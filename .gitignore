@@ -99,3 +99,11 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# customer ignore
+.DS_Store
+db.sqlite3
+**/*.DS_Store
+.idea
+node_modules
+settings_local.py
