@@ -12,8 +12,8 @@ class User(AbstractUser):
     name = models.CharField(max_length=30, blank=True, null=True)
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
-    boxing_beans_balance = models.IntegerField(default=0)
-    wallet_balance = models.IntegerField(default=0)  # unit, 分
+    coin_balance = models.IntegerField(default=0)
+    money_balance = models.IntegerField(default=0)  # unit, 分
 
     class Meta(AbstractUser.Meta):
         db_table = 'user'
@@ -52,17 +52,17 @@ class TradeBaseModel(models.Model):
 class UserProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     nick_name = models.CharField(max_length=30)
-    name = models.CharField(max_length=30)
-    nation = models.CharField(max_length=30)
-    birthday = models.DateTimeField()
-    weight = models.CharField(max_length=10)
-    stature = models.CharField(max_length=10)
-    profession = models.CharField(max_length=20)
-    head_portrait = models.URLField()
+    name = models.CharField(max_length=30, blank=True, null=True)
+    nation = models.CharField(max_length=30, blank=True, null=True)
+    birthday = models.DateTimeField(blank=True, null=True)
+    weight = models.CharField(max_length=10, blank=True, null=True)
+    height = models.CharField(max_length=10, blank=True, null=True)
+    profession = models.CharField(max_length=20, null=True, blank=True)
+    avatar = models.URLField(null=True, blank=True)
     gender = models.BooleanField(default=True)  # True-男，False-女
-    live_address = models.CharField(max_length=254, null=True, blank=True)
-    signature = models.CharField(max_length=30)  # 个性签名
-    alipay_account = models.CharField(max_length=30)
+    address = models.CharField(max_length=254, null=True, blank=True)
+    bio = models.CharField(max_length=30, blank=True, null=True)  # 个性签名
+    alipay_account = models.CharField(max_length=30, null=True, blank=True)
 
     class Meta:
         db_table = 'user_profile'
