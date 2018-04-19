@@ -81,8 +81,6 @@ class TradeBaseModel(models.Model):
     order_id = models.CharField(max_length=128)
     trade_device = models.CharField(choices=constants.DEVICE_CHOICES, max_length=10)
     trade_channel = models.CharField(choices=constants.TRADE_CHANNEL_CHOICES, max_length=10)
-    payable_account = models.CharField(max_length=50)
-    receivable_account = models.CharField(max_length=50)
 
     class Meta:
         abstract = True
@@ -163,10 +161,13 @@ class UserPaymentBill(TradeBaseModel, BaseModel):
         db_table = 'user_payment_bill'
 
 
-class UserWithDrawApplication(TradeBaseModel, AuditBaseModel):
+class UserWithDrawApplication(AuditBaseModel):
     """用户提现申请"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_with_draw_applications')
     status = models.CharField(max_length=50, choices=constants.DRAW_WITH_CHOICES)
+    amount = models.IntegerField()  # unit, 分
+    channel = models.CharField(choices=constants.WITH_DRAW_CHANNEL_CHOICES, max_length=10)
+    receivable_account = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'user_with_draw_application'
