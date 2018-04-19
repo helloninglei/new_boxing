@@ -50,7 +50,7 @@ class TradeBaseModel(models.Model):
 
 
 class UserProfile(BaseModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_info')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     nick_name = models.CharField(max_length=30)
     name = models.CharField(max_length=30)
     nation = models.CharField(max_length=30)
@@ -79,9 +79,9 @@ class UserRelation(BaseModel):
         db_table = 'user_relation'
 
 
-class BoxerInfo(AuditBaseModel):
+class BoxerProfile(AuditBaseModel):
     """拳手认证信息"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_info')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_profile')
     identity_number = models.CharField(max_length=18)
     mobile = models.CharField(max_length=11)
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
@@ -90,16 +90,16 @@ class BoxerInfo(AuditBaseModel):
     introduction = models.TextField()
 
     class Meta:
-        db_table = 'boxer_info'
+        db_table = 'boxer_profile'
 
 
-class BoxerInfoAdditional(BaseModel):
-    boxer_info = models.ForeignKey(BoxerInfo, on_delete=models.CASCADE, related_name='boxer_info_additional')
+class BoxerProfileAdditional(BaseModel):
+    boxer_profile = models.ForeignKey(BoxerProfile, on_delete=models.CASCADE, related_name='boxer_profile_additional')
     data_url = models.URLField()
     data_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
 
     class Meta:
-        db_table = 'boxer_info_additional'
+        db_table = 'boxer_profile_additional'
 
 
 class UserBalanceBill(AuditBaseModel):
