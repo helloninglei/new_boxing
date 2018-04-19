@@ -1,14 +1,53 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from biz import constants
 
 
+class UserManager(BaseUserManager):
+    use_in_migrations = True
+
+    def _create_user(self, username, mobile, password, **extra_fields):
+        """
+        Creates and saves a User with the given username, and password.
+        """
+        if not username:
+            raise ValueError('The given username must be set')
+        username = self.model.normalize_username(username)
+        user = self.model(username=username, mobile=mobile, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, username, mobile, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(username, mobile, password, **extra_fields)
+
+    def create_superuser(self, username, mobile, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self._create_user(username, mobile, password, **extra_fields)
+
+
 class User(AbstractUser):
     first_name = None
     last_name = None
+    email = None
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+    mobile = models.CharField(max_length=11, unique=True, db_index=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
