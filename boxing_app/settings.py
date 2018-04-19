@@ -27,6 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DB_MYSQL_DATABASE = 'boxing_new'
+DB_MYSQL_HOST = '192.168.33.10'
+DB_MYSQL_PORT = '3306'
+DB_MYSQL_USER = 'root'
+DB_MYSQL_PASSWORD = 'root'
 
 # Application definition
 
@@ -37,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'biz'
 ]
 
 MIDDLEWARE = [
@@ -68,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'boxing_app.wsgi.application'
+AUTH_USER_MODEL = 'biz.User'
 
 
 # Database
@@ -75,8 +83,18 @@ WSGI_APPLICATION = 'boxing_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': DB_MYSQL_DATABASE,
+        'HOST': DB_MYSQL_HOST,
+        'PORT': DB_MYSQL_PORT,
+        'USER': DB_MYSQL_USER,
+        'PASSWORD': DB_MYSQL_PASSWORD,
+        'OPTIONS': {
+            'charset': 'utf8mb4'
+        },
+        'TEST': {
+            'CHARSET': 'utf8mb4',
+        }
     }
 }
 
