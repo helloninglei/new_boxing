@@ -1,33 +1,34 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from biz import constants
+from biz import utils
+from biz import redis_client
 
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def _create_user(self, username, mobile, password, **extra_fields):
+    def _create_user(self, mobile, password, **extra_fields):
         """
         Creates and saves a User with the given username, and password.
         """
-        if not username:
-            raise ValueError('The given username must be set')
-        username = self.model.normalize_username(username)
-        user = self.model(username=username, mobile=mobile, **extra_fields)
+        if not mobile:
+            raise ValueError('The given mobile must be set')
+        extra_fields['username'] = redis_client.get_incr('User:username') if \
+            redis_client.exists('User:username') else redis_client.set_incr('User:username', amount=100000000)
+        user = self.model(mobile=mobile, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, mobile, password=None, **extra_fields):
+    def create_user(self, mobile, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, mobile, password, **extra_fields)
+        return self._create_user(mobile, password, **extra_fields)
 
-    def create_superuser(self, username, mobile, password, **extra_fields):
+    def create_superuser(self, mobile, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -36,19 +37,21 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(username, mobile, password, **extra_fields)
+        return self._create_user(mobile, password, **extra_fields)
 
 
 class User(AbstractUser):
     first_name = None
     last_name = None
     email = None
+    username = models.CharField(max_length=150)
     REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'mobile'
 
     objects = UserManager()
 
-    mobile = models.CharField(max_length=11, unique=True, db_index=True)
-    name = models.CharField(max_length=30, blank=True, null=True)
+    mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[utils.validate_mobile],
+                              error_messages={'unique': "A user with that mobile already exists."})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)
@@ -68,27 +71,9 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class AuditBaseModel(BaseModel):
-    auditor = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
-    audit_time = models.DateTimeField()
-
-    class Meta:
-        abstract = True
-
-
-class TradeBaseModel(models.Model):
-    trade_amount = models.IntegerField()  # unit, 分
-    order_id = models.CharField(max_length=128)
-    trade_device = models.CharField(choices=constants.DEVICE_CHOICES, max_length=10)
-    trade_channel = models.CharField(choices=constants.TRADE_CHANNEL_CHOICES, max_length=10)
-
-    class Meta:
-        abstract = True
-
-
 class UserProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
-    nick_name = models.CharField(max_length=30)
+    nick_name = models.CharField(max_length=30, null=True, blank=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     nation = models.CharField(max_length=30, blank=True, null=True)
     birthday = models.DateTimeField(blank=True, null=True)
@@ -103,71 +88,3 @@ class UserProfile(BaseModel):
 
     class Meta:
         db_table = 'user_profile'
-
-
-class UserRelation(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
-    passive_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followings')
-    is_friend = models.BooleanField(default=False)
-    is_black = models.BooleanField(default=False)
-    is_follower = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = 'user_relation'
-
-
-class BoxerProfile(AuditBaseModel):
-    """拳手认证信息"""
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_profile')
-    identity_number = models.CharField(max_length=18)
-    mobile = models.CharField(max_length=11)
-    is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
-
-    club = models.CharField(max_length=128)
-    introduction = models.TextField()
-
-    class Meta:
-        db_table = 'boxer_profile'
-
-
-class BoxerProfileAdditional(BaseModel):
-    boxer_profile = models.ForeignKey(BoxerProfile, on_delete=models.CASCADE, related_name='boxer_profile_additional')
-    data_url = models.URLField()
-    data_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
-
-    class Meta:
-        db_table = 'boxer_profile_additional'
-
-
-class UserBalanceBill(AuditBaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_balance_bill')
-    balance_type = models.CharField(choices=constants.BALANCE_TYPE_CHOICES, max_length=10)
-    balance_bill_type = models.CharField(max_length=10, choices=constants.BALANCE_BILL_TYPE)
-    amount = models.IntegerField()  # unit, 分 | + 收入  | - 支出
-    remark = models.CharField(null=True, blank=True, max_length=30)
-
-    class Meta:
-        db_table = 'user_balance_bill'
-
-
-class UserPaymentBill(TradeBaseModel, BaseModel):
-    """用户支付流水"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_payment_bills')
-    status = models.CharField(choices=constants.TRADE_STATUS_CHOICES, max_length=10)
-    remark = models.CharField(max_length=50, null=True, blank=True)
-    bill_type = models.CharField(max_length=20, choices=constants.BILL_TYPE_CHOICES)
-
-    class Meta:
-        db_table = 'user_payment_bill'
-
-
-class UserWithDrawApplication(AuditBaseModel):
-    """用户提现申请"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_with_draw_applications')
-    status = models.CharField(max_length=50, choices=constants.DRAW_WITH_CHOICES)
-    amount = models.IntegerField()  # unit, 分
-    channel = models.CharField(choices=constants.WITH_DRAW_CHANNEL_CHOICES, max_length=10)
-    receivable_account = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = 'user_with_draw_application'

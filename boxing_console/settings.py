@@ -27,11 +27,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-DB_MYSQL_DATABASE = 'boxing_new'
+DB_MYSQL_DATABASE = 'quanchengchuji'
 DB_MYSQL_HOST = '192.168.33.10'
 DB_MYSQL_PORT = '3306'
 DB_MYSQL_USER = 'root'
 DB_MYSQL_PASSWORD = 'root'
+
+REDIS_HOST = '192.168.33.10'
+REDIS_PORT = 6379
+REDIS_DB = 5
+
+setting_local_file = os.path.join(BASE_DIR, 'boxing_console/settings_local.py')
+if os.path.exists(setting_local_file):
+    execfile(setting_local_file)
 
 
 # Application definition
@@ -98,6 +106,12 @@ DATABASES = {
     }
 }
 
+REDIS_CONFIG = {
+    'host': REDIS_HOST,
+    'port': REDIS_PORT,
+    'db': REDIS_DB
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -118,12 +132,21 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 

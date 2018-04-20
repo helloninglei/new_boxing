@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-DB_MYSQL_DATABASE = 'boxing_new'
+DB_MYSQL_DATABASE = 'quanchengchuji'
 DB_MYSQL_HOST = '192.168.33.10'
 DB_MYSQL_PORT = '3306'
 DB_MYSQL_USER = 'root'
