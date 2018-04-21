@@ -13,20 +13,20 @@ class UserSerializer(serializers.ModelSerializer):
     user_basic_info = serializers.SerializerMethodField()
 
     def get_user_basic_info(self, instance):
-        return {field: self._get_user_profile_field(instance, field) for field in ['name', 'nation', 'birthday',
+        return {field: self._get_user_profile_field(instance)(field) for field in ['name', 'nation', 'birthday',
                                                                                    'height', 'weight', 'profession']}
 
     def get_address(self, instance):
-        return self._get_user_profile_field(instance, 'address')
+        return self._get_user_profile_field(instance)('address')
 
     def get_gender(self, instance):
-        return self._get_user_profile_field(instance, 'gender')
+        return self._get_user_profile_field(instance)('gender')
 
     def get_nick_name(self, instance):
-        return self._get_user_profile_field(instance, 'nick_name')
+        return self._get_user_profile_field(instance)("nick_name")
 
-    def _get_user_profile_field(self, instance, field=None):
-        return utils.get_one_to_one_model_field(instance, 'user_profile', field=field)
+    def _get_user_profile_field(self, instance):
+        return utils.get_one_to_one_model_field(instance, 'user_profile')
 
     class Meta:
         model = User
