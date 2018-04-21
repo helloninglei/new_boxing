@@ -44,7 +44,7 @@ class User(AbstractUser):
     first_name = None
     last_name = None
     email = None
-    username = models.CharField(max_length=150)
+    username = models.CharField(max_length=150, unique=True)
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'mobile'
 
