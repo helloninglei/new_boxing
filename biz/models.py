@@ -54,8 +54,6 @@ class User(AbstractUser):
                               error_messages={'unique': "A user with that mobile already exists."})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
-    coin_balance = models.IntegerField(default=0)
-    money_balance = models.IntegerField(default=0)  # unit, 分
 
     class Meta(AbstractUser.Meta):
         db_table = 'user'
