@@ -33,6 +33,10 @@ DB_MYSQL_PORT = '3306'
 DB_MYSQL_USER = 'root'
 DB_MYSQL_PASSWORD = 'root'
 
+REDIS_HOST = '192.168.33.10'
+REDIS_PORT = 6379
+REDIS_DB = 5
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -96,6 +100,12 @@ DATABASES = {
             'CHARSET': 'utf8mb4',
         }
     }
+}
+
+REDIS_CONFIG = {
+    'host': REDIS_HOST,
+    'port': REDIS_PORT,
+    'db': REDIS_DB
 }
 
 

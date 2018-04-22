@@ -67,7 +67,7 @@ class BaseModel(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
 
-    class Meta:
+    class Meta():
         abstract = True
 
 
@@ -88,3 +88,28 @@ class UserProfile(BaseModel):
 
     class Meta:
         db_table = 'user_profile'
+
+
+class CoinChangeLog(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='coin_change_log')
+    lastAmount = models.IntegerField(default=0)    # 变动前额度
+    changeAmount = models.IntegerField(default=0)    # 变动额度
+    remainAmount = models.IntegerField(default=0)    # 变动后额度
+    operator = models.CharField(null=True, max_length=20)
+    change_reason = models.CharField(null=True, max_length=20)
+
+    class Meta:
+        db_table = 'conin_change_log'
+
+
+class MoneyChangeLog(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='money_change_log')
+    lastAmount = models.IntegerField(default=0)  # 变动前额度
+    changeAmount = models.IntegerField(default=0)  # 变动额度
+    remainAmount = models.IntegerField(default=0)  # 变动后额度
+    operator = models.CharField(null=True, max_length=20)
+    change_reason = models.CharField(null=True, max_length=20)
+
+    class Meta:
+        db_table = 'money_change_log'
+

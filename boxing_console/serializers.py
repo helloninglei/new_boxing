@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from rest_framework import serializers
-from biz.models import User
+from biz.models import User, CoinChangeLog
 from biz import utils
 
 
@@ -32,3 +32,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'nick_name', 'mobile', 'gender', 'address', 'coin_balance', 'money_balance',
                   'date_joined', 'user_basic_info']
+
+
+class CoinLogListSerializer(serializers.ModelSerializer):
+    created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'))
+
+    class Meta:
+        model = CoinChangeLog
+        fields = '__all__'
+
