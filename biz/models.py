@@ -51,7 +51,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[utils.validate_mobile],
-                              error_messages={'unique': "A user with that mobile already exists."})
+                              error_messages={'unique': u"手机号已存在。"})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
 
