@@ -44,14 +44,14 @@ class User(AbstractUser):
     first_name = None
     last_name = None
     email = None
-    username = models.CharField(max_length=150)
+    username = models.CharField(max_length=150, unique=True)
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'mobile'
 
     objects = UserManager()
 
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[utils.validate_mobile],
-                              error_messages={'unique': "A user with that mobile already exists."})
+                              error_messages={'unique': u"手机号已存在。"})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)

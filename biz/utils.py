@@ -12,9 +12,3 @@ def validate_mobile(value):
         raise ValidationError(
             _('%(value)s is not an mobile'), params={'value': value},
         )
-
-
-def get_one_to_one_model_field(instance, related_name, field=None):
-    if field:
-        return getattr(getattr(instance, related_name), field) if hasattr(instance, related_name) else None
-    return lambda attr: getattr(getattr(instance, related_name), attr) if hasattr(instance, related_name) else None
