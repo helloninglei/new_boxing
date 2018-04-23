@@ -3,8 +3,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from biz import utils
-from biz import redis_client
+from biz import validator
 
 
 class UserManager(BaseUserManager):
@@ -16,8 +15,6 @@ class UserManager(BaseUserManager):
         """
         if not mobile:
             raise ValueError('The given mobile must be set')
-        extra_fields['username'] = redis_client.get_incr('User:username') if \
-            redis_client.exists('User:username') else redis_client.set_incr('User:username', amount=100000000)
         user = self.model(mobile=mobile, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -44,13 +41,13 @@ class User(AbstractUser):
     first_name = None
     last_name = None
     email = None
-    username = models.CharField(max_length=150, unique=True)
+    username = None
     REQUIRED_FIELDS = []
     USERNAME_FIELD = 'mobile'
 
     objects = UserManager()
 
-    mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[utils.validate_mobile],
+    mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
                               error_messages={'unique': u"手机号已存在。"})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
