@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import json
 from constants import DISCOVER_MEDIA
 from django.db import models
 from django.contrib.auth.models import User
@@ -23,17 +23,27 @@ class AuditModel(BaseModel):
     class Meta:
         abstract = True
 
+class StringListField(models.TextField):
+    def prepare_value(self, value):
+        return json.dumps(value)
+
+    def to_python(self, value):
+        if not value:
+            return []
+        return json.loads(value)
+
+class ThreadManager(models.Manager):
+    def get_queryset(self):
+        return super(ThreadManager, self).get_queryset().filter(is_deleted=False)
 
 # 动态
 class Thread(BaseModel):
     content = models.CharField(max_length=140)
+    images = StringListField()
+    video = models.CharField(max_length=255)
     is_deleted = models.BooleanField(default=False, db_index=True)
 
-    def author_id(self):
-        return self.creator.id
+    objects = ThreadManager()
 
-# 图片视频
-class Media(BaseModel):
-    thread = models.ForeignKey(Thread, on_delete=models.PROTECT, null=True, related_name='medias')
-    url = models.CharField(max_length=255)
-    media_type = models.SmallIntegerField(choices=DISCOVER_MEDIA.CHOICES, db_index=True)
+    class Meta:
+        db_table = 'discover_thread'
