@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from boxing_app.views import oss
 
 urlpatterns = [
+    url(r'^upload_token/', oss.get_upload_token),
     url(r'^admin/', admin.site.urls),
 ]
