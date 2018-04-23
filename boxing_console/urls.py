@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from boxing_console.views.user_management import UserManagementViewSet
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    # url(r'^admin/', admin.site.urls),
+    url(r"^users$", UserManagementViewSet.as_view({"get": "list"}))
 ]
