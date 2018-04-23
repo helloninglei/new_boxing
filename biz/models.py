@@ -3,7 +3,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from biz import utils
+from biz import utils, constants
 from biz import redis_client
 
 
@@ -95,8 +95,11 @@ class CoinChangeLog(BaseModel):
     lastAmount = models.IntegerField(default=0)    # 变动前额度
     changeAmount = models.IntegerField(default=0)    # 变动额度
     remainAmount = models.IntegerField(default=0)    # 变动后额度
+    change_type = models.CharField(null=True, max_length=30,
+                                   choices=constants.COIN_CHANGE_TPYE_CHOICES)
     operator = models.CharField(null=True, max_length=20)
-    change_reason = models.CharField(null=True, max_length=20)
+    remarks = models.CharField(null=True, max_length=20)
+
 
     class Meta:
         db_table = 'conin_change_log'
@@ -107,8 +110,10 @@ class MoneyChangeLog(BaseModel):
     lastAmount = models.IntegerField(default=0)  # 变动前额度
     changeAmount = models.IntegerField(default=0)  # 变动额度
     remainAmount = models.IntegerField(default=0)  # 变动后额度
+    change_type = models.CharField(null=True, max_length=30,
+                                   choices=constants.COIN_CHANGE_TPYE_CHOICES)
     operator = models.CharField(null=True, max_length=20)
-    change_reason = models.CharField(null=True, max_length=20)
+    remarks = models.CharField(null=True, max_length=20)
 
     class Meta:
         db_table = 'money_change_log'

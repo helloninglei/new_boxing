@@ -21,5 +21,5 @@ class CommonFilter(django_filters.FilterSet):
 class CoinChangLogListFilter(CommonFilter):
     class Meta:
         model = models.CoinChangeLog
-        fields = ['user', 'operator', 'change_reason', 'created_time', 'start_time', 'end_time']
+        fields = ['user', 'operator', 'change_type', 'created_time', 'start_time', 'end_time']
 

@@ -6,7 +6,7 @@ from biz.models import CoinChangeLog, MoneyChangeLog
 
 
 @transaction.atomic
-def coin_handle(effect_user, operator, change_amount=0, change_reason=None):
+def coin_handle(effect_user, operator, change_amount=0, change_type=None, remarks=None):
     lastAmount = effect_user.coin_balance
     remainAmount = int(lastAmount) + int(change_amount)
 
@@ -14,8 +14,9 @@ def coin_handle(effect_user, operator, change_amount=0, change_reason=None):
                                                    operator=operator,
                                                    lastAmount=lastAmount,
                                                    changeAmount=change_amount,
+                                                   change_type=change_type,
                                                    remainAmount=remainAmount,
-                                                   change_reason=change_reason
+                                                   remarks=remarks
                                                     )
 
     effect_user.coin_balance += int(change_amount)
@@ -23,7 +24,7 @@ def coin_handle(effect_user, operator, change_amount=0, change_reason=None):
     return coin_change_log
 
 @transaction.atomic
-def money_handle(effect_user, operator, change_amount=0, change_reason=None):
+def money_handle(effect_user, operator, change_amount=0, change_type=None, remarks=None):
     lastAmount = effect_user.money_balance
     remainAmount = int(lastAmount) + int(math.floor(float(change_amount)*100))
 
@@ -31,9 +32,14 @@ def money_handle(effect_user, operator, change_amount=0, change_reason=None):
                                                      operator=operator,
                                                      lastAmount=lastAmount,
                                                      changeAmount=change_amount,
+                                                     change_type=change_type,
                                                      remainAmount=remainAmount,
-                                                     change_reason=change_reason)
+                                                     remarks=remarks)
 
     effect_user.money_balance += int(math.floor(float(change_amount)*100))
     effect_user.save()
     return money_change_log
+
+def write_coin_and_money_log_remarks(request):
+    remarks = request.data.get('remarks',None)
+    return remarks
