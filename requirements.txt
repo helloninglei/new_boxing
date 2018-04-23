@@ -1,1 +1,4 @@
 Django==1.11.11
+PyMySQL==0.8.0
+djangorestframework==3.8.2
+oss2==2.4.0

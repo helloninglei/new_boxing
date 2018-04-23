@@ -1,0 +1,48 @@
+[
+    {
+        "model": "biz.thread",
+        "pk": 1,
+        "fields": {
+            "creator": null,
+            "created_time": "2018-04-20T10:22:36.025Z",
+            "update_time": "2018-04-20T10:22:36.025Z",
+            "content": "hello",
+            "is_deleted": false
+        }
+    },
+    {
+        "model": "biz.thread",
+        "pk": 2,
+        "fields": {
+            "creator": null,
+            "created_time": "2018-04-20T10:23:13.016Z",
+            "update_time": "2018-04-20T10:23:13.016Z",
+            "content": "world",
+            "is_deleted": false
+        }
+    },
+    {
+        "model": "biz.media",
+        "pk": 1,
+        "fields": {
+            "creator": null,
+            "created_time": "2018-04-20T10:23:33.031Z",
+            "update_time": "2018-04-20T10:23:33.031Z",
+            "thread": 2,
+            "url": "baidu",
+            "media_type": 1
+        }
+    },
+    {
+        "model": "biz.media",
+        "pk": 2,
+        "fields": {
+            "creator": null,
+            "created_time": "2018-04-20T10:23:47.790Z",
+            "update_time": "2018-04-20T10:23:47.790Z",
+            "thread": 2,
+            "url": "google",
+            "media_type": 2
+        }
+    }
+]

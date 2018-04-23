@@ -28,6 +28,20 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+DB_MYSQL_DATABASE = 'boxing'
+DB_MYSQL_HOST = 'localhost'
+DB_MYSQL_PORT = '3306'
+DB_MYSQL_USER = 'root'
+DB_MYSQL_PASSWORD = ''
+
+class ALIYUN_OSS(object):
+    accessKeyId = 'abcabcabcabc'
+    accessKeySecret = 'abcabcabcabc'
+    host = 'https://test_abc.oss-cn-beijing.aliyuncs.com'
+    expire_time = 60
+    upload_dir = 'images/'
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+
+    'biz',
 ]
 
 MIDDLEWARE = [
@@ -75,9 +93,13 @@ WSGI_APPLICATION = 'boxing_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': DB_MYSQL_DATABASE,
+        'HOST': DB_MYSQL_HOST,
+        'PORT': DB_MYSQL_PORT,
+        'USER': DB_MYSQL_USER,
+        'PASSWORD': DB_MYSQL_PASSWORD,
+    },
 }
 
 
@@ -118,3 +140,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if os.path.isfile('./boxing_app/settings_local.py'):
+    from settings_local import *
