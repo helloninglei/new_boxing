@@ -91,9 +91,9 @@ class UserProfile(BaseModel):
 
 class CoinChangeLog(BaseModel):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='coin_change_log')
-    lastAmount = models.IntegerField(default=0)    # 变动前额度
-    changeAmount = models.IntegerField(default=0)    # 变动额度
-    remainAmount = models.IntegerField(default=0)    # 变动后额度
+    last_amount = models.IntegerField(default=0)    # 变动前额度
+    change_amount = models.IntegerField(default=0)    # 变动额度
+    remain_amount = models.IntegerField(default=0)    # 变动后额度
     change_type = models.CharField(null=True, max_length=30,
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
     operator = models.CharField(null=True, max_length=20)
@@ -107,9 +107,9 @@ class CoinChangeLog(BaseModel):
 
 class MoneyChangeLog(BaseModel):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='money_change_log')
-    lastAmount = models.IntegerField(default=0)  # 变动前额度 单位(分)
-    changeAmount = models.IntegerField(default=0)  # 变动额度
-    remainAmount = models.IntegerField(default=0)  # 变动后额度
+    last_amount = models.IntegerField(default=0)  # 变动前额度 单位(分)
+    change_amount = models.IntegerField(default=0)  # 变动额度
+    remain_amount = models.IntegerField(default=0)  # 变动后额度
     change_type = models.CharField(null=True, max_length=30,
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
     operator = models.CharField(null=True, max_length=20)

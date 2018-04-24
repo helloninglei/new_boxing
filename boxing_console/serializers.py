@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import math
 from rest_framework import serializers
-from biz.models import CoinChangeLog
+from biz.models import CoinChangeLog, User, MoneyChangeLog
 from biz import models, constants
-from biz.services import coin_money_handle
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -31,74 +30,51 @@ class CoinLogListSerializer(serializers.ModelSerializer):
         model = CoinChangeLog
         fields = '__all__'
 
-class CoinSubstractSerializer(serializers.Serializer):
-    change_type = serializers.SerializerMethodField()
+class CoinLogCreateSerializer(serializers.Serializer):
     change_amount = serializers.IntegerField()
-    effect_user = serializers.SerializerMethodField()
-    operator = serializers.SerializerMethodField(required=False)
-    remarks = serializers.SerializerMethodField(required=False)
 
     def validate(self, attrs):
+        user_id = self.context['request'].parser_context['kwargs'].get('effect_user_id')
+        user = User.objects.filter(pk=user_id).first()
+        if not user:
+            raise serializers.ValidationError({'error_message': '用户不存在'})
+        attrs['user'] = user
+        attrs['last_amount'] = user.coin_balance
         attrs['change_type'] = self.context['request'].META.get('HTTP_OPERATION')
         attrs['operator'] = self.context['request'].user
-        attrs['effect_user'] = self.context['request'].parser_context['kwargs'].get('effect_user_id')
-
+        attrs['remain_amount'] = attrs['last_amount'] + attrs['change_amount']
         if attrs['change_type'] not in dict(constants.COIN_CHANGE_TYPE_CHOICES).keys():
             raise serializers.ValidationError({'error_message': '拳豆修改类型未知'})
         return attrs
 
-    def get_change_type(self):
-        return self.validated_data['change_type']
-
-    def get_change_amount(self):
-        return self.validated_data['change_amount']
-
-    def get_effect_user(self):
-        return self.validated_data['effect_user']
-
-    def get_operator(self):
-        return self.validated_data['operator']
-
-    def get_remarks(self):
-        return self.validated_data['remarks']
-
     def create(self, validated_data):
-        return coin_money_handle.coin_handle(**validated_data)
-
+        coin_change_log = CoinChangeLog.objects.create(**validated_data)
+        user = validated_data['user']
+        user.coin_balance += validated_data['change_amount']
+        user.save()
+        return coin_change_log
 
 class MoneySubstractSerializer(serializers.Serializer):
-    change_type = serializers.SerializerMethodField()
     change_amount = serializers.FloatField()
-    effect_user = serializers.SerializerMethodField()
-    operator = serializers.SerializerMethodField(required=False)
-    remarks = serializers.SerializerMethodField(required=False)
 
     def validate(self, attrs):
+        user_id = self.context['request'].parser_context['kwargs'].get('effect_user_id')
+        user = User.objects.filter(pk=user_id).first()
+        if not user:
+            raise serializers.ValidationError({'error_message': '用户不存在'})
+        attrs['user'] = user
+        attrs['last_amount'] = user.money_balance
+        attrs['change_amount'] = int(math.floor(attrs['change_amount'] * 100))
+        attrs['remain_amount'] = attrs['last_amount'] + attrs['change_amount']
         attrs['change_type'] = self.context['request'].META.get('HTTP_OPERATION')
         attrs['operator'] = self.context['request'].user
-        attrs['effect_user'] = self.context['request'].parser_context['kwargs'].get('effect_user_id')
-        attrs['change_amount'] = self.context['request'].data.get('change_amount')
-
         if attrs['change_type'] not in dict(constants.MONEY_CHANGE_TYPE_CHOICES).keys():
             raise serializers.ValidationError({'error_message': '钱包余额修改类型未知'})
-        else:
-            attrs['change_amount'] = int(math.floor(float(attrs['change_amount'])*100))
         return attrs
 
-    def get_change_type(self):
-        return self.validated_data['change_type']
-
-    def get_change_amount(self):
-        return self.validated_data['change_amount']
-
-    def get_effect_user(self):
-        return self.validated_data['effect_user']
-
-    def get_operator(self):
-        return self.validated_data['operator']
-
-    def get_remarks(self):
-        return self.validated_data['remarks']
-
     def create(self, validated_data):
-        return coin_money_handle.money_handle(**validated_data)
+        money_change_log = MoneyChangeLog.objects.create(**validated_data)
+        user = validated_data['user']
+        user.money_balance += validated_data['change_amount']
+        user.save()
+        return money_change_log
