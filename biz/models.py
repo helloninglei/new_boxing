@@ -94,7 +94,7 @@ class CoinChangeLog(BaseModel):
     changeAmount = models.IntegerField(default=0)    # 变动额度
     remainAmount = models.IntegerField(default=0)    # 变动后额度
     change_type = models.CharField(null=True, max_length=30,
-                                   choices=constants.COIN_CHANGE_TPYE_CHOICES)
+                                   choices=constants.COIN_CHANGE_TYPE_CHOICES)
     operator = models.CharField(null=True, max_length=20)
     remarks = models.CharField(null=True, max_length=20)
 
@@ -109,7 +109,7 @@ class MoneyChangeLog(BaseModel):
     changeAmount = models.IntegerField(default=0)  # 变动额度
     remainAmount = models.IntegerField(default=0)  # 变动后额度
     change_type = models.CharField(null=True, max_length=30,
-                                   choices=constants.COIN_CHANGE_TPYE_CHOICES)
+                                   choices=constants.COIN_CHANGE_TYPE_CHOICES)
     operator = models.CharField(null=True, max_length=20)
     remarks = models.CharField(null=True, max_length=20)
 

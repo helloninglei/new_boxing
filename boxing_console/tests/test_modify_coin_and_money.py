@@ -42,7 +42,7 @@ class CoinAndMoneyTestCase(APITestCase):
     def test_add_money_success(self):
         responst = self.client.post(reverse('add_money', kwargs={'effect_user_id': self.fake_user2.pk}),
                                     data={'change_amount': 100,
-                                          'change_type': constants.MONEY_CHANGE_TPYE_INCREASE_RECHARGE})
+                                          'change_type': constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE})
         self.assertEqual(responst.status_code, status.HTTP_200_OK)
 
         money_log = MoneyChangeLog.objects.filter(user=self.fake_user2).first()
@@ -50,11 +50,11 @@ class CoinAndMoneyTestCase(APITestCase):
         self.assertEqual(money_log.changeAmount, 100)
         self.assertEqual(money_log.remainAmount, 100*100)
         self.assertEqual(int(money_log.operator), self.fake_user1.pk)
-        self.assertEqual(money_log.change_type, constants.MONEY_CHANGE_TPYE_INCREASE_RECHARGE)
+        self.assertEqual(money_log.change_type, constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE)
 
     def test_add_money_failed(self):
         responst1 = self.client.post(reverse('add_money', kwargs={'effect_user_id': self.fake_user2.pk}),
-                                    data={'change_type': constants.MONEY_CHANGE_TPYE_INCREASE_RECHARGE})
+                                    data={'change_type': constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE})
         self.assertEqual(responst1.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(responst1.data['message'], u'请输入需要增加或减少的钱包金额')
 

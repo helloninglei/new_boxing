@@ -24,7 +24,7 @@ def add_or_subtract_user_coin(request, effect_user_id):
         return Response({'message': u'您操作的用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
     if not change_amount:
         return Response({'message': u'请输入需要增加或减少的拳豆值'}, status=status.HTTP_400_BAD_REQUEST)
-    if change_type not in dict(constants.COIN_CHANGE_TPYE_CHOICES).keys():
+    if change_type not in dict(constants.COIN_CHANGE_TYPE_CHOICES).keys():
         return Response({'message': u'拳豆变动类型未知'}, status=status.HTTP_400_BAD_REQUEST)
 
     coin_change_log = coin_handle(effect_user, operator, change_amount, change_type, remarks)
@@ -47,7 +47,7 @@ def add_or_subtract_user_money(request, effect_user_id):
         return Response({'message': u'您操作的用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
     if not change_amount:
         return Response({'message': u'请输入需要增加或减少的钱包金额'}, status=status.HTTP_400_BAD_REQUEST)
-    if change_type not in dict(constants.MONEY_CHANGE_TPYE_CHOICES).keys():
+    if change_type not in dict(constants.MONEY_CHANGE_TYPE_CHOICES).keys():
         return Response({'message': u'钱包金额变动类型未知'}, status=status.HTTP_400_BAD_REQUEST)
 
     money_change_log = money_handle(effect_user, operator, change_amount, change_type, remarks)
