@@ -14,10 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib import admin
 from boxing_console.views.user_management import UserManagementViewSet
 
 urlpatterns = [
-    # url(r'^admin/', admin.site.urls),
     url(r"^users$", UserManagementViewSet.as_view({"get": "list"}))
 ]

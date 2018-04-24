@@ -10,19 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from settings import *
 
 WSGI_APPLICATION = 'boxing_console.wsgi.application'
 
 ROOT_URLCONF = 'boxing_console.urls'
-
-settings_common_file = os.path.join(BASE_DIR, 'common_settings.py')
-if os.path.exists(settings_common_file):
-    execfile(settings_common_file)
-else:
-    print "must exist common_settings.py in directory of {}".format(BASE_DIR)
-    exit()
-
