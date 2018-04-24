@@ -25,10 +25,9 @@ urlpatterns = [
 
     # url(r'^admin/', admin.site.urls),
     url(r"^users$", UserManagementViewSet.as_view({"get": "list"})),
-    url(r'^admin/', admin.site.urls),
-    url(r'^add-coin/(?P<effect_user_id>\d+)', add_or_subtract_user_coin,
+    url(r'^coin/(?P<effect_user_id>\d+)/substract', add_or_subtract_user_coin,
         name='add_coin'),
-    url(r'^add-money/(?P<effect_user_id>\d+)', add_or_subtract_user_money,
+    url(r'^money/(?P<effect_user_id>\d+)/substract', add_or_subtract_user_money,
         name='add_money'),
     url(r'^coin-change-log$',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
 ]

@@ -63,7 +63,7 @@ class CoinChangLogViewSet(mixins.ListModelMixin,
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = CoinLogListSerializer
     filter_class = CoinChangLogListFilter
-    queryset = CoinChangeLog.objects.filter().order_by(*['-created_time', '-id'])
+    queryset = CoinChangeLog.objects.filter()
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset().filter(user=request.user))

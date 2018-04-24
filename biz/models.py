@@ -101,6 +101,7 @@ class CoinChangeLog(BaseModel):
 
     class Meta:
         db_table = 'conin_change_log'
+        ordering = ['-created_time', '-id']
 
 
 class MoneyChangeLog(BaseModel):
@@ -115,4 +116,4 @@ class MoneyChangeLog(BaseModel):
 
     class Meta:
         db_table = 'money_change_log'
-
+        ordering = ['-created_time', '-id']
