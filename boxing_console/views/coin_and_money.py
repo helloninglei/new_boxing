@@ -10,7 +10,7 @@ from boxing_console.serializers import CoinLogListSerializer, MoneySubstractSeri
 class UserCoinSubstract(mixins.CreateModelMixin,
                         viewsets.GenericViewSet):
     serializer_class = CoinLogCreateSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def add_or_substract(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -26,7 +26,7 @@ class UserCoinSubstract(mixins.CreateModelMixin,
 class UserMoneySubstract(mixins.CreateModelMixin,
                          viewsets.GenericViewSet):
     serializer_class = MoneySubstractSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def add_or_substract(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
