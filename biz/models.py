@@ -89,7 +89,6 @@ class UserProfile(BaseModel):
         db_table = 'user_profile'
 
 
-<<<<<<< HEAD
 class CoinChangeLog(BaseModel):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='coin_change_log')
     last_amount = models.IntegerField(default=0)    # 变动前额度
@@ -119,7 +118,8 @@ class MoneyChangeLog(BaseModel):
     class Meta:
         db_table = 'money_change_log'
         ordering = ['-created_time', '-id']
-=======
+
+
 class StringListField(models.TextField):
     def get_prep_value(self, value):
         if value:
@@ -150,4 +150,3 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'discover_message'
->>>>>>> master
