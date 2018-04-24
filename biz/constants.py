@@ -1,4 +1,5 @@
 # coding=utf-8
+<<<<<<< HEAD
 
 
 COIN_CHANGE_TYPE_INCREASE_RECHARGE = 'INCREASE_COIN_RECHARGE'
@@ -57,3 +58,5 @@ MONEY_CHANGE_TYPE_CHOICES = (
     (MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO, u'付费视频'),
     (MONEY_CHANGE_TYPE_REDUCE_SIGN_UP, u'报名'),
 )
+=======
+>>>>>>> master

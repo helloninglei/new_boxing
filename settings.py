@@ -5,13 +5,14 @@
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'h8g39idb0b=i!qsj=u&lkc7)c)4s%^+i-b(^ownv1_05%l9v6o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ENVIRONMENT = 'dev'   #production/test/dev
 
 ALLOWED_HOSTS = []
 
@@ -24,6 +25,21 @@ DB_MYSQL_PASSWORD = 'root'
 REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
+
+BASE_UPLOAD_FILE_URL = '/upload/'
+UPLOAD_FILE_LOCAL_STORAGE_DIR = '/var/tmp/boxing'
+
+OSS_URL = 'url'
+OSS_KEY = 'key'
+OSS_SECRET = 'secret'
+OSS_BUCKET = 'bucket'
+
+OSS_CONFIG = {
+    'url': OSS_URL,
+    'app_key': OSS_KEY,
+    'app_secret': OSS_SECRET,
+    'bucket': OSS_BUCKET
+}
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
