@@ -7,12 +7,12 @@ if __name__ == "__main__":
         print """
     Couldn't load settings. You must add --settings <settings_python_path> into command line.
     Example:
-    \tpython manage.py --settings boxing_app.settings <args>
-    \tpython manage.py --settings boxing_console.settings <args>
+    \tpython manage.py --settings boxing_app.app_settings <args>
+    \tpython manage.py --settings boxing_console.console_settings <args>
     """
         exit(1)
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", sys.argv[3])
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
