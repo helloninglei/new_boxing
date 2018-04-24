@@ -28,7 +28,7 @@ def add_or_subtract_user_coin(request, effect_user_id):
         return Response({'message': u'拳豆变动类型未知'}, status=status.HTTP_400_BAD_REQUEST)
 
     coin_change_log = coin_handle(effect_user, operator, change_amount, change_type, remarks)
-    success_message = u'操作成功，用户{0}拳豆增加{1},目前拳豆余额为{2}'.format(effect_user.username,
+    success_message = u'操作成功，用户{0}拳豆增加{1},目前拳豆余额为{2}'.format(effect_user.mobile,
                                                              coin_change_log.changeAmount,
                                                              coin_change_log.remainAmount)
 
@@ -51,7 +51,7 @@ def add_or_subtract_user_money(request, effect_user_id):
         return Response({'message': u'钱包金额变动类型未知'}, status=status.HTTP_400_BAD_REQUEST)
 
     money_change_log = money_handle(effect_user, operator, change_amount, change_type, remarks)
-    success_message = u'操作成功，用户{0}钱包金额增加{1},目前钱包余额为{2}'.format(effect_user.username,
+    success_message = u'操作成功，用户{0}钱包金额增加{1},目前钱包余额为{2}'.format(effect_user.mobile,
                                                                money_change_log.changeAmount,
                                                                money_change_log.remainAmount)
 
@@ -66,8 +66,5 @@ class CoinChangLogViewSet(mixins.ListModelMixin,
     queryset = CoinChangeLog.objects.filter()
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset().filter(user=request.user))
-        page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True)
-
-        return Response(self.get_paginated_response(serializer.data).data)
+        self.queryset = self.queryset.filter(user=self.request.user)
+        return super(CoinChangLogViewSet, self).list(request, *args, **kwargs)
