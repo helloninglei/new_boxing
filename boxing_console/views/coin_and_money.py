@@ -12,7 +12,7 @@ class UserCoinSubstract(mixins.CreateModelMixin,
     serializer_class = CoinLogCreateSerializer
     permission_classes = (permissions.AllowAny,)
 
-    def coin_substract(self, request, *args, **kwargs):
+    def add_or_substract(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         coin_change_log = serializer.save()
@@ -28,7 +28,7 @@ class UserMoneySubstract(mixins.CreateModelMixin,
     serializer_class = MoneySubstractSerializer
     permission_classes = (permissions.AllowAny,)
 
-    def money_substract(self, request, *args, **kwargs):
+    def add_or_substract(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         money_change_log = serializer.save()
