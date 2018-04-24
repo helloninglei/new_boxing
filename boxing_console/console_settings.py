@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+from settings import *
+
 WSGI_APPLICATION = 'boxing_console.wsgi.application'
 
 ROOT_URLCONF = 'boxing_console.urls'
-
-from settings import *
