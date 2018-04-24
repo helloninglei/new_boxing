@@ -21,7 +21,7 @@ from boxing_app.views import message
 
 urlpatterns = []
 message_urls = [
-    url(r"^messages$", message.MessageViewSet.as_view()),
+    url(r"^messages$", message.MessageViewSet.as_view({'get': 'list'})),
 ]
 
 upload_urls = [
