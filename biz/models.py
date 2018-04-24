@@ -116,13 +116,3 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'discover_message'
-
-
-class UploadFile(models.Model):
-    origin_name = models.CharField(max_length=256)
-    file_url = models.CharField(max_length=512)
-    create_user = models.ForeignKey(User, related_name='+')
-    create_time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'upload_file'
