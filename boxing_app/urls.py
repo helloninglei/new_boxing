@@ -14,5 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 
-urlpatterns = [
+from django.conf.urls import url
+from boxing_app.views import message
+
+urlpatterns = []
+message_urls = [
+    url(r"^messages$", message.MessageViewSet.as_view())
 ]
+
+urlpatterns += message_urls
