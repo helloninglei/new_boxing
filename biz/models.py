@@ -107,7 +107,7 @@ class CoinChangeLog(BaseModel):
 
 class MoneyChangeLog(BaseModel):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='money_change_log')
-    lastAmount = models.IntegerField(default=0)  # 变动前额度
+    lastAmount = models.IntegerField(default=0)  # 变动前额度 单位(分)
     changeAmount = models.IntegerField(default=0)  # 变动额度
     remainAmount = models.IntegerField(default=0)  # 变动后额度
     change_type = models.CharField(null=True, max_length=30,

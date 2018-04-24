@@ -1,61 +1,39 @@
 # -*- coding: utf-8 -*-
-from rest_framework import mixins, status
-from rest_framework import viewsets
-from rest_framework import permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import mixins, status, permissions, viewsets
 from rest_framework.response import Response
-from biz import constants
-from biz.models import CoinChangeLog, User
-from biz.services.coin_money_handle import coin_handle, money_handle, write_coin_and_money_log_remarks
+from biz.models import CoinChangeLog
 from boxing_console.filters import CoinChangLogListFilter
-from boxing_console.serializers import CoinLogListSerializer
+from boxing_console.serializers import CoinLogListSerializer, CoinSubstractSerializer, MoneySubstractSerializer
 
 
-@api_view(['POST'])
-@permission_classes((permissions.IsAuthenticated,))
-def add_or_subtract_user_coin(request, effect_user_id):
-    change_amount = request.data.get('change_amount')
-    change_type = request.data.get('change_type')
-    effect_user = User.objects.filter(pk=effect_user_id).first()
-    operator = request.user.pk
-    remarks = write_coin_and_money_log_remarks(request)
+class UserCoinSubstract(viewsets.GenericViewSet):
+    serializer_class = CoinSubstractSerializer
+    permission_classes = (permissions.AllowAny,)
 
-    if not effect_user:
-        return Response({'message': u'您操作的用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
-    if not change_amount:
-        return Response({'message': u'请输入需要增加或减少的拳豆值'}, status=status.HTTP_400_BAD_REQUEST)
-    if change_type not in dict(constants.COIN_CHANGE_TYPE_CHOICES).keys():
-        return Response({'message': u'拳豆变动类型未知'}, status=status.HTTP_400_BAD_REQUEST)
+    def coin_substract(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        coin_change_log = serializer.save()
+        success_message = u'操作成功，用户{0}拳豆增加{1},目前拳豆余额为{2}'.format(coin_change_log.user.mobile,
+                                                                 coin_change_log.changeAmount,
+                                                                 coin_change_log.remainAmount)
 
-    coin_change_log = coin_handle(effect_user, operator, change_amount, change_type, remarks)
-    success_message = u'操作成功，用户{0}拳豆增加{1},目前拳豆余额为{2}'.format(effect_user.mobile,
-                                                             coin_change_log.changeAmount,
-                                                             coin_change_log.remainAmount)
+        return Response({'message': success_message}, status=status.HTTP_200_OK)
 
-    return Response({'message': success_message}, status=status.HTTP_200_OK)
 
-@api_view(['POST'])
-@permission_classes((permissions.IsAuthenticated,))
-def add_or_subtract_user_money(request, effect_user_id):
-    change_amount = request.data.get('change_amount')
-    change_type = request.data.get('change_type')
-    effect_user = User.objects.filter(pk=effect_user_id).first()
-    operator = request.user.pk
-    remarks = write_coin_and_money_log_remarks(request)
+class UserMoneySubstract(viewsets.GenericViewSet):
+    serializer_class = MoneySubstractSerializer
+    permission_classes = (permissions.AllowAny,)
 
-    if not effect_user:
-        return Response({'message': u'您操作的用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
-    if not change_amount:
-        return Response({'message': u'请输入需要增加或减少的钱包金额'}, status=status.HTTP_400_BAD_REQUEST)
-    if change_type not in dict(constants.MONEY_CHANGE_TYPE_CHOICES).keys():
-        return Response({'message': u'钱包金额变动类型未知'}, status=status.HTTP_400_BAD_REQUEST)
+    def money_substract(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        money_change_log = serializer.save()
+        success_message = u'操作成功，用户{0}钱包金额增加{1}元,目前钱包余额为{2}元'.format(money_change_log.user.mobile,
+                                                                   money_change_log.changeAmount/100.00,
+                                                                   money_change_log.remainAmount/100.00)
 
-    money_change_log = money_handle(effect_user, operator, change_amount, change_type, remarks)
-    success_message = u'操作成功，用户{0}钱包金额增加{1},目前钱包余额为{2}'.format(effect_user.mobile,
-                                                               money_change_log.changeAmount,
-                                                               money_change_log.remainAmount)
-
-    return Response({'message': success_message}, status=status.HTTP_200_OK)
+        return Response({'message': success_message}, status=status.HTTP_200_OK)
 
 
 class CoinChangLogViewSet(mixins.ListModelMixin,
