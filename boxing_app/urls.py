@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from boxing_app.views import oss
+from django.conf import settings
+from django.conf.urls.static import static
+from boxing_app.views import upload
 
-urlpatterns = [
-    url(r'^upload_token/', oss.get_upload_token),
+upload_urls = [
+    url(r'^upload_file$', upload.upload_file, name='upload'),
 ]
+
+urlpatterns = upload_urls
+
+urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

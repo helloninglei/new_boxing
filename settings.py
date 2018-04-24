@@ -25,12 +25,21 @@ REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
 
-class ALIYUN_OSS(object):
-    accessKeyId = 'abcabcabcabc'
-    accessKeySecret = 'abcabcabcabc'
-    host = 'https://test_abc.oss-cn-beijing.aliyuncs.com'
-    expire_time = 60
-    upload_dir = 'images/'
+
+BASE_UPLOAD_FILE_URL = '/upload/'
+UPLOAD_FILE_LOCAL_STORAGE_DIR = '/var/tmp/boxing'
+
+OSS_URL = 'url'
+OSS_KEY = 'key'
+OSS_SECRET = 'secret'
+OSS_BUCKET = 'bucket'
+
+OSS_CONFIG = {
+    'url': OSS_URL,
+    'app_key': OSS_KEY,
+    'app_secret': OSS_SECRET,
+    'bucket': OSS_BUCKET
+}
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
