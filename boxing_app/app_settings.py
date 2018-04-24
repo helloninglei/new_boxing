@@ -19,10 +19,8 @@ ROOT_URLCONF = 'boxing_app.urls'
 
 WSGI_APPLICATION = 'boxing_app.wsgi.application'
 
-
-settings_common_file = os.path.join(BASE_DIR, 'common_settings.py')
-if os.path.exists(settings_common_file):
-    execfile(settings_common_file)
-else:
-    print "must exist common_settings.py in directory of {}".format(BASE_DIR)
-    exit()
+settings_file = os.path.join(BASE_DIR, 'settings.py')
+if not os.path.exists(settings_file):
+    print "must exist settings.py in directory of {}".format(BASE_DIR)
+    exit(1)
+execfile(settings_file)

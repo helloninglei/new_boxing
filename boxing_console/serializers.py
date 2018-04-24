@@ -15,7 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
     user_basic_info = serializers.SerializerMethodField()
 
     def get_user_basic_info(self, instance):
-        return UserProfileSerializer(instance.user_profile).data if hasattr(instance, 'user_profile') else None
+        if hasattr(instance, 'user_profile'):
+            return UserProfileSerializer(instance.user_profile).data
 
     class Meta:
         model = models.User
