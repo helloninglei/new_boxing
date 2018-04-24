@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
-from django.contrib.auth.base_user import BaseUserManager
+import json
 from django.db import models
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import validator
 
@@ -84,3 +84,35 @@ class UserProfile(BaseModel):
 
     class Meta:
         db_table = 'user_profile'
+
+
+class StringListField(models.TextField):
+    def get_prep_value(self, value):
+        if value:
+            return json.dumps(value)
+
+    def from_db_value(self, value, *args):
+        if not value:
+            return []
+        return json.loads(value)
+
+
+class MessageManager(models.Manager):
+    def get_queryset(self):
+        return super(MessageManager, self).get_queryset().filter(is_deleted=False)
+
+
+# 动态
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
+    content = models.CharField(max_length=140)
+    images = StringListField(null=True)
+    video = models.URLField(null=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_time = models.DateTimeField(auto_now=True)
+
+    objects = MessageManager()
+
+    class Meta:
+        db_table = 'discover_message'

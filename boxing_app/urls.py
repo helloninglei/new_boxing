@@ -13,13 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-
 from django.conf.urls import url
+from django.conf import settings
+from django.conf.urls.static import static
+from boxing_app.views import upload
 from boxing_app.views import message
 
 urlpatterns = []
 message_urls = [
-    url(r"^messages$", message.MessageViewSet.as_view())
+    url(r"^messages$", message.MessageViewSet.as_view()),
 ]
 
+upload_urls = [
+    url(r'^upload_file$', upload.upload_file, name='upload'),
+]
+
+urlpatterns += upload_urls
 urlpatterns += message_urls
+urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
