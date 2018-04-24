@@ -59,6 +59,7 @@ class User(AbstractUser):
         db_table = 'user'
         verbose_name = 'user'
         verbose_name_plural = 'users'
+        ordering = ['-id']
 
 
 class BaseModel(models.Model):
