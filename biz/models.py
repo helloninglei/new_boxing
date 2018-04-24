@@ -97,19 +97,19 @@ class StringListField(models.TextField):
         return json.loads(value)
 
 
-class ThreadManager(models.Manager):
+class MessageManager(models.Manager):
     def get_queryset(self):
-        return super(ThreadManager, self).get_queryset().filter(is_deleted=False)
+        return super(MessageManager, self).get_queryset().filter(is_deleted=False)
 
 
 # 动态
-class Thread(BaseModel):
+class Message(BaseModel):
     content = models.CharField(max_length=140)
     images = StringListField()
-    video = models.CharField(max_length=255)
+    video = models.URLField()
     is_deleted = models.BooleanField(default=False, db_index=True)
 
-    objects = ThreadManager()
+    objects = MessageManager()
 
     class Meta:
-        db_table = 'discover_thread'
+        db_table = 'discover_message'
