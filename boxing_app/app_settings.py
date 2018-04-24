@@ -10,17 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 ROOT_URLCONF = 'boxing_app.urls'
 
 WSGI_APPLICATION = 'boxing_app.wsgi.application'
 
-settings_file = os.path.join(BASE_DIR, 'settings.py')
-if not os.path.exists(settings_file):
-    print "must exist settings.py in directory of {}".format(BASE_DIR)
-    exit(1)
-execfile(settings_file)
+from settings import *
