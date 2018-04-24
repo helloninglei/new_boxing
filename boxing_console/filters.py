@@ -14,8 +14,8 @@ class CommonFilter(django_filters.FilterSet):
         if value:
             next_day = value + datetime.timedelta(days=1)
             return qs.filter(created_time__lt=next_day)
-        else:
-            return qs.filter()
+
+        return qs.filter()
 
 
 class CoinChangLogListFilter(CommonFilter):
