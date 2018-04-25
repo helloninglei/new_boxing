@@ -58,7 +58,7 @@ class CoinLogSerializer(serializers.ModelSerializer):
 
 class MoneyLogSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'), required=False)
-    change_amount = serializers.FloatField()
+    change_amount = serializers.IntegerField()
     change_type = serializers.CharField()
     user = serializers.CharField(read_only=True)
 
@@ -69,7 +69,7 @@ class MoneyLogSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'error_message': '用户不存在'})
         attrs['user'] = user
         attrs['last_amount'] = user.money_balance
-        attrs['change_amount'] = int(math.floor(attrs['change_amount'] * 100))
+        # attrs['change_amount'] = int(math.floor(attrs['change_amount'] * 100))
         attrs['remain_amount'] = attrs['last_amount'] + attrs['change_amount']
         attrs['operator'] = self.context['request'].user
         if attrs['change_type'] not in dict(constants.MONEY_CHANGE_TYPE_CHOICES).keys():

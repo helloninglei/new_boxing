@@ -45,8 +45,8 @@ class CoinAndMoneyTestCase(TestCase):
 
         money_log = MoneyChangeLog.objects.filter(user=self.fake_user2).first()
         self.assertEqual(money_log.last_amount, 0)
-        self.assertEqual(money_log.change_amount, 100*100)
-        self.assertEqual(money_log.remain_amount, 100*100)
+        self.assertEqual(money_log.change_amount, 100)
+        self.assertEqual(money_log.remain_amount, 100)
         self.assertEqual(money_log.operator, self.fake_user1.mobile)
         self.assertEqual(money_log.change_type, constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE)
 

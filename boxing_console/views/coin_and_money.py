@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from rest_framework import permissions, mixins, status
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
+from rest_framework import permissions, mixins
 from rest_framework.viewsets import GenericViewSet
 
 from biz.models import CoinChangeLog, MoneyChangeLog
@@ -22,7 +20,7 @@ class CoinChangLogViewSet(mixins.CreateModelMixin,
     queryset = CoinChangeLog.objects.all()
 
     def list(self, request, *args, **kwargs):
-        self.queryset = self.queryset.filter(user=1)
+        self.queryset = self.queryset.filter(user=request.user)
         return super(CoinChangLogViewSet, self).list(request, *args, **kwargs)
 
 
