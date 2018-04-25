@@ -21,6 +21,6 @@ class MessageViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
-    def hot(self, request, *args, **kwargs):
+    def hot(self, request, *args, **kwargs):  #TODO 依赖评论和点赞部分
         pass
 
