@@ -18,24 +18,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
 from boxing_app.views import message
-from django.conf.urls import include
 
-
-urlpatterns = []
 
 message_urls = [
-    url(r"^messages$", message.MessageViewSet.as_view({'get': 'list'})),
+    url(r"^messages$", message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
+    url(r"^messages/hot$", message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
+    url(r'^messages/(?P<pk>[0-9]+)$', message.MessageViewSet.as_view({'get': 'retrieve','delete': 'destroy'}), name='message-detail'),
 ]
 
 upload_urls = [
     url(r'^upload_file$', upload.upload_file, name='upload'),
 ]
 
-rest_framework_urls = [
-    url(r'^api-auth/', include('rest_framework.urls')),
-]
-
-urlpatterns += rest_framework_urls
+urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += message_urls
 urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
