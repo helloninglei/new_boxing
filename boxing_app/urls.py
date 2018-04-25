@@ -17,11 +17,14 @@ from django.conf.urls import url
 from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
+from boxing_app.views.boxer import BoxerIdentificationViewSet
 
 upload_urls = [
     url(r'^upload_file$', upload.upload_file, name='upload'),
 ]
-
-urlpatterns = upload_urls
+boxer_url = [
+    url(r'^boxer/identification/create$',BoxerIdentificationViewSet.as_view, name='identification_create'),
+]
+urlpatterns = upload_urls + boxer_url
 
 urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
