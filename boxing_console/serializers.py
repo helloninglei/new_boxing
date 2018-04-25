@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import math
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, User, MoneyChangeLog
 from biz import models, constants
@@ -27,28 +26,23 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CoinLogSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'),required=False)
-    change_amount = serializers.IntegerField()
-    change_type = serializers.CharField()
-    user = serializers.CharField(read_only=True)
-
-    def validate(self, attrs):
-        user_id = self.context['request'].parser_context['kwargs'].get('user_id')
-        user = User.objects.filter(pk=user_id).first()
-        if not user:
-            raise serializers.ValidationError({'error_message': '用户不存在'})
-        attrs['user'] = user
-        attrs['last_amount'] = user.coin_balance
-        attrs['operator'] = self.context['request'].user
-        attrs['remain_amount'] = attrs['last_amount'] + attrs['change_amount']
-        if attrs['change_type'] not in dict(constants.COIN_CHANGE_TYPE_CHOICES).keys():
-            raise ValidationError({'error_message': '拳豆修改类型未知'})
-        return attrs
+    change_type = serializers.ChoiceField(choices=constants.COIN_CHANGE_TYPE_CHOICES,
+                                          error_messages={'invalid_choice': u'拳豆修改类型未知'})
 
     def create(self, validated_data):
-        coin_change_log = CoinChangeLog.objects.create(**validated_data)
         user = validated_data['user']
-        user.coin_balance += validated_data['change_amount']
+        change_amount = validated_data['change_amount']
+        last_amount = user.coin_balance
+        remain_amount = last_amount + change_amount
+        operator = self.context['request'].user
+        user.coin_balance += change_amount
         user.save()
+
+        coin_change_log = CoinChangeLog.objects.create(last_amount=last_amount,
+                                                       operator=operator,
+                                                       remain_amount=remain_amount,
+                                                       **validated_data)
+
         return coin_change_log
 
 
@@ -58,30 +52,26 @@ class CoinLogSerializer(serializers.ModelSerializer):
 
 class MoneyLogSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'), required=False)
-    change_amount = serializers.IntegerField()
-    change_type = serializers.CharField()
-    user = serializers.CharField(read_only=True)
+    change_type = serializers.ChoiceField(choices=constants.MONEY_CHANGE_TYPE_CHOICES,
+                                          error_messages={'invalid_choice': u'钱包余额修改类型未知'})
 
-    def validate(self, attrs):
-        user_id = self.context['request'].parser_context['kwargs'].get('user_id')
-        user = User.objects.filter(pk=user_id).first()
-        if not user:
-            raise serializers.ValidationError({'error_message': '用户不存在'})
-        attrs['user'] = user
-        attrs['last_amount'] = user.money_balance
-        # attrs['change_amount'] = int(math.floor(attrs['change_amount'] * 100))
-        attrs['remain_amount'] = attrs['last_amount'] + attrs['change_amount']
-        attrs['operator'] = self.context['request'].user
-        if attrs['change_type'] not in dict(constants.MONEY_CHANGE_TYPE_CHOICES).keys():
-            raise serializers.ValidationError({'error_message': '钱包余额修改类型未知'})
-        return attrs
 
     def create(self, validated_data):
-        money_change_log = MoneyChangeLog.objects.create(**validated_data)
         user = validated_data['user']
-        user.money_balance += validated_data['change_amount']
+        change_amount = validated_data['change_amount']
+        last_amount = user.money_balance
+        remain_amount = last_amount + change_amount
+        operator = self.context['request'].user
+        user.money_balance += change_amount
         user.save()
+
+        money_change_log = MoneyChangeLog.objects.create(last_amount=last_amount,
+                                                       operator=operator,
+                                                       remain_amount=remain_amount,
+                                                       **validated_data)
+
         return money_change_log
+
 
     class Meta:
         model = MoneyChangeLog

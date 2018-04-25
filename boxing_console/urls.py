@@ -20,10 +20,10 @@ from boxing_console.views.user_management import UserManagementViewSet
 
 
 urlpatterns = [
-    url(r'^coin/(?P<user_id>\d+)/add-substract', CoinChangLogViewSet.as_view({'post':'create'}),
-        name='coin_add_or_substract'),
-    url(r'^money/(?P<user_id>\d+)/add-substract', MoneyChangeLogViewSet.as_view({'post':'create'}),
-        name='money_add_or_substract'),
-    url(r'^coin-change-log$',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
+    url(r'^coin/change$', CoinChangLogViewSet.as_view({'post':'create'}),
+        name='coin_change'),
+    url(r'^money/change$', MoneyChangeLogViewSet.as_view({'post':'create'}),
+        name='money_change'),
+    url(r'^coin/change/log$',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
     url(r"^users$", UserManagementViewSet.as_view({"get": "list"}))
 ]

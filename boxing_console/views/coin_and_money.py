@@ -20,7 +20,7 @@ class CoinChangLogViewSet(mixins.CreateModelMixin,
     queryset = CoinChangeLog.objects.all()
 
     def list(self, request, *args, **kwargs):
-        self.queryset = self.queryset.filter(user=request.user)
+        self.queryset = self.queryset.filter(user=request.user.pk)
         return super(CoinChangLogViewSet, self).list(request, *args, **kwargs)
 
 

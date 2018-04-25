@@ -101,7 +101,7 @@ class UserProfile(BaseModel):
 
 class CoinChangeLog(PropertyChangeLog):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='coin_change_log')
-    change_type = models.CharField(null=True, max_length=30,
+    change_type = models.CharField(null=True, max_length=64,
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
 
     class Meta:
@@ -111,7 +111,7 @@ class CoinChangeLog(PropertyChangeLog):
 
 class MoneyChangeLog(PropertyChangeLog):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='money_change_log')
-    change_type = models.CharField(null=True, max_length=30,
+    change_type = models.CharField(null=True, max_length=64,
                                    choices=constants.MONEY_CHANGE_TYPE_CHOICES)
 
     class Meta:
