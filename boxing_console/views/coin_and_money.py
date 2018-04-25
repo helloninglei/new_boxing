@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-from rest_framework import mixins, status, permissions, viewsets
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from biz.models import CoinChangeLog
+from biz.models import CoinChangeLog, MoneyChangeLog
 from boxing_console.filters import CoinChangLogListFilter
-from boxing_console.serializers import  MoneySubstractSerializer, CoinLogSerializer
+from boxing_console.serializers import  MoneyLogSerializer, CoinLogSerializer
 
-class UserMoneySubstract(mixins.CreateModelMixin,
-                         viewsets.GenericViewSet):
-    serializer_class = MoneySubstractSerializer
+class MoneyChangeLogViewSet(ModelViewSet):
+    serializer_class = MoneyLogSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = MoneyChangeLog.objects.all()
 
-    def add_or_substract(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         money_change_log = serializer.save()
@@ -24,7 +24,7 @@ class UserMoneySubstract(mixins.CreateModelMixin,
 
 
 class CoinChangLogViewSet(ModelViewSet):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = CoinLogSerializer
     filter_class = CoinChangLogListFilter
     queryset = CoinChangeLog.objects.all()

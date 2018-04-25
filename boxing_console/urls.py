@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from boxing_console.views.coin_and_money import CoinChangLogViewSet, UserMoneySubstract
+from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 
 
 urlpatterns = [
     url(r'^coin/(?P<effect_user_id>\d+)/add-substract', CoinChangLogViewSet.as_view({'post':'create'}),
         name='coin_add_or_substract'),
-    url(r'^money/(?P<effect_user_id>\d+)/add-substract', UserMoneySubstract.as_view({'post':'add_or_substract'}),
+    url(r'^money/(?P<effect_user_id>\d+)/add-substract', MoneyChangeLogViewSet.as_view({'post':'create'}),
         name='money_add_or_substract'),
     url(r'^coin-change-log$',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
     url(r"^users$", UserManagementViewSet.as_view({"get": "list"}))
