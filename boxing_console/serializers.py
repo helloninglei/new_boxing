@@ -23,15 +23,10 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'mobile', 'date_joined', 'user_basic_info']
 
 
-class CoinLogListSerializer(serializers.ModelSerializer):
-    created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'))
-
-    class Meta:
-        model = CoinChangeLog
-        fields = '__all__'
-
-class CoinLogCreateSerializer(serializers.Serializer):
+class CoinLogSerializer(serializers.ModelSerializer):
+    created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'),required=False)
     change_amount = serializers.IntegerField()
+    user = serializers.CharField(required=False)
 
     def validate(self, attrs):
         user_id = self.context['request'].parser_context['kwargs'].get('effect_user_id')
@@ -53,6 +48,11 @@ class CoinLogCreateSerializer(serializers.Serializer):
         user.coin_balance += validated_data['change_amount']
         user.save()
         return coin_change_log
+
+
+    class Meta:
+        model = CoinChangeLog
+        fields = '__all__'
 
 class MoneySubstractSerializer(serializers.Serializer):
     change_amount = serializers.FloatField()
