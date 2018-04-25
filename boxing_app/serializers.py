@@ -15,10 +15,10 @@ class MessageUserField(serializers.RelatedField):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    images = serializers.ListField(child=serializers.URLField())
+    images = serializers.ListField(child=serializers.URLField(), required=False)
+    video = serializers.URLField(required=False)
     user = MessageUserField(read_only=True)
 
     class Meta:
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
-        extra_kwargs = {'images': {'required': False}, 'video': {'required': False}}
