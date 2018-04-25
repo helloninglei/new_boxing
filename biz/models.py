@@ -69,6 +69,16 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+class PropertyChangeLog(BaseModel):
+    last_amount = models.IntegerField(default=0)  # 变动前额度
+    change_amount = models.IntegerField(default=0)  # 变动额度
+    remain_amount = models.IntegerField(default=0)  # 变动后额度
+    operator = models.CharField(null=True, max_length=20) # 操作人
+    remarks = models.CharField(null=True, max_length=50) #备注
+
+    class Meta:
+        abstract = True
+
 
 class UserProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
@@ -89,31 +99,20 @@ class UserProfile(BaseModel):
         db_table = 'user_profile'
 
 
-class CoinChangeLog(BaseModel):
+class CoinChangeLog(PropertyChangeLog):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='coin_change_log')
-    last_amount = models.IntegerField(default=0)    # 变动前额度
-    change_amount = models.IntegerField(default=0)    # 变动额度
-    remain_amount = models.IntegerField(default=0)    # 变动后额度
     change_type = models.CharField(null=True, max_length=30,
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
-    operator = models.CharField(null=True, max_length=20)
-    remarks = models.CharField(null=True, max_length=20)
-
 
     class Meta:
         db_table = 'conin_change_log'
         ordering = ['-created_time', '-id']
 
 
-class MoneyChangeLog(BaseModel):
+class MoneyChangeLog(PropertyChangeLog):
     user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='money_change_log')
-    last_amount = models.IntegerField(default=0)  # 变动前额度 单位(分)
-    change_amount = models.IntegerField(default=0)  # 变动额度
-    remain_amount = models.IntegerField(default=0)  # 变动后额度
     change_type = models.CharField(null=True, max_length=30,
-                                   choices=constants.COIN_CHANGE_TYPE_CHOICES)
-    operator = models.CharField(null=True, max_length=20)
-    remarks = models.CharField(null=True, max_length=20)
+                                   choices=constants.MONEY_CHANGE_TYPE_CHOICES)
 
     class Meta:
         db_table = 'money_change_log'
