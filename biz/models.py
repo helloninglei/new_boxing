@@ -3,7 +3,7 @@ import json
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
-from biz import validator
+from biz import validator, constants
 
 
 class UserManager(BaseUserManager):
@@ -116,3 +116,32 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'discover_message'
+
+
+#拳手认证
+class BoxerIdentification(BaseModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
+    real_name = models.CharField(max_length=10)
+    height = models.IntegerField()
+    weight = models.IntegerField()
+    birthday = models.DateTimeField()
+    identity_number = models.CharField(max_length=18)
+    mobile = models.CharField(max_length=11)
+    is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
+    club = models.CharField(max_length=128)
+    introduction = models.TextField()
+    experience = models.TextField(null=True,blank=True)
+
+    class Meta:
+        db_table = 'bxer_identification'
+
+
+class BoxerMediaAdditional(BaseModel):
+    boxer_identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE,
+                                             related_name='boxer_identification_additional')
+    media_url = models.URLField()
+    media_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
+
+    class Meta:
+        db_table = 'boxer_identification_additional'
+
