@@ -7,7 +7,11 @@ from django.forms.models import model_to_dict
 
 class MessageUserField(serializers.RelatedField):
     def to_representation(self, user):
-        return model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
+        result = {'id': user.id}
+        if hasattr(user, 'user_profile'):
+            profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
+            result.update(profile)
+        return result
 
 
 class MessageSerializer(serializers.ModelSerializer):

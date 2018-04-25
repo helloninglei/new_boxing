@@ -91,18 +91,11 @@ class StringListField(models.TextField):
         if value:
             return json.dumps(value)
 
-    def value_to_string(self, obj):
-        return self.get_prep_value(obj)
-
     def from_db_value(self, value, *args):
         if not value:
             return []
         return json.loads(value)
 
-    def to_python(self, value):
-        if not value:
-            return []
-        return json.loads(value)        
 
 class MessageManager(models.Manager):
     def get_queryset(self):
