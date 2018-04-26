@@ -23,7 +23,7 @@ upload_urls = [
     url(r'^upload_file$', upload.upload_file, name='upload'),
 ]
 boxer_url = [
-    url(r'^boxer/identification/create$',BoxerIdentificationViewSet.as_view, name='identification_create'),
+    url(r'^boxer/identification/create$',BoxerIdentificationViewSet.as_view({'post':'create'}), name='identification_create'),
 ]
 urlpatterns = upload_urls + boxer_url
 

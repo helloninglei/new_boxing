@@ -132,15 +132,17 @@ class BoxerIdentification(BaseModel):
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
     experience = models.TextField(null=True,blank=True,max_length=500)
+    authentication_state = models.CharField(max_length=10,default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
 
     class Meta:
-        db_table = 'bxer_identification'
+        db_table = 'boxer_identification'
 
 
 class BoxerMediaAdditional(BaseModel):
     boxer_identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE,
                                              related_name='boxer_identification_additional')
-    media_url = models.URLField()
+    media_url = models.CharField(max_length=255)
     media_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
 
     class Meta:
