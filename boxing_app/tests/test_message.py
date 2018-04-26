@@ -14,12 +14,19 @@ class MessageTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
 
     def test_create(self):
-        self.client1.post('/messages', {'content': 'hello'})
-        self.client1.post('/messages', {'content': 'hello', 'images': ['http://img1.com', 'http://img2.com'], 'video': 'https://baidu.com'})
+        msg1 = {'content': 'hello1'}
+        msg2 = {'content': 'hello2', 'images': ['http://img1.com', 'http://img2.com'], 'video': 'https://baidu.com'}
+        self.client1.post('/messages', msg1)
+        self.client1.post('/messages', msg2)
 
         response = self.client1.get(path='/messages')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(response.data['count'], 2)
+        results = response.data['results']
+        self.assertEqual(msg2['content'], results[0]['content'])
+        self.assertEqual(msg2['images'], results[0]['images'])
+        self.assertEqual(msg2['video'], results[0]['video'])
+        self.assertEqual(msg1['content'], results[1]['content'])
 
     def test_delete(self):
         res = self.client1.post('/messages', {'content': 'hello'})
