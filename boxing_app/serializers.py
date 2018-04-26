@@ -19,7 +19,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         identification_addition_data = validated_data.pop('boxer_identification_additional')
-        print identification_addition_data
         boxer_identification = BoxerIdentification.objects.create(user=user,**validated_data)
         for additiona_data in identification_addition_data:
             BoxerMediaAdditional.objects.create(boxer_identification=boxer_identification, **additiona_data)
