@@ -97,9 +97,9 @@ class StringListField(models.TextField):
         return json.loads(value)
 
 
-class MessageManager(models.Manager):
+class SoftDeleteManager(models.Manager):
     def get_queryset(self):
-        return super(MessageManager, self).get_queryset().filter(is_deleted=False)
+        return super(SoftDeleteManager, self).get_queryset().filter(is_deleted=False)
 
 
 # 动态
@@ -112,9 +112,24 @@ class Message(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
 
-    objects = MessageManager()
+    objects = SoftDeleteManager()
 
     class Meta:
         db_table = 'discover_message'
         ordering = ('-created_time',)
 
+
+class Comment(models.Model):
+    content = models.CharField(max_length=140)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='comments', db_index=True)
+    parent_id = models.IntegerField(null=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_time = models.DateTimeField(auto_now=True)
+
+    objects = SoftDeleteManager()
+
+    class Meta:
+        db_table = 'discover_comment'
+        ordering = ('-created_time',)

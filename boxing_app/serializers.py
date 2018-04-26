@@ -5,7 +5,7 @@ from biz import models
 from django.forms.models import model_to_dict
 
 
-class MessageUserField(serializers.RelatedField):
+class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
         result = {'id': user.id}
         if hasattr(user, 'user_profile'):
@@ -17,8 +17,17 @@ class MessageUserField(serializers.RelatedField):
 class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.URLField(), required=False)
     video = serializers.URLField(required=False)
-    user = MessageUserField(read_only=True)
+    user = DiscoverUserField(read_only=True)
 
     class Meta:
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = DiscoverUserField(read_only=True)
+    parent_id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = models.Comment
+        fields = ['id', 'content', 'parent_id', 'user']
