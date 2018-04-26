@@ -18,6 +18,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
 from boxing_app.views.boxer import BoxerIdentificationViewSet
+from boxing_app.views import message
+
+
+message_urls = [
+    url(r"^messages$", message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
+    url(r"^messages/hot$", message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
+    url(r'^messages/(?P<pk>[0-9]+)$', message.MessageViewSet.as_view({'get': 'retrieve','delete': 'destroy'}), name='message-detail'),
+]
 
 upload_urls = [
     url(r'^upload_file$', upload.upload_file, name='upload'),
@@ -25,6 +33,7 @@ upload_urls = [
 boxer_url = [
     url(r'^boxer/identification/create$',BoxerIdentificationViewSet.as_view({'post':'create'}), name='identification_create'),
 ]
-urlpatterns = upload_urls + boxer_url
 
+urlpatterns = upload_urls + boxer_url + upload_urls + message_urls
+urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
 urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

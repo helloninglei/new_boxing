@@ -116,6 +116,7 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'discover_message'
+        ordering = ('-created_time',)
 
 
 #拳手认证
@@ -147,4 +148,3 @@ class BoxerMediaAdditional(BaseModel):
 
     class Meta:
         db_table = 'boxer_identification_additional'
-
