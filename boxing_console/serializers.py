@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import math
 from rest_framework import serializers
 
-from biz.models import CoinChangeLog, User, MoneyChangeLog
+from biz.models import CoinChangeLog, MoneyChangeLog
 from biz import models, constants
 
 
@@ -40,9 +39,9 @@ class CoinMoneyBaseSerializer(serializers.ModelSerializer):
         user.save()
 
         change_log = ModelClass.objects.create(last_amount=last_amount,
-                                                                           operator=operator,
-                                                                           remain_amount=remain_amount,
-                                                                           **validated_data)
+                                               operator=operator,
+                                               remain_amount=remain_amount,
+                                               **validated_data)
 
         return change_log
 
