@@ -32,6 +32,8 @@ upload_urls = [
 ]
 boxer_url = [
     url(r'^boxer/identification/create$',BoxerIdentificationViewSet.as_view({'post':'create'}), name='identification_create'),
+    url(r'^boxer/identification$',BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
+        name='get_boxer_identification')
 ]
 
 urlpatterns = upload_urls + boxer_url + upload_urls + message_urls

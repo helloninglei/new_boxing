@@ -142,3 +142,33 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
         identification = BoxerIdentification.objects.filter(user=self.fake_user).first()
         self.assertIsNone(identification)
+
+    def test_retrieve_identification(self):
+        boxer_dentity = BoxerIdentification.objects.create(real_name='张三',
+                                                           user=self.fake_user,
+                                                            height=190,
+                                                            weight=70,
+                                                            birthday="2018-04-25T11:04:40.634170+08:00",
+                                                            identity_number='111111111111111',
+                                                            mobile='111111111',
+                                                            is_professional_boxer=True,
+                                                            club='111',
+                                                            introduction='hhh')
+
+        BoxerMediaAdditional.objects.create(boxer_identification=boxer_dentity,
+                                             media_url='url0',
+                                             media_type=constants.IMAGE_CERTIFICATE_OF_HONOR)
+
+        response = self.client.get(reverse('get_boxer_identification'))
+
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.assertEqual(response.data['real_name'], u'张三')
+        self.assertEqual(response.data['height'], 190)
+        self.assertEqual(response.data['weight'], 70)
+        self.assertEqual(response.data['mobile'], '111111111')
+        self.assertEqual(response.data['identity_number'], '111111111111111')
+        self.assertEqual(response.data['is_professional_boxer'], True)
+        self.assertEqual(response.data['club'], '111')
+
+        self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],constants.IMAGE_CERTIFICATE_OF_HONOR)
+        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], 'url0')

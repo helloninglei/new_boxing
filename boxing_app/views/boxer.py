@@ -6,9 +6,9 @@ from boxing_app.serializers import BoxerIdentificationSerializer
 
 
 class BoxerIdentificationViewSet(mixins.CreateModelMixin,
+                                 mixins.RetrieveModelMixin,
                                   viewsets.GenericViewSet):
     serializer_class = BoxerIdentificationSerializer
 
-    def get_queryset(self):
-        queryset = BoxerIdentification.objects.filter(user=self.request.user)
-        return queryset
+    def get_object(self):
+        return BoxerIdentification.objects.filter(user=self.request.user).first()
