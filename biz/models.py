@@ -149,3 +149,5 @@ class Message(models.Model):
 
     class Meta:
         db_table = 'discover_message'
+        ordering = ('-created_time',)
+
