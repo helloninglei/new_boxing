@@ -24,53 +24,50 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'mobile', 'date_joined', 'user_basic_info']
 
 
-class CoinLogSerializer(serializers.ModelSerializer):
+class CoinMoneyBaseSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'),required=False)
+
+    def create(self, validated_data):
+        ModelClass = self.Meta.model
+        alias = validated_data.pop('alias')
+        user = validated_data['user']
+        change_amount = validated_data['change_amount']
+        last_amount = getattr(user,'{}_balance'.format(alias))
+        remain_amount = last_amount + change_amount
+        operator = self.context['request'].user
+
+        setattr(user,'{}_balance'.format(alias),remain_amount)
+        user.save()
+
+        change_log = ModelClass.objects.create(last_amount=last_amount,
+                                                                           operator=operator,
+                                                                           remain_amount=remain_amount,
+                                                                           **validated_data)
+
+        return change_log
+
+
+class CoinLogSerializer(CoinMoneyBaseSerializer):
     change_type = serializers.ChoiceField(choices=constants.COIN_CHANGE_TYPE_CHOICES,
                                           error_messages={'invalid_choice': u'拳豆修改类型未知'})
 
     def create(self, validated_data):
-        user = validated_data['user']
-        change_amount = validated_data['change_amount']
-        last_amount = user.coin_balance
-        remain_amount = last_amount + change_amount
-        operator = self.context['request'].user
-        user.coin_balance += change_amount
-        user.save()
-
-        coin_change_log = CoinChangeLog.objects.create(last_amount=last_amount,
-                                                       operator=operator,
-                                                       remain_amount=remain_amount,
-                                                       **validated_data)
-
-        return coin_change_log
+        validated_data['alias'] = 'coin'
+        return super(CoinLogSerializer,self).create(validated_data)
 
 
     class Meta:
         model = CoinChangeLog
         fields = '__all__'
 
-class MoneyLogSerializer(serializers.ModelSerializer):
-    created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'), required=False)
+
+class MoneyLogSerializer(CoinMoneyBaseSerializer):
     change_type = serializers.ChoiceField(choices=constants.MONEY_CHANGE_TYPE_CHOICES,
                                           error_messages={'invalid_choice': u'钱包余额修改类型未知'})
 
-
     def create(self, validated_data):
-        user = validated_data['user']
-        change_amount = validated_data['change_amount']
-        last_amount = user.money_balance
-        remain_amount = last_amount + change_amount
-        operator = self.context['request'].user
-        user.money_balance += change_amount
-        user.save()
-
-        money_change_log = MoneyChangeLog.objects.create(last_amount=last_amount,
-                                                       operator=operator,
-                                                       remain_amount=remain_amount,
-                                                       **validated_data)
-
-        return money_change_log
+        validated_data['alias'] = 'money'
+        return super(MoneyLogSerializer,self).create(validated_data)
 
 
     class Meta:
