@@ -4,12 +4,12 @@ import sys
 
 if __name__ == "__main__":
     if '--settings' not in sys.argv:
-        print """
+        print("""
     Couldn't load settings. You must add --settings <settings_python_path> into command line.
     Example:
     \tpython manage.py --settings boxing_app.app_settings <args>
     \tpython manage.py --settings boxing_console.console_settings <args>
-    """
+    """)
         exit(1)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", sys.argv[3])
