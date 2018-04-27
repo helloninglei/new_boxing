@@ -23,18 +23,17 @@ class CommentTestCase(APITestCase):
         self.comment1 = res1.data
         self.comment2 = res2.data
 
-    # def test_create_comment(self):
-    #     self.prepare()
-    #     response = self.client1.get(path='/messages/%s/comments' % self.message_id)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data['count'], 2)
-    #     results = response.data['results']
-    #     self.assertEqual(self.comment1['user']['id'], self.test_user_1.id)
-    #     self.assertEqual(self.msg1['content'], results[1]['content'])
-    #     self.assertEqual(self.comment2['user']['id'], self.test_user_2.id)
-    #     self.assertEqual(self.msg2['content'], results[0]['content'])
+    def test_create_comment(self):
+        self.prepare()
+        response = self.client1.get(path='/messages/%s/comments' % self.message_id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 2)
+        results = response.data['results']
+        self.assertEqual(self.comment1['user']['id'], self.test_user_1.id)
+        self.assertEqual(self.msg1['content'], results[1]['content'])
+        self.assertEqual(self.comment2['user']['id'], self.test_user_2.id)
+        self.assertEqual(self.msg2['content'], results[0]['content'])
 
-    #
     def test_reply(self):
         self.prepare()
         reply_data = {
