@@ -24,7 +24,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(**kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        super(CommentViewSet, self).destroy()
         obj = self.get_object()
         if request.user == obj.user:
             with transaction.atomic():
