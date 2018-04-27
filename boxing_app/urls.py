@@ -20,6 +20,7 @@ from boxing_app.views import upload
 from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
 
+boxer_identification = BoxerIdentificationViewSet.as_view({'post':'create','put':'update','get':'retrieve'})
 
 message_urls = [
     url(r"^messages$", message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
@@ -31,12 +32,8 @@ upload_urls = [
     url(r'^upload_file$', upload.upload_file, name='upload'),
 ]
 
-
 boxer_url = [
-    url(r'^boxer/identification$', BoxerIdentificationViewSet.as_view({'post':'create','put':'update'}),
-        name='boxer_identification'),
-    url(r'^boxer/(?P<pk>[0-9]+)/identification$', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
-        name='get_boxer_identification'),
+    url(r'^boxer/identification$', boxer_identification, name='boxer_identification'),
 ]
 
 urlpatterns = upload_urls + boxer_url + upload_urls + message_urls
