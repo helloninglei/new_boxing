@@ -7,7 +7,8 @@ from boxing_app.serializers import BoxerIdentificationSerializer
 
 class BoxerIdentificationViewSet(mixins.CreateModelMixin,
                                  mixins.RetrieveModelMixin,
-                                  viewsets.GenericViewSet):
+                                 mixins.UpdateModelMixin,
+                                 viewsets.GenericViewSet):
     serializer_class = BoxerIdentificationSerializer
 
     def get_object(self):
