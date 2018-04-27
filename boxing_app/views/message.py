@@ -7,7 +7,7 @@ from boxing_app.serializers import MessageSerializer
 
 
 class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all()
+    queryset = Message.objects.all().prefetch_related('user')
     serializer_class = MessageSerializer
 
     def perform_create(self, serializer):

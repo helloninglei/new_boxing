@@ -13,17 +13,23 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
 from boxing_app.views import message
+from boxing_app.views import comment
 
 
 message_urls = [
-    url(r"^messages$", message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
-    url(r"^messages/hot$", message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
-    url(r'^messages/(?P<pk>[0-9]+)$', message.MessageViewSet.as_view({'get': 'retrieve','delete': 'destroy'}), name='message-detail'),
+    url(r'^messages$', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
+    url(r'^messages/hot$', message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
+    url(r'^messages/(?P<pk>[0-9]+)$', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}), name='message-detail'),
+]
+
+comment_urls = [
+    url(r'^messages/(?P<message_id>[0-9]+)/comments$', comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
+    url(r'^messages/(?P<message_id>[0-9]+)/comments/?(?P<pk>[0-9]*)$', comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
 ]
 
 upload_urls = [
@@ -33,4 +39,6 @@ upload_urls = [
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += message_urls
+urlpatterns += comment_urls
+urlpatterns += [ url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
 urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

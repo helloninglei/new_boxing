@@ -123,7 +123,7 @@ class Comment(models.Model):
     content = models.CharField(max_length=140)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='comments', db_index=True)
-    parent_id = models.IntegerField(null=True)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
@@ -133,3 +133,6 @@ class Comment(models.Model):
     class Meta:
         db_table = 'discover_comment'
         ordering = ('-created_time',)
+
+    def reply_list(self):
+        return self.__class__.objects.filter(parent=self)

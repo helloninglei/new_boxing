@@ -23,11 +23,36 @@ class MessageSerializer(serializers.ModelSerializer):
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
 
-
-class CommentSerializer(serializers.ModelSerializer):
+class BaseCommentSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
-    parent_id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Comment
-        fields = ['id', 'content', 'parent_id', 'user']
+        fields = ['id', 'content', 'user']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = DiscoverUserField(read_only=True)
+    replies = serializers.SerializerMethodField()
+
+    def get_replies(self, obj):
+        count = obj.reply_list().count()
+        latest_two = obj.reply_list()[:2]
+        return {
+            'count': count,
+            'result': BaseCommentSerializer(latest_two).data
+        }
+
+    class Meta:
+        model = models.Comment
+        fields = ['id', 'content', 'user', 'replies']
+
+
+class ReplySerializer(CommentSerializer):
+    def get_replies(self, obj):
+        count = obj.reply_list().count()
+        latest = obj.reply_list()
+        return {
+            'count': count,
+            'result': BaseCommentSerializer(latest).data
+        }
