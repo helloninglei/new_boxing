@@ -165,7 +165,7 @@ class BoxerIdentificationTestCase(APITestCase):
                                              media_url='url0',
                                              media_type=constants.IMAGE_CERTIFICATE_OF_HONOR)
 
-        response = self.client.get(reverse('boxer_identification'))
+        response = self.client.get(reverse('get_boxer_identification',kwargs={'pk':self.fake_user.pk}))
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
         self.assertEqual(response.data['real_name'], u'张三')

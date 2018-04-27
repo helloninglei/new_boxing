@@ -31,10 +31,12 @@ upload_urls = [
     url(r'^upload_file$', upload.upload_file, name='upload'),
 ]
 
-boxer_identification = BoxerIdentificationViewSet.as_view({'post':'create','get':'retrieve','put':'update'})
 
 boxer_url = [
-    url(r'^boxer/identification$', boxer_identification,name='boxer_identification'),
+    url(r'^boxer/identification$', BoxerIdentificationViewSet.as_view({'post':'create','put':'update'}),
+        name='boxer_identification'),
+    url(r'^boxer/(?P<pk>[0-9]+)/identification$', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
+        name='get_boxer_identification'),
 ]
 
 urlpatterns = upload_urls + boxer_url + upload_urls + message_urls

@@ -160,7 +160,7 @@ class BoxerIdentification(BaseModel):
     identity_number = models.CharField(max_length=18)
     mobile = models.CharField(max_length=11)
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
-    club = models.CharField(max_length=50)
+    club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
     experience = models.TextField(null=True,blank=True,max_length=500)
