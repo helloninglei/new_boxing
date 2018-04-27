@@ -38,11 +38,25 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ReplyViewSet(CommentViewSet):
     serializer_class = ReplySerializer
 
+    def get_queryset(self):
+        return Comment.objects.filter(message=self._get_message_instance()).prefetch_related('user')
+
     def perform_create(self, serializer):
         obj = self.get_object()
+        print(obj)
         kwargs = {
             'user': self.request.user,
             'message': self._get_message_instance(),
-            'parent_id': obj.id
+            'parent': obj
         }
+        parent = obj.parent
+        if parent:
+            if parent.parent:
+                ancestor_id = parent.ancestor_id
+            else:
+                ancestor_id = obj.parent.id
+        else:
+            ancestor_id = obj.id
+
+        kwargs['ancestor_id'] = ancestor_id
         serializer.save(**kwargs)
