@@ -5,7 +5,6 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import validator, constants
 
-
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -51,6 +50,8 @@ class User(AbstractUser):
                               error_messages={'unique': u"手机号已存在。"})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
+    coin_balance = models.IntegerField(default=0)
+    money_balance = models.IntegerField(default=0)  # unit, 分
 
     class Meta(AbstractUser.Meta):
         db_table = 'user'
@@ -62,6 +63,16 @@ class User(AbstractUser):
 class BaseModel(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class PropertyChangeLog(BaseModel):
+    last_amount = models.IntegerField(default=0)  # 变动前额度
+    change_amount = models.IntegerField(default=0)  # 变动额度
+    remain_amount = models.IntegerField(default=0)  # 变动后额度
+    operator = models.CharField(null=True, max_length=20) # 操作人
+    remarks = models.CharField(null=True, max_length=50) #备注
 
     class Meta:
         abstract = True
@@ -84,6 +95,26 @@ class UserProfile(BaseModel):
 
     class Meta:
         db_table = 'user_profile'
+
+
+class CoinChangeLog(PropertyChangeLog):
+    user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='coin_change_log')
+    change_type = models.CharField(null=True, max_length=64,
+                                   choices=constants.COIN_CHANGE_TYPE_CHOICES)
+
+    class Meta:
+        db_table = 'conin_change_log'
+        ordering = ['-created_time', '-id']
+
+
+class MoneyChangeLog(PropertyChangeLog):
+    user = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='money_change_log')
+    change_type = models.CharField(null=True, max_length=64,
+                                   choices=constants.MONEY_CHANGE_TYPE_CHOICES)
+
+    class Meta:
+        db_table = 'money_change_log'
+        ordering = ['-created_time', '-id']
 
 
 class StringListField(models.TextField):
