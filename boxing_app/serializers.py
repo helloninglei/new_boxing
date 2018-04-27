@@ -23,7 +23,7 @@ class MessageSerializer(serializers.ModelSerializer):
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
 
-class BaseCommentSerializer(serializers.ModelSerializer):
+class BasicReplySerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     to_user = DiscoverUserField(read_only=True)
 
@@ -41,7 +41,7 @@ class CommentSerializer(serializers.ModelSerializer):
         latest_two = obj.reply_list()[:2]
         return {
             'count': count,
-            'results': BaseCommentSerializer(latest_two, many=True).data
+            'results': BasicReplySerializer(latest_two, many=True).data
         }
 
     class Meta:
@@ -55,5 +55,5 @@ class ReplySerializer(CommentSerializer):
         latest = obj.reply_list()
         return {
             'count': count,
-            'results': BaseCommentSerializer(latest,  many=True).data
+            'results': BasicReplySerializer(latest,  many=True).data
         }
