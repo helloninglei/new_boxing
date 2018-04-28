@@ -13,29 +13,36 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
 from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
+from boxing_app.views import comment
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post':'create','put':'update','get':'retrieve'})
 
-message_urls = [
-    url(r"^messages$", message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
-    url(r"^messages/hot$", message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
-    url(r'^messages/(?P<pk>[0-9]+)$', message.MessageViewSet.as_view({'get': 'retrieve','delete': 'destroy'}), name='message-detail'),
+discover_urls = [
+    path('messages', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
+    path('messages/hot', message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
+    path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}), name='message-detail'),
+    path('messages/<int:message_id>/comments', comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
+    path('messages/<int:message_id>/comments/<int:pk>', comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
 ]
 
 upload_urls = [
-    url(r'^upload_file$', upload.upload_file, name='upload'),
+    path('upload_file', upload.upload_file, name='upload'),
 ]
 
 boxer_url = [
-    url(r'^boxer/identification$', boxer_identification, name='boxer_identification'),
-]
+    path(r'^boxer/identification$', boxer_identification, name='boxer_identification'),
+    ]
 
-urlpatterns = upload_urls + boxer_url + upload_urls + message_urls
-urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
-urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
+urlpatterns = []
+urlpatterns += upload_urls
+urlpatterns += boxer_url
+urlpatterns += discover_urls
+if settings.ENVIRONMENT != settings.PRODUCTION:
+    urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
+    urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
