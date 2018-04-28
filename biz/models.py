@@ -190,6 +190,7 @@ class BoxerMediaAdditional(BaseModel):
     class Meta:
         db_table = 'boxer_identification_additional'
 
+
 class Comment(SoftDeleteModel):
     content = models.CharField(max_length=140)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
