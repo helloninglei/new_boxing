@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.db import models
+from django.core import exceptions
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import constants
@@ -134,9 +135,18 @@ class SoftDeleteManager(models.Manager):
     def get_queryset(self):
         return super(SoftDeleteManager, self).get_queryset().filter(is_deleted=False)
 
+class SoftDeleteModel(models.Model):
+    objects = SoftDeleteManager()
+
+    class Meta:
+        abstract = True
+
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save()
 
 # 动态
-class Message(models.Model):
+class Message(SoftDeleteModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
     content = models.CharField(max_length=140)
     images = StringListField(null=True)
@@ -145,14 +155,12 @@ class Message(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
 
-    objects = SoftDeleteManager()
-
     class Meta:
         db_table = 'discover_message'
         ordering = ('-created_time',)
 
 
-class Comment(models.Model):
+class Comment(SoftDeleteModel):
     content = models.CharField(max_length=140)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='comments', db_index=True)
@@ -161,8 +169,6 @@ class Comment(models.Model):
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
-
-    objects = SoftDeleteManager()
 
     class Meta:
         db_table = 'discover_comment'

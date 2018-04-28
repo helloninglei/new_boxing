@@ -7,8 +7,4 @@ class OnlyOwnerCanDeletePermission(permissions.BasePermission):
         if request.method != 'DELETE':
             return True
         else:
-            if request.user == obj.user:
-                return True
-            return False
-
-
+            return request.user == obj.user

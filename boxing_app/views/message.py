@@ -15,8 +15,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         self.check_object_permissions(request, obj)
-        obj.is_deleted = True
-        obj.save()
+        obj.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):

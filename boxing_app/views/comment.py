@@ -28,8 +28,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         self.check_object_permissions(request, obj)
-        obj.is_deleted = True
-        obj.save()
+        obj.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ReplyViewSet(CommentViewSet):
@@ -45,12 +44,8 @@ class ReplyViewSet(CommentViewSet):
             'message': self._get_message_instance(),
             'parent': obj
         }
-        parent = obj.parent
-        if parent:
-            if parent.parent:
-                ancestor_id = parent.ancestor_id
-            else:
-                ancestor_id = obj.parent.id
+        if obj.ancestor_id:
+            ancestor_id = obj.ancestor_id
         else:
             ancestor_id = obj.id
 
