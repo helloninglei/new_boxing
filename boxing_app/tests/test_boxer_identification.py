@@ -210,7 +210,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "experience": '',
             "boxer_identification_additional": [
                                                 {"media_url": "changed_url1",
-                                                 "media_type": constants.VIDEO_CONTENSTANT},
+                                                 "media_type": constants.VIDEO_CONTESTANT},
                                                 {"media_url": "changed_url2",
                                                  "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
@@ -230,7 +230,7 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(response.data['job'], 'j4444444')
         self.assertEqual(len(response.data['boxer_identification_additional']),2)
         self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],
-                         constants.VIDEO_CONTENSTANT)
+                         constants.VIDEO_CONTESTANT)
         self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], 'changed_url1')
         self.assertEqual(response.data['boxer_identification_additional'][1]['media_type'],
                          constants.IMAGE_CERTIFICATE_OF_HONOR)
