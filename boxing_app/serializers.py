@@ -40,9 +40,9 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         return instance
 
     def create_addition(self, instance, addition_data_list):
-        for additiona_data in addition_data_list:
-            BoxerMediaAdditional.objects.create(boxer_identification=instance, **additiona_data)
-
+        boxer_addition_obj_list = [BoxerMediaAdditional(boxer_identification=instance, **additiona_data)
+                                   for additiona_data in addition_data_list]
+        BoxerMediaAdditional.objects.bulk_create(boxer_addition_obj_list)
 
     class Meta:
         model = BoxerIdentification
