@@ -30,8 +30,10 @@ money_url = [
 ]
 
 boxer_url = [
-    url(r'^boxer/approve$', BoxerIdentificationViewSet.as_view({'get':'list'}),
-        name='boxer_approve_list'),
+    url(r'^boxer/identification$', BoxerIdentificationViewSet.as_view({'get':'list'}),
+        name='boxer_identification_list'),
+    url(r'^boxer/identification/(?P<pk>\d+)$', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
+        name='boxer_identification_detail'),
 ]
 
 urlpatterns = money_url + boxer_url
