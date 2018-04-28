@@ -133,7 +133,7 @@ class StringListField(models.TextField):
 
 class SoftDeleteManager(models.Manager):
     def get_queryset(self):
-        return super(SoftDeleteManager, self).get_queryset().filter(is_deleted=False)
+        return super().get_queryset().filter(is_deleted=False)
 
 class SoftDeleteModel(models.Model):
     objects = SoftDeleteManager()
