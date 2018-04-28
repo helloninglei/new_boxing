@@ -26,9 +26,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(**kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        self.check_object_permissions(request, obj)
-        obj.soft_delete()
+        self.get_object().soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ReplyViewSet(CommentViewSet):
@@ -42,12 +40,7 @@ class ReplyViewSet(CommentViewSet):
         kwargs = {
             'user': self.request.user,
             'message': self._get_message_instance(),
-            'parent': obj
+            'parent': obj,
+            'ancestor_id': obj.ancestor_id or obj.id,
         }
-        if obj.ancestor_id:
-            ancestor_id = obj.ancestor_id
-        else:
-            ancestor_id = obj.id
-
-        kwargs['ancestor_id'] = ancestor_id
         serializer.save(**kwargs)
