@@ -38,22 +38,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_replies(self, obj):
         count = obj.reply_list().count()
-        latest_two = obj.reply_list()[:2]
-        return {
-            'count': count,
-            'results': BasicReplySerializer(latest_two, many=True).data
-        }
-
-    class Meta:
-        model = models.Comment
-        fields = ['id', 'content', 'user', 'replies']
-
-
-class ReplySerializer(CommentSerializer):
-    def get_replies(self, obj):
-        count = obj.reply_list().count()
         latest = obj.reply_list()
         return {
             'count': count,
             'results': BasicReplySerializer(latest,  many=True).data
         }
+    class Meta:
+        model = models.Comment
+        fields = ['id', 'content', 'user', 'replies']

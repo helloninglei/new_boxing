@@ -74,3 +74,29 @@ class CommentTestCase(APITestCase):
 
         response = self.client1.get('/messages/%s/comments' % self.message_id)
         self.assertEqual(len(response.data['results']), 1)
+
+        reply_data = {
+            'content': 'reply to comment 1'
+        }
+        reply_to_reply_data = {
+            'content': 'reply to reply 1'
+        }
+        res = self.client1.post('/messages/%s/comments/%s' % (self.message_id, self.comment2['id']), reply_data)
+        reply_id = res.data['id']
+
+        res = self.client2.post('/messages/%s/comments/%s' % (self.message_id, reply_id), reply_to_reply_data)
+        reply_to_reply_id = res.data['id']
+
+        res = self.client2.delete('/messages/%s/comments/%s' % (self.message_id, reply_id))
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+        res = self.client1.delete('/messages/%s/comments/%s' % (self.message_id, reply_id))
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+        res = self.client1.get('/messages/%s/comments' % self.message_id)
+        comment = res.data['results'][0]
+        replies = comment['replies']
+        self.assertEqual(replies['count'], 1)
+        reply = replies['results'][0]
+        self.assertEqual(reply['id'], reply_to_reply_id)
+        self.assertEqual(reply['to_user'], None)

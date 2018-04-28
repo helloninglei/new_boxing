@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from biz.models import Comment, Message
-from rest_framework import viewsets, status
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.response import Response
-from boxing_app.serializers import CommentSerializer, ReplySerializer
-from django.db import transaction
+from boxing_app.permissions import OnlyOwnerCanDeletePermission
+from boxing_app.serializers import CommentSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    permission_classes = (OnlyOwnerCanDeletePermission,)
     serializer_class = CommentSerializer
 
     def _get_message_instance(self):
@@ -25,24 +27,19 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
-        if request.user == obj.user:
-            with transaction.atomic():
-                obj.is_deleted = True
-                obj.save()
-                Comment.objects.filter(parent_id=obj.id).update(is_deleted=True)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_403_FORBIDDEN)
-
+        self.check_object_permissions(request, obj)
+        obj.is_deleted = True
+        obj.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ReplyViewSet(CommentViewSet):
-    serializer_class = ReplySerializer
+    serializer_class = CommentSerializer
 
     def get_queryset(self):
         return Comment.objects.filter(message=self._get_message_instance()).prefetch_related('user')
 
     def perform_create(self, serializer):
         obj = self.get_object()
-        print(obj)
         kwargs = {
             'user': self.request.user,
             'message': self._get_message_instance(),
