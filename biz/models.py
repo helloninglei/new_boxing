@@ -174,8 +174,7 @@ class BoxerIdentification(BaseModel):
     experience = models.TextField(null=True,blank=True,max_length=500)
     authentication_state = models.CharField(max_length=10,default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
-    lock_state = models.CharField(max_length=10,default=constants.ACCEPT_ORDER_LOCKEN,
-                                    choices=constants.ACCEPT_ORDER_LOCK_CHOICES)
+    lock_state = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'boxer_identification'
