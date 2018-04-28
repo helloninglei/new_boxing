@@ -1,4 +1,3 @@
-import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, viewsets, permissions, filters
 
