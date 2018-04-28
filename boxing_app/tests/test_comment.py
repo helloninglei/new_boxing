@@ -99,4 +99,4 @@ class CommentTestCase(APITestCase):
         self.assertEqual(replies['count'], 1)
         reply = replies['results'][0]
         self.assertEqual(reply['id'], reply_to_reply_id)
-        self.assertEqual(reply['to_user'], None)
+        self.assertIsNone(reply['to_user'])
