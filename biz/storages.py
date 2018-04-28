@@ -17,7 +17,7 @@ class OssClient(object):
         return file_path
 
 
-if settings.ENVIRONMENT == 'production':
+if settings.ENVIRONMENT == settings.PRODUCTION:
     storage = OssClient(base_url=settings.BASE_UPLOAD_FILE_URL)
 else:
     storage = FileSystemStorage(location=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR,

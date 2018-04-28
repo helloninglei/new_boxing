@@ -12,7 +12,12 @@ SECRET_KEY = 'h8g39idb0b=i!qsj=u&lkc7)c)4s%^+i-b(^ownv1_05%l9v6o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ENVIRONMENT = 'dev'   #production/test/dev
+
+PRODUCTION = 'production'
+TEST = 'test'
+DEVELOPMENT = 'development'
+
+ENVIRONMENT = PRODUCTION
 
 ALLOWED_HOSTS = []
 
