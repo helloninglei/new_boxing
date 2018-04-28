@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.db import models
+from django.core import exceptions
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import validator, constants
@@ -128,13 +129,22 @@ class StringListField(models.TextField):
         return json.loads(value)
 
 
-class MessageManager(models.Manager):
+class SoftDeleteManager(models.Manager):
     def get_queryset(self):
-        return super(MessageManager, self).get_queryset().filter(is_deleted=False)
+        return super().get_queryset().filter(is_deleted=False)
 
+class SoftDeleteModel(models.Model):
+    objects = SoftDeleteManager()
+
+    class Meta:
+        abstract = True
+
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save()
 
 # 动态
-class Message(models.Model):
+class Message(SoftDeleteModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
     content = models.CharField(max_length=140)
     images = StringListField(null=True)
@@ -143,13 +153,12 @@ class Message(models.Model):
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
 
-    objects = MessageManager()
-
     class Meta:
         db_table = 'discover_message'
         ordering = ('-created_time',)
 
 
+<<<<<<< HEAD
 #拳手认证
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
@@ -181,3 +190,25 @@ class BoxerMediaAdditional(BaseModel):
 
     class Meta:
         db_table = 'boxer_identification_additional'
+
+class Comment(SoftDeleteModel):
+    content = models.CharField(max_length=140)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='comments', db_index=True)
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, db_index=True)
+    ancestor_id = models.IntegerField(null=True, db_index=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'discover_comment'
+        ordering = ('-created_time',)
+
+    def reply_list(self):
+        return self.__class__.objects.filter(ancestor_id=self.id).prefetch_related('user', 'parent')
+
+    def to_user(self):
+        if not self.parent.is_deleted and self.parent.id != self.ancestor_id:
+            return self.parent.user
+>>>>>>> master
