@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from biz.models import Message
+from django.db.models import Count
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from boxing_app.serializers import MessageSerializer
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 
@@ -19,6 +21,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    def hot(self, request, *args, **kwargs):  #TODO 依赖评论和点赞部分
-        pass
+    @action(methods=['get'], detail=False)
+    def hot(self, request, *args, **kwargs):
+        self.queryset = Message.objects.annotate(like_count=Count('like')).order_by('-like_count')
+        return super().list(request, *args, **kwargs)
 

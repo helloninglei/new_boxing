@@ -18,10 +18,13 @@ class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.URLField(), required=False)
     video = serializers.URLField(required=False)
     user = DiscoverUserField(read_only=True)
+    like_count = serializers.IntegerField(read_only=True)
+    comment_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Message
-        fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
+        fields = ['id', 'content', 'images', 'video', 'created_time', 'user', 'like_count', 'comment_count']
+
 
 class BasicReplySerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
