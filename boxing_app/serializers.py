@@ -37,10 +37,9 @@ class CommentSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField()
 
     def get_replies(self, obj):
-        count = obj.reply_list().count()
         latest = obj.reply_list()
         return {
-            'count': count,
+            'count': latest.count(),
             'results': BasicReplySerializer(latest,  many=True).data
         }
     class Meta:
