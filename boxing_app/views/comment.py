@@ -3,12 +3,10 @@ from biz.models import Comment, Message
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
-from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = (OnlyOwnerCanDeletePermission,)
     serializer_class = CommentSerializer
 
     def _get_message_instance(self):
@@ -26,10 +24,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(**kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        obj = self.get_object()
-        self.check_object_permissions(request, obj)
-        obj.is_deleted = True
-        obj.save()
+        self.get_object().soft_delete(request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ReplyViewSet(CommentViewSet):
@@ -45,12 +40,8 @@ class ReplyViewSet(CommentViewSet):
             'message': self._get_message_instance(),
             'parent': obj
         }
-        parent = obj.parent
-        if parent:
-            if parent.parent:
-                ancestor_id = parent.ancestor_id
-            else:
-                ancestor_id = obj.parent.id
+        if obj.ancestor_id:
+            ancestor_id = obj.ancestor_id
         else:
             ancestor_id = obj.id
 
