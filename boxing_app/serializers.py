@@ -2,7 +2,7 @@
 from django.db.transaction import atomic
 from rest_framework import serializers
 
-from biz.models import BoxerIdentification, BoxerMediaAdditional, User
+from biz.models import BoxerIdentification, BoxerMediaAdditional
 
 
 class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
@@ -27,22 +27,14 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 
     @atomic
     def update(self, instance, validated_data):
-        instance.real_name = validated_data.get('real_name', instance.real_name)
-        instance.height = validated_data.get('height', instance.height)
-        instance.weight = validated_data.get('weight', instance.weight)
-        instance.birthday = validated_data.get('birthday', instance.birthday)
-        instance.identity_number = validated_data.get('identity_number', instance.identity_number)
-        instance.mobile = validated_data.get('mobile', instance.mobile)
-        instance.is_professional_boxer = validated_data.get('is_professional_boxer', instance.is_professional_boxer)
-        instance.club = validated_data.get('club', instance.club)
-        instance.job = validated_data.get('job', instance.job)
-        instance.introduction = validated_data.get('introduction', instance.introduction)
-        instance.experience = validated_data.get('experience', instance.experience)
+        identification_addition_data =validated_data.pop('boxer_identification_additional')
+
+        [setattr(instance, key, value) for key, value in validated_data.items()]
         instance.authentication_state = constants.BOXER_AUTHENTICATION_STATE_WAITING
+
         instance.save()
 
         BoxerMediaAdditional.objects.filter(boxer_identification=instance).delete()
-        identification_addition_data = validated_data.get('boxer_identification_additional')
         self.create_addition(instance,identification_addition_data)
 
         return instance
