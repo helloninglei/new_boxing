@@ -45,4 +45,11 @@ class CommentSerializer(serializers.ModelSerializer):
         }
     class Meta:
         model = models.Comment
-        fields = ['id', 'content', 'user', 'replies']
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    user = DiscoverUserField(read_only=True)
+
+    class Meta:
+        model = models.Like
+        fields = ['user', 'created_time']
