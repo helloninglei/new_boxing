@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.db.transaction import atomic
 from rest_framework import serializers
+from biz import models, constants
+from django.forms.models import model_to_dict
 
-from biz.models import BoxerIdentification, BoxerMediaAdditional, User
+
+from biz.models import BoxerIdentification, BoxerMediaAdditional
 
 
 class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
@@ -55,13 +58,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state',)
-
-
-
-from rest_framework import serializers
-from biz import models, constants
-from django.forms.models import model_to_dict
+        read_only_fields = ('authentication_state','lock_state')
 
 
 class MessageUserField(serializers.RelatedField):

@@ -165,7 +165,9 @@ class BoxerIdentification(BaseModel):
     introduction = models.TextField(max_length=300)
     experience = models.TextField(null=True,blank=True,max_length=500)
     authentication_state = models.CharField(max_length=10,default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
-                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
+    lock_state = models.CharField(max_length=10,default=constants.ACCEPT_ORDER_LOCKEN,
+                                    choices=constants.ACCEPT_ORDER_LOCK_CHOICES)
 
     class Meta:
         db_table = 'boxer_identification'

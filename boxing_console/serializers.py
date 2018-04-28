@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from biz.models import CoinChangeLog, MoneyChangeLog
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerMediaAdditional, BoxerIdentification
 from biz import models, constants
 
 
@@ -72,3 +72,25 @@ class MoneyLogSerializer(CoinMoneyBaseSerializer):
     class Meta:
         model = MoneyChangeLog
         fields = '__all__'
+
+
+class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BoxerMediaAdditional
+        fields = ['media_url', 'media_type']
+
+
+class BoxerIdentificationSerializer(serializers.ModelSerializer):
+    boxer_identification_additional = BoxerMediaAdditionalSerializer(many=True)
+    nike_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BoxerIdentification
+        fields = '__all__'
+        read_only_fields = ('lock_state',)
+
+    def get_nike_name(self,obj):
+        has_profile = hasattr(obj.user, 'user_profile')
+        return obj.user.user_profile.nick_name if has_profile else None
+
