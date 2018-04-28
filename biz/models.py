@@ -158,7 +158,6 @@ class Message(SoftDeleteModel):
         ordering = ('-created_time',)
 
 
-<<<<<<< HEAD
 #拳手认证
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
@@ -211,4 +210,3 @@ class Comment(SoftDeleteModel):
     def to_user(self):
         if not self.parent.is_deleted and self.parent.id != self.ancestor_id:
             return self.parent.user
->>>>>>> master
