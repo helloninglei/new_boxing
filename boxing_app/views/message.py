@@ -4,14 +4,19 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from boxing_app.serializers import MessageSerializer
+from boxing_app.permissions import OnlyOwnerCanDeletePermission
 
 class MessageViewSet(viewsets.ModelViewSet):
+    permission_classes = (OnlyOwnerCanDeletePermission,)
 
     queryset = Message.objects.all().prefetch_related('user')
     serializer_class = MessageSerializer
 
     def destroy(self, request, *args, **kwargs):
-        self.get_object().soft_delete(request.user)
+        obj = self.get_object()
+        self.check_object_permissions(request, obj)
+        obj.is_deleted = True
+        obj.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
