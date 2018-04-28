@@ -26,8 +26,7 @@ class CoinAndMoneyTestCase(TestCase):
         self.assertEqual(search_nick_name_response.data['count'],1)
 
         search_real_name_response = self.client.get(path='/boxer/identification?search=name5')
-        self.assertEqual(search_nick_name_response.data['count'],1)
-
+        self.assertEqual(search_real_name_response.data['count'],1)
 
 
     def test_get_boxer_identification_detail(self):
