@@ -22,10 +22,11 @@ class MessageSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
+    is_like = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = models.Message
-        fields = ['id', 'content', 'images', 'video', 'created_time', 'user', 'like_count', 'comment_count']
+        fields = ['id', 'content', 'images', 'video', 'created_time', 'user', 'like_count', 'comment_count', 'is_like']
 
 
 class BasicReplySerializer(serializers.ModelSerializer):

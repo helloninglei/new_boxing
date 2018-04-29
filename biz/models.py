@@ -160,8 +160,6 @@ class Message(SoftDeleteModel):
         db_table = 'discover_message'
         ordering = ('-created_time',)
 
-    def comment_count(self):
-        return Comment.objects.filter(message=self).count()
 
 class Comment(SoftDeleteModel):
     content = models.CharField(max_length=140)
