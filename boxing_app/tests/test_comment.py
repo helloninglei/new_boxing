@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
-from biz.models import User, UserProfile
+from biz.models import User
 from rest_framework import status
 
 
