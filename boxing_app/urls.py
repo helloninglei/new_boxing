@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from boxing_app.views import upload
 from boxing_app.views import message
 from boxing_app.views import comment
+from boxing_app.views import report
 from boxing_app.views import like
 
 
@@ -28,7 +29,8 @@ discover_urls = [
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}), name='message-detail'),
     path('messages/<int:message_id>/comments', comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
     path('messages/<int:message_id>/comments/<int:pk>', comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
-    path('messages/<int:message_id>/like', like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='like'),
+    path('messages/<int:message_id>/like', like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('messages/<int:message_id>/report', report.ReportViewSet.as_view({'post': 'create'}), name='message-report'),
 ]
 
 upload_urls = [

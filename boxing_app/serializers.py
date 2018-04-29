@@ -2,7 +2,9 @@
 
 from rest_framework import serializers
 from biz import models
+from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from django.forms.models import model_to_dict
+from rest_framework.exceptions import ValidationError
 
 
 class DiscoverUserField(serializers.RelatedField):
@@ -52,3 +54,14 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Like
         fields = ['user', 'created_time']
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if data['reason'] == DISCOVER_MESSAGE_REPORT_OTHER_REASON and not data['remark']:
+            raise ValidationError({'remark': ['remark is required']})
+        return data
+
+    class Meta:
+        model = models.Report
+        fields = ['reason', 'remark']

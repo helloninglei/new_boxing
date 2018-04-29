@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 from django.db import models
-from django.core import exceptions
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import constants
@@ -135,6 +134,7 @@ class SoftDeleteManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_deleted=False)
 
+
 class SoftDeleteModel(models.Model):
     objects = SoftDeleteManager()
 
@@ -144,6 +144,7 @@ class SoftDeleteModel(models.Model):
     def soft_delete(self):
         self.is_deleted = True
         self.save()
+
 
 # 动态
 class Message(SoftDeleteModel):
@@ -190,4 +191,16 @@ class Like(models.Model):
     class Meta:
         db_table = 'discover_like'
         unique_together = ('user', 'message',)
+        ordering = ('-created_time',)
+
+
+class Report(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    reason = models.SmallIntegerField(choices=constants.DISCOVER_MESSAGE_REPORT_CHOICES)
+    remark = models.CharField(max_length=20, null=True)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='+')
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'discover_report'
         ordering = ('-created_time',)
