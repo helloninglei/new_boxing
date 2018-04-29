@@ -48,8 +48,10 @@ class CommentSerializer(serializers.ModelSerializer):
             'count': latest.count(),
             'results': BasicReplySerializer(latest,  many=True).data
         }
+
     class Meta:
         model = models.Comment
+        fields = ['id', 'content', 'user', 'replies']
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -62,7 +64,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     def validate(self, data):
-        if data['reason'] == DISCOVER_MESSAGE_REPORT_OTHER_REASON and not data['remark']:
+        if data['reason'] == DISCOVER_MESSAGE_REPORT_OTHER_REASON and not data.get('remark'):
             raise ValidationError({'remark': ['remark is required']})
         return data
 

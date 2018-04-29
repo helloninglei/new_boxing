@@ -29,6 +29,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         self.get_object().soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class ReplyViewSet(CommentViewSet):
     serializer_class = CommentSerializer
 

@@ -3,6 +3,7 @@ from rest_framework.test import APITestCase
 from biz.models import User
 from rest_framework import status
 
+
 class LikeTestCase(APITestCase):
     def setUp(self):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
@@ -31,7 +32,6 @@ class LikeTestCase(APITestCase):
         res = self.client1.post('/messages/%s/like' % self.message_id2)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         response = self.client1.get('/messages')
-        print(response.data)
 
         for message in response.data['results']:
             is_like = message['is_like']
@@ -52,7 +52,6 @@ class LikeTestCase(APITestCase):
                 self.assertEqual(like_count, 1)
             else:
                 self.assertEqual(like_count, 0)
-
 
     def test_hot_message(self):
         self.prepare()
