@@ -23,16 +23,16 @@ class BoxerIdentificationViewSet(mixins.ListModelMixin,
     filter_fields = ('is_professional_boxer','approve_state','lock_state')
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
 
-    def change_lock_state(self, request):
+    def change_lock_state(self, request, *args, **kwargs):
         self.create_operation_log(request=request, operate='lock')
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def approve(self, request):
+    def approve(self, request, *args, **kwargs):
         self.create_operation_log(request=request, operate='approve')
         return Response(reverse('boxer_identification_list'))
 
     def refuse(self, request, *args, **kwargs):
-        self.create_operation_log(request=request, operate='refuse',operator_comment=kwargs.get('operator_comment'))
+        self.create_operation_log(request=request, operate='refuse',operator_comment=request.data.get('operator_comment'))
         return Response(reverse('boxer_identification_list'))
 
     @atomic

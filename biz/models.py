@@ -197,6 +197,9 @@ class IdentificationOperateLog(BaseModel):
     lock_state = models.BooleanField(default=False)
     operator_comment = models.CharField(null=True, blank=True, max_length=255)
 
+    class Meta:
+        db_table = 'identification_opeation_log'
+
 
 class Comment(SoftDeleteModel):
     content = models.CharField(max_length=140)
