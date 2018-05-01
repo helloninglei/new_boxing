@@ -172,9 +172,9 @@ class BoxerIdentification(BaseModel):
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
     experience = models.TextField(null=True,blank=True,max_length=500)
-    authentication_state = models.CharField(max_length=10,default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
-                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
-    lock_state = models.BooleanField(default=True)
+    approve_state = models.CharField(max_length=10,default=constants.BOXER_APPROVE_STATE_WAITING,
+                                            choices=constants.BOXER_APPROVE_STATE_CHOICE)
+    lock_state = models.BooleanField(default=False )
 
     class Meta:
         db_table = 'boxer_identification'
@@ -188,6 +188,14 @@ class BoxerMediaAdditional(BaseModel):
 
     class Meta:
         db_table = 'boxer_identification_additional'
+
+
+class IdentificationOperateLog(BaseModel):
+    identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='operate_log')
+    operator = models.ForeignKey(User,null=True, on_delete=models.DO_NOTHING, related_name='operate_log')
+    approve_state = models.CharField(null=True, blank=True, max_length=10, choices=constants.BOXER_APPROVE_STATE_CHOICE)
+    lock_state = models.BooleanField(default=False)
+    operator_comment = models.CharField(null=True, blank=True, max_length=255)
 
 
 class Comment(SoftDeleteModel):

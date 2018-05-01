@@ -32,7 +32,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         identification_addition_data =validated_data.pop('boxer_identification_additional')
 
         [setattr(instance, key, value) for key, value in validated_data.items()]
-        instance.authentication_state = constants.BOXER_AUTHENTICATION_STATE_WAITING
+        instance.approve_state = constants.BOXER_APPROVE_STATE_WAITING
 
         instance.save()
 
@@ -50,7 +50,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state','lock_state')
+        read_only_fields = ('approve_state','lock_state')
 
 
 class DiscoverUserField(serializers.RelatedField):
