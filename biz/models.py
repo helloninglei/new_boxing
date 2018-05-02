@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 from django.db import models
-from django.core import exceptions
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import validator, constants
@@ -164,7 +163,7 @@ class BoxerIdentification(BaseModel):
     real_name = models.CharField(max_length=10)
     height = models.IntegerField()
     weight = models.IntegerField()
-    birthday = models.DateTimeField()
+    birthday = models.DateField()
     identity_number = models.CharField(max_length=18)
     mobile = models.CharField(max_length=11)
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
@@ -182,7 +181,7 @@ class BoxerIdentification(BaseModel):
 class BoxerMediaAdditional(BaseModel):
     boxer_identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE,
                                              related_name='boxer_identification_additional')
-    media_url = models.CharField(max_length=255)
+    media_url = models.URLField()
     media_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
 
     class Meta:

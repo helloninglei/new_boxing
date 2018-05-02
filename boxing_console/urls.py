@@ -23,8 +23,8 @@ from boxing_console.views.user_management import UserManagementViewSet
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post':'create'}),
         name='coin_change'),
-    url('money/change', MoneyChangeLogViewSet.as_view({'post':'create'}),
+    path('money/change', MoneyChangeLogViewSet.as_view({'post':'create'}),
         name='money_change'),
-    url('coin/change/log',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
-    url("users", UserManagementViewSet.as_view({"get": "list"}))
+    path('coin/change/log',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
+    path("users", UserManagementViewSet.as_view({"get": "list"}))
 ]
