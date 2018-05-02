@@ -14,16 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import path
 
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 
 
 urlpatterns = [
-    url(r'^coin/change$', CoinChangLogViewSet.as_view({'post':'create'}),
+    path('coin/change', CoinChangLogViewSet.as_view({'post':'create'}),
         name='coin_change'),
-    url(r'^money/change$', MoneyChangeLogViewSet.as_view({'post':'create'}),
+    url('money/change', MoneyChangeLogViewSet.as_view({'post':'create'}),
         name='money_change'),
-    url(r'^coin/change/log$',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
-    url(r"^users$", UserManagementViewSet.as_view({"get": "list"}))
+    url('coin/change/log',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
+    url("users", UserManagementViewSet.as_view({"get": "list"}))
 ]
