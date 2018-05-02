@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import path
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
@@ -21,18 +22,18 @@ from boxing_console.views.user_management import UserManagementViewSet
 
 
 money_url = [
-    url(r'^coin/change$', CoinChangLogViewSet.as_view({'post':'create'}),
+    path('coin/change', CoinChangLogViewSet.as_view({'post':'create'}),
         name='coin_change'),
-    url(r'^money/change$', MoneyChangeLogViewSet.as_view({'post':'create'}),
+    path('money/change', MoneyChangeLogViewSet.as_view({'post':'create'}),
         name='money_change'),
-    url(r'^coin/change/log$',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
-    url(r"^users$", UserManagementViewSet.as_view({"get": "list"}))
+    path('coin/change/log',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
+    path("users", UserManagementViewSet.as_view({"get": "list"}))
 ]
 
 boxer_url = [
-    url(r'^boxer/identification$', BoxerIdentificationViewSet.as_view({'get':'list'}),
+    path(r'^boxer/identification$', BoxerIdentificationViewSet.as_view({'get':'list'}),
         name='boxer_identification_list'),
-    url(r'^boxer/identification/(?P<pk>\d+)$', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
+    path(r'^boxer/identification/(?P<pk>\d+)$', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
         name='boxer_identification_detail'),
 ]
 
