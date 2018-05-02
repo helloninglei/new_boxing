@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.transaction import atomic
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 from biz.models import BoxerIdentification, BoxerMediaAdditional
 
@@ -27,6 +28,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 
     @atomic
     def update(self, instance, validated_data):
+
         identification_addition_data =validated_data.pop('boxer_identification_additional')
 
         [setattr(instance, key, value) for key, value in validated_data.items()]

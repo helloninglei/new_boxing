@@ -171,6 +171,7 @@ class BoxerIdentificationTestCase(APITestCase):
         response = self.client.get(reverse('boxer_identification'))
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+
         self.assertEqual(response.data['real_name'], '张三')
         self.assertEqual(response.data['height'], 190)
         self.assertEqual(response.data['weight'], 70)
@@ -218,23 +219,25 @@ class BoxerIdentificationTestCase(APITestCase):
                                                  "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
-        response = self.client.put(reverse('boxer_identification'),
-                                      data=json.dumps(update_data),
-                                      content_type='application/json')
+        response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
+        self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('message'), "存在待审核的认证信息，不能修改")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['real_name'], '李四')
-        self.assertEqual(response.data['height'], 190)
-        self.assertEqual(response.data['weight'], 120)
-        self.assertEqual(response.data['mobile'], 'm4444444')
-        self.assertEqual(response.data['identity_number'], 'im444444')
-        self.assertEqual(response.data['is_professional_boxer'], True)
-        self.assertEqual(response.data['club'], 'c444444')
-        self.assertEqual(response.data['job'], 'j4444444')
-        self.assertEqual(len(response.data['boxer_identification_additional']),2)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],
-                         constants.VIDEO_CONTESTANT)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], 'http://img11.com')
-        self.assertEqual(response.data['boxer_identification_additional'][1]['media_type'],
-                         constants.IMAGE_CERTIFICATE_OF_HONOR)
-        self.assertEqual(response.data['boxer_identification_additional'][1]['media_url'], 'http://img22.com')
+        boxer_dentity.authentication_state = constants.BOXER_AUTHENTICATION_STATE_APPROVED
+        boxer_dentity.save()
+
+        response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        fake_user_addition = self.fake_user.boxer_identification.boxer_identification_additional
+
+        for key in update_data:
+            if key =='boxer_identification_additional':
+                pass
+            else:
+                self.assertEqual(response.data.get(key), update_data[key])
+
+        self.assertEqual(fake_user_addition.all().count(),len(update_data['boxer_identification_additional']))
+        for count in range(fake_user_addition.all().count()):
+            self.assertEqual(fake_user_addition.all()[count].media_url, update_data['boxer_identification_additional'][count]['media_url'])
+            self.assertEqual(fake_user_addition.all()[count].media_type, update_data['boxer_identification_additional'][count]['media_type'])
+
