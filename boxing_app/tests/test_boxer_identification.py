@@ -228,16 +228,18 @@ class BoxerIdentificationTestCase(APITestCase):
 
         response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.fake_user = User.objects.get(pk=self.fake_user.pk)
         fake_user_addition = self.fake_user.boxer_identification.boxer_identification_additional
 
         for key in update_data:
-            if key =='boxer_identification_additional':
+            if key == 'birthday':
+                self.assertEqual(getattr(self.fake_user.boxer_identification, key), datetime.date(2018, 4, 25))
+            elif key =='boxer_identification_additional':
                 pass
             else:
-                self.assertEqual(response.data.get(key), update_data[key])
+                self.assertEqual(getattr(self.fake_user.boxer_identification,key), update_data[key])
 
         self.assertEqual(fake_user_addition.all().count(),len(update_data['boxer_identification_additional']))
         for count in range(fake_user_addition.all().count()):
             self.assertEqual(fake_user_addition.all()[count].media_url, update_data['boxer_identification_additional'][count]['media_url'])
             self.assertEqual(fake_user_addition.all()[count].media_type, update_data['boxer_identification_additional'][count]['media_type'])
-
