@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db.transaction import atomic
 from rest_framework import serializers
-<<<<<<< HEAD
-from biz import models, constants
-=======
->>>>>>> box_identification_model
 from django.forms.models import model_to_dict
 
 from biz import models, constants
@@ -54,11 +50,8 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = '__all__'
-<<<<<<< HEAD
         read_only_fields = ('authentication_state','lock_state')
-=======
-        read_only_fields = ('authentication_state',)
->>>>>>> box_identification_model
+
 
 
 class DiscoverUserField(serializers.RelatedField):
