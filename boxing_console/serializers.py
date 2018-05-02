@@ -48,7 +48,7 @@ class CoinMoneyBaseSerializer(serializers.ModelSerializer):
 
 class CoinLogSerializer(CoinMoneyBaseSerializer):
     change_type = serializers.ChoiceField(choices=constants.COIN_CHANGE_TYPE_CHOICES,
-                                          error_messages={'invalid_choice': u'拳豆修改类型未知'})
+                                          error_messages={'invalid_choice': '拳豆修改类型未知'})
 
     def create(self, validated_data):
         validated_data['alias'] = 'coin'
@@ -62,7 +62,7 @@ class CoinLogSerializer(CoinMoneyBaseSerializer):
 
 class MoneyLogSerializer(CoinMoneyBaseSerializer):
     change_type = serializers.ChoiceField(choices=constants.MONEY_CHANGE_TYPE_CHOICES,
-                                          error_messages={'invalid_choice': u'钱包余额修改类型未知'})
+                                          error_messages={'invalid_choice': '钱包余额修改类型未知'})
 
     def create(self, validated_data):
         validated_data['alias'] = 'money'

@@ -37,7 +37,7 @@ class BoxerIdentificationTestCase(APITestCase):
 
         self.assertEqual(response.status_code,status.HTTP_201_CREATED)
         self.assertIsNotNone(identification)
-        self.assertEqual(identification.real_name, u'张三')
+        self.assertEqual(identification.real_name, '张三')
         self.assertEqual(identification.height, 190)
         self.assertEqual(identification.weight, 120)
         self.assertEqual(identification.identity_number, '131313141444')
@@ -73,7 +73,7 @@ class BoxerIdentificationTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIsNotNone(identification)
-        self.assertEqual(identification.real_name, u'张三')
+        self.assertEqual(identification.real_name, '张三')
         self.assertEqual(identification.height, 190)
         self.assertEqual(identification.weight, 120)
         self.assertEqual(identification.identity_number, '131313141444')
@@ -168,7 +168,7 @@ class BoxerIdentificationTestCase(APITestCase):
         response = self.client.get(reverse('boxer_identification'))
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
-        self.assertEqual(response.data['real_name'], u'张三')
+        self.assertEqual(response.data['real_name'], '张三')
         self.assertEqual(response.data['height'], 190)
         self.assertEqual(response.data['weight'], 70)
         self.assertEqual(response.data['mobile'], '111111111')
@@ -220,7 +220,7 @@ class BoxerIdentificationTestCase(APITestCase):
                                       content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['real_name'], u'李四')
+        self.assertEqual(response.data['real_name'], '李四')
         self.assertEqual(response.data['height'], 190)
         self.assertEqual(response.data['weight'], 120)
         self.assertEqual(response.data['mobile'], 'm4444444')

@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
 from django.urls import path
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
@@ -31,9 +30,9 @@ money_url = [
 ]
 
 boxer_url = [
-    path(r'^boxer/identification$', BoxerIdentificationViewSet.as_view({'get':'list'}),
+    path('boxer/identification', BoxerIdentificationViewSet.as_view({'get':'list'}),
         name='boxer_identification_list'),
-    path(r'^boxer/identification/(?P<pk>\d+)$', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
+    path('boxer/identification/<int:pk>)', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
         name='boxer_identification_detail'),
 ]
 
