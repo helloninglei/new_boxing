@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import json
 
 from rest_framework import status
@@ -21,7 +22,7 @@ class BoxerIdentificationTestCase(APITestCase):
                     "real_name": "张三",
                     "height": 190,
                     "weight": 120,
-                    "birthday": "2018-04-25T11:04:40.634170+08:00",
+                    "birthday": "2018-04-25",
                     "identity_number": "131313141444",
                     "mobile": "113134",
                     "is_professional_boxer": True,
@@ -53,7 +54,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "real_name": "张三",
             "height": 190,
             "weight": 120,
-            "birthday": "2018-04-25T11:04:40.634170+08:00",
+            "birthday": "2018-04-25",
             "identity_number": "131313141444",
             "mobile": "113134",
             "is_professional_boxer": True,
@@ -61,38 +62,40 @@ class BoxerIdentificationTestCase(APITestCase):
             "job":'hhh',
             "introduction": "beautiful",
             "experience": '',
-            "boxer_identification_additional": [{"media_url":"url0","media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
-                                                {"media_url": "url1", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
-                                                {"media_url": "url2", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
+            "boxer_identification_additional": [{"media_url":"http://img1.com","media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
+                                                {"media_url": "http://img2.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
+                                                {"media_url": "http://img3.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
         response = self.client.post(reverse('boxer_identification'),
                                     data=json.dumps(post_data), content_type='application/json')
-        identification = BoxerIdentification.objects.filter(user=self.fake_user).first()
-        identification_addition = BoxerMediaAdditional.objects.filter(boxer_identification=identification)
+
+        fake_user_identification = self.fake_user.boxer_identification
+        fake_user_addition = self.fake_user.boxer_identification.boxer_identification_additional
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIsNotNone(identification)
-        self.assertEqual(identification.real_name, '张三')
-        self.assertEqual(identification.height, 190)
-        self.assertEqual(identification.weight, 120)
-        self.assertEqual(identification.identity_number, '131313141444')
-        self.assertEqual(identification.mobile, '113134')
-        self.assertEqual(identification.is_professional_boxer, True)
-        self.assertEqual(identification.club, '131ef2f3')
-        self.assertEqual(identification.introduction, 'beautiful')
-        self.assertEqual(identification.experience, '')
 
-        self.assertIsNotNone(identification_addition)
-        self.assertEqual(len(identification_addition),3)
-        self.assertEqual(identification_addition[0].media_url, 'url0')
-        self.assertEqual(identification_addition[0].media_type, constants.IMAGE_CERTIFICATE_OF_HONOR)
+        self.assertIsNotNone(fake_user_identification)
+        self.assertIsNotNone(fake_user_addition)
+
+        for key in post_data:
+            if key == 'birthday':
+                self.assertEqual(getattr(fake_user_identification, key), datetime.date(2018, 4, 25))
+            elif key =='boxer_identification_additional':
+                pass
+            else:
+                self.assertEqual(getattr(fake_user_identification,key), post_data[key])
+
+        self.assertEqual(fake_user_addition.all().count(),len(post_data['boxer_identification_additional']))
+        for count in range(fake_user_addition.all().count()):
+            self.assertEqual(fake_user_addition.all()[count].media_url, post_data['boxer_identification_additional'][count]['media_url'])
+            self.assertEqual(fake_user_addition.all()[count].media_type, post_data['boxer_identification_additional'][count]['media_type'])
 
     def test_create_identification_faild(self):
         post_data_without_real_name = {
             "height": 190,
             "weight": 120,
-            "birthday": "2018-04-25T11:04:40.634170+08:00",
+            "birthday": "2018-04-25",
             "identity_number": "131313141444",
             "mobile": "113134",
             "is_professional_boxer": True,
@@ -106,7 +109,7 @@ class BoxerIdentificationTestCase(APITestCase):
         post_data_mobile_invalid = {
             "height": 190,
             "weight": 120,
-            "birthday": "2018-04-25T11:04:40.634170+08:00",
+            "birthday": "2018-04-25",
             "identity_number": "131313141444",
             "mobile": "113123343334",
             "is_professional_boxer": True,
@@ -129,7 +132,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "real_name": "张三",
             "height": 190,
             "weight": 120,
-            "birthday": "2018-04-25T11:04:40.634170+08:00",
+            "birthday": "2018-04-25",
             "identity_number": "131313141444",
             "mobile": "113134",
             "is_professional_boxer": True,
@@ -137,9 +140,9 @@ class BoxerIdentificationTestCase(APITestCase):
             "job": 'hhh',
             "introduction": "beautiful",
             "experience": '',
-            "boxer_identification_additional": [{"media_url":"url0","media_type": 'hhh'},
-                                                {"media_url": "url1", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
-                                                {"media_url": "url2", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
+            "boxer_identification_additional": [{"media_url":"http://img1.com","media_type": 'hhh'},
+                                                {"media_url": "http://img2.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
+                                                {"media_url": "http://img3.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
         response = self.client.post(reverse('boxer_identification'),
@@ -153,7 +156,7 @@ class BoxerIdentificationTestCase(APITestCase):
                                                            user=self.fake_user,
                                                             height=190,
                                                             weight=70,
-                                                            birthday="2018-04-25T11:04:40.634170+08:00",
+                                                            birthday="2018-04-25",
                                                             identity_number='111111111111111',
                                                             mobile='111111111',
                                                             is_professional_boxer=True,
@@ -162,12 +165,13 @@ class BoxerIdentificationTestCase(APITestCase):
                                                             introduction='hhh')
 
         BoxerMediaAdditional.objects.create(boxer_identification=boxer_dentity,
-                                             media_url='url0',
+                                             media_url='http://img1.com',
                                              media_type=constants.IMAGE_CERTIFICATE_OF_HONOR)
 
         response = self.client.get(reverse('boxer_identification'))
 
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+
         self.assertEqual(response.data['real_name'], '张三')
         self.assertEqual(response.data['height'], 190)
         self.assertEqual(response.data['weight'], 70)
@@ -176,7 +180,7 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(response.data['is_professional_boxer'], True)
         self.assertEqual(response.data['club'], '111')
         self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],constants.IMAGE_CERTIFICATE_OF_HONOR)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], 'url0')
+        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], 'http://img1.com')
 
 
     def test_update_identification(self):
@@ -184,7 +188,7 @@ class BoxerIdentificationTestCase(APITestCase):
                                                            user=self.fake_user,
                                                            height=190,
                                                            weight=70,
-                                                           birthday="2018-04-25T11:04:40.634170+08:00",
+                                                           birthday="2018-04-25",
                                                            identity_number='111111111111111',
                                                            mobile='111111111',
                                                            is_professional_boxer=True,
@@ -193,14 +197,14 @@ class BoxerIdentificationTestCase(APITestCase):
                                                            introduction='hhh')
 
         BoxerMediaAdditional.objects.create(boxer_identification=boxer_dentity,
-                                            media_url='url0',
+                                            media_url='http://img1.com',
                                             media_type=constants.IMAGE_CERTIFICATE_OF_HONOR)
 
         update_data = {
             "real_name": "李四",
             "height": 190,
             "weight": 120,
-            "birthday": "2018-04-25T11:04:40.634170+08:00",
+            "birthday": "2018-04-25",
             "identity_number": "im444444",
             "mobile": "m4444444",
             "is_professional_boxer": True,
@@ -209,29 +213,34 @@ class BoxerIdentificationTestCase(APITestCase):
             "introduction": "beautiful",
             "experience": '',
             "boxer_identification_additional": [
-                                                {"media_url": "changed_url1",
+                                                {"media_url": "http://img11.com",
                                                  "media_type": constants.VIDEO_CONTESTANT},
-                                                {"media_url": "changed_url2",
+                                                {"media_url": "http://img22.com",
                                                  "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
-        response = self.client.put(reverse('boxer_identification'),
-                                      data=json.dumps(update_data),
-                                      content_type='application/json')
+        response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
+        self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data.get('message'), "存在待审核的认证信息，不能修改")
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['real_name'], '李四')
-        self.assertEqual(response.data['height'], 190)
-        self.assertEqual(response.data['weight'], 120)
-        self.assertEqual(response.data['mobile'], 'm4444444')
-        self.assertEqual(response.data['identity_number'], 'im444444')
-        self.assertEqual(response.data['is_professional_boxer'], True)
-        self.assertEqual(response.data['club'], 'c444444')
-        self.assertEqual(response.data['job'], 'j4444444')
-        self.assertEqual(len(response.data['boxer_identification_additional']),2)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],
-                         constants.VIDEO_CONTESTANT)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], 'changed_url1')
-        self.assertEqual(response.data['boxer_identification_additional'][1]['media_type'],
-                         constants.IMAGE_CERTIFICATE_OF_HONOR)
-        self.assertEqual(response.data['boxer_identification_additional'][1]['media_url'], 'changed_url2')
+
+        boxer_dentity.authentication_state = constants.BOXER_AUTHENTICATION_STATE_APPROVED
+        boxer_dentity.save()
+
+        response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        self.fake_user = User.objects.get(pk=self.fake_user.pk)
+        fake_user_addition = self.fake_user.boxer_identification.boxer_identification_additional
+
+        for key in update_data:
+            if key == 'birthday':
+                self.assertEqual(getattr(self.fake_user.boxer_identification, key), datetime.date(2018, 4, 25))
+            elif key =='boxer_identification_additional':
+                pass
+            else:
+                self.assertEqual(getattr(self.fake_user.boxer_identification,key), update_data[key])
+
+        self.assertEqual(fake_user_addition.all().count(),len(update_data['boxer_identification_additional']))
+        for count in range(fake_user_addition.all().count()):
+            self.assertEqual(fake_user_addition.all()[count].media_url, update_data['boxer_identification_additional'][count]['media_url'])
+            self.assertEqual(fake_user_addition.all()[count].media_type, update_data['boxer_identification_additional'][count]['media_type'])

@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 from django.db.transaction import atomic
 from rest_framework import serializers
+<<<<<<< HEAD
 from biz import models, constants
+=======
+>>>>>>> box_identification_model
 from django.forms.models import model_to_dict
 
-from biz.models import BoxerIdentification, BoxerMediaAdditional
+from biz import models, constants
 
 
 class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = BoxerMediaAdditional
+        model = models.BoxerMediaAdditional
         fields = ['media_url', 'media_type']
 
 
@@ -23,12 +26,13 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     @atomic
     def create(self, validated_data):
         identification_addition_data = validated_data.pop('boxer_identification_additional')
-        instance = BoxerIdentification.objects.create(**validated_data)
+        instance = models.BoxerIdentification.objects.create(**validated_data)
         self.create_addition(instance, identification_addition_data)
         return instance
 
     @atomic
     def update(self, instance, validated_data):
+
         identification_addition_data =validated_data.pop('boxer_identification_additional')
 
         [setattr(instance, key, value) for key, value in validated_data.items()]
@@ -36,21 +40,25 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 
         instance.save()
 
-        BoxerMediaAdditional.objects.filter(boxer_identification=instance).delete()
+        models.BoxerMediaAdditional.objects.filter(boxer_identification=instance).delete()
         self.create_addition(instance,identification_addition_data)
 
         return instance
 
     def create_addition(self, instance, addition_data_list):
-        boxer_addition_obj_list = [BoxerMediaAdditional(boxer_identification=instance, **additiona_data)
+        boxer_addition_obj_list = [models.BoxerMediaAdditional(boxer_identification=instance, **additiona_data)
                                    for additiona_data in addition_data_list]
-        BoxerMediaAdditional.objects.bulk_create(boxer_addition_obj_list)
+        models.BoxerMediaAdditional.objects.bulk_create(boxer_addition_obj_list)
 
 
     class Meta:
-        model = BoxerIdentification
+        model = models.BoxerIdentification
         fields = '__all__'
+<<<<<<< HEAD
         read_only_fields = ('authentication_state','lock_state')
+=======
+        read_only_fields = ('authentication_state',)
+>>>>>>> box_identification_model
 
 
 class DiscoverUserField(serializers.RelatedField):
