@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import validator, constants
 
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -67,12 +68,13 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+
 class PropertyChangeLog(BaseModel):
     last_amount = models.IntegerField(default=0)  # 变动前额度
     change_amount = models.IntegerField(default=0)  # 变动额度
     remain_amount = models.IntegerField(default=0)  # 变动后额度
-    operator = models.CharField(null=True, max_length=20) # 操作人
-    remarks = models.CharField(null=True, max_length=50) #备注
+    operator = models.CharField(null=True, max_length=20)  # 操作人
+    remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
         abstract = True
@@ -103,7 +105,7 @@ class CoinChangeLog(PropertyChangeLog):
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
 
     class Meta:
-        db_table = 'conin_change_log'
+        db_table = 'coin_change_log'
         ordering = ['-created_time', '-id']
 
 
@@ -132,6 +134,7 @@ class SoftDeleteManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_deleted=False)
 
+
 class SoftDeleteModel(models.Model):
     objects = SoftDeleteManager()
 
@@ -141,6 +144,7 @@ class SoftDeleteModel(models.Model):
     def soft_delete(self):
         self.is_deleted = True
         self.save()
+
 
 # 动态
 class Message(SoftDeleteModel):
@@ -161,8 +165,8 @@ class Message(SoftDeleteModel):
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
     real_name = models.CharField(max_length=10)
-    height = models.IntegerField()
-    weight = models.IntegerField()
+    height = models.IntegerField()  # 单位：cm
+    weight = models.IntegerField()  # 单位：g
     birthday = models.DateField()
     identity_number = models.CharField(max_length=18)
     mobile = models.CharField(max_length=11)
@@ -170,10 +174,10 @@ class BoxerIdentification(BaseModel):
     club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
-    experience = models.TextField(null=True,blank=True,max_length=500)
-    authentication_state = models.CharField(max_length=10,default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
-                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
     lock_state = models.BooleanField(default=True)
+    experience = models.TextField(null=True, blank=True, max_length=500)
+    authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
 
     class Meta:
         db_table = 'boxer_identification'

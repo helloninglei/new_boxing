@@ -21,7 +21,7 @@ from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
 from boxing_app.views import comment
 
-boxer_identification = BoxerIdentificationViewSet.as_view({'post':'create','put':'update','get':'retrieve'})
+boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
 discover_urls = [
     path('messages', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),

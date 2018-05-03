@@ -29,7 +29,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     @atomic
     def update(self, instance, validated_data):
 
-        identification_addition_data =validated_data.pop('boxer_identification_additional')
+        identification_addition_data = validated_data.pop('boxer_identification_additional')
 
         [setattr(instance, key, value) for key, value in validated_data.items()]
         instance.authentication_state = constants.BOXER_AUTHENTICATION_STATE_WAITING
@@ -37,7 +37,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         instance.save()
 
         models.BoxerMediaAdditional.objects.filter(boxer_identification=instance).delete()
-        self.create_addition(instance,identification_addition_data)
+        self.create_addition(instance, identification_addition_data)
 
         return instance
 
@@ -91,6 +91,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'count': latest.count(),
             'results': BasicReplySerializer(latest,  many=True).data
         }
+
     class Meta:
         model = models.Comment
         fields = ['id', 'content', 'user', 'replies']

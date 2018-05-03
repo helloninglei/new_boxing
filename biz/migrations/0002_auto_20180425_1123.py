@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['-created_time', '-id'],
-                'db_table': 'conin_change_log',
+                'db_table': 'coin_change_log',
             },
         ),
         migrations.CreateModel(
