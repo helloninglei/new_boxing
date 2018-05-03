@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerMediaAdditional, BoxerIdentification
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification
 from biz import models, constants
 
 
@@ -74,15 +74,9 @@ class MoneyLogSerializer(CoinMoneyBaseSerializer):
         fields = '__all__'
 
 
-class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = BoxerMediaAdditional
-        fields = ['media_url', 'media_type']
-
-
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
-    boxer_identification_additional = BoxerMediaAdditionalSerializer(many=True)
+    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
+    competition_video = serializers.URLField(required=False)
     nick_name = serializers.SerializerMethodField()
 
     class Meta:
