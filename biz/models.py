@@ -103,7 +103,7 @@ class CoinChangeLog(PropertyChangeLog):
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
 
     class Meta:
-        db_table = 'conin_change_log'
+        db_table = 'coin_change_log'
         ordering = ['-created_time', '-id']
 
 
