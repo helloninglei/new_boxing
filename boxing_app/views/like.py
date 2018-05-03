@@ -6,6 +6,7 @@ from biz.models import Like
 from biz.models import Message
 from boxing_app.serializers import LikeSerializer
 
+
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
 

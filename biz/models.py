@@ -69,6 +69,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+
 class PropertyChangeLog(BaseModel):
     last_amount = models.IntegerField(default=0)  # 变动前额度
     change_amount = models.IntegerField(default=0)  # 变动额度
@@ -185,7 +186,7 @@ class Comment(SoftDeleteModel):
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='like', db_index=True)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='likes')
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
