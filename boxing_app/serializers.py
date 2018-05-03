@@ -1,50 +1,34 @@
 # -*- coding: utf-8 -*-
-from django.db.transaction import atomic
+import re
+
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 
 from biz import models, constants
 
 
-class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.BoxerMediaAdditional
-        fields = ['media_url', 'media_type']
-
-
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    boxer_identification_additional = BoxerMediaAdditionalSerializer(many=True)
+    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
+    competition_video = serializers.URLField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
 
-    @atomic
-    def create(self, validated_data):
-        identification_addition_data = validated_data.pop('boxer_identification_additional')
-        instance = models.BoxerIdentification.objects.create(**validated_data)
-        self.create_addition(instance, identification_addition_data)
-        return instance
+    def validate_mobile(self, value):
+        p = re.compile(r'^1\d{10}$')
+        if p.match(value) == None:
+            raise serializers.ValidationError({"message": "手机号格式错误！"})
+        return value
 
-    @atomic
+    def validate_identity_number(self, value):
+        p = re.compile(r'^\d{18}$')
+        if p.match(value) == None:
+            raise serializers.ValidationError({"message": "身份证号码格式错误！"})
+        return value
+
     def update(self, instance, validated_data):
-
-        identification_addition_data = validated_data.pop('boxer_identification_additional')
-
-        [setattr(instance, key, value) for key, value in validated_data.items()]
-        instance.authentication_state = constants.BOXER_AUTHENTICATION_STATE_WAITING
-
-        instance.save()
-
-        models.BoxerMediaAdditional.objects.filter(boxer_identification=instance).delete()
-        self.create_addition(instance, identification_addition_data)
-
-        return instance
-
-    def create_addition(self, instance, addition_data_list):
-        boxer_addition_obj_list = [models.BoxerMediaAdditional(boxer_identification=instance, **additiona_data)
-                                   for additiona_data in addition_data_list]
-        models.BoxerMediaAdditional.objects.bulk_create(boxer_addition_obj_list)
+        validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_APPROVED
+        return super().update(instance, validated_data)
 
     class Meta:
         model = models.BoxerIdentification

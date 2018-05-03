@@ -177,19 +177,11 @@ class BoxerIdentification(BaseModel):
     experience = models.TextField(null=True, blank=True, max_length=500)
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
+    honor_certificate_images = StringListField(null=True)
+    competition_video = models.URLField(null=True)
 
     class Meta:
         db_table = 'boxer_identification'
-
-
-class BoxerMediaAdditional(BaseModel):
-    boxer_identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE,
-                                             related_name='boxer_identification_additional')
-    media_url = models.URLField()
-    media_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
-
-    class Meta:
-        db_table = 'boxer_identification_additional'
 
 
 class Comment(SoftDeleteModel):
