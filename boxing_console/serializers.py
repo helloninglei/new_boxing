@@ -83,7 +83,7 @@ class BoxerMediaAdditionalSerializer(serializers.ModelSerializer):
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     boxer_identification_additional = BoxerMediaAdditionalSerializer(many=True)
-    nike_name = serializers.SerializerMethodField()
+    nick_name = serializers.SerializerMethodField()
 
     class Meta:
         model = BoxerIdentification
@@ -91,6 +91,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         read_only_fields = ('lock_state',)
 
     @staticmethod
-    def get_nike_name(obj):
+    def get_nick_name(obj):
         has_profile = hasattr(obj.user, 'user_profile')
         return obj.user.user_profile.nick_name if has_profile else None

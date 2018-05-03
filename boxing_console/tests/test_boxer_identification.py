@@ -33,7 +33,7 @@ class CoinAndMoneyTestCase(TestCase):
         self.create_boxer_identification_data()
         response = self.client.get(reverse('boxer_identification_detail',kwargs={'pk':10}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNotNone(response.data['nike_name'])
+        self.assertIsNotNone(response.data['nick_name'])
         self.assertIsNotNone(response.data['mobile'])
         self.assertIsNotNone(response.data['birthday'])
         self.assertIsNotNone(response.data['weight'])
