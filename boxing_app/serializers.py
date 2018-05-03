@@ -29,7 +29,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     @atomic
     def update(self, instance, validated_data):
 
-        identification_addition_data =validated_data.pop('boxer_identification_additional')
+        identification_addition_data = validated_data.pop('boxer_identification_additional')
 
         [setattr(instance, key, value) for key, value in validated_data.items()]
         instance.authentication_state = constants.BOXER_AUTHENTICATION_STATE_WAITING

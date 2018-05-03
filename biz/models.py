@@ -161,8 +161,8 @@ class Message(SoftDeleteModel):
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
     real_name = models.CharField(max_length=10)
-    height = models.IntegerField()
-    weight = models.IntegerField()
+    height = models.IntegerField()  # 单位：cm
+    weight = models.IntegerField()  # 单位：g
     birthday = models.DateField()
     identity_number = models.CharField(max_length=18)
     mobile = models.CharField(max_length=11)
