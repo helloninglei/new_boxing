@@ -73,7 +73,7 @@ class PropertyChangeLog(BaseModel):
     last_amount = models.IntegerField(default=0)  # 变动前额度
     change_amount = models.IntegerField(default=0)  # 变动额度
     remain_amount = models.IntegerField(default=0)  # 变动后额度
-    operator = models.CharField(null=True, max_length=20)  # 操作人
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, default=None)  # 操作人
     remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
