@@ -37,7 +37,6 @@ class BoxerIdentificationTestCase(APITestCase):
         identification_addition = BoxerMediaAdditional.objects.filter(boxer_identification=identification).first()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIsNotNone(identification)
 
         for key in post_data:
             if key == 'birthday':
@@ -79,7 +78,7 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertIsNotNone(fake_user_identification)
         self.assertIsNotNone(fake_user_addition)
 
-        for key in post_data :
+        for key in post_data:
             if key == 'birthday':
                 self.assertEqual(getattr(fake_user_identification, key), datetime.date(2018, 4, 25))
             elif key == 'boxer_identification_additional':
@@ -90,9 +89,9 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(fake_user_addition.all().count(), len(post_data['boxer_identification_additional']))
         for count in range(fake_user_addition.all().count()):
             self.assertEqual(fake_user_addition.all()[count].media_url,
-                             post_data['boxer_identification_additional'][count]['media_url'])
+                             post_data['boxer_identification_additional'][count].get('media_url'))
             self.assertEqual(fake_user_addition.all()[count].media_type,
-                             post_data['boxer_identification_additional'][count]['media_type'])
+                             post_data['boxer_identification_additional'][count].get('media_type'))
 
     def test_create_identification_faild(self):
         post_data_without_real_name = {
@@ -123,12 +122,11 @@ class BoxerIdentificationTestCase(APITestCase):
             "boxer_identification_additional": []
         }
 
-
         response1 = self.client.post(reverse('boxer_identification'), data=post_data_without_real_name)
-        self.assertEqual(response1.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response1.status_code, status.HTTP_400_BAD_REQUEST)
 
         response2 = self.client.post(reverse('boxer_identification'), data=post_data_mobile_invalid)
-        self.assertEqual(response2.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_identification_with_addition_faild(self):
         post_data = {
@@ -143,29 +141,31 @@ class BoxerIdentificationTestCase(APITestCase):
             "job": 'hhh',
             "introduction": "beautiful",
             "experience": '',
-            "boxer_identification_additional": [{"media_url":"http://img1.com","media_type": 'hhh'},
-                                                {"media_url": "http://img2.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
-                                                {"media_url": "http://img3.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
+            "boxer_identification_additional": [{"media_url": "http://img1.com", "media_type": 'hhh'},
+                                                {"media_url": "http://img2.com",
+                                                 "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
+                                                {"media_url": "http://img3.com",
+                                                 "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
         response = self.client.post(reverse('boxer_identification'),
                                     data=json.dumps(post_data), content_type='application/json')
-        self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         identification = BoxerIdentification.objects.filter(user=self.fake_user).first()
         self.assertIsNone(identification)
 
     def test_retrieve_identification(self):
         boxer_dentity = BoxerIdentification.objects.create(real_name='张三',
                                                            user=self.fake_user,
-                                                            height=190,
-                                                            weight=70,
-                                                            birthday="2018-04-25",
-                                                            identity_number='111111111111111',
-                                                            mobile='111111111',
-                                                            is_professional_boxer=True,
-                                                            club='111',
-                                                            job='hhh',
-                                                            introduction='hhh')
+                                                           height=190,
+                                                           weight=70,
+                                                           birthday="2018-04-25",
+                                                           identity_number='111111111111111',
+                                                           mobile='111111111',
+                                                           club='111',
+                                                           job='hhh',
+                                                           introduction='hhh',
+                                                           is_professional_boxer=True)
 
         boxer_dentity_addition = BoxerMediaAdditional.objects.create(boxer_identification=boxer_dentity,
                                                                      media_url='http://img1.com',
@@ -173,9 +173,7 @@ class BoxerIdentificationTestCase(APITestCase):
 
         response = self.client.get(reverse('boxer_identification'))
 
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
-
-
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['real_name'], boxer_dentity.real_name)
         self.assertEqual(response.data['height'], boxer_dentity.height)
         self.assertEqual(response.data['weight'], boxer_dentity.weight)
@@ -183,9 +181,10 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(response.data['identity_number'], boxer_dentity.identity_number)
         self.assertEqual(response.data['is_professional_boxer'], boxer_dentity.is_professional_boxer)
         self.assertEqual(response.data['club'], boxer_dentity.club)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],boxer_dentity_addition.media_type)
-        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'], boxer_dentity_addition.media_url)
-
+        self.assertEqual(response.data['boxer_identification_additional'][0]['media_type'],
+                         boxer_dentity_addition.media_type)
+        self.assertEqual(response.data['boxer_identification_additional'][0]['media_url'],
+                         boxer_dentity_addition.media_url)
 
     def test_update_identification(self):
         boxer_dentity = BoxerIdentification.objects.create(real_name='张三',
@@ -223,28 +222,31 @@ class BoxerIdentificationTestCase(APITestCase):
                                                  "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
-        response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
-        self.assertEqual(response.status_code,status.HTTP_400_BAD_REQUEST)
+        response = self.client.put(reverse('boxer_identification'),
+                                   data=json.dumps(update_data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data.get('message'), "存在待审核的认证信息，不能修改")
-
 
         boxer_dentity.authentication_state = constants.BOXER_AUTHENTICATION_STATE_APPROVED
         boxer_dentity.save()
 
-        response = self.client.put(reverse('boxer_identification'),data=json.dumps(update_data),content_type='application/json')
-        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        response = self.client.put(reverse('boxer_identification'),
+                                   data=json.dumps(update_data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.fake_user = User.objects.get(pk=self.fake_user.pk)
         fake_user_addition = self.fake_user.boxer_identification.boxer_identification_additional
 
         for key in update_data:
             if key == 'birthday':
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), datetime.date(2018, 4, 25))
-            elif key =='boxer_identification_additional':
+            elif key == 'boxer_identification_additional':
                 pass
             else:
-                self.assertEqual(getattr(self.fake_user.boxer_identification,key), update_data[key])
+                self.assertEqual(getattr(self.fake_user.boxer_identification, key), update_data[key])
 
-        self.assertEqual(fake_user_addition.all().count(),len(update_data['boxer_identification_additional']))
+        self.assertEqual(fake_user_addition.all().count(), len(update_data['boxer_identification_additional']))
         for count in range(fake_user_addition.all().count()):
-            self.assertEqual(fake_user_addition.all()[count].media_url, update_data['boxer_identification_additional'][count]['media_url'])
-            self.assertEqual(fake_user_addition.all()[count].media_type, update_data['boxer_identification_additional'][count]['media_type'])
+            self.assertEqual(fake_user_addition.all()[count].media_url,
+                             update_data['boxer_identification_additional'][count].get('media_url'))
+            self.assertEqual(fake_user_addition.all()[count].media_type,
+                             update_data['boxer_identification_additional'][count].get('media_type'))
