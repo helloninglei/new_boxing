@@ -37,7 +37,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         instance.save()
 
         models.BoxerMediaAdditional.objects.filter(boxer_identification=instance).delete()
-        self.create_addition(instance,identification_addition_data)
+        self.create_addition(instance, identification_addition_data)
 
         return instance
 
@@ -89,6 +89,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'count': latest.count(),
             'results': BasicReplySerializer(latest,  many=True).data
         }
+
     class Meta:
         model = models.Comment
         fields = ['id', 'content', 'user', 'replies']

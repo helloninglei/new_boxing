@@ -32,11 +32,11 @@ class BoxerIdentificationTestCase(APITestCase):
                     "experience": '',
                     "boxer_identification_additional": []
                 }
-        response = self.client.post(reverse('boxer_identification'),data=post_data)
+        response = self.client.post(reverse('boxer_identification'), data=post_data)
         identification = BoxerIdentification.objects.filter(user=self.fake_user).first()
         identification_addition = BoxerMediaAdditional.objects.filter(boxer_identification=identification).first()
 
-        self.assertEqual(response.status_code,status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIsNotNone(identification)
 
         for key in post_data:
@@ -44,7 +44,7 @@ class BoxerIdentificationTestCase(APITestCase):
                 self.assertEqual(getattr(identification, key).strftime(format("%Y-%m-%d")), post_data[key])
             elif key == 'boxer_identification_additional':
                 pass
-            else :
+            else:
                 self.assertEqual(getattr(identification, key), post_data[key])
         self.assertIsNone(identification_addition)
 
@@ -58,12 +58,15 @@ class BoxerIdentificationTestCase(APITestCase):
             "mobile": "113134",
             "is_professional_boxer": True,
             "club": "131ef2f3",
-            "job":'hhh',
+            "job": 'hhh',
             "introduction": "beautiful",
             "experience": '',
-            "boxer_identification_additional": [{"media_url":"http://img1.com","media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
-                                                {"media_url": "http://img2.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
-                                                {"media_url": "http://img3.com", "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
+            "boxer_identification_additional": [{"media_url": "http://img1.com",
+                                                 "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
+                                                {"media_url": "http://img2.com",
+                                                 "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR},
+                                                {"media_url": "http://img3.com",
+                                                 "media_type": constants.IMAGE_CERTIFICATE_OF_HONOR}
                                                 ]
         }
         response = self.client.post(reverse('boxer_identification'),
@@ -71,24 +74,25 @@ class BoxerIdentificationTestCase(APITestCase):
 
         fake_user_identification = self.fake_user.boxer_identification
         fake_user_addition = self.fake_user.boxer_identification.boxer_identification_additional
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         self.assertIsNotNone(fake_user_identification)
         self.assertIsNotNone(fake_user_addition)
 
-        for key in post_data:
+        for key in post_data :
             if key == 'birthday':
                 self.assertEqual(getattr(fake_user_identification, key), datetime.date(2018, 4, 25))
-            elif key =='boxer_identification_additional':
+            elif key == 'boxer_identification_additional':
                 pass
             else:
-                self.assertEqual(getattr(fake_user_identification,key), post_data[key])
+                self.assertEqual(getattr(fake_user_identification, key), post_data[key])
 
-        self.assertEqual(fake_user_addition.all().count(),len(post_data['boxer_identification_additional']))
+        self.assertEqual(fake_user_addition.all().count(), len(post_data['boxer_identification_additional']))
         for count in range(fake_user_addition.all().count()):
-            self.assertEqual(fake_user_addition.all()[count].media_url, post_data['boxer_identification_additional'][count]['media_url'])
-            self.assertEqual(fake_user_addition.all()[count].media_type, post_data['boxer_identification_additional'][count]['media_type'])
+            self.assertEqual(fake_user_addition.all()[count].media_url,
+                             post_data['boxer_identification_additional'][count]['media_url'])
+            self.assertEqual(fake_user_addition.all()[count].media_type,
+                             post_data['boxer_identification_additional'][count]['media_type'])
 
     def test_create_identification_faild(self):
         post_data_without_real_name = {
