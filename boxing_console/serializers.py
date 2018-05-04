@@ -15,8 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(format='%Y-%m-%d %H-%M-%S')
     user_basic_info = serializers.SerializerMethodField()
 
-    @staticmethod
-    def get_user_basic_info(instance):
+    def get_user_basic_info(self, instance):
         if hasattr(instance, 'user_profile'):
             return UserProfileSerializer(instance.user_profile).data
 
@@ -83,7 +82,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('lock_state',)
 
-    @staticmethod
-    def get_nick_name(obj):
+    def get_nick_name(self, obj):
         has_profile = hasattr(obj.user, 'user_profile')
         return obj.user.user_profile.nick_name if has_profile else None
