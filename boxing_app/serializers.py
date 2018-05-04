@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-
 from rest_framework import serializers
-from biz import models
-from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
+from biz import models
+from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 
 
 class DiscoverUserField(serializers.RelatedField):
