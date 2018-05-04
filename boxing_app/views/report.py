@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from biz.models import Message
 from rest_framework import viewsets
+from biz.models import Message
 from boxing_app.serializers import ReportSerializer
 
 

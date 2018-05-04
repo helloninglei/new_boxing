@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
-from biz.models import User
-from biz.models import Report
 from rest_framework import status
+from biz.models import User
 from biz.constants import DISCOVER_MESSAGE_REPORT_CHOICES
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 
