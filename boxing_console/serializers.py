@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CoinMoneyBaseSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'), required=False)
-    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    operator =  serializers.PrimaryKeyRelatedField(read_only=True)
 
     def create(self, validated_data):
         model_class = self.Meta.model

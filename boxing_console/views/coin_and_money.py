@@ -11,6 +11,9 @@ class MoneyChangeLogViewSet(mixins.CreateModelMixin,
     serializer_class = MoneyLogSerializer
     queryset = MoneyChangeLog.objects.all()
 
+    def perform_create(self, serializer):
+        serializer.save(operator=self.request.user)
+
 
 class CoinChangLogViewSet(mixins.CreateModelMixin,
                           mixins.ListModelMixin,
@@ -22,5 +25,8 @@ class CoinChangLogViewSet(mixins.CreateModelMixin,
     def list(self, request, *args, **kwargs):
         self.queryset = self.queryset.filter(user=request.user.pk)
         return super(CoinChangLogViewSet, self).list(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(operator=self.request.user)
 
 
