@@ -6,3 +6,4 @@ PyMySQL==0.8.0
 pytz==2018.4
 redis==2.10.6
 oss2==2.4.0
+http://ytx-sdk.oss-cn-shanghai.aliyuncs.com/dysms_python.zip\?spm\=a2c4g.11186623.2.6.NYHX5e\&file\=dysms_python.zip

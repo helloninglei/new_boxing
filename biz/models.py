@@ -180,3 +180,15 @@ class Comment(SoftDeleteModel):
     def to_user(self):
         if not self.parent.is_deleted and self.parent.id != self.ancestor_id:
             return self.parent.user
+
+
+class SmsLog(models.Model):
+    mobile = models.CharField(max_length=11)
+    template_code = models.CharField(max_length=30)
+    content = models.CharField(max_length=255)
+    created_time = models.DateTimeField(auto_now_add=True)
+    result = models.CharField(max_length=512)
+    business_id = models.CharField(max_length=36)
+
+    class Meta:
+        db_table = 'sms_log'
