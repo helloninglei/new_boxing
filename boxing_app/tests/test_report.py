@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User, Report
 from biz.constants import REPORT_OBJECT_DICT
-from biz.constants import DISCOVER_MESSAGE_REPORT_CHOICES
+from biz.constants import REPORT_REASON_CHOICES
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 
 
@@ -25,7 +25,7 @@ class LikeTestCase(APITestCase):
     def test_create_report(self):
         self.prepare()
         data = {
-            'reason': DISCOVER_MESSAGE_REPORT_CHOICES[0][0],
+            'reason': REPORT_REASON_CHOICES[0][0],
             'object_id': self.message_id,
         }
         res = self.client2.post('/messages/report', data)

@@ -222,7 +222,7 @@ class Report(models.Model):
     object_id = models.IntegerField()
     object_type = models.SmallIntegerField(db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    reason = models.SmallIntegerField(choices=constants.DISCOVER_MESSAGE_REPORT_CHOICES)
+    reason = models.SmallIntegerField(choices=constants.REPORT_REASON_CHOICES)
     remark = models.CharField(max_length=20, null=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
