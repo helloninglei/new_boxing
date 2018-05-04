@@ -30,7 +30,6 @@ if __name__ == "__main__":
         raise
     try:
         import pymysql
-
         pymysql.install_as_MySQLdb()
     except ImportError:
         pass

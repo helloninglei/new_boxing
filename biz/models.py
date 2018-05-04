@@ -174,6 +174,7 @@ class BoxerIdentification(BaseModel):
     club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
+    lock_state = models.BooleanField(default=True)
     experience = models.TextField(null=True, blank=True, max_length=500)
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)

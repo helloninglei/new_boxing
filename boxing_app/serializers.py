@@ -18,10 +18,12 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_WAITING
         return super().update(instance, validated_data)
 
+
     class Meta:
         model = models.BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state',)
+        read_only_fields = ('authentication_state','lock_state')
+
 
 
 class DiscoverUserField(serializers.RelatedField):

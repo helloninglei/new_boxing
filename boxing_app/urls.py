@@ -41,7 +41,7 @@ upload_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
-    ]
+]
 
 urlpatterns = []
 urlpatterns += upload_urls

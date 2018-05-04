@@ -13,11 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+
 from django.urls import path
 
+from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.user_management import UserManagementViewSet
+
 
 
 urlpatterns = [
@@ -28,3 +30,12 @@ urlpatterns = [
     path('coin/change/log',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
     path("users", UserManagementViewSet.as_view({"get": "list"}))
 ]
+
+boxer_url = [
+    path('boxer/identification', BoxerIdentificationViewSet.as_view({'get':'list'}),
+        name='boxer_identification_list'),
+    path('boxer/identification/<int:pk>)', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
+        name='boxer_identification_detail'),
+]
+
+urlpatterns += boxer_url

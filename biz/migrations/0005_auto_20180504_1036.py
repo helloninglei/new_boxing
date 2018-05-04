@@ -32,6 +32,7 @@ class Migration(migrations.Migration):
                 ('introduction', models.TextField(max_length=300)),
                 ('experience', models.TextField(blank=True, max_length=500, null=True)),
                 ('authentication_state', models.CharField(choices=[('WAITING', '待审核'), ('REFUSE', '已驳回'), ('APPROVED', '已通过')], default='WAITING', max_length=10)),
+                ('lock_state', models.BooleanField(default=True)),
                 ('honor_certificate_images', biz.models.StringListField(null=True)),
                 ('competition_video', models.URLField(null=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='boxer_identification', to=settings.AUTH_USER_MODEL)),

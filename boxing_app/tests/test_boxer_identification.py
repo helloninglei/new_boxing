@@ -143,9 +143,7 @@ class BoxerIdentificationTestCase(APITestCase):
                                                            competition_video='')
 
         response = self.client.get(reverse('boxer_identification'))
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         self.assertEqual(response.data['real_name'], boxer_dentity.real_name)
         self.assertEqual(response.data['height'], boxer_dentity.height)
         self.assertEqual(response.data['weight'], boxer_dentity.weight)
