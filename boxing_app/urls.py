@@ -17,11 +17,13 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
+from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 
+boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
 discover_urls = [
     path('messages', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
@@ -37,8 +39,13 @@ upload_urls = [
     path('upload_file', upload.upload_file, name='upload'),
 ]
 
+boxer_url = [
+    path('boxer/identification', boxer_identification, name='boxer_identification'),
+    ]
+
 urlpatterns = []
 urlpatterns += upload_urls
+urlpatterns += boxer_url
 urlpatterns += discover_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

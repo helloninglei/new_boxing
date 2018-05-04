@@ -3,8 +3,7 @@ import json
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
-from biz import constants
-from biz import validator
+from biz import validator, constants
 
 
 class UserManager(BaseUserManager):
@@ -49,7 +48,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
-                              error_messages={'unique': u"手机号已存在。"})
+                              error_messages={'unique': "手机号已存在。"})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)
@@ -71,11 +70,11 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  # 变动前额度
-    change_amount = models.IntegerField(default=0)  # 变动额度
-    remain_amount = models.IntegerField(default=0)  # 变动后额度
-    operator = models.CharField(null=True, max_length=20) # 操作人
-    remarks = models.CharField(null=True, max_length=50) #备注
+    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
+    remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
         abstract = True
@@ -106,7 +105,7 @@ class CoinChangeLog(PropertyChangeLog):
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
 
     class Meta:
-        db_table = 'conin_change_log'
+        db_table = 'coin_change_log'
         ordering = ['-created_time', '-id']
 
 
@@ -160,6 +159,29 @@ class Message(SoftDeleteModel):
     class Meta:
         db_table = 'discover_message'
         ordering = ('-created_time',)
+
+
+#拳手认证
+class BoxerIdentification(BaseModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
+    real_name = models.CharField(max_length=10)
+    height = models.IntegerField()  # 单位：cm
+    weight = models.IntegerField()  # 单位：g
+    birthday = models.DateField()
+    identity_number = models.CharField(max_length=18, validators=[validator.validate_identity_number])
+    mobile = models.CharField(max_length=11, validators=[validator.validate_mobile])
+    is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
+    club = models.CharField(null=True, blank=True, max_length=50)
+    job = models.CharField(max_length=10)
+    introduction = models.TextField(max_length=300)
+    experience = models.TextField(null=True, blank=True, max_length=500)
+    authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
+    honor_certificate_images = StringListField(null=True)
+    competition_video = models.URLField(null=True)
+
+    class Meta:
+        db_table = 'boxer_identification'
 
 
 class Comment(SoftDeleteModel):
