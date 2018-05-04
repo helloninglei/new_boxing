@@ -14,18 +14,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
 
-    def validate_mobile(self, value):
-        p = re.compile(r'^1\d{10}$')
-        if p.match(value) == None:
-            raise serializers.ValidationError({"message": "手机号格式错误！"})
-        return value
-
-    def validate_identity_number(self, value):
-        p = re.compile(r'^\d{18}$')
-        if p.match(value) == None:
-            raise serializers.ValidationError({"message": "身份证号码格式错误！"})
-        return value
-
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_APPROVED
         return super().update(instance, validated_data)

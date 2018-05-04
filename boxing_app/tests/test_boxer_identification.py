@@ -65,8 +65,8 @@ class BoxerIdentificationTestCase(APITestCase):
                                     data=json.dumps(post_data), content_type='application/json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIsNotNone(response.data['mobile'].get('message'))
-        self.assertIsNotNone(response.data['identity_number'].get('message'))
+        self.assertIsNotNone(response.data['mobile'])
+        self.assertIsNotNone(response.data['identity_number'])
 
     def test_create_identification_faild(self):
         post_data_without_real_name = {
