@@ -1,5 +1,4 @@
 # coding: utf-8
-
 import oss2
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
