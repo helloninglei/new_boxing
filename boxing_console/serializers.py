@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CoinMoneyBaseSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'), required=False)
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def create(self, validated_data):
         model_class = self.Meta.model
@@ -34,13 +35,11 @@ class CoinMoneyBaseSerializer(serializers.ModelSerializer):
         change_amount = validated_data['change_amount']
         last_amount = getattr(user, '{}_balance'.format(alias))
         remain_amount = last_amount + change_amount
-        operator = self.context['request'].user
 
         setattr(user, '{}_balance'.format(alias), remain_amount)
         user.save()
 
         change_log = model_class.objects.create(last_amount=last_amount,
-                                                operator=operator,
                                                 remain_amount=remain_amount,
                                                 **validated_data)
 
