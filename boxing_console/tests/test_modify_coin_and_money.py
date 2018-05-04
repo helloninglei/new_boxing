@@ -24,7 +24,7 @@ class CoinAndMoneyTestCase(TestCase):
         self.assertEqual(coin_log.last_amount, 0)
         self.assertEqual(coin_log.change_amount, 100)
         self.assertEqual(coin_log.remain_amount, 100)
-        self.assertEqual(coin_log.operator, self.fake_user1.mobile)
+        self.assertEqual(coin_log.operator, self.fake_user1)
         self.assertEqual(coin_log.change_type, constants.COIN_CHANGE_TYPE_INCREASE_RECHARGE)
 
     def test_add_coin_amount_failed(self):
@@ -51,7 +51,7 @@ class CoinAndMoneyTestCase(TestCase):
         self.assertEqual(money_log.last_amount, 0)
         self.assertEqual(money_log.change_amount, 100)
         self.assertEqual(money_log.remain_amount, 100)
-        self.assertEqual(money_log.operator, self.fake_user1.mobile)
+        self.assertEqual(money_log.operator, self.fake_user1)
         self.assertEqual(money_log.change_type, constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE)
 
     def test_add_money_failed(self):
