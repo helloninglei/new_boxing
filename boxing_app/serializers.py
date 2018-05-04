@@ -8,7 +8,7 @@ from biz import models, constants
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
     competition_video = serializers.URLField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)

@@ -35,7 +35,7 @@ class BoxerIdentificationTestCase(APITestCase):
 
                 }
         response = self.client.post(reverse('boxer_identification'), data=post_data)
-        identification = BoxerIdentification.objects.filter(user=self.fake_user).first()
+        identification = BoxerIdentification.objects.get(user=self.fake_user)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -124,8 +124,8 @@ class BoxerIdentificationTestCase(APITestCase):
         response = self.client.post(reverse('boxer_identification'),
                                     data=json.dumps(post_data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        identification = BoxerIdentification.objects.filter(user=self.fake_user).first()
-        self.assertIsNone(identification)
+        has_identification = BoxerIdentification.objects.filter(user=self.fake_user).exists()
+        self.assertFalse(has_identification)
 
     def test_retrieve_identification(self):
         boxer_dentity = BoxerIdentification.objects.create(real_name='张三',
