@@ -2,8 +2,28 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
-from biz import models
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
+
+from biz import models, constants
+
+
+class BoxerIdentificationSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
+    competition_video = serializers.URLField(required=False)
+    height = serializers.IntegerField(max_value=250, min_value=100)
+    weight = serializers.IntegerField(max_value=999)
+
+    def update(self, instance, validated_data):
+        validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_WAITING
+        return super().update(instance, validated_data)
+
+
+    class Meta:
+        model = models.BoxerIdentification
+        fields = '__all__'
+        read_only_fields = ('authentication_state','lock_state')
+
 
 
 class DiscoverUserField(serializers.RelatedField):
