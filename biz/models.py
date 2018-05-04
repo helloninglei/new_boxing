@@ -168,8 +168,8 @@ class BoxerIdentification(BaseModel):
     height = models.IntegerField()  # 单位：cm
     weight = models.IntegerField()  # 单位：g
     birthday = models.DateField()
-    identity_number = models.CharField(max_length=18)
-    mobile = models.CharField(max_length=11)
+    identity_number = models.CharField(max_length=18, validators=[validator.validate_identity_number])
+    mobile = models.CharField(max_length=11, validators=[validator.validate_mobile])
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
     club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
