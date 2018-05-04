@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
@@ -21,6 +21,8 @@ from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
+
+from biz.constants import REPORT_OBJECT_TYPE_LIST
 
 
 discover_urls = [
@@ -37,9 +39,15 @@ upload_urls = [
     path('upload_file', upload.upload_file, name='upload'),
 ]
 
+report_object_string = '|'.join(REPORT_OBJECT_TYPE_LIST)
+report_urls = [
+    re_path(r'^report/(?P<object_type>(' + report_object_string + '))$', report.ReportViewSet.as_view({'post': 'create', 'get': 'list'}), name='report')
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += discover_urls
+urlpatterns += report_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

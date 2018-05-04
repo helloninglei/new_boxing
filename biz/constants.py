@@ -69,3 +69,10 @@ DISCOVER_MESSAGE_REPORT_CHOICES = (
     (6, '垃圾广告'),
     (DISCOVER_MESSAGE_REPORT_OTHER_REASON, '其他'),
 )
+
+REPORT_OBJECT_TYPE = (
+    (1, 'message'),
+    (2, 'comment')
+)
+
+REPORT_OBJECT_TYPE_LIST = (i[1] for i in REPORT_OBJECT_TYPE)
