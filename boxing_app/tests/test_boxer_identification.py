@@ -195,10 +195,14 @@ class BoxerIdentificationTestCase(APITestCase):
 
         response = self.client.put(reverse('boxer_identification'),
                                    data=json.dumps(update_data), content_type='application/json')
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.fake_user = User.objects.get(pk=self.fake_user.pk)
         for key in update_data:
             if key == 'birthday':
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), datetime.date(2018, 4, 25))
+            elif key == 'authentication_state':
+                self.assertEqual(response.data['authentication_state'], constants.BOXER_AUTHENTICATION_STATE_WAITING)
+
             else:
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), update_data[key])

@@ -15,7 +15,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     weight = serializers.IntegerField(max_value=999)
 
     def update(self, instance, validated_data):
-        validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_APPROVED
+        validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_WAITING
         return super().update(instance, validated_data)
 
     class Meta:
