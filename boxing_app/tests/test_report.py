@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User
+from biz.models import User, Report
+from biz.constants import REPORT_OBJECT_DICT
 from biz.constants import DISCOVER_MESSAGE_REPORT_CHOICES
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 
@@ -24,18 +25,22 @@ class LikeTestCase(APITestCase):
     def test_create_report(self):
         self.prepare()
         data = {
-            'reason': DISCOVER_MESSAGE_REPORT_CHOICES[0][0]
+            'reason': DISCOVER_MESSAGE_REPORT_CHOICES[0][0],
+            'object_id': self.message_id,
         }
-        res = self.client2.post('/messages/%s/report' % self.message_id, data)
+        res = self.client2.post('/messages/report', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        obj = Report.objects.get(id=res.data['object_id'])
+        self.assertEqual(REPORT_OBJECT_DICT['message'], obj.object_type)
 
         data = {
+            'object_id': self.message_id,
             'reason': DISCOVER_MESSAGE_REPORT_OTHER_REASON
         }
 
-        res = self.client2.post('/messages/%s/report' % self.message_id, data)
+        res = self.client2.post('/messages/report', data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         data['remark'] = 'test'
-        res = self.client2.post('/messages/%s/report' % self.message_id, data)
+        res = self.client2.post('/messages/report', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
