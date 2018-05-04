@@ -19,8 +19,8 @@ region_provider.add_endpoint(PRODUCT_NAME, REGION, DOMAIN)
 
 SMS_TEMPLATES = {
     "verifyCode": {
-        "code": "SMS_133964012",
-        "text": "尊敬的用户，您的验证码是：{code}。请勿泄露给他人！",
+        "code": "SMS_134110376",
+        "text": "您的验证码：{code}，您正进行身份验证，打死不告诉别人！",
     }
 }
 
