@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from biz import models
-from rest_framework import viewsets
+from rest_framework.viewsets import mixins, GenericViewSet
 from boxing_app.serializers import ReportSerializer
 from biz.constants import REPORT_OBJECT_DICT
 
 
-class ReportViewSet(viewsets.ModelViewSet):
+class ReportViewSet(mixins.CreateModelMixin, GenericViewSet):
     serializer_class = ReportSerializer
-    queryset = models.Report.objects.all()
 
     def perform_create(self, serializer):
         object_type = self.kwargs['object_type']

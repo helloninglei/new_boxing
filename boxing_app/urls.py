@@ -33,7 +33,6 @@ discover_urls = [
     path('messages/<int:message_id>/comments', comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
     path('messages/<int:message_id>/comments/<int:pk>', comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
     path('messages/<int:message_id>/like', like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
-    path('messages/<int:message_id>/report', report.ReportViewSet.as_view({'post': 'create'}), name='message-report'),
 ]
 
 upload_urls = [
@@ -42,7 +41,7 @@ upload_urls = [
 
 report_object_string = '|'.join(REPORT_OBJECT_DICT.keys())
 report_urls = [
-    re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string), report.ReportViewSet.as_view({'post': 'create', 'get': 'list'}), name='report')
+    re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string), report.ReportViewSet.as_view({'post': 'create'}), name='report')
 ]
 
 boxer_url = [
