@@ -70,10 +70,10 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  # 变动前额度
-    change_amount = models.IntegerField(default=0)  # 变动额度
-    remain_amount = models.IntegerField(default=0)  # 变动后额度
-    operator = models.ForeignKey(User, on_delete=models.PROTECT, default=None)  # 操作人
+    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
     remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
