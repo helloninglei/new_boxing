@@ -28,8 +28,15 @@ class CoinAndMoneyTestCase(TestCase):
         search_nick_name_res = self.client.get(reverse('boxer_identification_list'),data={'search': nick_name})
         self.assertEqual(search_nick_name_res.data['count'], 1)
 
+        search_nick_name_fail_res = self.client.get(reverse('boxer_identification_list'),data={'search': '张三'})
+        self.assertEqual(search_nick_name_fail_res.data['count'], 0)
+
         search_real_name_res = self.client.get(reverse('boxer_identification_list'), data={'search': real_name})
         self.assertEqual(search_real_name_res.data['count'], 1)
+        search_real_name_fail_res = self.client.get(reverse('boxer_identification_list'), data={'search': '李四'})
+        self.assertEqual(search_real_name_fail_res.data['count'], 0)
+
+
 
     def test_get_boxer_identification_detail(self):
         identification_data = {
