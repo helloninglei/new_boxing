@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 from django.db import models
-from django.core import exceptions
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import constants
@@ -70,6 +69,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+
 class PropertyChangeLog(BaseModel):
     last_amount = models.IntegerField(default=0)  # 变动前额度
     change_amount = models.IntegerField(default=0)  # 变动额度
@@ -135,6 +135,7 @@ class SoftDeleteManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_deleted=False)
 
+
 class SoftDeleteModel(models.Model):
     objects = SoftDeleteManager()
 
@@ -144,6 +145,7 @@ class SoftDeleteModel(models.Model):
     def soft_delete(self):
         self.is_deleted = True
         self.save()
+
 
 # 动态
 class Message(SoftDeleteModel):
@@ -182,6 +184,29 @@ class Comment(SoftDeleteModel):
             return self.parent.user
 
 
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='likes')
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'discover_like'
+        unique_together = ('user', 'message',)
+        ordering = ('-created_time',)
+
+
+class Report(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    reason = models.SmallIntegerField(choices=constants.DISCOVER_MESSAGE_REPORT_CHOICES)
+    remark = models.CharField(max_length=20, null=True)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='+')
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'discover_report'
+        ordering = ('-created_time',)
+
+
 class SmsLog(models.Model):
     mobile = models.CharField(max_length=11)
     template_code = models.CharField(max_length=30)
@@ -192,3 +217,4 @@ class SmsLog(models.Model):
 
     class Meta:
         db_table = 'sms_log'
+        ordering = ("-created_time",)

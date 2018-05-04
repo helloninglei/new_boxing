@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
-from biz.models import User, UserProfile
 from rest_framework import status
+from biz.models import User
 
 
 class CommentTestCase(APITestCase):
