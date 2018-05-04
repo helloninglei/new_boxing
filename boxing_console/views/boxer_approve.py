@@ -5,9 +5,7 @@ from biz.models import BoxerIdentification
 from boxing_console.serializers import BoxerIdentificationSerializer
 
 
-class BoxerIdentificationViewSet(mixins.ListModelMixin,
-                              mixins.RetrieveModelMixin,
-                              viewsets.GenericViewSet):
+class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     permission_classes = (permissions.AllowAny,)
     serializer_class = BoxerIdentificationSerializer

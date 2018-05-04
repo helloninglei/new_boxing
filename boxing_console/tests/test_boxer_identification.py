@@ -26,58 +26,35 @@ class CoinAndMoneyTestCase(TestCase):
         self.assertEqual(list_res.data['count'],self.identification_count)
 
         search_nick_name_res = self.client.get(reverse('boxer_identification_list'),data={'search': nick_name})
-        self.assertEqual(search_nick_name_res.data['count'],1)
-        search_result = search_nick_name_res.data['results'][0]
-        self.assertEqual(search_result.get('real_name'), get_by_nick_name.real_name)
-        self.assertEqual(search_result.get('height'), get_by_nick_name.height)
-        self.assertEqual(search_result.get('weight'), get_by_nick_name.weight)
-        self.assertEqual(search_result.get('birthday'), get_by_nick_name.birthday.strftime(format("%Y-%m-%d")))
-        self.assertEqual(search_result.get('is_professional_boxer'), get_by_nick_name.is_professional_boxer)
-        self.assertEqual(search_result.get('club'), get_by_nick_name.club)
-        self.assertEqual(search_result.get('job'), get_by_nick_name.job)
-        self.assertEqual(search_result.get('introduction'), get_by_nick_name.introduction)
-        self.assertEqual(search_result.get('lock_state'), get_by_nick_name.lock_state)
-        self.assertEqual(search_result.get('experience'), get_by_nick_name.experience)
-        self.assertEqual(search_result.get('authentication_state'), get_by_nick_name.authentication_state)
-        self.assertEqual(search_result.get('honor_certificate_images'), get_by_nick_name.honor_certificate_images)
-        self.assertEqual(search_result.get('competition_video'), get_by_nick_name.competition_video)
+        self.assertEqual(search_nick_name_res.data['count'], 1)
 
         search_real_name_res = self.client.get(reverse('boxer_identification_list'), data={'search': real_name})
-        self.assertEqual(search_real_name_res.data['count'],1)
-        search_result = search_real_name_res.data['results'][0]
-        self.assertEqual(search_result.get('real_name'), get_by_nick_name.real_name)
-        self.assertEqual(search_result.get('height'), get_by_nick_name.height)
-        self.assertEqual(search_result.get('weight'), get_by_nick_name.weight)
-        self.assertEqual(search_result.get('birthday'), get_by_nick_name.birthday.strftime(format("%Y-%m-%d")))
-        self.assertEqual(search_result.get('is_professional_boxer'), get_by_nick_name.is_professional_boxer)
-        self.assertEqual(search_result.get('club'), get_by_nick_name.club)
-        self.assertEqual(search_result.get('job'), get_by_nick_name.job)
-        self.assertEqual(search_result.get('introduction'), get_by_nick_name.introduction)
-        self.assertEqual(search_result.get('lock_state'), get_by_nick_name.lock_state)
-        self.assertEqual(search_result.get('experience'), get_by_nick_name.experience)
-        self.assertEqual(search_result.get('authentication_state'), get_by_nick_name.authentication_state)
-        self.assertEqual(search_result.get('honor_certificate_images'), get_by_nick_name.honor_certificate_images)
-        self.assertEqual(search_result.get('competition_video'), get_by_nick_name.competition_video)
+        self.assertEqual(search_real_name_res.data['count'], 1)
 
     def test_get_boxer_identification_detail(self):
-        self.create_boxer_identification_data()
-        list_res = self.client.get(reverse('boxer_identification_list'))
-        pk = list_res.data['results'][-1].get('id')
-        identification = BoxerIdentification.objects.get(pk=pk)
-        response = self.client.get(reverse('boxer_identification_detail',kwargs={'pk':pk}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['nick_name'], identification.user.user_profile.nick_name)
-        self.assertEqual(response.data['mobile'], identification.mobile)
-        self.assertEqual(response.data['birthday'], identification.birthday.strftime(format("%Y-%m-%d")))
-        self.assertEqual(response.data['weight'], identification.weight)
-        self.assertEqual(response.data['identity_number'], identification.identity_number)
-        self.assertEqual(response.data['job'], identification.job)
-        self.assertEqual(response.data['introduction'], identification.introduction)
-        self.assertEqual(response.data['lock_state'], identification.lock_state)
-        self.assertEqual(response.data['experience'], identification.experience)
-        self.assertEqual(response.data['authentication_state'], identification.authentication_state)
-
-
+        identification_data = {
+                                "user": self.fake_user1,
+                                "real_name": "张三",
+                                "height": 190,
+                                "weight": 120,
+                                "birthday": "2018-04-25",
+                                "identity_number": "131313141444141444",
+                                "mobile": "11313131344",
+                                "is_professional_boxer": True,
+                                "club": "131ef2f3",
+                                "job": 'hhh',
+                                "introduction": "beautiful",
+                                "experience": '',
+                                "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+                                "competition_video": 'https://baidu.com'
+                            }
+        identification_detail = BoxerIdentification.objects.create(**identification_data)
+        response = self.client.get(reverse('boxer_identification_detail',kwargs={'pk':identification_detail.pk}))
+        for key in identification_data.keys():
+            if key == 'user':
+                self.assertEqual(response.data[key], self.fake_user1.pk)
+            else:
+                self.assertEqual(response.data[key], identification_data[key])
 
     def create_boxer_identification_data(self):
         user_list = [User.objects.create_user(mobile=13000000000 + int('%d' % i),password='123')
