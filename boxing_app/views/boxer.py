@@ -18,3 +18,6 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         if instance.authentication_state == constants.BOXER_AUTHENTICATION_STATE_WAITING:
             return Response({"message": "存在待审核的认证信息，不能修改"}, status=status.HTTP_400_BAD_REQUEST)
         return super().update(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
