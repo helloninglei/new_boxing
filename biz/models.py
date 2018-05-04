@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
 from django.db import models
-from django.core import exceptions
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from biz import validator, constants
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -48,7 +48,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
-                              error_messages={'unique': u"手机号已存在。"})
+                              error_messages={'unique': "手机号已存在。"})
     weibo_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)
@@ -68,12 +68,13 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  # 变动前额度
-    change_amount = models.IntegerField(default=0)  # 变动额度
-    remain_amount = models.IntegerField(default=0)  # 变动后额度
-    operator = models.CharField(null=True, max_length=20) # 操作人
-    remarks = models.CharField(null=True, max_length=50) #备注
+    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
+    remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
         abstract = True
@@ -104,7 +105,7 @@ class CoinChangeLog(PropertyChangeLog):
                                    choices=constants.COIN_CHANGE_TYPE_CHOICES)
 
     class Meta:
-        db_table = 'conin_change_log'
+        db_table = 'coin_change_log'
         ordering = ['-created_time', '-id']
 
 
@@ -133,6 +134,7 @@ class SoftDeleteManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_deleted=False)
 
+
 class SoftDeleteModel(models.Model):
     objects = SoftDeleteManager()
 
@@ -142,6 +144,7 @@ class SoftDeleteModel(models.Model):
     def soft_delete(self):
         self.is_deleted = True
         self.save()
+
 
 # 动态
 class Message(SoftDeleteModel):
@@ -162,38 +165,30 @@ class Message(SoftDeleteModel):
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
     real_name = models.CharField(max_length=10)
-    height = models.IntegerField()
-    weight = models.IntegerField()
-    birthday = models.DateTimeField()
-    identity_number = models.CharField(max_length=18)
-    mobile = models.CharField(max_length=11)
+    height = models.IntegerField()  # 单位：cm
+    weight = models.IntegerField()  # 单位：g
+    birthday = models.DateField()
+    identity_number = models.CharField(max_length=18, validators=[validator.validate_identity_number])
+    mobile = models.CharField(max_length=11, validators=[validator.validate_mobile])
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
     club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
-    experience = models.TextField(null=True,blank=True,max_length=500)
-    approve_state = models.CharField(max_length=10,default=constants.BOXER_APPROVE_STATE_WAITING,
-                                            choices=constants.BOXER_APPROVE_STATE_CHOICE)
-    lock_state = models.BooleanField(default=False )
+    lock_state = models.BooleanField(default=True)
+    experience = models.TextField(null=True, blank=True, max_length=500)
+    authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
+    honor_certificate_images = StringListField(null=True)
+    competition_video = models.URLField(null=True)
 
     class Meta:
         db_table = 'boxer_identification'
 
 
-class BoxerMediaAdditional(BaseModel):
-    boxer_identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE,
-                                             related_name='boxer_identification_additional')
-    media_url = models.CharField(max_length=255)
-    media_type = models.CharField(choices=constants.MEDIA_TYPE_CHOICES, max_length=30)
-
-    class Meta:
-        db_table = 'boxer_identification_additional'
-
-
 class IdentificationOperateLog(BaseModel):
     identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='operate_log')
     operator = models.ForeignKey(User,null=True, on_delete=models.DO_NOTHING, related_name='operate_log')
-    approve_state = models.CharField(null=True, blank=True, max_length=10, choices=constants.BOXER_APPROVE_STATE_CHOICE)
+    approve_state = models.CharField(null=True, blank=True, max_length=10, choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
     lock_state = models.BooleanField(default=False)
     operator_comment = models.CharField(null=True, blank=True, max_length=255)
 
@@ -221,3 +216,26 @@ class Comment(SoftDeleteModel):
     def to_user(self):
         if not self.parent.is_deleted and self.parent.id != self.ancestor_id:
             return self.parent.user
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='likes')
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'discover_like'
+        unique_together = ('user', 'message',)
+        ordering = ('-created_time',)
+
+
+class Report(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    reason = models.SmallIntegerField(choices=constants.DISCOVER_MESSAGE_REPORT_CHOICES)
+    remark = models.CharField(max_length=20, null=True)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='+')
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'discover_report'
+        ordering = ('-created_time',)
