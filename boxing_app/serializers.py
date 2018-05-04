@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import re
-
 from rest_framework import serializers
 from django.forms.models import model_to_dict
+from rest_framework.exceptions import ValidationError
+from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 
 from biz import models, constants
 
@@ -39,10 +39,14 @@ class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.URLField(), required=False)
     video = serializers.URLField(required=False)
     user = DiscoverUserField(read_only=True)
+    like_count = serializers.IntegerField(read_only=True)
+    comment_count = serializers.IntegerField(read_only=True)
+    is_like = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = models.Message
-        fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
+        fields = ['id', 'content', 'images', 'video', 'created_time', 'user', 'like_count', 'comment_count', 'is_like']
+
 
 class BasicReplySerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
@@ -67,3 +71,22 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comment
         fields = ['id', 'content', 'user', 'replies']
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    user = DiscoverUserField(read_only=True)
+
+    class Meta:
+        model = models.Like
+        fields = ['user', 'created_time']
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        if data['reason'] == DISCOVER_MESSAGE_REPORT_OTHER_REASON and not data.get('remark'):
+            raise ValidationError({'remark': ['举报理由是必填项']})
+        return data
+
+    class Meta:
+        model = models.Report
+        fields = ['reason', 'remark']

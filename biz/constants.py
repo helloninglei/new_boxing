@@ -66,3 +66,15 @@ MONEY_CHANGE_TYPE_CHOICES = (
     (MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO, '付费视频'),
     (MONEY_CHANGE_TYPE_REDUCE_SIGN_UP, '报名'),
 )
+
+DISCOVER_MESSAGE_REPORT_OTHER_REASON = 7
+
+DISCOVER_MESSAGE_REPORT_CHOICES = (
+    (1, '淫秽色情'),
+    (2, '赌博诈骗'),
+    (3, '恐怖暴力'),
+    (4, '违法信息'),
+    (5, '诽谤辱骂'),
+    (6, '垃圾广告'),
+    (DISCOVER_MESSAGE_REPORT_OTHER_REASON, '其他'),
+)
