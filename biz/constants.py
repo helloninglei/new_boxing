@@ -75,4 +75,4 @@ REPORT_OBJECT_TYPE = (
     (2, 'comment')
 )
 
-REPORT_OBJECT_TYPE_LIST = (i[1] for i in REPORT_OBJECT_TYPE)
+REPORT_OBJECT_DICT = dict([(i[1], i[0]) for i in REPORT_OBJECT_TYPE])

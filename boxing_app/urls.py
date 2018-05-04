@@ -21,8 +21,7 @@ from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
-
-from biz.constants import REPORT_OBJECT_TYPE_LIST
+from biz.constants import REPORT_OBJECT_DICT
 
 
 discover_urls = [
@@ -39,9 +38,9 @@ upload_urls = [
     path('upload_file', upload.upload_file, name='upload'),
 ]
 
-report_object_string = '|'.join(REPORT_OBJECT_TYPE_LIST)
+report_object_string = '|'.join(REPORT_OBJECT_DICT.keys())
 report_urls = [
-    re_path(r'^report/(?P<object_type>(' + report_object_string + '))$', report.ReportViewSet.as_view({'post': 'create', 'get': 'list'}), name='report')
+    re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string), report.ReportViewSet.as_view({'post': 'create', 'get': 'list'}), name='report')
 ]
 
 urlpatterns = []

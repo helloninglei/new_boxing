@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from biz import models
 from rest_framework import viewsets
-from biz.models import Message
 from boxing_app.serializers import ReportSerializer
+from biz.constants import REPORT_OBJECT_DICT
 
 
 class ReportViewSet(viewsets.ModelViewSet):
@@ -11,12 +11,10 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         object_type = self.kwargs['object_type']
-        object_id = self.kwargs['object_id']
         object_class = getattr(models, object_type.title())
-        print(object_class.objects.get(id=id))
-        message_id = self.kwargs['message_id']
+        object_class.objects.get(id=self.request.POST['object_id'])
         kwargs = {
             'user': self.request.user,
-            'message': Message.objects.get(id=message_id)
+            'object_type': REPORT_OBJECT_DICT[object_type]
         }
         serializer.save(**kwargs)
