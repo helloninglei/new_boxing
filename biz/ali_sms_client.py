@@ -19,8 +19,8 @@ region_provider.add_endpoint(PRODUCT_NAME, REGION, DOMAIN)
 
 SMS_TEMPLATES = {
     "verifyCode": {
-        "code": "SMS_92400018",
-        "text": "您的验证码：{code}，您正进行身份验证，打死不告诉别人！",
+        "code": "SMS_133964012",
+        "text": "尊敬的用户，您的验证码是：{code}。请勿泄露给他人！",
     }
 }
 
@@ -39,12 +39,6 @@ def _send_sms(business_id, mobile, template_code, template_param):
 
     # 短信签名
     sms_request.set_SignName("拳城出击")
-
-    # 数据提交方式
-    # smsRequest.set_method(MT.POST)
-
-    # 数据提交格式
-    # smsRequest.set_accept_format(FT.JSON)
 
     # 短信发送的号码列表，必填。
     sms_request.set_PhoneNumbers(mobile)
@@ -75,7 +69,7 @@ def _send_template_sms(template, mobile, content, params, ip):
 
     business_id = uuid.uuid1()
 
-    if settings.PRODUCT == settings.PRODUCTION:
+    if settings.ENVIRONMENT == settings.PRODUCTION:
         result = _send_sms(business_id, mobile, template['code'], params)
     else:
         result = 'fake result'
