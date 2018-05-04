@@ -11,7 +11,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
 
     def get_object(self):
-        return BoxerIdentification.objects.filter(user=self.request.user).first()
+        return BoxerIdentification.objects.get(user=self.request.user)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
