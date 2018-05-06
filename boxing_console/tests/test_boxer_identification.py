@@ -57,14 +57,14 @@ class CoinAndMoneyTestCase(TestCase):
     def test_boxer_identification_approve(self):
         self.create_boxer_identification_data()
 
-        self.assertEqual(BoxerIdentification.objects.last().approve_state, constants.BOXER_APPROVE_STATE_WAITING)
+        self.assertEqual(BoxerIdentification.objects.last().authentication_state, constants.BOXER_APPROVE_STATE_WAITING)
         response = self.client.post(reverse('identification_approve',kwargs={'pk':BoxerIdentification.objects.last().pk}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(BoxerIdentification.objects.last().approve_state, constants.BOXER_APPROVE_STATE_APPROVED)
+        self.assertEqual(BoxerIdentification.objects.last().authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
 
         operation_log = IdentificationOperateLog.objects.filter(identification=BoxerIdentification.objects.last()).last()
         self.assertEqual(operation_log.operator, self.fake_user1)
-        self.assertEqual(operation_log.approve_state, constants.BOXER_APPROVE_STATE_APPROVED)
+        self.assertEqual(operation_log.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
 
     def test_boxer_identification_refuse(self):
         self.create_boxer_identification_data()
@@ -72,7 +72,7 @@ class CoinAndMoneyTestCase(TestCase):
         response = self.client.post(reverse('identification_refuse', kwargs={'pk': BoxerIdentification.objects.last().pk}),
                                     data={'operator_comment':'就是拒绝了'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(BoxerIdentification.objects.last().approve_state, constants.BOXER_APPROVE_STATE_REFUSE)
+        self.assertEqual(BoxerIdentification.objects.last().authentication_state, constants.BOXER_AUTHENTICATION_STATE_REFUSE)
         operation_log = IdentificationOperateLog.objects.filter(identification=BoxerIdentification.objects.last()).last()
         self.assertEqual(operation_log.operator_comment, '就是拒绝了')
 

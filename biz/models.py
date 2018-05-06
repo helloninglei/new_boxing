@@ -70,11 +70,11 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
-    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
-    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
-    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
-    remarks = models.CharField(null=True, max_length=50)  # 备注
+    last_amount = models.IntegerField(default=0)  #变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  #变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  #变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  #操作人
+    remarks = models.CharField(null=True, max_length=50)  #备注
 
     class Meta:
         abstract = True
@@ -180,20 +180,11 @@ class BoxerIdentification(BaseModel):
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
     honor_certificate_images = StringListField(null=True)
     competition_video = models.URLField(null=True)
+    allow_lesson = StringListField(null=True, blank=True)
+    refuse_reason = models.TextField(null=True, blank=True)
 
     class Meta:
         db_table = 'boxer_identification'
-
-
-class IdentificationOperateLog(BaseModel):
-    identification = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='operate_log')
-    operator = models.ForeignKey(User,null=True, on_delete=models.DO_NOTHING, related_name='operate_log')
-    approve_state = models.CharField(null=True, blank=True, max_length=10, choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE)
-    lock_state = models.BooleanField(default=False)
-    operator_comment = models.CharField(null=True, blank=True, max_length=255)
-
-    class Meta:
-        db_table = 'identification_opeation_log'
 
 
 class Comment(SoftDeleteModel):
@@ -239,3 +230,15 @@ class Report(models.Model):
     class Meta:
         db_table = 'discover_report'
         ordering = ('-created_time',)
+
+
+class OperationLog(models.Model):
+    refer_type = models.CharField(choices=constants.OperationTarget.CHOICES, max_length=50)
+    refer_pk = models.BigIntegerField()
+    operator = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='+')
+    operation_type = models.CharField(choices=constants.OperationType.CHOICES, max_length=50, null=True)
+    timestamp = models.DateTimeField()
+    content = models.TextField()
+
+    class Meta:
+        db_table = 'operation_log'

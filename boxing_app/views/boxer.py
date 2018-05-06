@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 from biz import constants
-from biz.models import BoxerIdentification
+from biz.models import BoxerIdentification, User
 from boxing_app.serializers import BoxerIdentificationSerializer
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
+    permission_classes = (permissions.AllowAny,)
 
     def get_object(self):
         return BoxerIdentification.objects.get(user=self.request.user)
