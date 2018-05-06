@@ -88,7 +88,9 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxerIdentification
         fields = '__all__'
-        # read_only_fields = ('lock_state',)
+        read_only_fields = ('user', 'real_name', 'height', 'weight', 'birthday', 'identity_number',
+                            'mobile', 'is_professional_boxer', 'club', 'job', 'introduction', 'experience',
+                            'honor_certificate_images', 'competition_video')
 
     def get_nick_name(self, obj):
         has_profile = hasattr(obj.user, 'user_profile')

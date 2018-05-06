@@ -19,35 +19,37 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
 
     def order_lock(self, request, *args, **kwargs):
-        isinstance = self.get_object()
-        isinstance.lock_state = True
-        isinstance.save()
-        log_boxer_identification_operation(identification_id=isinstance.pk,
-                                           operator=User.objects.get(pk=1),
+        instance = self.get_object()
+        instance.lock_state = True
+        instance.save()
+        log_boxer_identification_operation(identification_id=instance.pk,
+                                           operator=request.user,
                                            operation_type=OperationType.BOXER_ORDER_LOCK,
                                            content="拳手接单状态锁定")
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def order_unlock(self, request, *args, **kwargs):
-        isinstance = self.get_object()
-        isinstance.lock_state = False
-        isinstance.save()
-        log_boxer_identification_operation(identification_id=self.get_object().pk,
-                                           operator=User.objects.get(pk=1),
+        instance = self.get_object()
+        instance.lock_state = False
+        instance.save()
+        log_boxer_identification_operation(identification_id=instance.pk,
+                                           operator=request.user,
                                            operation_type=OperationType.BOXER_ORDER_UNLOCK,
                                            content="拳手接单状态解锁")
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def approve(self, request, *args, **kwargs):
-        kwargs['authentication_state'] = OperationType.BOXER_AUTHENTICATION_APPROVED
         super().partial_update(request, *args, **kwargs)
-        log_boxer_identification_operation(self.get_object().pk, request.user, OperationType.BOXER_ORDER_LOCK, None)
-
+        log_boxer_identification_operation(identification_id=request.user,
+                                           operator=request.user,
+                                           operation_type=OperationType.BOXER_AUTHENTICATION_APPROVED,
+                                           content="拳手认证信息审核通过,可开通课程为：{}".format(request.data.get('allow_lesson')))
         return Response(reverse('boxer_identification_list'))
 
     def refuse(self, request, *args, **kwargs):
-        kwargs['authentication_state'] = OperationType.BOXER_AUTHENTICATION_REFUSE
         super().partial_update(request, *args, **kwargs)
-        log_boxer_identification_operation(self.get_object().pk, request.user, OperationType.BOXER_ORDER_LOCK,
-                                           kwargs['refuse_reason'])
+        log_boxer_identification_operation(identification_id=self.get_object().pk,
+                                           operator=User.objects.get(pk=1),
+                                           operation_type=OperationType.BOXER_AUTHENTICATION_REFUSE,
+                                           content="拳手认证信息审核失败，理由是：{}".format(request.data.get('refuse_reason')))
         return Response(reverse('boxer_identification_list'))

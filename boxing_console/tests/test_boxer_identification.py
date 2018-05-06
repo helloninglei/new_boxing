@@ -5,10 +5,10 @@ from django.urls import reverse
 from rest_framework import status
 
 from biz import constants
-from biz.models import User, BoxerIdentification, UserProfile, IdentificationOperateLog
+from biz.models import User, BoxerIdentification, UserProfile
 
 
-class CoinAndMoneyTestCase(TestCase):
+class BoxerIdentificationTestCase(TestCase):
     def setUp(self):
         self.fake_user1 = User.objects.create_user(mobile='mobile01', password='password01')
         self.fake_user2 = User.objects.create_user(mobile='mobile02', password='password02')
