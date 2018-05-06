@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.test import TestCase
@@ -5,7 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from biz import constants
-from biz.models import User, BoxerIdentification, UserProfile
+from biz.models import User, BoxerIdentification, UserProfile, OperationLog
 
 
 class BoxerIdentificationTestCase(TestCase):
@@ -37,44 +38,100 @@ class BoxerIdentificationTestCase(TestCase):
         search_real_name_fail_res = self.client.get(reverse('boxer_identification_list'), data={'search': '李四'})
         self.assertEqual(search_real_name_fail_res.data['count'], 0)
 
-    def test_boxer_identification_change_lock_state(self):
-        self.create_boxer_identification_data()
+    def test_boxer_order_state_lock_and_unlock(self):
+        identification_data = {
+            "user": self.fake_user1,
+            "real_name": "张三",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "11313131344",
+            "is_professional_boxer": True,
+            "club": "131ef2f3",
+            "job": 'hhh',
+            "introduction": "beautiful",
+            "experience": '',
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": 'https://baidu.com'
+        }
+        identification = BoxerIdentification.objects.create(**identification_data)
+        self.assertFalse(self.fake_user1.boxer_identification.lock_state)
+        self.client.post(reverse('boxer_order_lock', kwargs={'pk':identification.pk}))
+        identification = BoxerIdentification.objects.get(user=self.fake_user1)
+        self.assertTrue(identification.lock_state)
+        opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
+                                                refer_pk=identification.pk)
+        self.assertEqual(opeation_log.operator, self.fake_user1)
+        self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_ORDER_LOCK)
 
-        self.assertEqual(BoxerIdentification.objects.last().lock_state, False)
-        self.client.post(reverse('change_lock_state',kwargs={'pk':BoxerIdentification.objects.last().pk}))
-        self.assertEqual(BoxerIdentification.objects.last().lock_state, True)
+        self.client.post(reverse('boxer_order_unlock', kwargs={'pk':identification.pk}))
+        self.assertFalse(self.fake_user1.boxer_identification.lock_state)
+        opeation_log = OperationLog.objects.filter(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
+                                                   refer_pk=identification.pk)
+        self.assertEqual(opeation_log.count(), 2)
+        self.assertEqual(opeation_log.last().operation_type, constants.OperationType.BOXER_ORDER_UNLOCK)
 
-        operation_log = IdentificationOperateLog.objects.filter(identification=BoxerIdentification.objects.last()).last()
-        self.assertEqual(operation_log.operator, self.fake_user1)
-        self.assertEqual(operation_log.lock_state, True)
 
-        self.client.post(reverse('change_lock_state',kwargs={'pk':BoxerIdentification.objects.last().pk}))
-        operation_log = IdentificationOperateLog.objects.filter(identification=BoxerIdentification.objects.last()).last()
-        self.assertEqual(BoxerIdentification.objects.last().lock_state, False)
-        self.assertEqual(operation_log.operator, self.fake_user1)
-        self.assertEqual(operation_log.lock_state, False)
 
-    def test_boxer_identification_approve(self):
-        self.create_boxer_identification_data()
+    def test_boxer_identification_approve_success(self):
+        identification_data = {
+            "user": self.fake_user1,
+            "real_name": "张三",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "11313131344",
+            "is_professional_boxer": True,
+            "club": "131ef2f3",
+            "job": 'hhh',
+            "introduction": "beautiful",
+            "experience": '',
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": 'https://baidu.com'
+        }
+        identification = BoxerIdentification.objects.create(**identification_data)
 
-        self.assertEqual(BoxerIdentification.objects.last().authentication_state, constants.BOXER_APPROVE_STATE_WAITING)
-        response = self.client.post(reverse('identification_approve',kwargs={'pk':BoxerIdentification.objects.last().pk}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(BoxerIdentification.objects.last().authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
+        self.assertEqual(self.fake_user1.boxer_identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_WAITING)
+        res = self.client.post(reverse('identification_approve', kwargs={'pk':identification.pk}),
+                               data=json.dumps({'authentication_state':constants.BOXER_AUTHENTICATION_STATE_APPROVED,
+                                                'allow_lesson':['BOXING']}),
+                               content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(self.fake_user1.boxer_identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
 
-        operation_log = IdentificationOperateLog.objects.filter(identification=BoxerIdentification.objects.last()).last()
-        self.assertEqual(operation_log.operator, self.fake_user1)
-        self.assertEqual(operation_log.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
+        opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
+                                                refer_pk=identification.pk)
+        self.assertEqual(opeation_log.operator, self.fake_user1)
+        self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_APPROVED)
+
+    def test_boxer_identification_approve_failed(self):
+        identification_data = {
+            "user": self.fake_user1,
+            "real_name": "张三",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "11313131344",
+            "is_professional_boxer": True,
+            "club": "131ef2f3",
+            "job": 'hhh',
+            "introduction": "beautiful",
+            "experience": '',
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": 'https://baidu.com'
+        }
+        identification = BoxerIdentification.objects.create(**identification_data)
+
+        res = self.client.post(reverse('identification_approve', kwargs={'pk':identification.pk}),
+                               data={'authentication_state':constants.BOXER_AUTHENTICATION_STATE_APPROVED})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['allow_lesson'][0], "可开通的课程类型是必填项")
 
     def test_boxer_identification_refuse(self):
-        self.create_boxer_identification_data()
-
-        response = self.client.post(reverse('identification_refuse', kwargs={'pk': BoxerIdentification.objects.last().pk}),
-                                    data={'operator_comment':'就是拒绝了'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(BoxerIdentification.objects.last().authentication_state, constants.BOXER_AUTHENTICATION_STATE_REFUSE)
-        operation_log = IdentificationOperateLog.objects.filter(identification=BoxerIdentification.objects.last()).last()
-        self.assertEqual(operation_log.operator_comment, '就是拒绝了')
+        pass
 
     def test_get_boxer_identification_detail(self):
         identification_data = {

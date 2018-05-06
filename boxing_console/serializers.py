@@ -77,6 +77,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
     competition_video = serializers.URLField(required=False)
     nick_name = serializers.SerializerMethodField()
+    allow_lesson = serializers.ListField(child=serializers.CharField())
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and not attrs.get('refuse_reason'):
