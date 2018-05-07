@@ -238,7 +238,7 @@ class OperationLog(models.Model):
     operator = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='+', db_index=False)
     operation_type = models.CharField(choices=constants.OperationType.CHOICES, max_length=50, null=True)
     operate_time = models.DateTimeField()
-    content = models.CharField(max_length=100)
+    content = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         db_table = 'operation_log'
