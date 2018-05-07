@@ -234,5 +234,5 @@ class Course(models.Model):
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='course')
     course_name = models.CharField(choices=constants.BOXER_ALLOWED_COURSES_CHOICE, max_length=20)
     price = models.IntegerField()  # 单位：元
-    duration = models.IntegerField() # 时长，单位：min
+    duration = models.IntegerField()  # 时长，单位：min
     validity = models.DateField()  # 有效期
