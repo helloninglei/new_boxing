@@ -11,7 +11,7 @@ def log(refer_type, refer_pk, operator, operation_type, content):
         operator=operator,
         operation_type=operation_type,
         content=content,
-        timestamp=datetime.now()
+        operate_time=datetime.now()
     )
 
 

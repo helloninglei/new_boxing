@@ -80,7 +80,7 @@ DISCOVER_MESSAGE_REPORT_CHOICES = (
 )
 
 
-class OperationTarget():
+class OperationTarget:
     BOXER_IDENTIFICATION = 'BOXER_IDENTIFICATION'
 
     CHOICES = (
@@ -89,17 +89,17 @@ class OperationTarget():
     )
 
 
-class OperationType():
+class OperationType:
     BOXER_AUTHENTICATION_APPROVED = 'BOXER_AUTHENTICATION_APPROVED'
     BOXER_AUTHENTICATION_REFUSE = 'BOXER_AUTHENTICATION_REFUSE'
     BOXER_ORDER_LOCK = 'LOCK'
     BOXER_ORDER_UNLOCK = 'UNLOCK'
 
     CHOICES = (
-        (BOXER_AUTHENTICATION_APPROVED, u'拳手认证通过'),
-        (BOXER_AUTHENTICATION_REFUSE, u'拳手认证驳回'),
-        (BOXER_ORDER_LOCK, u'拳手接单状态锁定'),
-        (BOXER_ORDER_UNLOCK, u'拳手接单状态解锁'),
+        (BOXER_AUTHENTICATION_APPROVED, '拳手认证通过'),
+        (BOXER_AUTHENTICATION_REFUSE, '拳手认证驳回'),
+        (BOXER_ORDER_LOCK, '拳手接单状态锁定'),
+        (BOXER_ORDER_UNLOCK, '拳手接单状态解锁'),
     )
 
 

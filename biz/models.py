@@ -181,7 +181,7 @@ class BoxerIdentification(BaseModel):
     honor_certificate_images = StringListField(null=True)
     competition_video = models.URLField(null=True)
     allow_lesson = StringListField(null=True, blank=True)
-    refuse_reason = models.TextField(null=True, blank=True)
+    refuse_reason = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         db_table = 'boxer_identification'
@@ -237,8 +237,8 @@ class OperationLog(models.Model):
     refer_pk = models.BigIntegerField()
     operator = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='+', db_index=False)
     operation_type = models.CharField(choices=constants.OperationType.CHOICES, max_length=50, null=True)
-    timestamp = models.DateTimeField()
-    content = models.TextField()
+    operate_time = models.DateTimeField()
+    content = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'operation_log'
