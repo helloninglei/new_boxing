@@ -9,7 +9,18 @@ from boxing_app.serializers import FollowUserSerializer
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
 
+
 class BaseFollowView(APIView):
+    def get(self, request, *args, **kwargs):
+        page = int(request.query_params.get('page', 1))
+        if self.__class__.list_type == 'follower':
+            count_func, list_func = follower_count, follower_list
+        else:
+            count_func, list_func = followed_count, followed_list
+        user_id_list = list_func(request.user.id, page)
+        has_more = count_func(request.user.id) > page * PAGE_SIZE
+        return self._make_response(user_id_list, page, has_more)
+
     def post(self, request, *args, **kwargs):
         current_user_id = request.user.id
         to_follow_user_id = int(request.data['user_id'])
@@ -46,16 +57,8 @@ class UnFollowView(APIView):
 
 
 class FollowerView(BaseFollowView):
-    def get(self, request, *args, **kwargs):
-        page = int(request.query_params.get('page', 1))
-        user_id_list = follower_list(request.user.id, page)
-        has_more = follower_count(request.user.id) > page * PAGE_SIZE
-        return self._make_response(user_id_list, page, has_more)
+    list_type = 'follower'
 
 
 class FollowedView(BaseFollowView):
-    def get(self, request, *args, **kwargs):
-        page = int(request.query_params.get('page', 1))
-        user_id_list = followed_list(request.user.id, page)
-        has_more = followed_count(request.user.id) > page * PAGE_SIZE
-        return self._make_response(user_id_list, page, has_more)
+    list_type = 'followed'
