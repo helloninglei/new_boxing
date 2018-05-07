@@ -42,7 +42,7 @@ upload_urls = [
 report_object_string = '|'.join(REPORT_OBJECT_DICT.keys())
 report_urls = [
     re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string), report.ReportViewSet.as_view({'post': 'create'}), name='report'),
-    path('report_reason'.format(report_object_string), report.ReportViewSet.as_view({'get':'retrieve'}), name='report-reason')
+    path('report_reason', report.ReportViewSet.as_view({'get': 'retrieve'}), name='report-reason')
 ]
 
 boxer_url = [
