@@ -90,3 +90,49 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Report
         fields = ['object_id', 'reason', 'remark']
+
+
+class BaseFollowSerializer(serializers.Serializer):
+    user_id = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+    nick_name = serializers.SerializerMethodField()
+
+    def _get_profile(self, obj):
+        user = self._get_user(obj)
+        if hasattr(user, 'user_profile'):
+            return user.user_profile
+        return {}
+
+    def get_user_id(self, obj):
+        return self._get_user(obj).id
+
+    def get_avatar(self, obj):
+        return self._get_profile(obj).get('avatar')
+
+    def get_nick_name(self, obj):
+        return self._get_profile(obj).get('nick_name')
+
+    def get_address(self, obj):
+        return self._get_profile(obj).get('address')
+
+    def get_bio(self, obj):
+        return self._get_profile(obj).get('bio')
+
+    class Meta:
+        model = models.Follow
+        fields = ['id', 'user_id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
+        read_only_fields = '__all__'
+
+
+# 粉丝列表
+class FollowerSerializer(BaseFollowSerializer):
+
+    def _get_user(self, obj):
+        return obj.follower
+
+
+# 关注列表
+class FollowedSerializer(BaseFollowSerializer):
+
+    def _get_user(self, obj):
+        return obj.user

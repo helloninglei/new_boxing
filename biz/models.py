@@ -229,3 +229,13 @@ class Report(models.Model):
     class Meta:
         db_table = 'discover_report'
         ordering = ('-created_time',)
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')   # 被关注用户
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed')  # 关注用户
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'discover_follow'
+        ordering = ('-created_time',)

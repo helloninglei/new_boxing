@@ -22,6 +22,7 @@ from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
+from boxing_app.views import follow
 from biz.constants import REPORT_OBJECT_DICT
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
@@ -49,11 +50,18 @@ boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
 ]
 
+follow_url = [
+    path('follow', follow.BaseFollowViewSet.as_view({'post': 'create'})),
+    path('follower', follow.FollowerViewSet .as_view({'get': 'list'})),
+    path('followed', follow.FollowedViewSet .as_view({'get': 'list'})),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
 urlpatterns += discover_urls
 urlpatterns += report_urls
+urlpatterns += follow_url
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
