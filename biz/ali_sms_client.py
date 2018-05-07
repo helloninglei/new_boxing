@@ -47,7 +47,7 @@ def _send_sms(business_id, mobile, template_code, template_param):
     return sms_response
 
 
-def _send_template_sms(template, mobile, content, params, ip):
+def _send_template_sms(template, mobile, content, params):
 
     business_id = uuid.uuid1()
 
@@ -71,6 +71,6 @@ def _sms_send_log(mobile, template, content, business_id, result):
     )
 
 
-def send_verify_code(mobile, verify_code, ip=None):
+def send_verify_code(mobile, verify_code):
     template = SMS_TEMPLATES['verifyCode']
-    return _send_template_sms(template, mobile, template['text'].format(code=verify_code), {"code": verify_code}, ip=ip)
+    return _send_template_sms(template, mobile, template['text'].format(code=verify_code), {"code": verify_code})
