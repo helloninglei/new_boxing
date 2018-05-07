@@ -69,7 +69,7 @@ MONEY_CHANGE_TYPE_CHOICES = (
 
 DISCOVER_MESSAGE_REPORT_OTHER_REASON = 7
 
-DISCOVER_MESSAGE_REPORT_CHOICES = (
+REPORT_REASON_CHOICES = (
     (1, '淫秽色情'),
     (2, '赌博诈骗'),
     (3, '恐怖暴力'),
@@ -88,3 +88,9 @@ BOXER_ALLOWED_COURSES_CHOICE = (
     (BOXER_ALLOWED_COURSES_MMA, "MMA"),
     (BOXER_ALLOWED_COURSES_BOXING, "拳击")
 )
+
+# (model名, type_id)
+REPORT_OBJECT_DICT = {
+    'message': 1,
+    'comment': 2,
+}

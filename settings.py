@@ -46,6 +46,10 @@ OSS_CONFIG = {
     'bucket': OSS_BUCKET
 }
 
+ALI_SMS_ACCESS_KEY_ID = 'key'
+ALI_SMS_ACCESS_SECRET = 'secret'
+ALI_SMS_INTERVAL = 60
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
@@ -117,7 +121,8 @@ DATABASES = {
 REDIS_CONFIG = {
     'host': REDIS_HOST,
     'port': REDIS_PORT,
-    'db': REDIS_DB
+    'db': REDIS_DB,
+    "max_connections": 200
 }
 
 
