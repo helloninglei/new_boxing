@@ -118,7 +118,7 @@ class FollowUserSerializer(serializers.Serializer):
 
     def get_is_followed(self, user):
         current_user_id = self.context['current_user_id']
-        return not not is_followed(current_user_id, user.id)
+        return bool(is_followed(current_user_id, user.id))
 
     class Meta:
         fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
