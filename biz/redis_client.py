@@ -8,7 +8,7 @@ _config = settings.REDIS_CONFIG
 _client = redis.StrictRedis(host=_config['host'],
                             port=_config['port'],
                             db=_config['db'],
-                            max_connections=200)
+                            max_connections=_config['max_connections'])
 
 
 def exists(key):
