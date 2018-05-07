@@ -229,3 +229,16 @@ class Report(models.Model):
     class Meta:
         db_table = 'discover_report'
         ordering = ('-created_time',)
+
+
+class SmsLog(models.Model):
+    mobile = models.CharField(max_length=11)
+    template_code = models.CharField(max_length=30)
+    content = models.CharField(max_length=255)
+    created_time = models.DateTimeField(auto_now_add=True)
+    result = models.CharField(max_length=512)
+    business_id = models.CharField(max_length=36)
+
+    class Meta:
+        db_table = 'sms_log'
+        ordering = ("-created_time",)
