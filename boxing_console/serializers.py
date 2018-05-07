@@ -83,9 +83,11 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
                 not attrs.get('refuse_reason'):
             raise ValidationError({'refuse_reason': ['驳回理由是必填项']})
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED and \
-                not attrs.get('allow_lesson'):
-            raise ValidationError({'allow_lesson': ['可开通的课程类型是必填项']})
+        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED:
+            if not attrs.get('allow_lesson'):
+                raise ValidationError({'allow_lesson': ['可开通的课程类型是必填项']})
+            else:
+                attrs['is_locked'] = False
         return attrs
 
     class Meta:

@@ -19,7 +19,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     def change_lock_state(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.is_locked = True if kwargs['lock_type']==constants.OperationType.BOXER_ORDER_LOCK else False
+        instance.is_locked = True if kwargs['lock_type'] == constants.OperationType.BOXER_ORDER_LOCK else False
         instance.save()
         log_boxer_identification_operation(identification_id=instance.pk,
                                            operator=request.user,
@@ -28,17 +28,21 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def approve(self, request, *args, **kwargs):
-        super().partial_update(request, *args, **kwargs)
-        log_boxer_identification_operation(identification_id=self.get_object().pk,
-                                           operator=request.user,
-                                           operation_type=OperationType.BOXER_AUTHENTICATION_APPROVED,
-                                           content="拳手认证信息审核通过,可开通课程为：{}".format(request.data.get('allow_lesson')))
-        return Response(reverse('boxer_identification_list'))
+        return self.approved_or_refuse(request, True, *args, **kwargs)
 
     def refuse(self, request, *args, **kwargs):
+        return self.approved_or_refuse(request, False, *args, **kwargs)
+
+    def approved_or_refuse(self, request, is_approve, *args, **kwargs):
         super().partial_update(request, *args, **kwargs)
+        if is_approve:
+            operation_type = OperationType.BOXER_AUTHENTICATION_APPROVED
+            content = request.data.get('allow_lesson')
+        else:
+            operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
+            content = request.data.get('refuse_reason')
         log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,
-                                           operation_type=OperationType.BOXER_AUTHENTICATION_REFUSE,
-                                           content="拳手认证信息审核失败，理由是：{}".format(request.data.get('refuse_reason')))
+                                           operation_type=operation_type,
+                                           content=content)
         return Response(reverse('boxer_identification_list'))

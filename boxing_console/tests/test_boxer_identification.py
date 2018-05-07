@@ -55,7 +55,8 @@ class BoxerIdentificationTestCase(TestCase):
         }
         identification = BoxerIdentification.objects.create(**identification_data)
         self.assertFalse(self.fake_user1.boxer_identification.is_locked)
-        self.client.post(reverse('change_lock_state', kwargs={'pk': identification.pk, 'lock_type': constants.OperationType.BOXER_ORDER_LOCK}))
+        self.client.post(reverse('change_lock_state', kwargs={'pk': identification.pk,
+                                                              'lock_type': constants.OperationType.BOXER_ORDER_LOCK}))
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
         self.assertTrue(identification.is_locked)
         opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
@@ -63,7 +64,8 @@ class BoxerIdentificationTestCase(TestCase):
         self.assertEqual(opeation_log.operator, self.fake_user1)
         self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_ORDER_LOCK)
 
-        self.client.post(reverse('change_lock_state', kwargs={'pk': identification.pk, 'lock_type': constants.OperationType.BOXER_ORDER_UNLOCK}))
+        self.client.post(reverse('change_lock_state', kwargs={'pk': identification.pk,
+                                                              'lock_type': constants.OperationType.BOXER_ORDER_UNLOCK}))
         self.assertFalse(self.fake_user1.boxer_identification.is_locked)
         opeation_log = OperationLog.objects.filter(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                    refer_pk=identification.pk)
@@ -155,7 +157,7 @@ class BoxerIdentificationTestCase(TestCase):
                                                 refer_pk=identification.pk)
         self.assertEqual(opeation_log.operator, self.fake_user1)
         self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_REFUSE)
-        self.assertEqual(opeation_log.content, '拳手认证信息审核失败，理由是：身份信息不全，审核不通过')
+        self.assertEqual(opeation_log.content, '身份信息不全，审核不通过')
 
     def test_boxer_identification_refuse_faild_without_reason(self):
         identification_data = {
