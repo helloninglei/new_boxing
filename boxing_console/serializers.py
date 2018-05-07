@@ -80,9 +80,11 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     allow_lesson = serializers.ListField(child=serializers.CharField())
 
     def validate(self, attrs):
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and not attrs.get('refuse_reason'):
+        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
+                not attrs.get('refuse_reason'):
             raise ValidationError({'refuse_reason': ['驳回理由是必填项']})
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED and not attrs.get('allow_lesson'):
+        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED and \
+                not attrs.get('allow_lesson'):
             raise ValidationError({'allow_lesson': ['可开通的课程类型是必填项']})
         return attrs
 
@@ -96,4 +98,3 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     def get_nick_name(self, obj):
         has_profile = hasattr(obj.user, 'user_profile')
         return obj.user.user_profile.nick_name if has_profile else None
-

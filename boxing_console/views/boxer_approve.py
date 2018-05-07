@@ -1,17 +1,15 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from biz.constants import OperationType
-from biz.models import BoxerIdentification, User
+from biz.models import BoxerIdentification
 from biz.services.operation_log_service import log_boxer_identification_operation
 from boxing_console.serializers import BoxerIdentificationSerializer
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
-
-    permission_classes = (permissions.AllowAny,)
     serializer_class = BoxerIdentificationSerializer
     queryset = BoxerIdentification.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
@@ -40,7 +38,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     def approve(self, request, *args, **kwargs):
         super().partial_update(request, *args, **kwargs)
-        log_boxer_identification_operation(identification_id=request.user,
+        log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,
                                            operation_type=OperationType.BOXER_AUTHENTICATION_APPROVED,
                                            content="拳手认证信息审核通过,可开通课程为：{}".format(request.data.get('allow_lesson')))
@@ -49,7 +47,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     def refuse(self, request, *args, **kwargs):
         super().partial_update(request, *args, **kwargs)
         log_boxer_identification_operation(identification_id=self.get_object().pk,
-                                           operator=User.objects.get(pk=1),
+                                           operator=request.user,
                                            operation_type=OperationType.BOXER_AUTHENTICATION_REFUSE,
                                            content="拳手认证信息审核失败，理由是：{}".format(request.data.get('refuse_reason')))
         return Response(reverse('boxer_identification_list'))

@@ -20,25 +20,22 @@ from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChange
 from boxing_console.views.user_management import UserManagementViewSet
 
 urlpatterns = [
-    path('coin/change', CoinChangLogViewSet.as_view({'post':'create'}),
-        name='coin_change'),
-    path('money/change', MoneyChangeLogViewSet.as_view({'post':'create'}),
-        name='money_change'),
-    path('coin/change/log',CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
+    path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
+    path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
+    path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
 
     path("users", UserManagementViewSet.as_view({"get": "list"}))
 ]
 
 boxer_url = [
-    path('boxer/identification', BoxerIdentificationViewSet.as_view({'get':'list'}),
-        name='boxer_identification_list'),
-    path('boxer/identification/<int:pk>', BoxerIdentificationViewSet.as_view({'get':'retrieve'}),
-        name='boxer_identification_detail'),
-    path('boxer/identification/<int:pk>/lock',BoxerIdentificationViewSet.as_view({'post':'order_lock'}),
+    path('boxer/identification', BoxerIdentificationViewSet.as_view({'get': 'list'}), name='boxer_identification_list'),
+    path('boxer/identification/<int:pk>', BoxerIdentificationViewSet.as_view({'get': 'retrieve'}),
+         name='boxer_identification_detail'),
+    path('boxer/identification/<int:pk>/lock', BoxerIdentificationViewSet.as_view({'post': 'order_lock'}),
          name='boxer_order_lock'),
-    path('boxer/identification/<int:pk>/unlock',BoxerIdentificationViewSet.as_view({'post':'order_unlock'}),
+    path('boxer/identification/<int:pk>/unlock', BoxerIdentificationViewSet.as_view({'post': 'order_unlock'}),
          name='boxer_order_unlock'),
-    path('boxer/identification/<int:pk>/approve',BoxerIdentificationViewSet.as_view({'post':'approve'}),
+    path('boxer/identification/<int:pk>/approve', BoxerIdentificationViewSet.as_view({'post': 'approve'}),
          name='identification_approve'),
     path('boxer/identification/<int:pk>/refuse', BoxerIdentificationViewSet.as_view({'post': 'refuse'}),
          name='identification_refuse'),
