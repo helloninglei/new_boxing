@@ -54,7 +54,7 @@ follow_url = [
     path('follow', follow.BaseFollowView.as_view()),
     path('follower', follow.FollowerView.as_view()),
     path('followed', follow.FollowedView.as_view()),
-    path('unfollow', follow.FollowedView.as_view()),
+    path('unfollow', follow.UnFollowView.as_view()),
 ]
 
 urlpatterns = []

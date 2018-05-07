@@ -39,7 +39,7 @@ class FollowTestCase(APITestCase):
         res = self.client1.post('/follow', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-        res = self.client1.delete('/unfollow', data)
+        res = self.client1.post('/unfollow', data)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_follow_list(self):
@@ -73,7 +73,7 @@ class FollowTestCase(APITestCase):
         self.assertEqual(len(result), 1)
 
         # test unfollow
-        self.client1.delete('/follow', {'user_id': self.test_user_3.id})
+        self.client1.post('/unfollow', {'user_id': self.test_user_3.id})
         res = self.client3.get('/follower')
         result = res.data['result']
         self.assertEqual(len(result), 1)

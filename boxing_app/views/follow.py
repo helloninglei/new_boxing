@@ -37,6 +37,14 @@ class BaseFollowView(APIView):
         })
 
 
+class UnFollowView(APIView):
+    def post(self, request, *args, **kwargs):
+        current_user_id = request.user.id
+        followed_user_id = request.data['user_id']
+        unfollow_user(current_user_id, followed_user_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class FollowerView(BaseFollowView):
     def get(self, request, *args, **kwargs):
         page = int(request.query_params.get('page', 1))
