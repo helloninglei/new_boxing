@@ -80,7 +80,7 @@ DISCOVER_MESSAGE_REPORT_CHOICES = (
 )
 
 
-class OperationTarget(object):
+class OperationTarget():
     BOXER_IDENTIFICATION = 'BOXER_IDENTIFICATION'
 
     CHOICES = (
@@ -89,7 +89,7 @@ class OperationTarget(object):
     )
 
 
-class OperationType(object):
+class OperationType():
     BOXER_AUTHENTICATION_APPROVED = 'BOXER_AUTHENTICATION_APPROVED'
     BOXER_AUTHENTICATION_REFUSE = 'BOXER_AUTHENTICATION_REFUSE'
     BOXER_ORDER_LOCK = 'BOXER_ORDER_LOCK'

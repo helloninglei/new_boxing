@@ -9,7 +9,6 @@ from boxing_app.serializers import BoxerIdentificationSerializer
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
-    permission_classes = (permissions.AllowAny,)
 
     def get_object(self):
         return BoxerIdentification.objects.get(user=self.request.user)

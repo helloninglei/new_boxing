@@ -54,17 +54,17 @@ class BoxerIdentificationTestCase(TestCase):
             "competition_video": 'https://baidu.com'
         }
         identification = BoxerIdentification.objects.create(**identification_data)
-        self.assertFalse(self.fake_user1.boxer_identification.lock_state)
+        self.assertFalse(self.fake_user1.boxer_identification.is_locked)
         self.client.post(reverse('boxer_order_lock', kwargs={'pk': identification.pk}))
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
-        self.assertTrue(identification.lock_state)
+        self.assertTrue(identification.is_locked)
         opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                 refer_pk=identification.pk)
         self.assertEqual(opeation_log.operator, self.fake_user1)
         self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_ORDER_LOCK)
 
         self.client.post(reverse('boxer_order_unlock', kwargs={'pk': identification.pk}))
-        self.assertFalse(self.fake_user1.boxer_identification.lock_state)
+        self.assertFalse(self.fake_user1.boxer_identification.is_locked)
         opeation_log = OperationLog.objects.filter(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                    refer_pk=identification.pk)
         self.assertEqual(opeation_log.count(), 2)

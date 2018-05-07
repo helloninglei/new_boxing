@@ -13,12 +13,12 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
     queryset = BoxerIdentification.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    filter_fields = ('is_professional_boxer', 'authentication_state', 'lock_state')
+    filter_fields = ('is_professional_boxer', 'authentication_state', 'is_locked')
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
 
     def order_lock(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.lock_state = True
+        instance.is_locked = True
         instance.save()
         log_boxer_identification_operation(identification_id=instance.pk,
                                            operator=request.user,
@@ -28,7 +28,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     def order_unlock(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.lock_state = False
+        instance.is_locked = False
         instance.save()
         log_boxer_identification_operation(identification_id=instance.pk,
                                            operator=request.user,

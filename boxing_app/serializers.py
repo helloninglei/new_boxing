@@ -22,7 +22,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state','lock_state')
+        read_only_fields = ('authentication_state','is_locked')
 
 
 class DiscoverUserField(serializers.RelatedField):

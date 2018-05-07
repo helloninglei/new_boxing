@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='boxeridentification',
-            name='lock_state',
+            name='is_locked',
             field=models.BooleanField(default=False),
         ),
     ]

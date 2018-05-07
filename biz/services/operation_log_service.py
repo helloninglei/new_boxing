@@ -14,5 +14,6 @@ def log(refer_type, refer_pk, operator, operation_type, content):
         timestamp=datetime.now()
     )
 
+
 def log_boxer_identification_operation(identification_id, operator, operation_type, content):
     return log(constants.OperationTarget.BOXER_IDENTIFICATION, identification_id, operator, operation_type, content)

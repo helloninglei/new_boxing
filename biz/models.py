@@ -174,7 +174,7 @@ class BoxerIdentification(BaseModel):
     club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
-    lock_state = models.BooleanField(default=False)
+    is_locked = models.BooleanField(default=False)
     experience = models.TextField(null=True, blank=True, max_length=500)
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
@@ -235,7 +235,7 @@ class Report(models.Model):
 class OperationLog(models.Model):
     refer_type = models.CharField(choices=constants.OperationTarget.CHOICES, max_length=50)
     refer_pk = models.BigIntegerField()
-    operator = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='+')
+    operator = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='+', db_index=False)
     operation_type = models.CharField(choices=constants.OperationType.CHOICES, max_length=50, null=True)
     timestamp = models.DateTimeField()
     content = models.TextField()
