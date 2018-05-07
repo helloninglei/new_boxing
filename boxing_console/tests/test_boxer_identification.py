@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.test import TestCase
@@ -93,17 +94,21 @@ class BoxerIdentificationTestCase(TestCase):
 
         self.assertEqual(self.fake_user1.boxer_identification.authentication_state,
                          constants.BOXER_AUTHENTICATION_STATE_WAITING)
+        data = {'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED,
+                'allowed_lessons': ['THAI_BOXING', 'BOXING']}
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
-                               data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                     'allowed_lessons': "['THAI_BOXING']"})
+                               data=json.dumps(data), content_type='application/json')
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
+        self.assertEqual(identification.allowed_lessons, data['allowed_lessons'])
 
-        opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
+        operation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                 refer_pk=identification.pk)
-        self.assertEqual(opeation_log.operator, self.fake_user1)
-        self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_APPROVED)
+        self.assertEqual(operation_log.operator, self.fake_user1)
+        self.assertEqual(operation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_APPROVED)
+        self.assertEqual(operation_log.content, "{}".format(data['allowed_lessons']))
+
 
     def test_boxer_identification_approve_failed_without_lesson(self):
         identification_data = {
