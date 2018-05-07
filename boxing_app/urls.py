@@ -51,9 +51,10 @@ boxer_url = [
 ]
 
 follow_url = [
-    path('follow', follow.BaseFollowViewSet.as_view({'post': 'create'})),
-    path('follower', follow.FollowerViewSet .as_view({'get': 'list'})),
-    path('followed', follow.FollowedViewSet .as_view({'get': 'list'})),
+    path('follow', follow.BaseFollowView.as_view()),
+    path('follower', follow.FollowerView.as_view()),
+    path('followed', follow.FollowedView.as_view()),
+    path('unfollow', follow.FollowedView.as_view()),
 ]
 
 urlpatterns = []

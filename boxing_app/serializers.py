@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
-
+from biz.redis_client import is_followed
 from biz import models, constants
 
 
@@ -23,7 +23,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         model = models.BoxerIdentification
         fields = '__all__'
         read_only_fields = ('authentication_state','lock_state')
-
 
 
 class DiscoverUserField(serializers.RelatedField):
@@ -92,47 +91,35 @@ class ReportSerializer(serializers.ModelSerializer):
         fields = ['object_id', 'reason', 'remark']
 
 
-class BaseFollowSerializer(serializers.Serializer):
-    user_id = serializers.SerializerMethodField()
+class FollowUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     avatar = serializers.SerializerMethodField()
     nick_name = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
+    bio = serializers.SerializerMethodField()
+    is_followed = serializers.SerializerMethodField()
 
-    def _get_profile(self, obj):
-        user = self._get_user(obj)
+    def _get_profile(self, user):
         if hasattr(user, 'user_profile'):
             return user.user_profile
         return {}
 
-    def get_user_id(self, obj):
-        return self._get_user(obj).id
+    def get_avatar(self, user):
+        return self._get_profile(user).get('avatar')
 
-    def get_avatar(self, obj):
-        return self._get_profile(obj).get('avatar')
+    def get_nick_name(self, user):
+        return self._get_profile(user).get('nick_name')
 
-    def get_nick_name(self, obj):
-        return self._get_profile(obj).get('nick_name')
+    def get_address(self, user):
+        return self._get_profile(user).get('address')
 
-    def get_address(self, obj):
-        return self._get_profile(obj).get('address')
+    def get_bio(self, user):
+        return self._get_profile(user).get('bio')
 
-    def get_bio(self, obj):
-        return self._get_profile(obj).get('bio')
+    def get_is_followed(self, user):
+        current_user_id = self.context['current_user_id']
+        return not not is_followed(current_user_id, user.id)
 
     class Meta:
-        model = models.Follow
-        fields = ['id', 'user_id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
+        fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
         read_only_fields = '__all__'
-
-
-# 粉丝列表
-class FollowerSerializer(BaseFollowSerializer):
-
-    def _get_user(self, obj):
-        return obj.follower
-
-
-# 关注列表
-class FollowedSerializer(BaseFollowSerializer):
-
-    def _get_user(self, obj):
-        return obj.user
