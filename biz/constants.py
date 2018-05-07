@@ -79,10 +79,8 @@ REPORT_REASON_CHOICES = (
     (DISCOVER_MESSAGE_REPORT_OTHER_REASON, '其他'),
 )
 
-# (id, model名)
-REPORT_OBJECT_TYPE = (
-    (1, 'message'),
-    (2, 'comment'),
-)
-
-REPORT_OBJECT_DICT = dict([(i[1], i[0]) for i in REPORT_OBJECT_TYPE])
+# (model名, type_id)
+REPORT_OBJECT_DICT = {
+    'message': 1,
+    'comment': 2,
+}

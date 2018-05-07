@@ -2,7 +2,6 @@
 import redis
 from time import time
 from django.conf import settings
-from uuid import uuid4
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
 _config = settings.REDIS_CONFIG
