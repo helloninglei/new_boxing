@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from boxing_app.views import upload
@@ -22,6 +22,7 @@ from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
+from biz.constants import REPORT_OBJECT_DICT
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -32,11 +33,16 @@ discover_urls = [
     path('messages/<int:message_id>/comments', comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
     path('messages/<int:message_id>/comments/<int:pk>', comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
     path('messages/<int:message_id>/like', like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
-    path('messages/<int:message_id>/report', report.ReportViewSet.as_view({'post': 'create'}), name='message-report'),
 ]
 
 upload_urls = [
     path('upload_file', upload.upload_file, name='upload'),
+]
+
+report_object_string = '|'.join(REPORT_OBJECT_DICT.keys())
+report_urls = [
+    re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string), report.ReportViewSet.as_view({'post': 'create'}), name='report'),
+    path('report_reason', report.ReportViewSet.as_view({'get': 'retrieve'}), name='report-reason')
 ]
 
 boxer_url = [
@@ -47,6 +53,7 @@ urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
 urlpatterns += discover_urls
+urlpatterns += report_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

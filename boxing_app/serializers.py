@@ -88,4 +88,4 @@ class ReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Report
-        fields = ['reason', 'remark']
+        fields = ['object_id', 'reason', 'remark']
