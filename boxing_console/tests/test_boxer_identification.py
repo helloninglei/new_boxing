@@ -36,7 +36,7 @@ class BoxerIdentificationTestCase(TestCase):
         search_real_name_fail_res = self.client.get(reverse('boxer_identification_list'), data={'search': '李四'})
         self.assertEqual(search_real_name_fail_res.data['count'], 0)
 
-    def test_boxer_order_state_lock_and_unlock(self):
+    def test_boxer_change_lock_state(self):
         identification_data = {
             "user": self.fake_user1,
             "real_name": "张三",
@@ -55,7 +55,7 @@ class BoxerIdentificationTestCase(TestCase):
         }
         identification = BoxerIdentification.objects.create(**identification_data)
         self.assertFalse(self.fake_user1.boxer_identification.is_locked)
-        self.client.post(reverse('boxer_order_lock', kwargs={'pk': identification.pk}))
+        self.client.post(reverse('change_lock_state', kwargs={'pk': identification.pk, 'lock_type': constants.OperationType.BOXER_ORDER_LOCK}))
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
         self.assertTrue(identification.is_locked)
         opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
@@ -63,7 +63,7 @@ class BoxerIdentificationTestCase(TestCase):
         self.assertEqual(opeation_log.operator, self.fake_user1)
         self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_ORDER_LOCK)
 
-        self.client.post(reverse('boxer_order_unlock', kwargs={'pk': identification.pk}))
+        self.client.post(reverse('change_lock_state', kwargs={'pk': identification.pk, 'lock_type': constants.OperationType.BOXER_ORDER_UNLOCK}))
         self.assertFalse(self.fake_user1.boxer_identification.is_locked)
         opeation_log = OperationLog.objects.filter(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                    refer_pk=identification.pk)

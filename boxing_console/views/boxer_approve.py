@@ -3,6 +3,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
+from biz import constants
 from biz.constants import OperationType
 from biz.models import BoxerIdentification
 from biz.services.operation_log_service import log_boxer_identification_operation
@@ -16,24 +17,14 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     filter_fields = ('is_professional_boxer', 'authentication_state', 'is_locked')
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
 
-    def order_lock(self, request, *args, **kwargs):
+    def change_lock_state(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.is_locked = True
+        instance.is_locked = True if kwargs['lock_type']==constants.OperationType.BOXER_ORDER_LOCK else False
         instance.save()
         log_boxer_identification_operation(identification_id=instance.pk,
                                            operator=request.user,
-                                           operation_type=OperationType.BOXER_ORDER_LOCK,
-                                           content="拳手接单状态锁定")
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def order_unlock(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.is_locked = False
-        instance.save()
-        log_boxer_identification_operation(identification_id=instance.pk,
-                                           operator=request.user,
-                                           operation_type=OperationType.BOXER_ORDER_UNLOCK,
-                                           content="拳手接单状态解锁")
+                                           operation_type=kwargs['lock_type'],
+                                           content="拳手接单状态修改为：{}".format(kwargs['lock_type']))
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def approve(self, request, *args, **kwargs):
