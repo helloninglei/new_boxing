@@ -4,8 +4,6 @@ from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.profile import region_provider
 from aliyunsdkdysmsapi.request.v20170525 import SendSmsRequest
 from biz.models import SmsLog
-from biz import redis_keys_const
-from biz.redis_client import redis_client
 
 
 # 注意：不要更改
@@ -49,23 +47,7 @@ def _send_sms(business_id, mobile, template_code, template_param):
     return sms_response
 
 
-class SmsSendTooFrequentException(Exception):
-    pass
-
-
-def _check_ip_frequency(ip):
-    if ip:
-        redis_check_key = redis_keys_const.SMS_SENDING.format(ip=ip)
-        if redis_client.exists(redis_check_key):
-            raise SmsSendTooFrequentException
-        return redis_check_key
-
-
 def _send_template_sms(template, mobile, content, params, ip):
-    try:
-        redis_check_key = _check_ip_frequency(ip)
-    except SmsSendTooFrequentException:
-        return False
 
     business_id = uuid.uuid1()
 
@@ -73,9 +55,6 @@ def _send_template_sms(template, mobile, content, params, ip):
         result = _send_sms(business_id, mobile, template['code'], params)
     else:
         result = 'fake result'
-
-    if redis_check_key:
-        redis_client.setex(redis_check_key, settings.ALI_SMS_INTERVAL, "1")
 
     _sms_send_log(mobile, template, content, business_id, result)
 
