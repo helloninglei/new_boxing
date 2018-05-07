@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='boxeridentification',
-            name='allow_lesson',
+            name='allowed_lessons',
             field=biz.models.StringListField(blank=True, null=True),
         ),
         migrations.AddField(

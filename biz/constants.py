@@ -84,7 +84,7 @@ class OperationTarget:
     BOXER_IDENTIFICATION = 'BOXER_IDENTIFICATION'
 
     CHOICES = (
-        (BOXER_IDENTIFICATION, u'拳手认证'),
+        (BOXER_IDENTIFICATION, '拳手认证'),
 
     )
 

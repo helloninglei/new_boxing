@@ -95,7 +95,7 @@ class BoxerIdentificationTestCase(TestCase):
                          constants.BOXER_AUTHENTICATION_STATE_WAITING)
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                     'allow_lesson': "['THAI_BOXING']"})
+                                     'allowed_lessons': "['THAI_BOXING']"})
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
@@ -126,7 +126,7 @@ class BoxerIdentificationTestCase(TestCase):
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['allow_lesson'][0], "可开通的课程类型是必填项")
+        self.assertEqual(res.data['allowed_lessons'][0], "可开通的课程类型是必填项")
 
     def test_boxer_identification_refuse_success(self):
         identification_data = {

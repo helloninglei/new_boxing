@@ -37,7 +37,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         super().partial_update(request, *args, **kwargs)
         if is_approve:
             operation_type = OperationType.BOXER_AUTHENTICATION_APPROVED
-            content = request.data.get('allow_lesson')
+            content = request.data.get('allowed_lessons')
         else:
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
             content = request.data.get('refuse_reason')

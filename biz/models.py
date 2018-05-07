@@ -180,7 +180,7 @@ class BoxerIdentification(BaseModel):
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
     honor_certificate_images = StringListField(null=True)
     competition_video = models.URLField(null=True)
-    allow_lesson = StringListField(null=True, blank=True)
+    allowed_lessons = StringListField(null=True, blank=True)
     refuse_reason = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
