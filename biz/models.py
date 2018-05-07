@@ -219,10 +219,11 @@ class Like(models.Model):
 
 
 class Report(models.Model):
+    object_id = models.IntegerField()
+    object_type = models.SmallIntegerField(db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    reason = models.SmallIntegerField(choices=constants.DISCOVER_MESSAGE_REPORT_CHOICES)
+    reason = models.SmallIntegerField(choices=constants.REPORT_REASON_CHOICES)
     remark = models.CharField(max_length=20, null=True)
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='+')
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
@@ -236,3 +237,16 @@ class Course(models.Model):
     price = models.IntegerField()  # 单位：元
     duration = models.IntegerField()  # 时长，单位：min
     validity = models.DateField()  # 有效期
+
+    
+class SmsLog(models.Model):
+    mobile = models.CharField(max_length=11)
+    template_code = models.CharField(max_length=30)
+    content = models.CharField(max_length=255)
+    created_time = models.DateTimeField(auto_now_add=True)
+    result = models.CharField(max_length=512)
+    business_id = models.CharField(max_length=36)
+
+    class Meta:
+        db_table = 'sms_log'
+        ordering = ("-created_time",)
