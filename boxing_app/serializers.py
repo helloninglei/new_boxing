@@ -2,9 +2,10 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from biz.redis_client import is_followed
-from biz import models, constants
+from biz import models
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -15,14 +16,13 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     weight = serializers.IntegerField(max_value=999)
 
     def update(self, instance, validated_data):
-        validated_data['authentication_state'] = constants.BOXER_AUTHENTICATION_STATE_WAITING
+        validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
         return super().update(instance, validated_data)
-
 
     class Meta:
         model = models.BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state','lock_state')
+        read_only_fields = ('authentication_state', 'is_locked')
 
 
 class DiscoverUserField(serializers.RelatedField):

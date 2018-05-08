@@ -70,11 +70,11 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
-    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
-    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
-    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
-    remarks = models.CharField(null=True, max_length=50)  # 备注
+    last_amount = models.IntegerField(default=0)  #变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  #变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  #变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  #操作人
+    remarks = models.CharField(null=True, max_length=50)  #备注
 
     class Meta:
         abstract = True
@@ -174,12 +174,14 @@ class BoxerIdentification(BaseModel):
     club = models.CharField(null=True, blank=True, max_length=50)
     job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
-    lock_state = models.BooleanField(default=True)
+    is_locked = models.BooleanField(default=False)
     experience = models.TextField(null=True, blank=True, max_length=500)
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
     honor_certificate_images = StringListField(null=True)
     competition_video = models.URLField(null=True)
+    allowed_lessons = StringListField(null=True, blank=True)
+    refuse_reason = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         db_table = 'boxer_identification'
@@ -229,6 +231,18 @@ class Report(models.Model):
     class Meta:
         db_table = 'discover_report'
         ordering = ('-created_time',)
+
+
+class OperationLog(models.Model):
+    refer_type = models.CharField(choices=constants.OperationTarget.CHOICES, max_length=50)
+    refer_pk = models.BigIntegerField()
+    operator = models.ForeignKey(User, on_delete=models.deletion.PROTECT, related_name='+', db_index=False)
+    operation_type = models.CharField(choices=constants.OperationType.CHOICES, max_length=50, null=True)
+    operate_time = models.DateTimeField()
+    content = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        db_table = 'operation_log'
 
 
 class Course(models.Model):
