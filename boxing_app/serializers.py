@@ -2,9 +2,10 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
-
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
+from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
+from biz.redis_client import is_followed
 from biz import models
-from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON, BOXER_AUTHENTICATION_STATE_WAITING
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -18,11 +19,10 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
         return super().update(instance, validated_data)
 
-
     class Meta:
         model = models.BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state','is_locked')
+        read_only_fields = ('authentication_state', 'is_locked')
 
 
 class DiscoverUserField(serializers.RelatedField):
@@ -89,3 +89,37 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Report
         fields = ['object_id', 'reason', 'remark']
+
+
+class FollowUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    avatar = serializers.SerializerMethodField()
+    nick_name = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
+    bio = serializers.SerializerMethodField()
+    is_followed = serializers.SerializerMethodField()
+
+    def _get_profile(self, user):
+        if hasattr(user, 'user_profile'):
+            return user.user_profile
+        return {}
+
+    def get_avatar(self, user):
+        return self._get_profile(user).get('avatar')
+
+    def get_nick_name(self, user):
+        return self._get_profile(user).get('nick_name')
+
+    def get_address(self, user):
+        return self._get_profile(user).get('address')
+
+    def get_bio(self, user):
+        return self._get_profile(user).get('bio')
+
+    def get_is_followed(self, user):
+        current_user_id = self.context['current_user_id']
+        return bool(is_followed(current_user_id, user.id))
+
+    class Meta:
+        fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
+        read_only_fields = '__all__'
