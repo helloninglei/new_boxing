@@ -29,13 +29,13 @@ class CoinChangLogListFilter(CommonFilter):
 class CourseFilter(django_filters.FilterSet):
     price_min = django_filters.NumberFilter(name='price', lookup_expr='gte')
     price_max = django_filters.NumberFilter(name='price', lookup_expr='lte')
-    accept_order = django_filters.CharFilter(method='filter_accept_order')
+    is_accept_order = django_filters.CharFilter(method='filter_is_accept_order')
 
-    def filter_accept_order(self, qs, name, value):
+    def filter_is_accept_order(self, qs, name, value):
         if value:
             return qs.filter(~Q(boxer__is_locked=value))
         return qs.filter()
 
     class Meta:
         model = Course
-        fields = ['price_min', 'price_max', 'course_name', 'accept_order']
+        fields = ['price_min', 'price_max', 'course_name', 'is_accept_order']

@@ -94,8 +94,8 @@ class BoxerIdentificationTestCase(APITestCase):
             else:
                 self.assertEqual(res.data['results'][0][key], data1[key])
 
-        # 通过accept_order过滤,注意，accept_order与拳手的is_locked是相反的
-        res = self.client.get('/courses?accept_order={}'.format(True))
+        # 通过is_accept_order过滤,注意，is_accept_order与拳手的is_locked是相反的
+        res = self.client.get('/courses?is_accept_order={}'.format(True))
         self.assertEqual(res.data['count'], 1)
 
         # 通过price_min过滤

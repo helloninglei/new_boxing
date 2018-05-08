@@ -106,7 +106,7 @@ class CourseSerializer(serializers.ModelSerializer):
     boxer_name = serializers.SerializerMethodField()
     mobile = serializers.SerializerMethodField()
     is_professional_boxer = serializers.SerializerMethodField()
-    accept_order = serializers.SerializerMethodField()
+    is_accept_order = serializers.SerializerMethodField()
 
     def get_boxer_name(self, instance):
         return instance.boxer.real_name
@@ -117,7 +117,7 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_professional_boxer(self, instance):
         return "职业" if instance.boxer.is_professional_boxer else "非职业"
 
-    def get_accept_order(self, instance):
+    def get_is_accept_order(self, instance):
         return "否" if instance.boxer.is_locked else "是"
 
     class Meta:
