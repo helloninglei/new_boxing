@@ -29,10 +29,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         user_id = request.query_params.get('user_id')
-        if user_id:
-            self.queryset = self._get_query_set().filter(user_id=user_id)
-        else:
-            self.queryset = self._get_query_set()
+        self.queryset = self._get_query_set().filter(user_id=user_id) if user_id else self._get_query_set()
         return super().list(request, *args, **kwargs)
 
     def hot(self, request, *args, **kwargs):
