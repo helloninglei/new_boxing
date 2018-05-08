@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification
 from biz import models, constants
@@ -76,11 +77,25 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
     competition_video = serializers.URLField(required=False)
     nick_name = serializers.SerializerMethodField()
+    allowed_lessons = serializers.ListField(child=serializers.CharField())
+
+    def validate(self, attrs):
+        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
+                not attrs.get('refuse_reason'):
+            raise ValidationError({'refuse_reason': ['驳回理由是必填项']})
+        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED:
+            if not attrs.get('allowed_lessons'):
+                raise ValidationError({'allowed_lessons': ['可开通的课程类型是必填项']})
+            else:
+                attrs['is_locked'] = False
+        return attrs
 
     class Meta:
         model = BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('lock_state',)
+        read_only_fields = ('user', 'real_name', 'height', 'weight', 'birthday', 'identity_number',
+                            'mobile', 'is_professional_boxer', 'club', 'job', 'introduction', 'experience',
+                            'honor_certificate_images', 'competition_video')
 
     def get_nick_name(self, obj):
         has_profile = hasattr(obj.user, 'user_profile')
