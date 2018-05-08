@@ -4,7 +4,6 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from biz.models import User
-from biz.services.resp_msg_format import response_message_format
 from boxing_app.serializers import RegisterSerializer
 
 
