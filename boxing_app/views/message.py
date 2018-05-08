@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from biz.models import Message
 from boxing_app.serializers import MessageSerializer
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
+from biz.redis_client import followed_list_all
 
 
 class MessageViewSet(viewsets.ModelViewSet):
@@ -27,10 +28,23 @@ class MessageViewSet(viewsets.ModelViewSet):
         return Message.objects.annotate(like_count=Count('likes'), comment_count=Count('comments'), is_like=is_like).prefetch_related('user', 'likes')
 
     def list(self, request, *args, **kwargs):
-        self.queryset = self._get_query_set()
+        user_id = request.query_params.get('user_id')
+        if user_id:
+            self.queryset = self._get_query_set().filter(user_id=user_id)
+        else:
+            self.queryset = self._get_query_set()
         return super().list(request, *args, **kwargs)
 
     def hot(self, request, *args, **kwargs):
         self.queryset = self._get_query_set().order_by('-like_count')
+        return super().list(request, *args, **kwargs)
+
+    def followed(self, request, *args, **kwargs):
+        user_id_list = followed_list_all(request.user.id)
+        self.queryset = self._get_query_set().filter(user_id__in=user_id_list)
+        return super().list(request, *args, **kwargs)
+
+    def mine(self, request, *args, **kwargs):
+        self.queryset = self._get_query_set().filter(user=request.user)
         return super().list(request, *args, **kwargs)
 
