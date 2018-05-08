@@ -1,7 +1,7 @@
 """
 验证码：
 不用业务场景可能有不同的短信验证码发送规则，可以使用不同view来处理，但不同的view均需加入短信接口的保护措施。
-如果其他业务场景可以复用view，需要将业务场景加入doc。
+如果其他业务场景可以复用view，需要将业务场景加入docstring。
 """
 import random
 from rest_framework.decorators import api_view, permission_classes
