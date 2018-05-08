@@ -24,6 +24,7 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from biz.constants import REPORT_OBJECT_DICT
+from boxing_app.views import captcha
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -57,12 +58,18 @@ follow_url = [
     path('unfollow', follow.UnFollowView.as_view()),
 ]
 
+captcha_urls = [
+    re_path('^captcha/', include('captcha.urls')),
+    path("captcha-image", captcha.captcha_image)
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
 urlpatterns += discover_urls
 urlpatterns += report_urls
 urlpatterns += follow_url
+urlpatterns += captcha_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

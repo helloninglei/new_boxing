@@ -13,3 +13,4 @@ certifi==2018.4.16
 chardet==3.0.4
 crcmod==1.7
 https://github.com/fangzhaowei/python-sdks/raw/master/dysms_python.zip
+django-simple-captcha==0.5.6
