@@ -24,6 +24,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('authentication_state', 'is_locked')
 
+
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
         result = {'id': user.id}
