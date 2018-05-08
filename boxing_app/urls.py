@@ -49,6 +49,10 @@ boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
 ]
 
+user_urls = [
+    re_path("^user-register-status/(?P<identity_type>(mobile|wechat_openid|weibo_openid))/(?P<identity_data>\w+)")
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url

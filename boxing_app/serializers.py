@@ -25,7 +25,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         read_only_fields = ('authentication_state','lock_state')
 
 
-
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
         result = {'id': user.id}
@@ -90,3 +89,9 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Report
         fields = ['object_id', 'reason', 'remark']
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = '__all__'
