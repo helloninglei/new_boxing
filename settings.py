@@ -65,7 +65,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'biz'
+    'biz',
+    'captcha'
 ]
 
 MIDDLEWARE = [
@@ -171,3 +172,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# captcha conf
+CAPTCHA_IMAGE_SIZE = (144, 66)
+CAPTCHA_FONT_SIZE = 30
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_arcs',)
+FAKE_IMAGE_CAPTCHA = '1111'
