@@ -129,12 +129,6 @@ class FollowUserSerializer(serializers.Serializer):
         read_only_fields = '__all__'
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.User
-        fields = '__all__'
-
-
 class SendVerifyCodeSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
     captcha = serializers.JSONField(required=False)
@@ -145,6 +139,6 @@ class SendVerifyCodeSerializer(serializers.Serializer):
             if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.exists(SEND_VERIFY_CODE.format(attrs['mobile'])):
+            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "图形验证码错误！"})
         return attrs

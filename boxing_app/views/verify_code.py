@@ -23,6 +23,7 @@ def send_verify_code(request):
     serializer.is_valid(raise_exception=True)
 
     verify_code = random.randint(100000, 999999)
-    redis_client.setex(SEND_VERIFY_CODE.format(serializer.validated_data['mobile']), SEND_VERIFY_INTERVAL, verify_code)
+    redis_client.setex(SEND_VERIFY_CODE.format(mobile=serializer.validated_data['mobile']), SEND_VERIFY_INTERVAL,
+                       verify_code)
     ali_sms_client.send_verify_code(serializer.validated_data['mobile'], verify_code)
     return Response(status=status.HTTP_200_OK)
