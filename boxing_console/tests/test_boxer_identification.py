@@ -150,19 +150,19 @@ class BoxerIdentificationTestCase(TestCase):
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
             "competition_video": 'https://baidu.com'
         }
+        data = {'authentication_state': constants.BOXER_AUTHENTICATION_STATE_REFUSE,
+                'refuse_reason': '身份信息不全，审核不通过'}
         identification = BoxerIdentification.objects.create(**identification_data)
-        res = self.client.post(reverse('identification_refuse', kwargs={'pk': identification.pk}),
-                               data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_REFUSE,
-                                     'refuse_reason': '身份信息不全，审核不通过'})
+        res = self.client.post(reverse('identification_refuse', kwargs={'pk': identification.pk}),data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_REFUSE)
-        self.assertEqual(identification.refuse_reason, '身份信息不全，审核不通过')
+        self.assertEqual(identification.refuse_reason, data['refuse_reason'])
         opeation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                 refer_pk=identification.pk)
         self.assertEqual(opeation_log.operator, self.fake_user1)
         self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_REFUSE)
-        self.assertEqual(opeation_log.content, '身份信息不全，审核不通过')
+        self.assertEqual(opeation_log.content, data['refuse_reason'])
 
     def test_boxer_identification_refuse_faild_without_reason(self):
         identification_data = {
