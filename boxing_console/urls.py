@@ -17,6 +17,7 @@ from django.urls import path
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
+from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 
 urlpatterns = [
@@ -39,4 +40,9 @@ boxer_url = [
          name='identification_refuse'),
 ]
 
+course_url = [
+    path('courses', CourseViewSet.as_view({'get': 'list'}), name='courses_list')
+]
+
 urlpatterns += boxer_url
+urlpatterns += course_url
