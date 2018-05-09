@@ -268,3 +268,17 @@ class SmsLog(models.Model):
     class Meta:
         db_table = 'sms_log'
         ordering = ("-created_time",)
+
+
+class BoxingClub(BaseModel):
+    club_name = models.CharField(max_length=20)
+    address = models.CharField(max_length=30)
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+    phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
+    opening_hours = models.CharField(max_length=30)
+    images = StringListField()
+    club_introduction = models.CharField(max_length=120)
+
+    class Meta:
+        db_table = 'club'
