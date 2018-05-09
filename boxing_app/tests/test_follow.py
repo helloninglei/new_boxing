@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User, Report
-from biz.constants import REPORT_OBJECT_DICT
-from biz.constants import REPORT_REASON_CHOICES
-from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
+from biz.models import User
 from biz.redis_client import _client
 
 
@@ -19,12 +16,9 @@ class FollowTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
         self.client3 = self.client_class()
         self.client3.login(username=self.test_user_3, password='password')
-
-    def flush_redis(self):
         _client.flushdb()
 
     def test_follow(self):
-        self.flush_redis()
         data = {'user_id': self.test_user_2.id}
         res = self.client1.post('/follow', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -34,7 +28,6 @@ class FollowTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_unfollow(self):
-        self.flush_redis()
         data = {'user_id': self.test_user_2.id}
         res = self.client1.post('/follow', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -43,7 +36,6 @@ class FollowTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_follow_list(self):
-        self.flush_redis()
         self.client1.post('/follow', {'user_id': self.test_user_2.id})
         self.client1.post('/follow', {'user_id': self.test_user_3.id})
 
