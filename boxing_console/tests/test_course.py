@@ -16,9 +16,8 @@ class BoxerIdentificationTestCase(APITestCase):
 
     @staticmethod
     def make_identification_list():
-        user_list = []
-        [user_list.append(User.objects.create_user(mobile=11111111112+num, password='password'))
-         for num in range(0, 10)]
+        user_list = [User.objects.create_user(mobile=11111111112+num, password='password')
+                     for num in range(0, 10)]
 
         identification_list = [BoxerIdentification.objects.create(
             user=user,
