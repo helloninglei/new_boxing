@@ -23,8 +23,8 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
-from biz.constants import REPORT_OBJECT_DICT
 from boxing_app.views import captcha
+from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -34,9 +34,13 @@ discover_urls = [
     path('messages/mine', message.MessageViewSet.as_view({'get': 'mine'}), name='message-mine'),
     path('messages/followed', message.MessageViewSet.as_view({'get': 'followed'}), name='message-followed'),
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}), name='message-detail'),
-    path('messages/<int:message_id>/comments', comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
-    path('messages/<int:message_id>/comments/<int:pk>', comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
     path('messages/<int:message_id>/like', like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+]
+
+comment_object_string = '|'.join(COMMENT_OBJECT_DICT.keys())
+comment_urls = [
+    re_path(r'^(?P<object_type>({0}))s/(?P<object_id>\d+)/comments$'.format(comment_object_string), comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
+    re_path(r'^(?P<object_type>({0}))s/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string), comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
 ]
 
 upload_urls = [
@@ -69,6 +73,7 @@ urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
 urlpatterns += discover_urls
+urlpatterns += comment_urls
 urlpatterns += report_urls
 urlpatterns += follow_url
 urlpatterns += captcha_urls

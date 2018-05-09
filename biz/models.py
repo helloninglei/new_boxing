@@ -3,6 +3,7 @@ import json
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 from biz import validator, constants
 
 
@@ -155,6 +156,7 @@ class Message(SoftDeleteModel):
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
+    comments = GenericRelation('Comment')
 
     class Meta:
         db_table = 'discover_message'
@@ -188,9 +190,11 @@ class BoxerIdentification(BaseModel):
 
 
 class Comment(SoftDeleteModel):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
     content = models.CharField(max_length=140)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
-    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='comments', db_index=True)
     parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, db_index=True)
     ancestor_id = models.IntegerField(null=True, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
@@ -198,7 +202,7 @@ class Comment(SoftDeleteModel):
     updated_time = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'discover_comment'
+        db_table = 'comment'
         ordering = ('-created_time',)
 
     def reply_list(self):
