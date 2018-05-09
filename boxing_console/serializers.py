@@ -2,7 +2,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course
 from biz import models, constants
 
 
@@ -100,3 +100,26 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     def get_nick_name(self, obj):
         has_profile = hasattr(obj.user, 'user_profile')
         return obj.user.user_profile.nick_name if has_profile else None
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    boxer_name = serializers.SerializerMethodField()
+    mobile = serializers.SerializerMethodField()
+    is_professional_boxer = serializers.SerializerMethodField()
+    is_accept_order = serializers.SerializerMethodField()
+
+    def get_boxer_name(self, instance):
+        return instance.boxer.real_name
+
+    def get_mobile(self, instance):
+        return instance.boxer.mobile
+
+    def get_is_professional_boxer(self, instance):
+        return  instance.boxer.is_professional_boxer
+
+    def get_is_accept_order(self, instance):
+        return not instance.boxer.is_locked
+
+    class Meta:
+        model = Course
+        exclude = ('boxer',)
