@@ -92,7 +92,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Report
-        fields = ['object_id', 'reason', 'remark']
+        fields = ['id', 'object_id', 'reason', 'remark']
 
 
 class FollowUserSerializer(serializers.Serializer):

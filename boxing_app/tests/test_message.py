@@ -2,16 +2,25 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User
+from biz.redis_client import _client
 
 
 class MessageTestCase(APITestCase):
     def setUp(self):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
         self.test_user_2 = User.objects.create_user(mobile='11111111112', password='password')
+        self.test_user_3 = User.objects.create_user(mobile='11111111113', password='password')
+        self.test_user_4 = User.objects.create_user(mobile='11111111114', password='password')
         self.client1 = self.client_class()
-        self.client1.login(username=self.test_user_1, password='password')
         self.client2 = self.client_class()
+        self.client3 = self.client_class()
+        self.client4 = self.client_class()
+        self.client1.login(username=self.test_user_1, password='password')
         self.client2.login(username=self.test_user_2, password='password')
+        self.client3.login(username=self.test_user_3, password='password')
+        self.client4.login(username=self.test_user_4, password='password')
+
+        _client.flushdb()
 
     def test_create(self):
         msg1 = {'content': 'hello1'}
@@ -42,3 +51,41 @@ class MessageTestCase(APITestCase):
 
         response = self.client1.get(path='/messages')
         self.assertEqual(len(response.data['results']), 2)
+
+    def prepare(self):
+        msg = {'content': 'hello1'}
+        self.client1.post('/messages', msg)
+
+        self.client2.post('/messages', msg)
+        self.client2.post('/messages', msg)
+        self.client3.post('/messages', msg)
+
+        self.client4.post('/messages', msg)
+
+    def test_followed_and_user_messages(self):
+        self.prepare()
+        self.client1.post('/follow', {'user_id': self.test_user_2.id})
+        self.client1.post('/follow', {'user_id': self.test_user_3.id})
+
+        # followed
+        res = self.client1.get('/messages/followed')
+        result = res.data['results']
+        self.assertEqual(len(result), 3)
+        followed_user_ids = [self.test_user_2.id, self.test_user_3.id]
+        for message in result:
+            self.assertIn(message['user']['id'], followed_user_ids)
+
+        # mine
+        res = self.client1.get('/messages/mine')
+        result = res.data['results']
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['user']['id'], self.test_user_1.id)
+
+        # user
+        res = self.client1.get(f'/messages?user_id={self.test_user_2.id}')
+        result = res.data['results']
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]['user']['id'], self.test_user_2.id)
+
+
+

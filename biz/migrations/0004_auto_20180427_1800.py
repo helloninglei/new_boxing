@@ -13,21 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Comment',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content', models.CharField(max_length=140)),
-                ('ancestor_id', models.IntegerField(db_index=True, null=True)),
-                ('is_deleted', models.BooleanField(db_index=True, default=False)),
-                ('created_time', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('updated_time', models.DateTimeField(auto_now=True)),
-            ],
-            options={
-                'db_table': 'discover_comment',
-                'ordering': ('-created_time',),
-            },
-        ),
         migrations.AlterModelOptions(
             name='message',
             options={'ordering': ('-created_time',)},
@@ -46,20 +31,5 @@ class Migration(migrations.Migration):
             model_name='user',
             name='mobile',
             field=models.CharField(db_index=True, error_messages={'unique': '手机号已存在。'}, max_length=11, unique=True, validators=[biz.validator.validate_mobile]),
-        ),
-        migrations.AddField(
-            model_name='comment',
-            name='message',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='biz.Message'),
-        ),
-        migrations.AddField(
-            model_name='comment',
-            name='parent',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='biz.Comment'),
-        ),
-        migrations.AddField(
-            model_name='comment',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='comments', to=settings.AUTH_USER_MODEL),
         ),
     ]

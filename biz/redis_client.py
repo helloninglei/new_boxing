@@ -70,6 +70,10 @@ def followed_list(current_user_id, page=1):
     return _client.zrevrange(f'followed_{current_user_id}', PAGE_SIZE * (page-1), PAGE_SIZE * page)
 
 
+def followed_list_all(current_user_id):
+    return _client.zrevrange(f'followed_{current_user_id}', 0, -1)
+
+
 def follower_count(current_user_id):
     return _client.zcard(f'follower_{current_user_id}')
 

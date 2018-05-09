@@ -119,3 +119,7 @@ REPORT_OBJECT_DICT = {
     'message': 1,
     'comment': 2,
 }
+
+COMMENT_OBJECT_DICT = {
+    'message': 1,
+}
