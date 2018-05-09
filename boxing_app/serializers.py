@@ -140,5 +140,5 @@ class SendVerifyCodeSerializer(serializers.Serializer):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
             if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
-                raise ValidationError({"message": "图形验证码错误！"})
+                raise ValidationError({"message": "需要图形验证码！"})
         return attrs
