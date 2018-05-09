@@ -6,10 +6,11 @@ from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from biz.redis_client import is_followed
 from biz import models
-from biz.validator import validate_mobile
+from biz.validator import validate_mobile, validate_password
 from biz.services.captcha_service import check_captcha
-from biz import redis_client
+from biz import redis_client, redis_const
 from biz.redis_const import SEND_VERIFY_CODE
+from boxing_app.services import verify_code_service
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -141,4 +142,28 @@ class SendVerifyCodeSerializer(serializers.Serializer):
         else:
             if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "需要图形验证码！"})
+        return attrs
+
+
+class RegisterSerializer(serializers.Serializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
+    password = serializers.CharField(validators=[validate_password])
+    verify_code = serializers.CharField()
+
+    def validate(self, attrs):
+        if models.User.objects.filter(mobile=attrs['mobile']).exists():
+            raise ValidationError({"message": "手机号已存在！"})
+        if not verify_code_service.check_verify_code(mobile=attrs['mobile'], verify_code=attrs['verify_code']):
+            raise ValidationError({"message": "短信验证码错误！"})
+        return attrs
+
+
+class RegisterWithInfoSerializer(serializers.Serializer):
+    avatar = serializers.CharField()
+    gender = serializers.BooleanField()
+    mobile = serializers.CharField(validators=[validate_mobile])
+
+    def validate(self, attrs):
+        if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
+            raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
         return attrs

@@ -26,6 +26,7 @@ from boxing_app.views import follow
 from boxing_app.views import captcha
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
+from boxing_app.views import register
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -74,6 +75,13 @@ verify_code_urls = [
     path("verify_code", send_verify_code)
 ]
 
+register_urls = [
+    path("mobile_register_status", register.mobile_register_status),
+    path("is_need_captcha", register.is_need_captcha),
+    path("register", register.register),
+    path("register_with_user_info", register.register_with_user_info)
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -83,6 +91,7 @@ urlpatterns += report_urls
 urlpatterns += follow_url
 urlpatterns += captcha_urls
 urlpatterns += verify_code_urls
+urlpatterns += register_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
