@@ -115,10 +115,10 @@ class CourseSerializer(serializers.ModelSerializer):
         return instance.boxer.mobile
 
     def get_is_professional_boxer(self, instance):
-        return "职业" if instance.boxer.is_professional_boxer else "非职业"
+        return  instance.boxer.is_professional_boxer
 
     def get_is_accept_order(self, instance):
-        return "否" if instance.boxer.is_locked else "是"
+        return not instance.boxer.is_locked
 
     class Meta:
         model = Course
