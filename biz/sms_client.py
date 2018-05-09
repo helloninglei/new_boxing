@@ -4,6 +4,8 @@ from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.profile import region_provider
 from aliyunsdkdysmsapi.request.v20170525 import SendSmsRequest
 from biz.models import SmsLog
+from biz import redis_client
+from biz.redis_const import SEND_VERIFY_CODE, SEND_VERIFY_INTERVAL
 
 
 # 注意：不要更改
@@ -71,6 +73,7 @@ def _sms_send_log(mobile, template, content, business_id, result):
     )
 
 
-def send_verify_code(mobile, verify_code):
+def send_verify_code(mobile, verify_code, interval=SEND_VERIFY_INTERVAL):
     template = SMS_TEMPLATES['verifyCode']
+    redis_client.setex(SEND_VERIFY_CODE.format(mobile=mobile), interval, verify_code)
     return _send_template_sms(template, mobile, template['text'].format(code=verify_code), {"code": verify_code})

@@ -7,10 +7,8 @@ import random
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 from rest_framework.response import Response
-from biz import redis_client
 from boxing_app.serializers import SendVerifyCodeSerializer
-from biz import ali_sms_client
-from biz.redis_const import SEND_VERIFY_CODE, SEND_VERIFY_INTERVAL
+from biz import sms_client
 
 
 @api_view(['POST'])
@@ -23,7 +21,5 @@ def send_verify_code(request):
     serializer.is_valid(raise_exception=True)
 
     verify_code = random.randint(100000, 999999)
-    redis_client.setex(SEND_VERIFY_CODE.format(mobile=serializer.validated_data['mobile']), SEND_VERIFY_INTERVAL,
-                       verify_code)
-    ali_sms_client.send_verify_code(serializer.validated_data['mobile'], verify_code)
+    sms_client.send_verify_code(serializer.validated_data['mobile'], verify_code)
     return Response(data={"message": "ok"}, status=status.HTTP_200_OK)
