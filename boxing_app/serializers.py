@@ -6,6 +6,10 @@ from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from biz.redis_client import is_followed
 from biz import models
+from biz.validator import validate_mobile
+from biz.services.captcha_service import check_captcha
+from biz import redis_client
+from biz.redis_const import SEND_VERIFY_CODE
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -123,3 +127,18 @@ class FollowUserSerializer(serializers.Serializer):
     class Meta:
         fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
         read_only_fields = '__all__'
+
+
+class SendVerifyCodeSerializer(serializers.Serializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
+    captcha = serializers.JSONField(required=False)
+
+    def validate(self, attrs):
+        if "captcha" in attrs:
+            captcha = attrs['captcha']
+            if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
+                raise ValidationError({"message": "图形验证码错误！"})
+        else:
+            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
+                raise ValidationError({"message": "需要图形验证码！"})
+        return attrs

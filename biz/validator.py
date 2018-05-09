@@ -15,6 +15,7 @@ def validate_mobile(value):
             _('%(value)s is not an mobile'), params={'value': value},
         )
 
+
 def validate_identity_number(value):
-    if identity_number_regex.match(value) == None:
-        raise ValidationError( "身份证号码格式错误！")
+    if identity_number_regex.match(value) is None:
+        raise ValidationError("身份证号码格式错误！")
