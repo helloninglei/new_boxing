@@ -30,7 +30,7 @@ class LikeTestCase(APITestCase):
         }
         res = self.client2.post('/messages/report', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        obj = Report.objects.get(object_id=res.data['object_id'])
+        obj = Report.objects.get(id=res.data['object_id'])
 
         self.assertEqual(REPORT_OBJECT_DICT['message'], obj.object_type)
 
