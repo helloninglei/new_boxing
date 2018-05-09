@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
+from django.core.validators import MinValueValidator
 from biz import validator, constants
 
 
@@ -268,3 +269,25 @@ class SmsLog(models.Model):
     class Meta:
         db_table = 'sms_log'
         ordering = ("-created_time",)
+
+
+class HotVideo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hot_videos')
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=140)
+    url = models.URLField()
+    try_url = models.URLField()
+    price = models.IntegerField(validators=[MinValueValidator(1)])
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    is_show = models.BooleanField(default=True)
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+
+class HotVideoOrder(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID, db_index=True)
+    video = models.ForeignKey(HotVideo, on_delete=models.PROTECT)
+    order_time = models.DateTimeField(auto_now_add=True)
+    pay_time = models.DateTimeField(null=True)
+
+
