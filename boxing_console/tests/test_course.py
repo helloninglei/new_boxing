@@ -112,3 +112,35 @@ class BoxerIdentificationTestCase(APITestCase):
         # 通过boxer__mobile搜索
         res = self.client.get('/courses?search={}'.format(identification_list[1].mobile))
         self.assertEqual(res.data['count'], 1)
+
+    def test_get_course_detail(self):
+        identification_list = self.make_identification_list()
+        update_data = {"real_name": "老王",
+                       "mobile": '10000000000',
+                       "allowed_lessons": ["THAI_BOXING", "BOXING", "MMA"],
+                       "club": "club001",
+                       "is_professional_boxer": True
+                       }
+        [setattr(identification_list[1], key, update_data[key]) for key in update_data]
+        identification_list[1].save()
+
+        data = {"boxer": identification_list[1],
+                "course_name": constants.BOXER_ALLOWED_COURSES_MMA,
+                "price": 100,
+                "duration": 120,
+                "validity": "2018-08-25"
+                }
+        course = Course.objects.create(**data)
+
+        res = self.client.get(reverse('course_detail', kwargs={'pk': course.pk}))
+        for key in data:
+            if key == 'boxer':
+                self.assertEqual(res.data['boxer_name'], data[key].real_name)
+            else:
+                self.assertEqual(res.data[key], data[key])
+
+        for key in update_data:
+            if key == 'real_name':
+                self.assertEqual(res.data['boxer_name'], update_data[key])
+            else:
+                self.assertEqual(res.data[key], update_data[key])
