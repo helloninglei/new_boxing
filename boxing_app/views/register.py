@@ -31,7 +31,7 @@ def register(request):
     password = serializer.validated_data['password']
     redis_client.hmset(
         redis_const.REGISTER_INFO.format(mobile=mobile), {"mobile": mobile, "password": password})
-    return Response(data={"result": "ok"}, status=status.HTTP_200_OK)
+    return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
@@ -46,4 +46,4 @@ def register_with_user_info(request):
     UserProfile.objects.create(user=user, gender=serializer.validated_data['gender'],
                                avatar=serializer.validated_data['avatar'])
     redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
-    return Response(data={"result": "ok"}, status=status.HTTP_200_OK)
+    return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
