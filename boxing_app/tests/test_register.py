@@ -33,3 +33,4 @@ class RegisterTestCase(APITestCase):
         self.assertEqual(response.data['result'], "ok")
         self.assertTrue(User.objects.filter(mobile=mobile))
         self.assertTrue(UserProfile.objects.filter(user__mobile=mobile).exists())
+        self.assertFalse(redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))

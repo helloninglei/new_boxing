@@ -45,4 +45,5 @@ def register_with_user_info(request):
     user = User.objects.create_user(mobile=mobile, password=password)
     UserProfile.objects.create(user=user, gender=serializer.validated_data['gender'],
                                avatar=serializer.validated_data['avatar'])
+    redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
     return Response(data={"result": "ok"}, status=status.HTTP_204_NO_CONTENT)
