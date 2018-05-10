@@ -11,11 +11,10 @@ init(){
 reset(){
     docker stop $(docker ps -a -q)
     docker rm $(docker ps -a -q)
-    init()
+    init
 }
 
 start(){
-    pull
     docker stop new_boxing_app
     docker stop new_boxing_console
 }
@@ -26,7 +25,8 @@ stop(){
 }
 
 restart(){
-    pull
     docker restart new_boxing_app
     docker restart new_boxing_console
 }
+
+eval $1
