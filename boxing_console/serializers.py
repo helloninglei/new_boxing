@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, HotVideo
@@ -106,6 +107,9 @@ class CourseSerializer(serializers.ModelSerializer):
     mobile = serializers.SerializerMethodField()
     is_professional_boxer = serializers.SerializerMethodField()
     is_accept_order = serializers.SerializerMethodField()
+    club = serializers.SerializerMethodField()
+    allowed_lessons = serializers.SerializerMethodField()
+    boxer_id = serializers.SerializerMethodField()
 
     def get_boxer_name(self, instance):
         return instance.boxer.real_name
@@ -114,10 +118,19 @@ class CourseSerializer(serializers.ModelSerializer):
         return instance.boxer.mobile
 
     def get_is_professional_boxer(self, instance):
-        return  instance.boxer.is_professional_boxer
+        return instance.boxer.is_professional_boxer
 
     def get_is_accept_order(self, instance):
         return not instance.boxer.is_locked
+
+    def get_club(self, instance):
+        return instance.boxer.club
+
+    def get_allowed_lessons(self, instance):
+        return instance.boxer.allowed_lessons
+
+    def get_boxer_id(self, instance):
+        return instance.boxer.pk
 
     class Meta:
         model = Course
