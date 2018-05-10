@@ -22,5 +22,4 @@ deploy(){
     /usr/local/bin/uwsgi /etc/uwsgi.ini
 }
 
-
-clear_cache && install && migrate && deploy
+cd work && clear_cache && install && migrate && deploy
