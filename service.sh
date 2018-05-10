@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# 管理docker容器
+
 pull(){
     git pull origin master
 }
@@ -11,7 +14,6 @@ init(){
 reset(){
     docker stop $(docker ps -a -q)
     docker rm $(docker ps -a -q)
-    init
 }
 
 start(){

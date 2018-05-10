@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# 在docker容器内运行uwsgi
+
 clear_cache(){
     find . -type f -name "*.py[co]" -delete
     find . -type d -name "__pycache__" -delete
