@@ -15,3 +15,5 @@ from settings import *
 ROOT_URLCONF = 'boxing_app.urls'
 
 WSGI_APPLICATION = 'boxing_app.wsgi.application'
+
+REST_FRAMEWORK['DEFAULT_PAGINATION_CLASS'] = 'boxing_app.pagination.BoxingPagination'

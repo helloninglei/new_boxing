@@ -19,7 +19,10 @@ DEVELOPMENT = 'development'
 
 ENVIRONMENT = DEVELOPMENT
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '39.105.73.10',  # qa1
+]
 
 DB_MYSQL_DATABASE = 'quanchengchuji'
 DB_MYSQL_HOST = '192.168.33.10'
