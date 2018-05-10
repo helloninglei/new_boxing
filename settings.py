@@ -65,8 +65,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    "rest_framework.authtoken",
     'biz',
-    'captcha'
+    'captcha',
+    "rest_auth"
 ]
 
 MIDDLEWARE = [

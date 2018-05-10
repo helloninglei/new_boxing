@@ -256,6 +256,9 @@ class Course(models.Model):
     duration = models.IntegerField()  # 时长，单位：min
     validity = models.DateField()  # 有效期
 
+    class Meta:
+        db_table = "course"
+
 
 class SmsLog(models.Model):
     mobile = models.CharField(max_length=11)

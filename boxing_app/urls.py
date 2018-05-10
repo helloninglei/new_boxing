@@ -82,6 +82,10 @@ register_urls = [
     path("register_with_user_info", register.register_with_user_info)
 ]
 
+login_urls = [
+    re_path(r"^rest-auth/", include("rest_auth.urls"))
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -92,6 +96,7 @@ urlpatterns += follow_url
 urlpatterns += captcha_urls
 urlpatterns += verify_code_urls
 urlpatterns += register_urls
+urlpatterns += login_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
