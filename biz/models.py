@@ -278,7 +278,7 @@ class BoxingClub(BaseModel):
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
-    club_introduction = models.CharField(max_length=120)
+    introduction = models.CharField(max_length=120)
 
     class Meta:
         db_table = 'club'
