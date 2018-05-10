@@ -13,12 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.urls import path
-
+from django.urls import include, path
+from django.conf import settings
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
+from boxing_console.views.hot_video import HotVideoViewSet
 
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
@@ -40,9 +41,20 @@ boxer_url = [
          name='identification_refuse'),
 ]
 
+hot_video_url = [
+    path('hot_videos', HotVideoViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+]
+
 course_url = [
     path('courses', CourseViewSet.as_view({'get': 'list'}), name='courses_list')
 ]
 
 urlpatterns += boxer_url
 urlpatterns += course_url
+urlpatterns += course_url
+urlpatterns += hot_video_url
+
+if settings.ENVIRONMENT != settings.PRODUCTION:
+    urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
+

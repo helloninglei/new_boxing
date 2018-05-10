@@ -275,19 +275,25 @@ class HotVideo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hot_videos')
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=140)
-    url = models.URLField()
-    try_url = models.URLField()
+    url = models.CharField(max_length=200)
+    try_url = models.CharField(max_length=200)
     price = models.IntegerField(validators=[MinValueValidator(1)])
     operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     is_show = models.BooleanField(default=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
+    class Meta:
+        db_table = 'hot_video'
+        ordering = ("-created_time",)
+
 
 class HotVideoOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID, db_index=True)
-    video = models.ForeignKey(HotVideo, on_delete=models.PROTECT)
+    video = models.ForeignKey(HotVideo, on_delete=models.PROTECT, related_name='orders')
     order_time = models.DateTimeField(auto_now_add=True)
+    amount = models.PositiveIntegerField()
     pay_time = models.DateTimeField(null=True)
 
-
+    class Meta:
+        db_table = 'hot_video_order'
