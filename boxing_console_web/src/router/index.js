@@ -1,6 +1,5 @@
 import Index        from 'components/index';
 import Login        from 'components/login';
-import Viewer       from 'components/viewer';
 import UserManage   from 'pages/usermanage';
 import BoxingManage from 'pages/boxingmanage';
 import BoxingList   from 'pages/boxinglist';

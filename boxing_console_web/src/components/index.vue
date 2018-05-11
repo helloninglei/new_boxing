@@ -4,16 +4,16 @@
             <el-col :span="4"  style="min-height: 100%; background: #1D1D27;;overflow: hidden;width:216px">
                 <el-menu active-text-color="#fff" :default-active="defaultActive" router>
                     <el-menu-item index="/usermanage" :disabled="disabled">
-                        <div class='menu-item-inner'>用户管理</div>
+                        <div class='menu-item-inner' @click="changeTitle('用户管理','')">用户管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxingmanage" :disabled="disabled">
-                        <div class='menu-item-inner'>拳馆管理</div>
+                        <div class='menu-item-inner' @click="changeTitle('拳馆管理','')">拳馆管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxinglist" :disabled="disabled">
-                        <div class="menu-item-inner"><div class='_hr'></div>拳馆列表</div>
+                        <div class="menu-item-inner" @click="changeTitle('拳馆管理','拳馆列表')"><div class='_hr'></div>拳馆列表</div>
                     </el-menu-item>
                     <el-menu-item index="/addBoxing" :disabled="disabled">
-                        <div class="menu-item-inner"><div class='_hr'></div>添加拳馆</div>
+                        <div class="menu-item-inner" @click="changeTitle('拳馆管理','添加拳馆')"><div class='_hr'></div>添加拳馆</div>
                     </el-menu-item>
                 </el-menu>
             </el-col>
@@ -21,6 +21,8 @@
                 <div class='index-top'>
                     <el-button type="danger" class='myColor_red myButton_40 btn_width_95'>退出</el-button>
                     <div class='user_name'>{{user_name}}</div>
+                    <p class="firstTitle">{{title1}}</p>
+                    <p v-if="isShowTitle"> <i class="el-icon-arrow-right"></i>{{title2}}</p>
                 </div>
                 <router-view></router-view>
             </el-col>
@@ -40,6 +42,8 @@
     .index-top .btn_width_95,.index-top .user_name{float:right;margin-top:31px;margin-right:68px;font-size:14px;font-family: 'PingFangSC-Light;'}
     .btn_width_95{width:95px;}
     .user_name{float:right;margin-right:14px!important;height:40px;line-height: 40px}
+    .firstTitle{float:left;font-size: 32px;color: #000000;margin:36px 0 0 30px;font-family: 'PingFangSC'}
+    .firstTitle+p{float:left;font-size: 14px;color: rgba(0,0,0,0.60);margin:49px 0 0 25px;}
 </style>
 
 <script type="text/ecmascript-6">
@@ -48,8 +52,11 @@
     export default {
         data() {
             return {
-                disabled: false,
-                user_name:'admin'
+                disabled : false,
+                user_name: 'admin',
+                title1   : '用户管理',
+                title2   : '',
+                isShowTitle : false,
             }
         },
         components: {
@@ -57,28 +64,18 @@
         },
         computed: {
             defaultActive: function(){
-                let path = this.$route.path;
-                 if (path == '/checkDetail' || path == '/roleDetail' || path == '/checkProgress/modifyPassword') {
-                    return '/checkProgress'
-                }
-                else if (path == '/addUser' || path == '/editUser' || path == '/modifyPassword') {
-                    return '/userManage'
-                }
-                else if (path == '/addCheckSet' || path == '/editCheckSet' || path === '/seeCheckSetDetail' || path == '/modifyPassword')  {
-                    return '/checkSet'
-                }
-                return path;
+                
             }
         },
         created() {
-            // let userInfo = window.PYDATA.user;
-            // let ifSetPassword = userInfo.has_changed_password;
-            // if (!ifSetPassword) {
-            //     this.disabled = true;
-            // }
+            
         },
         methods: {
-
+            changeTitle(title1,title2){
+                this.title1 = title1
+                this.title2 = title2
+                this.isShowTitle = title2 ? true : false ;
+            }
         }
     }
 </script>
