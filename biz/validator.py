@@ -19,3 +19,9 @@ def validate_mobile(value):
 def validate_identity_number(value):
     if identity_number_regex.match(value) is None:
         raise ValidationError("身份证号码格式错误！")
+
+
+def validate_password(value):
+    password_regex = re.compile(r"^[\da-zA-Z]{6,16}$")
+    if not password_regex.match(value):
+        raise ValidationError("密码为6-16位数字字母组合！")

@@ -8,7 +8,8 @@ _config = settings.REDIS_CONFIG
 _client = redis.StrictRedis(host=_config['host'],
                             port=_config['port'],
                             db=_config['db'],
-                            max_connections=_config['max_connections'])
+                            max_connections=_config['max_connections'],
+                            decode_responses=True)
 
 
 def exists(key):
@@ -33,6 +34,14 @@ def get(key):
 
 def delete(key):
     return _client.delete(key)
+
+
+def hmset(key, mapping):
+    return _client.hmset(key, mapping)
+
+
+def hmget(key, fields):
+    return _client.hmget(key, fields)
 
 
 def _get_timestamp():
