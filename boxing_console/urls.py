@@ -20,6 +20,7 @@ from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChange
 from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
+from biz.views import upload_file
 
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
@@ -51,10 +52,15 @@ course_url = [
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail')
 ]
 
+upload_url = [
+    path('upload', upload_file, name='upload'),
+]
+
 urlpatterns += boxer_url
 urlpatterns += course_url
 urlpatterns += course_url
 urlpatterns += hot_video_url
+urlpatterns += upload_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
