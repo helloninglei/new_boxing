@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User, HotVideo, HotVideoOrder
 
+
 class HotVideoTestCase(APITestCase):
     def setUp(self):
         self.test_user = User.objects.create_user(mobile='11111111111', password='password')
