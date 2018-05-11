@@ -4,12 +4,13 @@ from rest_framework import viewsets, filters
 from django.db.models import Count, Sum
 from biz import models
 from boxing_console.serializers import HotVideoSerializer
+from boxing_console.filters import HotVideoFilter, CommonFilter
 
 
 class HotVideoViewSet(viewsets.ModelViewSet):
     serializer_class = HotVideoSerializer
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
-    filter_fields = ('created_time',)
+    filter_class = HotVideoFilter
     search_fields = ('user__id', 'name')
 
     def get_queryset(self):

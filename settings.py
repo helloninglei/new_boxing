@@ -21,6 +21,7 @@ ENVIRONMENT = DEVELOPMENT
 
 ALLOWED_HOSTS = [
     '39.105.73.10',  # qa1
+    '127.0.0.1',
 ]
 
 DB_MYSQL_DATABASE = 'quanchengchuji'
