@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
+from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
-from django.db import models
 
 from biz import validator, constants
 
@@ -276,7 +276,6 @@ class BoxingClub(BaseModel):
     address = models.CharField(max_length=30)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, db_index=True)  # 经度
     latitude = models.DecimalField(max_digits=8, decimal_places=6, db_index=True)   # 纬度
-    geohash = models.CharField(max_length=20, db_index=True)  #经纬度geohash值
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
