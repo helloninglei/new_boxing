@@ -274,9 +274,9 @@ class SmsLog(models.Model):
 class BoxingClub(BaseModel):
     club_name = models.CharField(max_length=20)
     address = models.CharField(max_length=30)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度
-    latitude = models.DecimalField(max_digits=8, decimal_places=6)   # 纬度
-    geohash = models.CharField(max_length=20)  #经纬度geohash值
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, db_index=True)  # 经度
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, db_index=True)   # 纬度
+    geohash = models.CharField(max_length=20, db_index=True)  #经纬度geohash值
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
