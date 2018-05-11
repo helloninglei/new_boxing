@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters, status
-
+from django_filters import rest_framework as df_filters
+from rest_framework import viewsets, filters
 from django.db.models import Count, Sum
 from biz import models
 from boxing_console.serializers import HotVideoSerializer
@@ -9,9 +8,9 @@ from boxing_console.serializers import HotVideoSerializer
 
 class HotVideoViewSet(viewsets.ModelViewSet):
     serializer_class = HotVideoSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    # filter_fields = ('created_time',)
-    search_fields = ('user__id', 'name', 'description')
+    filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
+    filter_fields = ('created_time',)
+    search_fields = ('user__id', 'name')
 
     def get_queryset(self):
         return models.HotVideo.objects.annotate(sales_count=Count('orders'), price_amount=Sum('orders__amount')).\
