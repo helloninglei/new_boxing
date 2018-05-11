@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub
 from biz import models, constants
 
 
@@ -136,3 +136,8 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         exclude = ('boxer',)
+
+class BoxingClubSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BoxingClub
