@@ -278,7 +278,7 @@ class HotVideo(models.Model):
     url = models.CharField(max_length=200)
     try_url = models.CharField(max_length=200)
     price = models.IntegerField(validators=[MinValueValidator(1)])  # 单位元
-    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
     is_show = models.BooleanField(default=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
 
