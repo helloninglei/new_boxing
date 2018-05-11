@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
+from biz import constants
 from django.conf import settings
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User, HotVideo
-
+from biz.models import User, HotVideo, HotVideoOrder
 
 class HotVideoTestCase(APITestCase):
     def setUp(self):
@@ -85,9 +85,36 @@ class HotVideoTestCase(APITestCase):
         res = self.client2.get(f'/hot_videos?end_time={start_date}')
         self.assertEqual(res.data['count'], 0)
 
+    def test_video_order(self):
+        res = self.client2.post('/hot_videos', self.data)
+        video_id = res.data['id']
 
+        video = HotVideo.objects.get(pk=video_id)
+        HotVideoOrder.objects.create(
+            user=self.test_superuser,
+            status=constants.PAYMENT_STATUS_PAID,
+            video=video,
+            amount=video.price,
+            pay_time=datetime.datetime.now()
+        )
+        HotVideoOrder.objects.create(
+            user=self.test_user3,
+            status=constants.PAYMENT_STATUS_PAID,
+            video=video,
+            amount=video.price,
+            pay_time=datetime.datetime.now()
+        )
 
+        HotVideoOrder.objects.create(
+            user=self.test_user,
+            status=constants.PAYMENT_STATUS_UNPAID,
+            video=video,
+            amount=video.price,
+        )
 
-
+        res = self.client2.get('/hot_videos')
+        result = res.data['results'][0]
+        self.assertEqual(result['sales_count'], 2)
+        self.assertEqual(result['price_amount'], video.price*2)
 
 

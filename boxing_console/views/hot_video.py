@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from django_filters import rest_framework as df_filters
 from rest_framework import viewsets, filters
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q
 from biz import models
+from biz.constants import PAYMENT_STATUS_PAID
 from boxing_console.serializers import HotVideoSerializer
-from boxing_console.filters import HotVideoFilter, CommonFilter
+from boxing_console.filters import HotVideoFilter
 
 
 class HotVideoViewSet(viewsets.ModelViewSet):
@@ -14,5 +15,8 @@ class HotVideoViewSet(viewsets.ModelViewSet):
     search_fields = ('user__id', 'name')
 
     def get_queryset(self):
-        return models.HotVideo.objects.annotate(sales_count=Count('orders'), price_amount=Sum('orders__amount')).\
-            all().order_by('-created_time').prefetch_related('orders')
+        _filter = Q(orders__status=PAYMENT_STATUS_PAID)
+        return models.HotVideo.objects.annotate(
+            sales_count=Count('orders', filter=_filter),
+            price_amount=Sum('orders__amount', filter=_filter)
+        ).order_by('-created_time')
