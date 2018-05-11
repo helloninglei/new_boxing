@@ -167,3 +167,22 @@ class RegisterWithInfoSerializer(serializers.Serializer):
         if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
             raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
         return attrs
+
+
+class LoginSerializer(serializers.Serializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
+    password = serializers.CharField()
+    captcha = serializers.JSONField(required=False)
+
+    def validate(self, attrs):
+        if "captcha" in attrs:
+            captcha = attrs['captcha']
+            if not check_captcha(captcha.get('captcha_code'), captcha.get("captcha_hash")):
+                raise ValidationError({"message": "图形验证码错误！"})
+        else:
+            if redis_client.exists(redis_const.HAS_LOGINED.format(mobile=attrs['mobile'])):
+                raise ValidationError({"message": "需要图形验证码！"})
+
+        if not models.User.objects.filter(mobile=attrs['mobile']).exists():
+            raise ValidationError({"message": "手机号未注册！"})
+        return attrs
