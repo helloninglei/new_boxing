@@ -74,7 +74,7 @@ register_urls = [
 ]
 
 login_urls = [
-    path("login", login.login),
+    path("login", login.AuthTokenLogin.as_view()),
     path("login_is_need_captcha", login.login_is_need_captcha)
 ]
 

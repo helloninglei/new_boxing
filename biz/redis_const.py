@@ -8,3 +8,4 @@ REGISTER_INFO = "REGISTER:{mobile}"
 
 # login
 HAS_LOGINED = "LOGINED:{mobile}"
+LOGIN_INTERVAL = 60
