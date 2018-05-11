@@ -89,3 +89,12 @@ def follower_count(current_user_id):
 
 def followed_count(current_user_id):
     return _client.zcard(f'followed_{current_user_id}')
+
+def record_boxing_club_location(club):
+    return _client.geoadd('boxing-club-set', club.longitude, club.latitude, club.pk)
+
+def get_boxing_club_location(club_id):
+    return _client.geopos('boxing-club-set', club_id)
+
+def del_boxing_club_location(club_id):
+    return _client.zrem('boxing-club-set',club_id)

@@ -272,7 +272,7 @@ class SmsLog(models.Model):
 
 
 class BoxingClub(BaseModel):
-    club_name = models.CharField(max_length=20)
+    club_name = models.CharField(max_length=20, unique=True)
     address = models.CharField(max_length=30)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, db_index=True)  # 经度
     latitude = models.DecimalField(max_digits=8, decimal_places=6, db_index=True)   # 纬度

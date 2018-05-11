@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub
-from biz import models, constants
+from biz import models, constants, redis_client
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -138,6 +138,14 @@ class CourseSerializer(serializers.ModelSerializer):
         exclude = ('boxer',)
 
 class BoxingClubSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField(), required=False)
+
+    @transaction.atomic
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        redis_client.record_boxing_club_location(instance)
+        return instance
 
     class Meta:
         model = BoxingClub
+        fields = '__all__'
