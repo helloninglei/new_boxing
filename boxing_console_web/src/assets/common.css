@@ -1,0 +1,10 @@
+body{
+        /*font-family: 'PingFang SC', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;*/
+        font-family: 'PingFangSC-Light;', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
+}
+.el-button.myColor_red{
+    background: #F95862;
+}
+.el-button.myButton_40{
+  height:40px!important;
+}
