@@ -12,5 +12,5 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def perform_destroy(self, instance):
-        super().perform_destroy(instance)
         redis_client.del_boxing_club_location(instance.id)
+        super().perform_destroy(instance)

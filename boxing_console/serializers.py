@@ -137,6 +137,7 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         exclude = ('boxer',)
 
+
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), required=False)
 
