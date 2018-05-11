@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
-from django.contrib.gis.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
+from django.db import models
+
 from biz import validator, constants
 
 
@@ -276,7 +277,6 @@ class BoxingClub(BaseModel):
     longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度
     latitude = models.DecimalField(max_digits=8, decimal_places=6)   #维度
     geohash = models.CharField(max_length=20)
-    geom = models.GeometryField()
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
