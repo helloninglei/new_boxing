@@ -9,6 +9,7 @@ from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
@@ -35,5 +36,10 @@ course_url = [
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail')
 ]
 
+login_urls = [
+    path("login", obtain_auth_token)
+]
+
 urlpatterns += boxer_url
 urlpatterns += course_url
+urlpatterns += login_urls
