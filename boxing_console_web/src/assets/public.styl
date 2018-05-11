@@ -1,0 +1,171 @@
+$color = #4B74FF
+#app
+  width 100%
+  height 100%
+.fillcontain
+  width 100%
+  height 100%
+.el-menu
+  margin-top 60px
+  min-height 100%
+  border-right none
+  background #333
+  .el-menu-item, .el-submenu__title
+    color rgba(255,255,255,0.3)
+    &:hover
+      background: #48576a
+      color #fff
+    &.is-active
+      background $color
+  &.el-menu--inline
+    margin-top 0
+    background #444
+.el-dropdown-link
+  cursor: pointer
+  color: #fff
+.el-dropdown
+  height 40px
+  line-height 40px
+  padding-top 10px
+  padding-left 20px
+.el-dropdown-menu
+  border-right none
+.account_handle
+  position absolute
+  top 0
+  left 0
+  z-index 1999
+
+.account_handle_icon
+  position relative
+  top -1px
+  display inline-block
+  margin-right 5px
+  width 16px
+  height 16px
+  vertical-align middle
+  &.modify_icon
+    background url("./assets/images/modify_icon.png") no-repeat
+    background-size contain
+  &.logout_icon
+    background url("./assets/images/logout_icon.png") no-repeat
+    background-size contain
+.radius_input
+  width 263px
+  height 32px
+  .el-input__inner
+    border-radius 24px
+.no_border
+  border none
+.el-input.is-active .el-input__inner, .el-input__inner:focus
+  border-color $color
+.container
+  width 90%
+  margin 0 auto
+.el-pagination {
+  margin 30px auto;
+  text-align: center;
+  width: 90%;
+}
+.el-select .el-input.is-focus .el-input__inner {
+  border-color: $color;
+}
+.el-menu-item:focus
+  background #444
+.el-checkbox-group
+  display block
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner
+  background $color
+  border-color $color
+.el-checkbox__input.is-checked+.el-checkbox__label
+  color $color
+.el-checkbox__input.is-focus .el-checkbox__inner
+  border-color $color
+.el-checkbox__inner:hover
+  border-color $color
+.el-checkbox:first-child
+  margin-left 30px
+.el-form-item.checkBox_container
+  padding-left 10px
+  .el-form-item__label
+    display block;
+    width 100%!important
+    text-align left
+  .el-form-item__content
+    margin-left 45px!important
+    .el-form-item__error
+      margin-left 30px
+.el-button--primary
+  background $color!important
+  font-size 14px
+  border-radius 24px
+  padding 9px 0
+  width 100px
+  height 32px
+  margin-top 3px
+.el-pagination.is-background .el-pager li:not(.disabled).active
+  background $color
+
+.el-radio__input.is-checked+.el-radio__label
+  color: $color;
+.el-radio__input.is-checked .el-radio__inner
+  border-color: $color;
+  background: $color;
+.el-radio__inner:hover
+  border-color $color
+.el-textarea
+  &.desc
+    .el-textarea__inner
+      width 600px
+      height 100px
+  &.index_desc
+    .el-textarea__inner
+      width 510px
+      height 100px
+.el-input__inner:focus, .el-form-item.is-error .el-textarea__inner:focus, .el-message-box__input input.invalid, .el-message-box__input input.invalid:focus
+  border-color $color
+.el-form-item.setName
+  .input_container
+    width 430px
+.el-form-item.set_index_limit
+  display inline-block
+  &.set_index_limit_up
+    .el-form-item__label
+      width 65px!important
+    .el-form-item__content
+      margin-left 66px!important
+  .el-form-item__content
+    .input_container
+      width 180px
+.index_table.el-form-item
+  .el-form-item__content
+    margin-left 0!important
+
+.el-select-dropdown.el-popper
+  z-index 999999!important
+.el-select
+  .el-input__inner:focus
+    border-color $color!important
+.el-tooltip__popper
+    width 20%
+    text-align center
+.el-form-item.upLoadFile
+    margin-bottom 0
+.el-form-item.handle_btn_container
+  .el-form-item__content
+      margin-left 0!important
+.el-breadcrumb__inner a:hover, .el-breadcrumb__inner:hover
+  color $color
+  cursor pointer
+.top_naver
+  padding-top 48px
+  width 100%
+  height 40px
+  font-size 14px
+  color #000
+  background #fff
+  border-bottom 1px solid rgba(51,51,51,.3);
+  overflow hidden;
+  .nav_container
+    width 90%
+    margin 0 auto
