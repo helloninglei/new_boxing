@@ -2,7 +2,6 @@
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from django.forms.models import model_to_dict
-from rest_framework.compat import authenticate
 from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
