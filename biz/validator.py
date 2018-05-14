@@ -12,7 +12,7 @@ identity_number_regex = re.compile(r'^\d{17}[xX0-9]$')
 def validate_mobile(value):
     if not mobile_regex.match(value):
         raise ValidationError(
-            _('%(value)s is not an mobile'), params={'value': value},
+            _('%(value)s 不是有效手机号。'), params={'value': value},
         )
 
 

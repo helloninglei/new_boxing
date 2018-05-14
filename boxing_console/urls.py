@@ -3,16 +3,15 @@
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
 """
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.conf import settings
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
-from rest_framework.authtoken.views import obtain_auth_token
 from boxing_console.views.hot_video import HotVideoViewSet
-from biz.views import upload_file
+from biz.views import upload_file, captcha_image
 
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
@@ -50,7 +49,13 @@ club_url = [
 ]
 
 login_urls = [
-    path("login", obtain_auth_token)
+    re_path("^", include("biz.urls"))
+]
+
+
+captcha_urls = [
+    re_path('^captcha/', include('captcha.urls')),
+    path("captcha-image", captcha_image)
 ]
 
 upload_url = [
@@ -64,6 +69,7 @@ urlpatterns += login_urls
 urlpatterns += course_url
 urlpatterns += hot_video_url
 urlpatterns += upload_url
+urlpatterns += captcha_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
