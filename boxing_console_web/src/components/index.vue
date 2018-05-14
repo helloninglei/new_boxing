@@ -4,7 +4,7 @@
             <el-col :span="4"  style="min-height: 100%; background: #1D1D27;;overflow: hidden;width:216px">
                 <el-menu active-text-color="#fff" :default-active="defaultActive" router>
                     <el-menu-item index="/usermanage" :disabled="disabled">
-                        <div class='menu-item-inner'>用户管理</div>
+                        <div class='menu-item-inner' @click="changeTitle('用户管理','')">用户管理</div>
                     </el-menu-item>
                     <el-menu-item index="/financemanage" :disabled="disabled">
                         <div class='menu-item-inner'>财务管理</div>
@@ -43,7 +43,7 @@
                         <div class='menu-item-inner'>Banner管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxingmanage" :disabled="disabled">
-                        <div class='menu-item-inner'>拳馆管理</div>
+                        <div class='menu-item-inner' @click="changeTitle('拳馆管理','')">拳馆管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxinglist" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>拳馆列表</div>

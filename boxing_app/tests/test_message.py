@@ -2,7 +2,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User
-from biz.redis_client import _client
+from biz.redis_client import redis_client
 
 
 class MessageTestCase(APITestCase):
@@ -20,7 +20,7 @@ class MessageTestCase(APITestCase):
         self.client3.login(username=self.test_user_3, password='password')
         self.client4.login(username=self.test_user_4, password='password')
 
-        _client.flushdb()
+        redis_client.flushdb()
 
     def test_create(self):
         msg1 = {'content': 'hello1'}
@@ -30,7 +30,7 @@ class MessageTestCase(APITestCase):
 
         response = self.client1.get(path='/messages')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(len(response.data['results']), 2)
         results = response.data['results']
         self.assertEqual(msg2['content'], results[0]['content'])
         self.assertEqual(msg2['images'], results[0]['images'])
