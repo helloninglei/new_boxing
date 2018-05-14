@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 from rest_framework import viewsets, permissions
+from rest_framework.reverse import reverse
 from django.db.models import Count, Q
+from django.shortcuts import redirect
 from biz import models
-from biz.constants import PAYMENT_STATUS_PAID
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
 from boxing_app.serializers import HotVideoSerializer
+
+
+def hot_videos_redirect(request):
+    url = reverse('hot-video', kwargs={'user_id': HOT_VIDEO_USER_ID})
+    return redirect(url)
+
 
 
 class HotVideoViewSet(viewsets.ModelViewSet):
@@ -20,3 +28,5 @@ class HotVideoViewSet(viewsets.ModelViewSet):
             is_paid=Count('orders', filter=_filter),
             comment_count=Count('comments'),
         ).order_by('-created_time')
+
+

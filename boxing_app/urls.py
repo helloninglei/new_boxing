@@ -18,7 +18,8 @@ from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
 from boxing_app.views import register
 from boxing_app.views import login
-from boxing_app.views.hot_video import HotVideoViewSet
+from boxing_app.views.hot_video import HotVideoViewSet, hot_videos_redirect
+
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -80,7 +81,8 @@ login_urls = [
 ]
 
 hot_video_url = [
-    path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'})),
+    path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'}), name='hot-video'),
+    path('hot_videos', hot_videos_redirect),
 ]
 
 urlpatterns = []
