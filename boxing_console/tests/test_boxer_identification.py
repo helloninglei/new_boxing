@@ -11,10 +11,10 @@ from biz.models import User, BoxerIdentification, UserProfile, OperationLog
 
 class BoxerIdentificationTestCase(TestCase):
     def setUp(self):
-        self.fake_user1 = User.objects.create_user(mobile='mobile01', password='password01')
-        self.fake_user2 = User.objects.create_user(mobile='mobile02', password='password02')
+        self.fake_user1 = User.objects.create_superuser(mobile='11111111111', password='password')
+        self.fake_user2 = User.objects.create_superuser(mobile='11111111112', password='password')
         self.client = self.client_class()
-        self.client.login(username=self.fake_user1, password='password01')
+        self.client.login(username=self.fake_user1, password='password')
         self.identification_count = 20
 
     def test_get_boxer_identification_list(self):
@@ -213,7 +213,7 @@ class BoxerIdentificationTestCase(TestCase):
                 self.assertEqual(response.data[key], identification_data[key])
 
     def create_boxer_identification_data(self):
-        user_list = [User.objects.create_user(mobile=13000000000 + int('%d' % i), password='123')
+        user_list = [User.objects.create_superuser(mobile=13000000000 + int('%d' % i), password='123')
                      for i in range(self.identification_count)]
 
         [UserProfile.objects.create(user=user, nick_name='user{}'.format(user.pk)) for user in user_list]

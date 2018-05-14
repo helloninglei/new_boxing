@@ -9,9 +9,9 @@ from biz.models import User, BoxingClub
 
 class BoxingClubTestCase(TestCase):
     def setUp(self):
-        self.test_user1 = User.objects.create_user(mobile='mobile01', password='password01')
+        self.test_user1 = User.objects.create_superuser(mobile='11111111111', password='password')
         self.client = self.client_class()
-        self.client.login(username=self.test_user1, password='password01')
+        self.client.login(username=self.test_user1, password='password')
         self.data = {
                     "club_name": "拳王01",
                     "address": "丰台区角门东洋桥",
