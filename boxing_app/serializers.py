@@ -187,5 +187,4 @@ class AuthTokenLoginSerializer(AuthTokenSerializer):
         if not models.User.objects.filter(mobile=attrs['username']).exists():
             raise ValidationError({"message": "手机号未注册！"})
         redis_client.setex(redis_const.HAS_LOGINED.format(mobile=attrs['username']), redis_const.LOGIN_INTERVAL, "1")
-        super(AuthTokenLoginSerializer, self).validate(attrs)
-        return attrs
+        return super(AuthTokenLoginSerializer, self).validate(attrs)
