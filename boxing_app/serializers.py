@@ -142,7 +142,7 @@ class SendVerifyCodeSerializer(serializers.Serializer):
             if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
+            if redis_client.redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "需要图形验证码！"})
         return attrs
 
@@ -166,7 +166,7 @@ class RegisterWithInfoSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
 
     def validate(self, attrs):
-        if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
+        if not redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
             raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
         return attrs
 
@@ -181,10 +181,11 @@ class AuthTokenLoginSerializer(AuthTokenSerializer):
             if not check_captcha(captcha.get('captcha_code'), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.exists(redis_const.HAS_LOGINED.format(mobile=attrs['username'])):
+            if redis_client.redis_client.exists(redis_const.HAS_LOGINED.format(mobile=attrs['username'])):
                 raise ValidationError({"message": "需要图形验证码！"})
 
         if not models.User.objects.filter(mobile=attrs['username']).exists():
             raise ValidationError({"message": "手机号未注册！"})
-        redis_client.setex(redis_const.HAS_LOGINED.format(mobile=attrs['username']), redis_const.LOGIN_INTERVAL, "1")
+        redis_client.redis_client.setex(
+            redis_const.HAS_LOGINED.format(mobile=attrs['username']), redis_const.LOGIN_INTERVAL, "1")
         return super().validate(attrs)
