@@ -13,7 +13,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     @property
     def object_type(self):
-        return getattr(models, self.kwargs['object_type'].title().replace(' ', ''))
+        return getattr(models, self.kwargs['object_type'].title().replace('_', ''))
 
     @property
     def object_id(self):
