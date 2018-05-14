@@ -17,6 +17,8 @@ install(){
 migrate(){
     echo "migrate..."
     python manage.py migrate --noinput --settings boxing_app.app_settings
+    python manage.py loaddata user --settings boxing_app.app_settings
+    python manage.py loaddata hot_video --settings boxing_app.app_settings
     echo "migrate done"
 }
 

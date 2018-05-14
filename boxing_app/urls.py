@@ -18,6 +18,7 @@ from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
+from boxing_app.views.hot_video import HotVideoViewSet
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -78,6 +79,10 @@ login_urls = [
     re_path(r"^", include("biz.urls"))
 ]
 
+hot_video_url = [
+    path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'})),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -89,6 +94,7 @@ urlpatterns += captcha_urls
 urlpatterns += verify_code_urls
 urlpatterns += register_urls
 urlpatterns += login_urls
+urlpatterns += hot_video_url
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

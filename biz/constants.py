@@ -118,10 +118,14 @@ BOXER_ALLOWED_COURSES_CHOICE = (
 REPORT_OBJECT_DICT = {
     'message': 1,
     'comment': 2,
+    'hot_video': 3,
 }
 
+
+# 评论
 COMMENT_OBJECT_DICT = {
     'message': 1,
+    'hot_video': 2,
 }
 
 
@@ -132,3 +136,6 @@ ORDER_PAYMENT_STATUS = (
     (PAYMENT_STATUS_UNPAID, '未支付'),
     (PAYMENT_STATUS_PAID, '已支付'),
 )
+
+
+HOT_VIDEO_USER_ID = 1000000
