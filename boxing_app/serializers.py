@@ -188,3 +188,17 @@ class AuthTokenLoginSerializer(AuthTokenSerializer):
             raise ValidationError({"message": "手机号未注册！"})
         redis_client.setex(redis_const.HAS_LOGINED.format(mobile=attrs['username']), redis_const.LOGIN_INTERVAL, "1")
         return super().validate(attrs)
+
+
+class HotVideoSerializer(serializers.ModelSerializer):
+    is_paid = serializers.BooleanField(read_only=True)
+    comment_count = serializers.IntegerField(read_only=True)
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        if obj.is_paid:
+            return obj.url
+
+    class Meta:
+        model = models.HotVideo
+        fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time')

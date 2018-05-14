@@ -14,7 +14,7 @@ class ReportViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         object_type = self.kwargs['object_type']
-        object_class = getattr(models, object_type.title().replace(' ', ''))
+        object_class = getattr(models, object_type.title().replace('_', ''))
         object_class.objects.get(id=self.request.POST['object_id'])
         kwargs = {
             'user': self.request.user,

@@ -282,8 +282,9 @@ class HotVideo(models.Model):
     try_url = models.CharField(max_length=200)
     price = models.IntegerField(validators=[MinValueValidator(1)])  # 单位元
     operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
-    is_show = models.BooleanField(default=True)
+    is_show = models.BooleanField(default=True, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    comments = GenericRelation('Comment')
 
     class Meta:
         db_table = 'hot_video'
@@ -292,7 +293,8 @@ class HotVideo(models.Model):
 
 class HotVideoOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID, db_index=True)
+    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
+                                      db_index=True)
     video = models.ForeignKey(HotVideo, on_delete=models.PROTECT, related_name='orders')
     order_time = models.DateTimeField(auto_now_add=True)
     amount = models.PositiveIntegerField()  # 单位元
