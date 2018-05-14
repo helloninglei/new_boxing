@@ -176,7 +176,7 @@ REST_FRAMEWORK = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -196,3 +196,7 @@ STATIC_URL = '/static/'
 CAPTCHA_IMAGE_SIZE = (144, 66)
 CAPTCHA_FONT_SIZE = 30
 CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_arcs',)
+
+# project property
+PROJECT_API = 'api'
+PROJECT_CONSOLE = 'console'
