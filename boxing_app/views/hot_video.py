@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from django.db.models import Count, Q
 from biz import models
 from biz.constants import PAYMENT_STATUS_PAID
@@ -8,9 +8,10 @@ from boxing_app.serializers import HotVideoSerializer
 
 class HotVideoViewSet(viewsets.ModelViewSet):
     serializer_class = HotVideoSerializer
+    permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        _filter = Q(orders__status=PAYMENT_STATUS_PAID, user=self.request.user)
+        _filter = Q(orders__status=PAYMENT_STATUS_PAID, user_id=self.request.user.id)
         pk = self.kwargs['user_id']
         return models.HotVideo.objects.filter(
             user=models.User.objects.get(pk=pk),
