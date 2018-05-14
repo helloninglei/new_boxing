@@ -1,17 +1,7 @@
 """boxing_app URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.11/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+    https://docs.djangoproject.com/en/2.0/topics/http/urls/
 """
 from django.urls import include, path, re_path
 from django.conf import settings
@@ -27,6 +17,7 @@ from boxing_app.views import captcha
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
 from boxing_app.views import register
+from boxing_app.views import login
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -82,6 +73,11 @@ register_urls = [
     path("register_with_user_info", register.register_with_user_info)
 ]
 
+login_urls = [
+    path("login", login.AuthTokenLogin.as_view()),
+    path("login_is_need_captcha", login.login_is_need_captcha)
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -92,6 +88,7 @@ urlpatterns += follow_url
 urlpatterns += captcha_urls
 urlpatterns += verify_code_urls
 urlpatterns += register_urls
+urlpatterns += login_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
