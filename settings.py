@@ -3,6 +3,7 @@
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -19,7 +20,14 @@ DEVELOPMENT = 'development'
 
 ENVIRONMENT = DEVELOPMENT
 
-ALLOWED_HOSTS = []
+if len(sys.argv) > 1 and sys.argv[1] == 'test':
+    ENVIRONMENT = TEST
+
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '39.105.73.10',  # qa1
+    '127.0.0.1',
+]
 
 DB_MYSQL_DATABASE = 'quanchengchuji'
 DB_MYSQL_HOST = '192.168.33.10'
@@ -30,6 +38,9 @@ DB_MYSQL_PASSWORD = 'root'
 REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
+
+if ENVIRONMENT == TEST:
+    REDIS_DB = 15   # 用于单元测试，每次会被清空
 
 BASE_UPLOAD_FILE_URL = '/upload/'
 UPLOAD_FILE_LOCAL_STORAGE_DIR = '/var/tmp/boxing'
@@ -66,7 +77,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'biz',
-    'captcha'
+    'captcha',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -150,7 +162,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
 }
 
 

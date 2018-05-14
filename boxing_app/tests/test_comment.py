@@ -27,7 +27,7 @@ class CommentTestCase(APITestCase):
         self.prepare()
         response = self.client1.get(path='/messages/%s/comments' % self.message_id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(len(response.data['results']), 2)
         results = response.data['results']
         self.assertEqual(self.comment1['user']['id'], self.test_user_1.id)
         self.assertEqual(self.msg1['content'], results[1]['content'])

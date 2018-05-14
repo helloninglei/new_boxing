@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
+from django.core.validators import MinValueValidator
 
 from biz import validator, constants
 
@@ -275,7 +276,7 @@ class BoxingClub(BaseModel):
     club_name = models.CharField(max_length=20, unique=True)
     address = models.CharField(max_length=30)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
-    latitude = models.DecimalField(max_digits=8, decimal_places=6)   # 纬度,整数位两位-90~90
+    latitude = models.DecimalField(max_digits=8, decimal_places=6)   # 纬度,整数位2位-90~90
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
@@ -283,3 +284,31 @@ class BoxingClub(BaseModel):
 
     class Meta:
         db_table = 'club'
+
+
+class HotVideo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hot_videos')
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=140)
+    url = models.CharField(max_length=200)
+    try_url = models.CharField(max_length=200)
+    price = models.IntegerField(validators=[MinValueValidator(1)])  # 单位元
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
+    is_show = models.BooleanField(default=True)
+    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        db_table = 'hot_video'
+        ordering = ("-created_time",)
+
+
+class HotVideoOrder(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID, db_index=True)
+    video = models.ForeignKey(HotVideo, on_delete=models.PROTECT, related_name='orders')
+    order_time = models.DateTimeField(auto_now_add=True)
+    amount = models.PositiveIntegerField()  # 单位元
+    pay_time = models.DateTimeField(null=True)
+
+    class Meta:
+        db_table = 'hot_video_order'
