@@ -5,6 +5,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 from django.core.validators import MinValueValidator
+
 from biz import validator, constants
 
 
@@ -272,6 +273,20 @@ class SmsLog(models.Model):
     class Meta:
         db_table = 'sms_log'
         ordering = ("-created_time",)
+
+
+class BoxingClub(BaseModel):
+    club_name = models.CharField(max_length=20, unique=True)
+    address = models.CharField(max_length=30)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
+    latitude = models.DecimalField(max_digits=8, decimal_places=6)   # 纬度,整数位2位-90~90
+    phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
+    opening_hours = models.CharField(max_length=30)
+    images = StringListField()
+    introduction = models.CharField(max_length=120)
+
+    class Meta:
+        db_table = 'club'
 
 
 class HotVideo(models.Model):
