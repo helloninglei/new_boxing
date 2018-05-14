@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from biz.redis_client import is_followed
@@ -140,7 +142,7 @@ class SendVerifyCodeSerializer(serializers.Serializer):
             if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
+            if redis_client.redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "需要图形验证码！"})
         return attrs
 
@@ -164,6 +166,26 @@ class RegisterWithInfoSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
 
     def validate(self, attrs):
-        if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
+        if not redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
             raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
         return attrs
+
+
+class AuthTokenLoginSerializer(AuthTokenSerializer):
+    username = serializers.CharField(label=_("Username"), validators=[validate_mobile])
+    captcha = serializers.JSONField(required=False)
+
+    def validate(self, attrs):
+        if "captcha" in attrs:
+            captcha = attrs['captcha']
+            if not check_captcha(captcha.get('captcha_code'), captcha.get("captcha_hash")):
+                raise ValidationError({"message": "图形验证码错误！"})
+        else:
+            if redis_client.redis_client.exists(redis_const.HAS_LOGINED.format(mobile=attrs['username'])):
+                raise ValidationError({"message": "需要图形验证码！"})
+
+        if not models.User.objects.filter(mobile=attrs['username']).exists():
+            raise ValidationError({"message": "手机号未注册！"})
+        redis_client.redis_client.setex(
+            redis_const.HAS_LOGINED.format(mobile=attrs['username']), redis_const.LOGIN_INTERVAL, "1")
+        return super().validate(attrs)

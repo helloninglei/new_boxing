@@ -1,24 +1,18 @@
 """boxing_console URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.11/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+    https://docs.djangoproject.com/en/2.0/topics/http/urls/
 """
-from django.urls import path
-
+from django.urls import include, path
+from django.conf import settings
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
+from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
+from rest_framework.authtoken.views import obtain_auth_token
+from boxing_console.views.hot_video import HotVideoViewSet
+from biz.views import upload_file
 
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
@@ -40,10 +34,36 @@ boxer_url = [
          name='identification_refuse'),
 ]
 
+hot_video_url = [
+    path('hot_videos', HotVideoViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+]
+
 course_url = [
     path('courses', CourseViewSet.as_view({'get': 'list'}), name='courses_list'),
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail')
 ]
 
+club_url = [
+    path('club', BoxingClubVewSet.as_view({'post': 'create'})),
+    path('club/<int:pk>',BoxingClubVewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}))
+]
+
+login_urls = [
+    path("login", obtain_auth_token)
+]
+
+upload_url = [
+    path('upload', upload_file, name='upload'),
+]
+
 urlpatterns += boxer_url
 urlpatterns += course_url
+urlpatterns += club_url
+urlpatterns += login_urls
+urlpatterns += course_url
+urlpatterns += hot_video_url
+urlpatterns += upload_url
+
+if settings.ENVIRONMENT != settings.PRODUCTION:
+    urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

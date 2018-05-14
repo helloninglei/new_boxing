@@ -10,13 +10,13 @@ from biz.models import User, BoxerIdentification, Course
 
 class BoxerIdentificationTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(mobile='11111111111', password='password')
+        self.user1 = User.objects.create_superuser(mobile='11111111111', password='password')
         self.client = self.client_class()
         self.client.login(username=self.user1, password='password')
 
     @staticmethod
     def make_identification_list():
-        user_list = [User.objects.create_user(mobile=11111111112+num, password='password')
+        user_list = [User.objects.create_superuser(mobile=11111111112+num, password='password')
                      for num in range(0, 10)]
 
         identification_list = [BoxerIdentification.objects.create(
