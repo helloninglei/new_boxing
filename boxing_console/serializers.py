@@ -2,8 +2,7 @@
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, HotVideo
 from biz import models, constants
 
 
@@ -136,3 +135,21 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         exclude = ('boxer',)
+
+
+class HotVideoSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField()
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    sales_count = serializers.IntegerField(read_only=True)
+    price_amount = serializers.IntegerField(read_only=True)
+
+    def validate(self, data):
+        user_id = data['user_id']
+        if not models.User.objects.filter(pk=user_id).exists():
+            raise ValidationError({'user_id': [f'用户 {user_id} 不存在']})
+        return data
+
+    class Meta:
+        model = HotVideo
+        fields = ('id', 'user_id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
+                  'operator', 'is_show', 'created_time')

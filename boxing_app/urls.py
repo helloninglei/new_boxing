@@ -16,7 +16,7 @@ Including another URLconf
 from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from boxing_app.views import upload
+from biz.views import upload_file
 from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
 from boxing_app.views import comment
@@ -46,7 +46,7 @@ comment_urls = [
 ]
 
 upload_urls = [
-    path('upload_file', upload.upload_file, name='upload'),
+    path('upload', upload_file, name='upload'),
 ]
 
 report_object_string = '|'.join(REPORT_OBJECT_DICT.keys())

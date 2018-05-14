@@ -15,3 +15,5 @@ from settings import *
 WSGI_APPLICATION = 'boxing_console.wsgi.application'
 
 ROOT_URLCONF = 'boxing_console.urls'
+
+REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'] = ('rest_framework.permissions.IsAdminUser',)
