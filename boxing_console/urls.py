@@ -49,7 +49,7 @@ club_url = [
 ]
 
 login_urls = [
-    re_path("^rest_auth/", include("biz.urls"))
+    re_path("^", include("biz.urls"))
 ]
 
 

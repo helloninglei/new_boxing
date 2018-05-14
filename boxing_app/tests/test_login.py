@@ -12,6 +12,6 @@ class TestLogin(APITestCase):
         redis_client.flushdb()
 
     def test_login(self):
-        response = self.client.post(path="/rest_auth/login", data={"username": self.user.mobile, "password": "password"})
+        response = self.client.post(path="/login", data={"username": self.user.mobile, "password": "password"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(Token.objects.get(key=response.data['token']).user.id, self.user.id)
