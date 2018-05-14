@@ -1,13 +1,13 @@
 import Index            from 'components/index';
 import Login            from 'components/login';
-import UserManage       from 'pages/usermanage';
-import BoxingManage     from 'pages/boxingmanage';
-import BoxingList       from 'pages/boxinglist';
-import AddBoxing        from 'pages/addboxing';
-import Financemanage    from 'pages/financemanage';
-import Paymentlist      from 'pages/paymentlist';
-import Precentlist      from 'pages/precentlist';
-import Boxerindentify   from 'pages/boxerindentify';
+import UserManage       from 'page/usermanage';
+import BoxingManage     from 'page/boxingmanage';
+import BoxingList       from 'page/boxinglist';
+import AddBoxing        from 'page/addboxing';
+import Financemanage    from 'page/financemanage';
+import Paymentlist      from 'page/paymentlist';
+import Precentlist      from 'page/precentlist';
+import Boxerindentify   from 'page/boxerindentify';
 
 
 export default [
