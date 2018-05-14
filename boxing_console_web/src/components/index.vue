@@ -18,12 +18,6 @@
                 </el-menu>
             </el-col>
             <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 216px);float:left">
-                <div class='index-top'>
-                    <el-button type="danger" class='myColor_red myButton_40 btn_width_95'>退出</el-button>
-                    <div class='user_name'>{{user_name}}</div>
-                    <p class="firstTitle">{{title1}}</p>
-                    <p v-if="isShowTitle"> <i class="el-icon-arrow-right"></i>{{title2}}</p>
-                </div>
                 <router-view></router-view>
             </el-col>
         </el-row>
