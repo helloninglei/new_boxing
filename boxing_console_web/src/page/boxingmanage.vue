@@ -1,6 +1,8 @@
 <template>
-    <div class="container">
-        拳馆列表
+    <div class="">
+        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxingmanage" disNone="disNone"></TopBar>
+
+        拳馆管理
     </div>
 </template>
 
@@ -9,14 +11,16 @@
 </style>
 
 <script type="text/ecmascript-6">
+    import TopBar from 'components/topBar';
+
     export default {
         data() {
-            return {
-                
-                
+            return {                
+                isShowTop : true,
             }
         },
         components: {
+            TopBar
         },
         created() {
             

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-export default function(url='',data={},params={},headers={},method='get'){
+export default function(url='',method='get',data={},params={},headers={}){
     // console.log(localStorage.token)
     let token=localStorage.token,baseURL=this.config.baseUrl;
     if(token==undefined||token==''){

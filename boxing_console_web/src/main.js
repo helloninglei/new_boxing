@@ -18,6 +18,7 @@ let linkActiveClass = 'active';
 //添加全局函数用this调用
 Vue.prototype.ajax    = axios
 Vue.prototype.config  = config
+Vue.prototype.token   = ''
 
 let router = new VueRouter({
   routes,

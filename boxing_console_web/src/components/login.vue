@@ -7,10 +7,10 @@
                     <el-input v-model="form.username" class='myInput' placeholder='请输入账号'></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
-                    <el-input v-model="form.password" class='myInput' placeholder='请输入密码'></el-input>
+                    <el-input v-model="form.password" type="password" class='myInput' placeholder='请输入密码'></el-input>
                 </el-form-item>
                 <el-form-item label="验证码">
-                    <el-input v-model="form.captcha" class='myInput width-234' placeholder='请输入图形验证码'></el-input>
+                    <el-input v-model="form.captcha.captcha_code" class='myInput width-234' placeholder='请输入图形验证码'></el-input>
                     <div class='yzPicture' id='yzPicture' @click='getCaptcha'>
                         <img :src="captcha" alt="" width='100%' height='100%'>
                     </div>
@@ -78,9 +78,12 @@
             return {
                 disabled: false,
                 form: {
-                   username: '',
-                   password: '',
-                   captcha:''
+                    username: '',
+                    password: '',
+                    captcha:{
+                        captcha_hash: "",
+                        captcha_code: ''
+                    }
                 },
                 captcha:'',
                 isShowErr:false,
@@ -104,14 +107,13 @@
         },
         methods: {
             getCaptcha() {
-                let $this=this;
-                this.ajax('/captcha-image').then(function(res){
-                    console.log(res.data)
-                    console.log($this.captcha)
-                    $this.captcha=$this.config.baseUrl+res.data.url;
-                },function(err){
-                    console.log(err)
-                })
+                // let $this=this;
+                // this.ajax('/captcha-image').then(function(res){
+                //     $this.captcha         =$this.config.baseUrl+res.data.url;
+                //     $this.form.captcha.captcha_hash=res.data.captcha_hash;
+                // },function(err){
+                //     console.log(err)
+                // })
             },
             onSubmit() {
                 console.log(this.config.baseUrl)
@@ -128,15 +130,24 @@
                     this.errText='密码格式不正确'
                     this.isShowErr=true;
                     return
-                }else if(!this.form.captcha){
+                }else if(!this.form.captcha.captcha_code){
                     this.errText='请输入图形验证码'
                     this.isShowErr=true;
                     return
                 }else{
                     this.isShowErr=false;
-                    console.log('submit!');
-                    console.log(this.form)
-                    this.$router.push({path:'/index'});
+                    // console.log('submit!');
+                    // console.log(this.form)
+                    let $this=this;
+                    this.ajax('/login','post',this.form).then(function(res){
+                        // console.log(res)
+                        $this.token=res.data.token;
+                        // console.log($this.token)
+                        $this.$router.push({path:'/index'});
+
+                    },function(err){
+                        console.log(err)
+                    })
                 }
                 
             }
