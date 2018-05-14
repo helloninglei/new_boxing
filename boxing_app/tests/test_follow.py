@@ -2,7 +2,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User
-from biz.redis_client import _client
+from biz.redis_client import redis_client
 
 
 class FollowTestCase(APITestCase):
@@ -16,7 +16,7 @@ class FollowTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
         self.client3 = self.client_class()
         self.client3.login(username=self.test_user_3, password='password')
-        _client.flushdb()
+        redis_client.flushdb()
 
     def test_follow(self):
         data = {'user_id': self.test_user_2.id}
