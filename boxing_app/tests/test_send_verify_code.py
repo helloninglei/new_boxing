@@ -9,12 +9,12 @@ class SendVerifyCodeVerify(APITestCase):
         self.client = self.client_class()
 
     def test_send_verify_code(self):
-        redis_client.delete(SEND_VERIFY_CODE.format(mobile="13300000000"))
+        redis_client.redis_client.delete(SEND_VERIFY_CODE.format(mobile="13300000000"))
         response = self.client.post(path='/verify_code', data={"mobile": "13300000000"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = self.client.post(path='/verify_code', data={"mobile": "13300000000"})
         self.assertEqual(response.data['message'][0], "需要图形验证码！")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        redis_client.delete(SEND_VERIFY_CODE.format(mobile="13300000000"))
+        redis_client.redis_client.delete(SEND_VERIFY_CODE.format(mobile="13300000000"))
         response = self.client.post(path="/verify_code", data={"mobile": "13300000000"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

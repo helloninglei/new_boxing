@@ -9,8 +9,8 @@ from biz.models import User, CoinChangeLog, MoneyChangeLog
 
 class CoinAndMoneyTestCase(TestCase):
     def setUp(self):
-        self.fake_user1 = User.objects.create_user(mobile='mobile01', password='password01')
-        self.fake_user2 = User.objects.create_user(mobile='mobile02', password='password02')
+        self.fake_user1 = User.objects.create_superuser(mobile='11111111111', password='password01')
+        self.fake_user2 = User.objects.create_superuser(mobile='11111111112', password='password02')
         self.client = self.client_class()
         self.client.login(username=self.fake_user1, password='password01')
 

@@ -6,6 +6,7 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.urls import include, path
 from django.conf import settings
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
+from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
 from boxing_console.views.course import CourseViewSet
 from boxing_console.views.user_management import UserManagementViewSet
@@ -43,6 +44,11 @@ course_url = [
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail')
 ]
 
+club_url = [
+    path('club', BoxingClubVewSet.as_view({'post': 'create'})),
+    path('club/<int:pk>',BoxingClubVewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}))
+]
+
 login_urls = [
     path("login", obtain_auth_token)
 ]
@@ -53,6 +59,7 @@ upload_url = [
 
 urlpatterns += boxer_url
 urlpatterns += course_url
+urlpatterns += club_url
 urlpatterns += login_urls
 urlpatterns += course_url
 urlpatterns += hot_video_url

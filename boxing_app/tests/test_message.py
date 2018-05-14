@@ -2,7 +2,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User
-from biz.redis_client import _client
+from biz.redis_client import redis_client
 
 
 class MessageTestCase(APITestCase):
@@ -20,7 +20,7 @@ class MessageTestCase(APITestCase):
         self.client3.login(username=self.test_user_3, password='password')
         self.client4.login(username=self.test_user_4, password='password')
 
-        _client.flushdb()
+        redis_client.flushdb()
 
     def test_create(self):
         msg1 = {'content': 'hello1'}
