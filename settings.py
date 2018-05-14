@@ -26,7 +26,7 @@ if len(sys.argv) > 1 and sys.argv[1] == 'test':
 ALLOWED_HOSTS = [
     '127.0.0.1',
     '39.105.73.10',  # qa1
-    '127.0.0.1',
+    'localhost',
 ]
 
 DB_MYSQL_DATABASE = 'quanchengchuji'
