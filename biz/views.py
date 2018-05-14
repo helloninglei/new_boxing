@@ -1,12 +1,10 @@
 # coding=utf-8
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 from boxing_app.forms import UploadFileForm
 from boxing_app.services import file_service
 
 
-@csrf_exempt
 @require_POST
 def upload_file(request):
     form = UploadFileForm(request.POST, request.FILES)
