@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from datetime.datetime import now
+from datetime import datetime
 from django.conf import settings
+from weixin.pay import WeixinPay
+
 from alipay import AliPay
 from biz.models import PayOrder
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WALLET, PAYMENT_TYPE_WECHAT
-
 
 app_private_key_string = """
         -----BEGIN RSA PRIVATE KEY-----
@@ -27,11 +28,14 @@ alipay = AliPay(
     debug=False,
 )
 
+wechat_pay = WeixinPay('app_id', 'mch_id', 'mch_key', 'notify_url')
+
+
 class PayService:
 
     @classmethod
     def generate_out_trade_no():
-        return now().strftime('%y%m%d%H%M%S%f')
+        return datetime.now().strftime('%y%m%d%H%M%S%f')
 
     @classmethod
     def create_order(cls, user, obj, payment_type, amount, device):
@@ -62,14 +66,17 @@ class PayService:
             out_trade_no=out_trade_no,
             total_amount=amount,
             subject=name,
-            notify_url=
+            notify_url=''
         )
-
 
     @classmethod
     def get_wechat_payment_info(cls, out_trade_no, amount, name):
-        pass
-
+        return wechat_pay.unified_order(
+            trade_type='APP',
+            out_trade_no=out_trade_no,
+            body=name,
+            total_fee=amount,
+        )
 
     @classmethod
     def get_wallet_payment_info(cls, out_trade_no, amount, name):
