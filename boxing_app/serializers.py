@@ -181,3 +181,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time')
+
+
+class LoginIsNeedCaptchaSerializer(serializers.Serializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
