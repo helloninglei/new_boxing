@@ -332,3 +332,7 @@ class PayOrder(models.Model):
     device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
     created_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'pay_order'
+        ordering = ("-created_time",)

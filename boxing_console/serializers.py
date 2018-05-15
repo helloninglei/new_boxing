@@ -3,7 +3,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
 from biz import models, constants, redis_client
 
 
@@ -169,3 +169,11 @@ class HotVideoSerializer(serializers.ModelSerializer):
         model = HotVideo
         fields = ('id', 'user_id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
                   'operator', 'is_show', 'created_time')
+
+
+class CourseOrderSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = PayOrder
+        fields = "__all__"
