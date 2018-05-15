@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
+from json import dumps
 from datetime import datetime
 from django.conf import settings
 from weixin.pay import WeixinPay
-
 from alipay import AliPay
 from biz.models import PayOrder
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WALLET, PAYMENT_TYPE_WECHAT
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WALLET, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_PAID
 
 app_private_key_string = """
         -----BEGIN RSA PRIVATE KEY-----
@@ -29,6 +30,8 @@ alipay = AliPay(
 )
 
 wechat_pay = WeixinPay('app_id', 'mch_id', 'mch_key', 'notify_url')
+
+logger = logging.getLogger()
 
 
 class PayService:
@@ -81,3 +84,21 @@ class PayService:
     @classmethod
     def get_wallet_payment_info(cls, out_trade_no, amount, name):
         pass
+
+    @classmethod
+    def check_wechat(cls, data):
+        if wechat_pay.check(data):
+            cls.on_callback(data)
+
+    @classmethod
+    def check_alipay(cls, data):
+        signature = data.pop("sign")
+        if alipay.verify(data, signature) and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
+            cls.success_callback(data)
+
+    @classmethod
+    def success_callback(cls, data):
+        order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
+        order.status = PAYMENT_STATUS_PAID
+        order.save()
+        logger.info(dumps(data))
