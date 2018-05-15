@@ -73,11 +73,11 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  #变动前额度 单位：分
-    change_amount = models.IntegerField(default=0)  #变动额度 单位：分
-    remain_amount = models.IntegerField(default=0)  #变动后额度 单位：分
-    operator = models.ForeignKey(User, on_delete=models.PROTECT)  #操作人
-    remarks = models.CharField(null=True, max_length=50)  #备注
+    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
+    remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
         abstract = True
@@ -165,7 +165,7 @@ class Message(SoftDeleteModel):
         ordering = ('-created_time',)
 
 
-#拳手认证
+# 拳手认证
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
     real_name = models.CharField(max_length=10)
@@ -181,7 +181,7 @@ class BoxerIdentification(BaseModel):
     is_locked = models.BooleanField(default=False)
     experience = models.TextField(null=True, blank=True, max_length=500)
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
-                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE, )
     honor_certificate_images = StringListField(null=True)
     competition_video = models.URLField(null=True)
     allowed_lessons = StringListField(null=True, blank=True)
@@ -279,7 +279,7 @@ class BoxingClub(BaseModel):
     club_name = models.CharField(max_length=20, unique=True)
     address = models.CharField(max_length=30)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
-    latitude = models.DecimalField(max_digits=8, decimal_places=6)   # 纬度,整数位2位-90~90
+    latitude = models.DecimalField(max_digits=8, decimal_places=6)  # 纬度,整数位2位-90~90
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
@@ -300,20 +300,24 @@ class HotVideo(models.Model):
     is_show = models.BooleanField(default=True, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     comments = GenericRelation('Comment')
+    orders = GenericRelation('PayOrder')
 
     class Meta:
         db_table = 'hot_video'
         ordering = ("-created_time",)
+        verbose_name = '热门视频'
 
 
-class HotVideoOrder(models.Model):
+class PayOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
     status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
                                       db_index=True)
-    video = models.ForeignKey(HotVideo, on_delete=models.PROTECT, related_name='orders')
+    out_trade_no = models.BigIntegerField()
+    payment_type = models.SmallIntegerField(choices=constants.PAYMENT_TYPE)
+    amount = models.PositiveIntegerField()  # 单位分
+    device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
     order_time = models.DateTimeField(auto_now_add=True)
-    amount = models.PositiveIntegerField()  # 单位元
-    pay_time = models.DateTimeField(null=True)
-
-    class Meta:
-        db_table = 'hot_video_order'
+    update_time = models.DateTimeField(auto_now=True)
