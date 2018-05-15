@@ -17,8 +17,8 @@ reset(){
 }
 
 start(){
-    docker stop new_boxing_app
-    docker stop new_boxing_console
+    docker start new_boxing_app
+    docker start new_boxing_console
 }
 
 stop(){

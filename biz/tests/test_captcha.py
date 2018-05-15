@@ -3,7 +3,7 @@ from captcha.models import CaptchaStore
 from biz.services.captcha_service import get_captcha, check_captcha
 
 
-# 该单元测试需要使用boxing_app.app_settings
+# 该单元测试使用boxing_app.app_settings 或者 boxing_console.console_settings
 class CaptchaTEstCase(unittest.TestCase):
     def setUp(self):
         self.captcha_key = get_captcha()['captcha_hash']

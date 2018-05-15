@@ -13,13 +13,12 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
-from boxing_app.views import captcha
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
 from boxing_app.views import register
 from boxing_app.views import login
 from boxing_app.views.hot_video import HotVideoViewSet, hot_videos_redirect
-
+from biz.views import captcha_image
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -28,14 +27,18 @@ discover_urls = [
     path('messages/hot', message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
     path('messages/mine', message.MessageViewSet.as_view({'get': 'mine'}), name='message-mine'),
     path('messages/followed', message.MessageViewSet.as_view({'get': 'followed'}), name='message-followed'),
-    path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}), name='message-detail'),
-    path('messages/<int:message_id>/like', like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
+         name='message-detail'),
+    path('messages/<int:message_id>/like',
+         like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
 ]
 
 comment_object_string = '|'.join(COMMENT_OBJECT_DICT.keys())
 comment_urls = [
-    re_path(r'^(?P<object_type>({0}))s/(?P<object_id>\d+)/comments$'.format(comment_object_string), comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
-    re_path(r'^(?P<object_type>({0}))s/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string), comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
+    re_path(r'^(?P<object_type>({0}))s/(?P<object_id>\d+)/comments$'.format(comment_object_string),
+            comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
+    re_path(r'^(?P<object_type>({0}))s/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string),
+            comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
 ]
 
 upload_urls = [
@@ -44,7 +47,8 @@ upload_urls = [
 
 report_object_string = '|'.join(REPORT_OBJECT_DICT.keys())
 report_urls = [
-    re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string), report.ReportViewSet.as_view({'post': 'create'}), name='report'),
+    re_path(r'^(?P<object_type>({0}))s/report$'.format(report_object_string),
+            report.ReportViewSet.as_view({'post': 'create'}), name='report'),
     path('report_reason', report.ReportViewSet.as_view({'get': 'retrieve'}), name='report-reason')
 ]
 
@@ -61,7 +65,7 @@ follow_url = [
 
 captcha_urls = [
     re_path('^captcha/', include('captcha.urls')),
-    path("captcha-image", captcha.captcha_image)
+    path("captcha-image", captcha_image)
 ]
 
 verify_code_urls = [
@@ -76,8 +80,8 @@ register_urls = [
 ]
 
 login_urls = [
-    path("login", login.AuthTokenLogin.as_view()),
-    path("login_is_need_captcha", login.login_is_need_captcha)
+    path("login_is_need_captcha", login.login_is_need_captcha),
+    re_path(r"^", include("biz.urls"))
 ]
 
 hot_video_url = [

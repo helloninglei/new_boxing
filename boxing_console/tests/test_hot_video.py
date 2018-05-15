@@ -9,9 +9,9 @@ from biz.models import User, HotVideo, HotVideoOrder
 
 class HotVideoTestCase(APITestCase):
     def setUp(self):
-        self.test_user = User.objects.create_user(mobile='11111111111', password='password')
+        self.test_user = User.objects.create_superuser(mobile='11111111111', password='password')
         self.test_superuser = User.objects.create_superuser(mobile='11111111112', password='password')
-        self.test_user3 = User.objects.create_user(mobile='11111111113', password='password')
+        self.test_user3 = User.objects.create_superuser(mobile='11111111113', password='password')
         self.client1 = self.client_class()
         self.client2 = self.client_class()
         self.client3 = self.client_class()
@@ -117,5 +117,3 @@ class HotVideoTestCase(APITestCase):
         result = res.data['results'][0]
         self.assertEqual(result['sales_count'], 2)
         self.assertEqual(result['price_amount'], video.price*2)
-
-
