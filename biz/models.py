@@ -317,3 +317,18 @@ class HotVideoOrder(models.Model):
 
     class Meta:
         db_table = 'hot_video_order'
+
+
+class PayOrder(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
+                                      db_index=True)
+    out_trade_no = models.BigIntegerField()
+    payment_type = models.SmallIntegerField(choices=constants.PAYMENT_TYPE)
+    amount = models.PositiveIntegerField()  # 单位分
+    device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
+    order_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
