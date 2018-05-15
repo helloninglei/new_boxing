@@ -30,3 +30,10 @@ class AuthTokenLogin(ObtainAuthToken):
 @permission_classes([permissions.AllowAny])
 def captcha_image(request):
     return Response(data=get_captcha(), status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def logout(request):
+    request.user.auth_token.delete()
+    return Response(data={"message": "ok"}, status=status.HTTP_200_OK)
