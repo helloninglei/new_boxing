@@ -25,3 +25,9 @@ def validate_password(value):
     password_regex = re.compile(r"^[\da-zA-Z]{6,16}$")
     if not password_regex.match(value):
         raise ValidationError("密码为6-16位数字字母组合！")
+
+
+def validate_mobile_or_email(value):
+    email_regex = re.compile(r"^1\d{10}|[\w.-]+@[\da-zA-Z]+(.[\w-]+)+$")
+    if not email_regex.match(value):
+        raise ValidationError(_('%(value)s 不是有效邮箱或手机号。'), params={"value": value})

@@ -6,7 +6,7 @@ from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from biz.redis_client import is_followed
 from biz import models
-from biz.validator import validate_mobile, validate_password
+from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
 from biz.redis_const import SEND_VERIFY_CODE
@@ -185,3 +185,21 @@ class HotVideoSerializer(serializers.ModelSerializer):
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
+
+
+class BindAlipayAccountSerializer(serializers.Serializer):
+    captcha = serializers.JSONField()
+    verify_code = serializers.CharField()
+    alipay_account = serializers.CharField(validators=[validate_mobile_or_email])
+
+    def __init__(self, *args, **kwargs):
+        self.current_user = kwargs.pop("current_user")
+        super().__init__(*args, **kwargs)
+
+    def validate(self, attrs):
+        captcha = attrs['captcha']
+        if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
+            raise ValidationError({"message": "图形验证码错误！"})
+        if not verify_code_service.check_verify_code(self.current_user.mobile, attrs['verify_code']):
+            raise ValidationError({"message": "短信验证码错误！"})
+        return attrs

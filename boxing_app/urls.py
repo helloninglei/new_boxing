@@ -19,6 +19,7 @@ from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
 from boxing_app.views.hot_video import HotVideoViewSet
+from boxing_app.views.user_profile import bind_alipay_account
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -79,6 +80,10 @@ login_urls = [
     re_path(r"^", include("biz.urls"))
 ]
 
+user_urls = [
+    path("alipay_account", bind_alipay_account)
+]
+
 hot_video_url = [
     path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'})),
 ]
@@ -95,6 +100,7 @@ urlpatterns += verify_code_urls
 urlpatterns += register_urls
 urlpatterns += login_urls
 urlpatterns += hot_video_url
+urlpatterns += user_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
