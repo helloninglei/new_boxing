@@ -8,6 +8,7 @@ import Financemanage    from 'page/financemanage';
 import Paymentlist      from 'page/paymentlist';
 import Precentlist      from 'page/precentlist';
 import Boxerindentify   from 'page/boxerindentify';
+import Classmanage      from 'page/classmanage';
 
 
 export default [
@@ -24,7 +25,7 @@ export default [
         component: Index,
         children: [
             {
-                path: '',
+                path: '/index',
                 component: UserManage,
             },
             {
@@ -58,6 +59,10 @@ export default [
             {
                 path: '/boxerindentify',
                 component: Boxerindentify,
+            },
+            {
+                path: '/classmanage',
+                component: Classmanage,
             },
         ]
     },

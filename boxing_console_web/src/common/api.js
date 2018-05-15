@@ -17,9 +17,7 @@ axios.interceptors.response.use(
 
 response => {
 
-console.log('response拦截器11111111111')
-
-console.log(response)
+// console.log(response)//正确响应
 
 return response
 
@@ -27,19 +25,16 @@ return response
 
 error => {
 
-console.log('response拦截器22222222222')
-
-console.log(error)
-
 if(error.request){
 
-console.log(111)
-
-console.log(error.request)
+console.log(error.request.response)
+let errors=error.request.response
+ for(var key in errors){
+ 	console.log(errors[key])
+ 	return
+ }
 
 } else if(error.response){
-
-console.log(222)
 
 console.log(error.response.data);
 
