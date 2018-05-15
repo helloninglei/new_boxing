@@ -3,7 +3,7 @@ from rest_framework import status
 from biz.models import User
 
 
-class TestLogin(APITestCase):
+class TestLoginIsNeedCaptcha(APITestCase):
     def setUp(self):
         self.client = self.client_class()
         self.user = User.objects.create_user(mobile="19900000000", password="password")
