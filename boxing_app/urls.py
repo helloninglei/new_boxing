@@ -14,11 +14,12 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from boxing_app.views.verify_code import send_verify_code
-from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
+from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
 from boxing_app.views.hot_video import HotVideoViewSet
+from boxing_app.views.pay import create_order
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -83,6 +84,12 @@ hot_video_url = [
     path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'})),
 ]
 
+
+payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
+payment_urls = [
+    re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), create_order, name='create-order'),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -95,6 +102,7 @@ urlpatterns += verify_code_urls
 urlpatterns += register_urls
 urlpatterns += login_urls
 urlpatterns += hot_video_url
+urlpatterns += payment_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)

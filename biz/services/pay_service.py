@@ -86,19 +86,28 @@ class PayService:
         pass
 
     @classmethod
-    def check_wechat(cls, data):
+    def on_wechat_callback(cls, data):
+        logger.info(
+            "[wechat_pay:] calback:{}".format('&'.join('{}={}'.format(key, val) for key, val in sorted(data.items())))
+        )
         if wechat_pay.check(data):
-            cls.on_callback(data)
+            cls.success_callback(data)
+            return wechat_pay.reply('OK', True)
+        return wechat_pay.reply("签名验证失败", False)
 
     @classmethod
-    def check_alipay(cls, data):
+    def on_alipay_callback(cls, data):
+        logger.info(
+            "[alipay:] calback:{}".format('&'.join('{}={}'.format(key, val) for key, val in sorted(data.items())))
+        )
         signature = data.pop("sign")
         if alipay.verify(data, signature) and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
             cls.success_callback(data)
+            return 'success'
+        return '签名验证失败'
 
     @classmethod
     def success_callback(cls, data):
         order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
         order.status = PAYMENT_STATUS_PAID
         order.save()
-        logger.info(dumps(data))
