@@ -44,7 +44,7 @@ course_url = [
 ]
 
 club_url = [
-    path('club', BoxingClubVewSet.as_view({'post': 'create'})),
+    path('club', BoxingClubVewSet.as_view({'post': 'create', 'get':'list'})),
     path('club/<int:pk>',BoxingClubVewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}))
 ]
 
