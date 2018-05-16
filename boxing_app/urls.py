@@ -82,7 +82,8 @@ register_urls = [
 
 login_urls = [
     path("login_is_need_captcha", login.login_is_need_captcha),
-    re_path(r"^", include("biz.urls"))
+    re_path(r"^", include("biz.urls")),
+    path("reset_password", login.reset_password)
 ]
 
 user_urls = [

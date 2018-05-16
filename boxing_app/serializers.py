@@ -199,3 +199,22 @@ class BindAlipayAccountSerializer(serializers.Serializer):
         if not verify_code_service.check_verify_code(self.context['user'].mobile, attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(validators=[validate_password])
+    mobile = serializers.CharField(validators=[validate_mobile])
+    verify_code = serializers.CharField()
+    captcha = serializers.JSONField()
+
+    def validate(self, attrs):
+        captcha = attrs['captcha']
+        if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
+            raise ValidationError({"message": "图形验证码错误！"})
+
+        if not verify_code_service.check_verify_code(attrs['mobile'], attrs['verify_code']):
+            raise ValidationError({"message": "短信验证码错误！"})
+
+        if not models.User.objects.filter(mobile=attrs['mobile']).exists():
+            raise ValidationError({"message": "该手机号未注册！"})
+        return attrs
