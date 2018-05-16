@@ -196,7 +196,7 @@ class PaySerializer(serializers.Serializer):
     content_object = serializers.SerializerMethodField()
 
     def get_content_object(self, obj):
-        object_type = self.context['request'].kwargs['object_type'].title().replace('_', '')
+        object_type = self.context['object_type'].title().replace('_', '')
         return getattr(models, object_type).objects.get(pk=obj.id)
 
     def get_ip(self, obj):

@@ -9,8 +9,12 @@ from biz.services.pay_service import PayService
 
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
-def create_order(request):
-    serializer = PaySerializer(data=request.data, context={'request': request})
+def create_order(request, object_type):
+
+    print(object_type)
+    print(request.data)
+    print(dir(request))
+    serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
     pay_info = PayService.create_order(
         user=request.user,

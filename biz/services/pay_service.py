@@ -35,7 +35,7 @@ class PayService:
         elif payment_type == PAYMENT_TYPE_WECHAT:
             return cls.get_wechat_payment_info(ip=ip, **data)
         else:
-            cls.get_wallet_payment_info()
+            cls.do_wallet_payment()
 
     @classmethod
     def get_alipay_payment_info(cls, out_trade_no, amount, name):
@@ -57,7 +57,7 @@ class PayService:
         )
 
     @classmethod
-    def get_wallet_payment_info(cls, out_trade_no, amount, name):
+    def do_wallet_payment(cls):  # TODO 钱包支付
         pass
 
     @classmethod

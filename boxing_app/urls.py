@@ -96,10 +96,10 @@ hot_video_url = [
     path('hot_videos', hot_videos_redirect),
 ]
 
-
 payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
 payment_urls = [
-    re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order, name='create-order'),
+    re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order,
+            name='create-order'),
     path('callback/alipay', pay.alipay_calback),
     path('callback/wechat', pay.wechat_calback),
 ]
