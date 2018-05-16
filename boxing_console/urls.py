@@ -39,7 +39,7 @@ hot_video_url = [
 ]
 
 course_url = [
-    path('course', CourseViewSet.as_view({'get': 'list'}), name='courses_list'),
+    path('courses', CourseViewSet.as_view({'get': 'list'}), name='courses_list'),
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail'),
     path('course/orders', CourseOrderViewSet.as_view({'get': 'list'}))
 ]
