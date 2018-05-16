@@ -41,7 +41,8 @@ hot_video_url = [
 course_url = [
     path('courses', CourseViewSet.as_view({'get': 'list'}), name='courses_list'),
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail'),
-    path('course/orders', CourseOrderViewSet.as_view({'get': 'list'}))
+    path('course/orders', CourseOrderViewSet.as_view({'get': 'list'})),
+    path('course/order/<int:pk>', CourseOrderViewSet.as_view({'get': 'retrieve'})),
 ]
 
 club_url = [
