@@ -2,6 +2,7 @@
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
+from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
 from biz.redis_client import is_followed
@@ -188,14 +189,10 @@ class LoginIsNeedCaptchaSerializer(serializers.Serializer):
 
 
 class BindAlipayAccountSerializer(serializers.Serializer):
-    captcha = serializers.JSONField()
     verify_code = serializers.CharField()
     alipay_account = serializers.CharField(validators=[validate_mobile_or_email])
 
     def validate(self, attrs):
-        captcha = attrs['captcha']
-        if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
-            raise ValidationError({"message": "图形验证码错误！"})
         if not verify_code_service.check_verify_code(self.context['user'].mobile, attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
@@ -205,16 +202,21 @@ class ResetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(validators=[validate_password])
     mobile = serializers.CharField(validators=[validate_mobile])
     verify_code = serializers.CharField()
-    captcha = serializers.JSONField()
 
     def validate(self, attrs):
-        captcha = attrs['captcha']
-        if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
-            raise ValidationError({"message": "图形验证码错误！"})
-
         if not verify_code_service.check_verify_code(attrs['mobile'], attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
 
         if not models.User.objects.filter(mobile=attrs['mobile']).exists():
             raise ValidationError({"message": "该手机号未注册！"})
+        return attrs
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(validators=[validate_password])
+    new_password = serializers.CharField(validators=[validate_password])
+
+    def validate(self, attrs):
+        if not authenticate(username=self.context['user'].mobile, password=attrs['old_password']):
+            raise ValidationError({"message": "原密码错误！"})
         return attrs

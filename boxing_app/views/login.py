@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from biz import redis_const, redis_client
-from boxing_app.serializers import LoginIsNeedCaptchaSerializer, ResetPasswordSerializer
+from boxing_app.serializers import LoginIsNeedCaptchaSerializer, ResetPasswordSerializer, ChangePasswordSerializer
 from biz.models import User
 
 
@@ -24,4 +24,15 @@ def reset_password(request):
     user = User.objects.get(mobile=serializer.validated_data['mobile'])
     user.set_password(serializer.validated_data['password'])
     user.save()
+    return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def change_password(request):
+    serializer = ChangePasswordSerializer(data=request.data, context={"user": request.user})
+    serializer.is_valid(raise_exception=True)
+    user = request.user
+    user.set_password(serializer.validated_data['new_password'])
+    user.save()
+    request.user.auth_token.delete()
     return Response({"message": "ok"}, status=status.HTTP_200_OK)

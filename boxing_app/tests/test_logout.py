@@ -10,6 +10,7 @@ class TestLogout(APITestCase):
     def setUp(self):
         self.client = self.client_class()
         self.user = User.objects.create_superuser(mobile="19900000000", password="password")
+        redis_client.delete(redis_const.HAS_LOGINED.format(mobile=self.user.mobile))
 
     def test_logout(self):
         # 请求头未携带token
