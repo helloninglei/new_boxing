@@ -2,8 +2,8 @@
 import logging
 from datetime import datetime
 from django.conf import settings
-from weixin.pay import WeixinPay
-from alipay import AliPay
+from weixin.pay import WeixinPay, WeixinPayError
+from alipay import AliPay, AliPayException
 from biz.models import PayOrder
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WALLET, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_PAID
 
@@ -65,21 +65,27 @@ class PayService:
         logger.info(
             "[wechat_pay:] calback:{}".format('&'.join('{}={}'.format(key, val) for key, val in sorted(data.items())))
         )
-        if wechat_pay.check(data):
-            cls.success_callback(data)
-            return wechat_pay.reply('OK', True)
-        return wechat_pay.reply("签名验证失败", False)
+        try:
+            if wechat_pay.check(data):
+                cls.success_callback(data)
+                return wechat_pay.reply('OK', True)
+        except (WeixinPayError, KeyError) as e:
+            logging.error(e)
+            return wechat_pay.reply("签名验证失败", False)
 
     @classmethod
     def on_alipay_callback(cls, data):
         logger.info(
             "[alipay:] calback:{}".format('&'.join('{}={}'.format(key, val) for key, val in sorted(data.items())))
         )
-        signature = data.pop("sign")
-        if alipay.verify(data, signature) and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
-            cls.success_callback(data)
-            return 'success'
-        return '签名验证失败'
+        try:
+            signature = data.pop("sign")
+            if alipay.verify(data, signature) and data["trade_status"] in ("TRADE_SUCCESS", "TRADE_FINISHED"):
+                cls.success_callback(data)
+                return 'success'
+        except (AliPayException, KeyError) as e:
+            logging.error(e)
+            return '签名验证失败'
 
     @classmethod
     def success_callback(cls, data):
