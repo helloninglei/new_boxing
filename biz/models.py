@@ -257,6 +257,7 @@ class Course(models.Model):
     price = models.IntegerField()  # 单位：元
     duration = models.IntegerField()  # 时长，单位：min
     validity = models.DateField()  # 有效期
+    orders = GenericRelation('PayOrder', related_query_name='course')
 
     class Meta:
         db_table = "course"
@@ -335,4 +336,3 @@ class PayOrder(models.Model):
 
     class Meta:
         db_table = 'pay_order'
-        ordering = ("-created_time",)
