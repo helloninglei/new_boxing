@@ -192,14 +192,10 @@ class BindAlipayAccountSerializer(serializers.Serializer):
     verify_code = serializers.CharField()
     alipay_account = serializers.CharField(validators=[validate_mobile_or_email])
 
-    def __init__(self, *args, **kwargs):
-        self.current_user = kwargs.pop("current_user")
-        super().__init__(*args, **kwargs)
-
     def validate(self, attrs):
         captcha = attrs['captcha']
         if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
             raise ValidationError({"message": "图形验证码错误！"})
-        if not verify_code_service.check_verify_code(self.current_user.mobile, attrs['verify_code']):
+        if not verify_code_service.check_verify_code(self.context['user'].mobile, attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
