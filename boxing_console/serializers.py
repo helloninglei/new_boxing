@@ -172,8 +172,24 @@ class HotVideoSerializer(serializers.ModelSerializer):
 
 
 class CourseOrderSerializer(serializers.ModelSerializer):
+    user_mobile = serializers.SerializerMethodField()
+    course_name = serializers.SerializerMethodField()
+    boxer_name = serializers.SerializerMethodField()
+    boxer_mobile = serializers.SerializerMethodField()
 
+    def get_user_mobile(self, instance):
+        return instance.user.mobile
+
+    def get_course_name(self, instance):
+        return instance.content_object.course_name
+
+    def get_boxer_name(self, instance):
+        return instance.content_object.boxer.real_name
+
+    def get_boxer_mobile(self, instance):
+        return instance.content_object.boxer.mobile
 
     class Meta:
         model = PayOrder
-        fields = "__all__"
+        fields = ("status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time", "user_mobile",
+                  "course_name", "boxer_name", "boxer_mobile")

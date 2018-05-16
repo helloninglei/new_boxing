@@ -18,3 +18,4 @@ class CourseViewSet(viewsets.ModelViewSet):
 class CourseOrderViewSet(viewsets.ModelViewSet):
     serializer_class = CourseOrderSerializer
     queryset = PayOrder.objects.filter(content_type=ContentType.objects.get_for_model(Course))
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
