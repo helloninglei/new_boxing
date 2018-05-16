@@ -19,7 +19,7 @@ from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
 from boxing_app.views.hot_video import HotVideoViewSet
-from boxing_app.views.pay import create_order
+from boxing_app.views import pay
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -87,7 +87,9 @@ hot_video_url = [
 
 payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
 payment_urls = [
-    re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), create_order, name='create-order'),
+    re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order, name='create-order'),
+    path('callback/alipay', pay.alipay_calback),
+    path('callback/wechat', pay.wechat_calback),
 ]
 
 urlpatterns = []
