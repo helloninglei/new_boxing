@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from json import dumps
 from datetime import datetime
 from django.conf import settings
 from weixin.pay import WeixinPay
@@ -8,60 +7,36 @@ from alipay import AliPay
 from biz.models import PayOrder
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WALLET, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_PAID
 
-app_private_key_string = """
-        -----BEGIN RSA PRIVATE KEY-----
-        base64 encoded content
-        -----END RSA PRIVATE KEY-----
-        """
-
-alipay_public_key_string = """
-        -----BEGIN PUBLIC KEY-----
-        base64 encoded content
-        -----END PUBLIC KEY-----
-    """
-
-alipay = AliPay(
-    appid="",
-    app_notify_url=None,
-    app_private_key_string=app_private_key_string,
-    alipay_public_key_string=alipay_public_key_string,
-    sign_type="RSA2",
-    debug=False,
-)
-
-wechat_pay = WeixinPay('app_id', 'mch_id', 'mch_key', 'notify_url')
-
+alipay = AliPay(**settings.ALIPAY)
+wechat_pay = WeixinPay(**settings.WECHAT_PAY)
 logger = logging.getLogger()
 
 
 class PayService:
 
     @classmethod
-    def generate_out_trade_no():
+    def generate_out_trade_no(cls):
         return datetime.now().strftime('%y%m%d%H%M%S%f')
 
     @classmethod
-    def create_order(cls, user, obj, payment_type, amount, device):
-        order = PayOrder.create(
+    def create_order(cls, user, obj, payment_type, amount, device, ip):
+        order = PayOrder.objects.create(
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=amount,
+            amount=obj.price * 100,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
-        if payment_type == PAYMENT_TYPE_ALIPAY:
-            pay_func = cls.get_alipay_payment_info
-        elif payment_type == PAYMENT_TYPE_WECHAT:
-            pay_func = cls.get_wechat_payment_info
-        else:
-            pay_func = cls.get_wallet_payment_info
         name = f'{obj.__class__._meta.verbose_name} {obj.id}'
-        return pay_func(
-            out_trade_no=order.out_trade_no,
-            amount=amount,
-            name=name,
-        )
+        data = dict(out_trade_no=order.out_trade_no, amount=amount, name=name)
+        print(name)
+        if payment_type == PAYMENT_TYPE_ALIPAY:
+            return cls.get_alipay_payment_info(**data)
+        elif payment_type == PAYMENT_TYPE_WECHAT:
+            return cls.get_wechat_payment_info(ip=ip, **data)
+        else:
+            cls.get_wallet_payment_info()
 
     @classmethod
     def get_alipay_payment_info(cls, out_trade_no, amount, name):
@@ -73,12 +48,13 @@ class PayService:
         )
 
     @classmethod
-    def get_wechat_payment_info(cls, out_trade_no, amount, name):
+    def get_wechat_payment_info(cls, out_trade_no, amount, name, ip):
         return wechat_pay.unified_order(
             trade_type='APP',
             out_trade_no=out_trade_no,
             body=name,
-            total_fee=amount,
+            total_fee=amount * 100,
+            spbill_create_ip=ip,
         )
 
     @classmethod

@@ -324,4 +324,3 @@ class PayOrder(models.Model):
 
     class Meta:
         db_table = 'pay_order'
-

@@ -190,7 +190,6 @@ class LoginIsNeedCaptchaSerializer(serializers.Serializer):
 
 
 class PaySerializer(serializers.Serializer):
-    amount = serializers.IntegerField(min_value=0)
     device = serializers.SerializerMethodField()
     ip = serializers.SerializerMethodField()
     payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE)

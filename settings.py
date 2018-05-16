@@ -1,4 +1,3 @@
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -40,7 +39,7 @@ REDIS_PORT = 6379
 REDIS_DB = 5
 
 if ENVIRONMENT == TEST:
-    REDIS_DB = 15   # 用于单元测试，每次会被清空
+    REDIS_DB = 15  # 用于单元测试，每次会被清空
 
 BASE_UPLOAD_FILE_URL = '/upload/'
 UPLOAD_FILE_LOCAL_STORAGE_DIR = '/var/tmp/boxing'
@@ -61,10 +60,34 @@ ALI_SMS_ACCESS_KEY_ID = 'key'
 ALI_SMS_ACCESS_SECRET = 'secret'
 ALI_SMS_INTERVAL = 60
 
+ALIPAY = {
+    'appid': "2016082000301642",
+    'app_notify_url': None,
+    'app_private_key_string': 'xxx',
+    'alipay_public_key_string': 'xxxx',
+    'sign_type': "RSA2",
+    'debug': True
+}
+
+WECHAT_PAY = {
+    'appid': "2016082000301642",
+    'app_notify_url': None,
+    'app_private_key_string': 'xxx',
+    'alipay_public_key_string': 'xxxx',
+    'sign_type': "RSA2",
+    'debug': True
+}
+
+WECHAT_PAY = {
+    'app_id': 'wxf0f79d11111',
+    'mch_id': '111111111111',
+    'mch_key': '1111111111',
+    'notify_url': 'http://127.0.0.1/callback/wechat_pay',
+}
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
-
 
 # Application definition
 
@@ -91,7 +114,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 TEMPLATES = [
     {
@@ -138,7 +160,6 @@ REDIS_CONFIG = {
     "max_connections": 200
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -157,7 +178,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
@@ -171,7 +191,6 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -184,7 +203,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
