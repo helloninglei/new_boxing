@@ -4,7 +4,7 @@ import axios from 'axios'
 export default function(url='',method='get',data={},params={},headers={}){
     // console.log(localStorage.token)
     let token=localStorage.token,baseURL=this.config.baseUrl;
-    console.log(token)
+    // console.log(token)
     if(token==undefined||token==''){
         this.$router.push({path:'/login'});
         //回到首页

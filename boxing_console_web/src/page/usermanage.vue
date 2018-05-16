@@ -41,21 +41,23 @@
                         label="拳豆余额"
                         width="90">
                             <template slot-scope="scope">
-                                <span class='colorFont'>{{"1000"}}</span>
+                                <!-- <span class='colorFont' >{{"1000"}}</span> -->
+                                <span class='' >{{"1000"}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
                         label="钱包余额"
                         width="90">
                             <template slot-scope="scope">
-                                <span class='colorFont'>{{"2000"}}</span>
+                                <span class='colorFont' @click='goWalletList(scope.row.id)'>{{"2000"}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
                         label="用户类别"
                         width="150">
                             <template slot-scope="scope">
-                                <span class='colorFont'>{{scope.row.user_basic_info.userType}}</span>
+                                <span class='colorFont' v-if="scope.row.user_basic_info.userType==1" @click='goUserDetail(scope.row)'>普通用户</span>
+                                <span class='colorFont' v-if="scope.row.user_basic_info.userType==2" @click='checkIdent(scope.row.id)'>认证拳手</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -68,7 +70,7 @@
                           label="操作">
                             <template slot-scope="scope">
                                 <div style='margin-bottom:9px'> 
-                                    <el-button  class='myBtnHover_red myButton_20 ' @click="handleClick(row)">增加用户余额</el-button>
+                                    <el-button  class='myBtnHover_red myButton_20 ' @click="handleClick(scope.row.id)">增加用户余额</el-button>
                                 </div>
                                 <div> 
                                     <el-button class='myBtnHover_red myButton_20 '>增加用户拳豆</el-button>
@@ -111,7 +113,21 @@
                         "id": 1, 
                         "mobile": "111111111111", 
                         "date_joined": "2018-01-01 10-11-11", 
-                        "user_basic_info": {}
+                        "user_basic_info": {
+                            "name": "王毅", 
+                            "weight": "120kg", 
+                            "nick_name": "小王", 
+                            "gender": '男', 
+                            "profession": "计算机", 
+                            "nation": "", 
+                            "birthday": "1996-2-4", 
+                            "address": "上海市普陀区金沙江路 1518 弄", 
+                            "height": "188",
+                            "userType":2,//模拟数据用户类型
+                            "gaunzhu_num":100,//模拟数据关注数
+                            "fensi_num":100,//模拟数据粉丝数
+                            "fenxiang_num":100,//模拟数据分享数
+                        }
                     }, 
                     {
                         "id": 2, 
@@ -127,7 +143,10 @@
                             "birthday": "1996-2-4", 
                             "address": "上海市普陀区金沙江路 1518 弄", 
                             "height": "188",
-                            "userType":'普通用户',//模拟数据用户类型
+                            "userType":1,//模拟数据用户类型
+                            "gaunzhu_num":100,//模拟数据关注数
+                            "fensi_num":100,//模拟数据粉丝数
+                            "fenxiang_num":100,//模拟数据分享数
                         }
                     }
                 ],
@@ -137,9 +156,9 @@
                     {title:'user_basic_info.gender',   name :'性别'    ,width: '80'},
                     {title:'user_basic_info.nick_name',name :'用户昵称' ,width: '100'},
                     {title:'user_basic_info.address',  name :'居住地'   ,width: ''},
-                    {title:'name',name :'关注数' ,width: '90'},
-                    {title:'name',name :'粉丝数' ,width: '90'},
-                    {title:'name',name :'分享数' ,width: '90'},
+                    {title:'user_basic_info.gaunzhu_num',name :'关注数' ,width: '90'},
+                    {title:'user_basic_info.fensi_num',  name :'粉丝数' ,width: '90'},
+                    {title:'user_basic_info.fenxiang_num',name :'分享数' ,width: '90'},
                 ],
             }
         },
@@ -176,11 +195,24 @@
                 })
             },
             handleClick(row){
-                console.log(row)
+                console.log(row.id)
             },
             changePage(val){
                 // 要看第几页
                 console.log(val)
+            },
+            goWalletList(id){
+                //去钱包流水页面
+                console.log(id)
+                this.$router.push({path: '/walletlist', query:{id:id}});
+            },
+            goUserDetail(row){
+                //去普通用户列表
+                console.log(row)
+                this.$router.push({path: '/userdetail', query:row});
+            },
+            checkIdent(id){
+                console.log('查看认证信息'+id)
             }
         },
     }

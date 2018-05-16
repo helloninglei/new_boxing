@@ -5,14 +5,17 @@ body{
 /*距离*/
 .margin_rt25{margin-right:25px;}
 .margin_lf70{margin-left:70px;}
+.margin_lf50{margin-left:50px;}
 /*button的整体样式*/
 .el-button.myColor_red{
     background: #F95862;
 }
+.el-button.myBtnHover_red:focus{background:#fff;color:#606266;border-color:#dcdfe6;}
 .myButton_40.btn_width_95:hover,.el-button.myBtnHover_red:hover{background:#F95862;color:#fff;border-color:#F95862;}
 .el-button.myButton_40,.myInput_40 .el-input__inner{
   height:40px!important;
 }
+.el-button--default{margin-left:0px!important;}
 .el-button.myButton_20,.myInput_20 .el-input__inner{
   height:20px!important;
   padding:2px 8px!important;
@@ -38,6 +41,11 @@ body{
 }
 /*表格hover样式去掉*/
 .el-table tr.el-table__row.current-row>td,.el-table tr.el-table__row.hover-row>td{background: #fff!important}
-/*hover样式*/
+/*字体hover样式*/
 .colorFont{text-decoration:underline;cursor:pointer;}
 .colorFont:hover{color:#F95862;}
+/*详情页样式*/
+.detail_title{text-align: right}
+.detail_title,.detail_header,.detail_content{font-family: PingFangSC-Regular;font-size: 14px;color: #909399;}
+.detail_content{color: #1D1D27!important;}
+/*.detail_header{margin-top:90px;}*/

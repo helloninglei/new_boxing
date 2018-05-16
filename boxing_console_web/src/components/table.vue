@@ -13,10 +13,9 @@
                <el-table-column
                   fixed="right"
                   label="操作"
-                  width="100">
+                  width="">
                   <template slot-scope="scope">
-                    <el-button @click="handleClick(scope.row)" type="text" size="small">详情</el-button>
-                    <!-- <el-button type="text" size="small">编辑</el-button> -->
+                    <span class='colorFont' @click="handleClick(scope.row)">详情</span>
                   </template>
                 </el-table-column>
             </el-table>
@@ -67,7 +66,7 @@
                 this.getMsg      = routerParams
             },
             handleClick(row){
-                console.log(row)
+                this.$emit('toDetail',row)
             }
         },
     }

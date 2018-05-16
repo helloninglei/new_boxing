@@ -1,7 +1,7 @@
 <template>
     <div id="topBar" :class="disNone">
         <div class='index-top'>
-            <el-button  class='myButton_40 btn_width_95 myBtnHover_red'>退出</el-button>
+            <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='close()'>退出</el-button>
             <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95'>退出</el-button> -->
             <div class='user_name'>{{user_name}}</div>
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -68,6 +68,22 @@
                 let routerParams = this.$route.params.dataobj
                 this.getMsg      = routerParams
             },
+            close(){
+                let $this=this;
+                this.ajax('/logout','delete',{},{}).then(function(res){
+                    localStorage.token='';
+                    $this.$router.push({path:'/login'});
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
+            }
         },
     }
 </script>

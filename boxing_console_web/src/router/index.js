@@ -9,6 +9,9 @@ import Paymentlist      from 'page/paymentlist';
 import Precentlist      from 'page/precentlist';
 import Boxerindentify   from 'page/boxerindentify';
 import Classmanage      from 'page/classmanage';
+import Classdetail      from 'page/classdetail1';
+import Userdetail       from 'page/userdetail';
+import Walletlist       from 'page/walletlist';
 
 
 export default [
@@ -63,6 +66,18 @@ export default [
             {
                 path: '/classmanage',
                 component: Classmanage,
+            },
+            {
+                path: '/classdetail',
+                component: Classdetail,
+            },
+            {
+                path: '/userdetail',
+                component: Userdetail,
+            },
+            {
+                path: '/walletlist',
+                component: Walletlist,
             },
         ]
     },

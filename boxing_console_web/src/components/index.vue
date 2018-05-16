@@ -1,7 +1,7 @@
 <template>
     <div class="index">
         <el-row style="height: 100%;">
-            <el-col :span="4"  style="min-height: 100%; background: #1D1D27;;overflow: hidden;width:216px">
+            <el-col :span="4"  style="height: 100%; background: #1D1D27;;overflow: hidden;width:216px;overflow: auto">
                 <el-menu active-text-color="#fff" :default-active="defaultActive" router>
                     <el-menu-item index="/usermanage" :disabled="disabled">
                         <div class='menu-item-inner' >用户管理</div>
@@ -109,8 +109,9 @@
         },
         computed: {
             defaultActive: function(){
+                //监听路由变化
                 let path = this.$route.path;
-                 if (path == '/index') {
+                 if (path == '/index' || path == '/userdetail' || path == '/walletlist') {
                     return '/usermanage'
                 }
                 return path;
