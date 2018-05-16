@@ -34,5 +34,5 @@ def change_password(request):
     user = request.user
     user.set_password(serializer.validated_data['new_password'])
     user.save()
-    request.user.auth_token.delete()
+    user.auth_token.delete()
     return Response({"message": "ok"}, status=status.HTTP_200_OK)
