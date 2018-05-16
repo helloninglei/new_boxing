@@ -7,7 +7,7 @@ from biz.models import User, HotVideo, PayOrder
 from django.contrib.contenttypes.fields import ContentType
 
 
-class HotVideoTestCase(APITestCase):
+class PaymentTestCase(APITestCase):
     def setUp(self):
         self.test_user = User.objects.create_user(mobile='11111111111', password='password')
         self.test_superuser = User.objects.create_superuser(mobile='11111111112', password='password')
@@ -26,7 +26,7 @@ class HotVideoTestCase(APITestCase):
             'operator_id': self.test_superuser.id,
         }
 
-    def test_video_payment(self):
+    def test_payment(self):
         video = HotVideo.objects.create(**self.data)
         payment_data = {
             'id': video.id,
