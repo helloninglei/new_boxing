@@ -190,6 +190,7 @@ class LoginIsNeedCaptchaSerializer(serializers.Serializer):
 
 
 class PaySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     device = serializers.SerializerMethodField()
     ip = serializers.SerializerMethodField()
     payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE)
@@ -197,7 +198,7 @@ class PaySerializer(serializers.Serializer):
 
     def get_content_object(self, obj):
         object_type = self.context['object_type'].title().replace('_', '')
-        return getattr(models, object_type).objects.get(pk=obj.id)
+        return getattr(models, object_type).objects.get(pk=obj['id'])
 
     def get_ip(self, obj):
         return get_client_ip(self.context['request'])
