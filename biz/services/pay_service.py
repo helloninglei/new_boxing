@@ -30,7 +30,6 @@ class PayService:
         )
         name = f'{obj.__class__._meta.verbose_name} {obj.id}'
         data = dict(out_trade_no=order.out_trade_no, amount=amount, name=name)
-        print(name)
         if payment_type == PAYMENT_TYPE_ALIPAY:
             return cls.get_alipay_payment_info(**data)
         elif payment_type == PAYMENT_TYPE_WECHAT:

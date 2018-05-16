@@ -4,7 +4,8 @@ from biz import constants
 from django.conf import settings
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User, HotVideo, HotVideoOrder
+from biz.models import User, HotVideo, PayOrder
+from biz.services.pay_service import PayService
 
 
 class HotVideoTestCase(APITestCase):
@@ -91,25 +92,34 @@ class HotVideoTestCase(APITestCase):
         video_id = res.data['id']
 
         video = HotVideo.objects.get(pk=video_id)
-        HotVideoOrder.objects.create(
+        PayOrder.objects.create(
             user=self.test_superuser,
             status=constants.PAYMENT_STATUS_PAID,
-            video=video,
+            content_object=video,
             amount=video.price,
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
             pay_time=datetime.datetime.now()
         )
-        HotVideoOrder.objects.create(
+        PayOrder.objects.create(
             user=self.test_user3,
             status=constants.PAYMENT_STATUS_PAID,
-            video=video,
+            content_object=video,
             amount=video.price,
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
             pay_time=datetime.datetime.now()
         )
 
-        HotVideoOrder.objects.create(
+        PayOrder.objects.create(
             user=self.test_user,
             status=constants.PAYMENT_STATUS_UNPAID,
-            video=video,
+            content_object=video,
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
             amount=video.price,
         )
 
