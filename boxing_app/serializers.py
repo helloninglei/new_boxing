@@ -162,6 +162,7 @@ class RegisterSerializer(serializers.Serializer):
 class RegisterWithInfoSerializer(serializers.Serializer):
     avatar = serializers.CharField()
     gender = serializers.BooleanField()
+    nick_name = serializers.CharField()
     mobile = serializers.CharField(validators=[validate_mobile])
 
     def validate(self, attrs):
