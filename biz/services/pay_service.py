@@ -89,4 +89,4 @@ class PayService:
 
     @classmethod
     def success_callback(cls, data):
-        PayOrder.objects.get(out_trade_no=data['out_trade_no']).update(status=PAYMENT_STATUS_PAID)
+        PayOrder.objects.filter(out_trade_no=data['out_trade_no']).update(status=PAYMENT_STATUS_PAID)
