@@ -28,6 +28,6 @@ def validate_password(value):
 
 
 def validate_mobile_or_email(value):
-    mobile_or_email_regex = re.compile(r"^1\d{10}|[\w.-]+@[\da-zA-Z]+(.[\w-]+)+$")
+    mobile_or_email_regex = re.compile(r"^1\d{10}$|^[\w.-]+@[\da-zA-Z]+(.[\w-]+)+$")
     if not mobile_or_email_regex.match(value):
         raise ValidationError(_('%(value)s 不是有效邮箱或手机号。'), params={"value": value})
