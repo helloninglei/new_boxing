@@ -8,7 +8,7 @@ from biz import constants
 from biz.models import User, BoxerIdentification, Course
 
 
-class BoxerIdentificationTestCase(APITestCase):
+class CourseTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_superuser(mobile='11111111111', password='password')
         self.client = self.client_class()
