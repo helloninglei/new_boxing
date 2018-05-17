@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 from biz import constants
-from biz.models import BoxerIdentification, User
-from boxing_app.serializers import BoxerIdentificationSerializer
+from biz.models import BoxerIdentification, User, PayOrder, Course
+from boxing_app.serializers import BoxerIdentificationSerializer, BoxerCourseOrderSerializer
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
@@ -21,3 +21,11 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class BoxerCourseOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = BoxerCourseOrderSerializer
+
+    def get_queryset(self):
+        boxer = BoxerIdentification.objects.get(user=self.request.user)
+        return  PayOrder.objects.filter(course__boxer=boxer)

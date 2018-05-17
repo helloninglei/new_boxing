@@ -109,7 +109,6 @@ class CourseSerializer(serializers.ModelSerializer):
     mobile = serializers.SerializerMethodField()
     is_professional_boxer = serializers.SerializerMethodField()
     is_accept_order = serializers.SerializerMethodField()
-    club = serializers.SerializerMethodField()
     allowed_lessons = serializers.SerializerMethodField()
     boxer_id = serializers.SerializerMethodField()
 
@@ -124,9 +123,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_is_accept_order(self, instance):
         return not instance.boxer.is_locked
-
-    def get_club(self, instance):
-        return instance.boxer.club
 
     def get_allowed_lessons(self, instance):
         return instance.boxer.allowed_lessons
@@ -207,7 +203,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
         return instance.content_object.boxer.mobile
 
     def get_club_name(self, instance):
-        return instance.content_object.boxer.club
+        return instance.content_object.club.name
 
     class Meta:
         model = PayOrder

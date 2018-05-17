@@ -7,7 +7,7 @@ from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from biz.views import upload_file
-from boxing_app.views.boxer import BoxerIdentificationViewSet
+from boxing_app.views.boxer import BoxerIdentificationViewSet, BoxerCourseOrderViewSet
 from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
@@ -55,6 +55,9 @@ report_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
+    path('boxer/course/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-course-orders'),
+    path('boxer/course/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}),
+         name='boxer-course-order-detail'),
 ]
 
 follow_url = [

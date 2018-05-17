@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile
+from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub
 
 
 class CourseOrderTestCase(APITestCase):
@@ -32,12 +32,23 @@ class CourseOrderTestCase(APITestCase):
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
             "competition_video": 'https://baidu.com'
         }
+        self.club_data = {
+            "name": "club01",
+            "address": "club_address",
+            "longitude": 111.111111,
+            "latitude": 11.111111,
+            "phone": 11111111111,
+            "opening_hours": "9:00-22:00",
+            "images": ["www.baidu.png"],
+            "introduction": "club_introduction"
+        }
         self.course_data = {
             "boxer": None,
             "course_name": constants.BOXER_ALLOWED_COURSES_MMA,
             "price": 100,
             "duration": 120,
-            "validity": "2018-08-25"
+            "validity": "2018-08-25",
+            "club": None
         }
         self.course_order_data = {
             "user": self.user1,
@@ -61,9 +72,11 @@ class CourseOrderTestCase(APITestCase):
         }
 
     def test_course_order_list(self):
-        # 创建user_profile->创建boxer->创建course->创建course_order
+        # 创建user_profile->创建boxer->创建club->创建course->创建course_order
         UserProfile.objects.create(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
@@ -132,9 +145,11 @@ class CourseOrderTestCase(APITestCase):
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
     def test_course_detail(self):
-        # 创建user_profile->创建boxer->创建course->创建course_order
+        # 创建user_profile->创建boxer->创建club->创建course->创建course_order
         UserProfile.objects.create(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
@@ -154,3 +169,4 @@ class CourseOrderTestCase(APITestCase):
                 self.assertEqual(self.course_order_data[key].strftime('%Y-%m-%d %H:%M:%S'), res.data.get(key))
             else:
                 self.assertEqual(self.course_order_data[key], res.data.get(key))
+
