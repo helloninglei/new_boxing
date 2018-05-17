@@ -300,7 +300,7 @@ class HotVideo(models.Model):
     is_show = models.BooleanField(default=True, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     comments = GenericRelation('Comment')
-    orders = GenericRelation('PayOrder')
+    orders = GenericRelation('PayOrder', related_query_name='hot_video')
 
     class Meta:
         db_table = 'hot_video'

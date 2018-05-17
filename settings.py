@@ -70,15 +70,6 @@ ALIPAY = {
 }
 
 WECHAT_PAY = {
-    'appid': "2016082000301642",
-    'app_notify_url': None,
-    'app_private_key_string': 'xxx',
-    'alipay_public_key_string': 'xxxx',
-    'sign_type': "RSA2",
-    'debug': True
-}
-
-WECHAT_PAY = {
     'app_id': 'wxf0f79d11111',
     'mch_id': '111111111111',
     'mch_key': '1111111111',
