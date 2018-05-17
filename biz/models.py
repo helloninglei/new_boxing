@@ -332,7 +332,7 @@ class PayOrder(models.Model):
     amount = models.PositiveIntegerField()  # 单位分
     device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
     order_time = models.DateTimeField(auto_now_add=True)
-    pay_time = models.DateTimeField()
+    pay_time = models.DateTimeField(null=True)
 
     class Meta:
         db_table = 'pay_order'

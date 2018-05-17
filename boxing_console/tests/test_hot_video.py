@@ -93,14 +93,14 @@ class HotVideoTestCase(APITestCase):
         video = HotVideo.objects.get(pk=video_id)
         HotVideoOrder.objects.create(
             user=self.test_superuser,
-            status=constants.PAYMENT_STATUS_PAID,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
             video=video,
             amount=video.price,
             pay_time=datetime.datetime.now()
         )
         HotVideoOrder.objects.create(
             user=self.test_user3,
-            status=constants.PAYMENT_STATUS_PAID,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
             video=video,
             amount=video.price,
             pay_time=datetime.datetime.now()
