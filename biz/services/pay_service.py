@@ -70,7 +70,7 @@ class PayService:
                 cls.success_callback(data)
                 return wechat_pay.reply('OK', True)
         except (WeixinPayError, KeyError) as e:
-            logging.error(e)
+            logger.error(e)
             return wechat_pay.reply("签名验证失败", False)
 
     @classmethod
@@ -84,7 +84,7 @@ class PayService:
                 cls.success_callback(data)
                 return 'success'
         except (AliPayException, KeyError) as e:
-            logging.error(e)
+            logger.error(e)
             return '签名验证失败'
 
     @classmethod
