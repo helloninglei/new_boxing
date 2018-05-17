@@ -211,6 +211,6 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PayOrder
-        fields = ( "id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
-                   "course_name", "course_duration", "course_validity", "user_mobile", "user_id", "user_nickname",
-                   "boxer_name", "boxer_mobile", "object_id","club_name")
+        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
+                  "course_name", "course_duration", "course_validity", "user_mobile", "user_id", "user_nickname",
+                  "boxer_name", "boxer_mobile", "object_id", "club_name")
