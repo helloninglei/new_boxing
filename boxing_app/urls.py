@@ -58,7 +58,7 @@ boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
 ]
 
-order_url =[
+order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
 ]

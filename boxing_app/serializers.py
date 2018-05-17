@@ -292,5 +292,4 @@ class BoxerCourseOrderSerializer(serializers.ModelSerializer):
         fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time", "finish_time",
                   "user_id", "user_nickname", "user_gender", "user_avatar", "course_name", "course_duration",
                   "course_validity", "club_name", "club_address", "club_longitude", "club_latitude",
-                  "comment_score","comment_time", "comment_content", "comment_images")
-
+                  "comment_score", "comment_time", "comment_content", "comment_images")
