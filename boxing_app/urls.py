@@ -19,7 +19,7 @@ from boxing_app.views import register
 from boxing_app.views import login
 from boxing_app.views.hot_video import HotVideoViewSet, hot_videos_redirect
 from biz.views import captcha_image
-from boxing_app.views.user_profile import bind_alipay_account
+from boxing_app.views.user_profile import bind_alipay_account, UserProfileViewSet
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -77,7 +77,8 @@ register_urls = [
     path("mobile_register_status", register.mobile_register_status),
     path("is_need_captcha", register.is_need_captcha),
     path("register", register.register),
-    path("register_with_user_info", register.register_with_user_info)
+    path("register_with_user_info", register.register_with_user_info),
+    path("mobile/change", register.change_mobile)
 ]
 
 login_urls = [
@@ -88,7 +89,8 @@ login_urls = [
 ]
 
 user_urls = [
-    path("alipay_account", bind_alipay_account)
+    path("alipay_account", bind_alipay_account),
+    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update"}))
 ]
 
 hot_video_url = [
