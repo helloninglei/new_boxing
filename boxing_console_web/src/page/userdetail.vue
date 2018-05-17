@@ -70,16 +70,15 @@ nav{min-height: 528px}
             TopBar,
         },
         created() { 
+            //刷新后对象里面都变成字符串
             let query   = this.$route.query
-            this.result = query;
-            console.log(this.result)
+            this.result.user_basic_info = query;
+        },
+        mounted(){
         },
         methods: {
             getDetailData(id) {
                 
-            },
-            checkIdent(id){
-                console.log('查看认证信息'+id)
             }
         },
     }

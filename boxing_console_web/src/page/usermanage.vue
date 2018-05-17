@@ -208,8 +208,8 @@
             },
             goUserDetail(row){
                 //去普通用户列表
-                console.log(row)
-                this.$router.push({path: '/userdetail', query:row});
+                console.log(row.user_basic_info)
+                this.$router.push({path: '/userdetail', query:row.user_basic_info});
             },
             checkIdent(id){
                 console.log('查看认证信息'+id)
