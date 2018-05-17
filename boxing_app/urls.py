@@ -7,12 +7,13 @@ from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from biz.views import upload_file
-from boxing_app.views.boxer import BoxerIdentificationViewSet, BoxerCourseOrderViewSet
+from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.orders import BoxerCourseOrderViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
 from boxing_app.views import register
@@ -55,9 +56,11 @@ report_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
-    path('boxer/course/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-course-orders'),
-    path('boxer/course/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}),
-         name='boxer-course-order-detail'),
+]
+
+order_url =[
+    path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
+    path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
 ]
 
 follow_url = [
@@ -112,6 +115,7 @@ urlpatterns += register_urls
 urlpatterns += login_urls
 urlpatterns += hot_video_url
 urlpatterns += user_urls
+urlpatterns += order_url
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
     urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
