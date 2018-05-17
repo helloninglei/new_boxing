@@ -28,7 +28,7 @@ class RegisterTestCase(APITestCase):
         self.assertTrue(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
         self.assertEqual(response.data['result'], "ok")
         response = self.client.post(path="/register_with_user_info", data={
-            "mobile": mobile, "gender": True, "avatar": "avatar"})
+            "mobile": mobile, "gender": True, "avatar": "avatar", "nick_name": "nick_name"})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['result'], "ok")
         self.assertTrue(User.objects.filter(mobile=mobile))
