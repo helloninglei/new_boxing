@@ -25,7 +25,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     def _get_query_set(self):
         user = self.request.user
         is_like = Count('likes', filter=Q(likes__user=user))
-        return Message.objects.annotate(like_count=Count('likes'), comment_count=Count('comments'), is_like=is_like)
+        return Message.objects.annotate(like_count=Count('likes'), comment_count=Count('comments'),
+                                        is_like=is_like).prefetch_related('user__boxer_identification')
 
     def list(self, request, *args, **kwargs):
         user_id = request.query_params.get('user_id')
@@ -44,4 +45,3 @@ class MessageViewSet(viewsets.ModelViewSet):
     def mine(self, request, *args, **kwargs):
         self.queryset = self._get_query_set().filter(user=request.user)
         return super().list(request, *args, **kwargs)
-
