@@ -4,6 +4,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
+from biz.models import PayOrder
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
@@ -259,6 +260,77 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not authenticate(username=self.context['user'].mobile, password=attrs['old_password']):
             raise ValidationError({"message": "原密码错误！"})
         return attrs
+
+
+class BoxerCourseOrderSerializer(serializers.ModelSerializer):
+    user_id = serializers.SerializerMethodField()
+    user_nickname = serializers.SerializerMethodField()
+    user_gender = serializers.SerializerMethodField()
+    user_avatar = serializers.SerializerMethodField()
+    course_name = serializers.SerializerMethodField()
+    course_duration = serializers.SerializerMethodField()
+    course_validity = serializers.SerializerMethodField()
+    club_name = serializers.SerializerMethodField()
+    club_address = serializers.SerializerMethodField()
+    club_longitude = serializers.SerializerMethodField()
+    club_latitude = serializers.SerializerMethodField()
+    comment_score = serializers.SerializerMethodField()
+    comment_time = serializers.SerializerMethodField()
+    comment_content = serializers.SerializerMethodField()
+    comment_images = serializers.SerializerMethodField()
+
+    def get_user_id(self, instance):
+        return instance.user.pk
+
+    def get_user_nickname(self, instance):
+        return instance.user.user_profile.nick_name
+
+    def get_user_gender(self, instance):
+        return instance.user.user_profile.gender
+
+    def get_user_avatar(self, instance):
+        return instance.user.user_profile.avatar
+
+    def get_course_name(self, instance):
+        return instance.content_object.course_name
+
+    def get_course_duration(self, instance):
+        return instance.content_object.duration
+
+    def get_course_validity(self, instance):
+        return instance.content_object.validity
+
+    def get_club_name(self, instance):
+        return instance.content_object.club.name
+
+    def get_club_address(self, instance):
+        return instance.content_object.club.address
+
+    def get_club_longitude(self, instance):
+        return instance.content_object.club.longitude
+
+    def get_club_latitude(self, instance):
+        return instance.content_object.club.latitude
+
+    # TODO 等待订单评论部分
+    def get_comment_score(self, instance):
+        return None
+
+    def get_comment_time(self, instance):
+        return None
+
+    def get_comment_content(self, instance):
+        return None
+
+    def get_comment_images(self, instance):
+        return None
+
+    class Meta:
+        model = PayOrder
+        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time", "finish_time",
+                  "user_id", "user_nickname", "user_gender", "user_avatar", "course_name", "course_duration",
+                  "course_validity", "club_name", "club_address", "club_longitude", "club_latitude",
+                  "comment_score", "comment_time", "comment_content", "comment_images")
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):

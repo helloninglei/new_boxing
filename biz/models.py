@@ -264,6 +264,20 @@ class OperationLog(models.Model):
         db_table = 'operation_log'
 
 
+class BoxingClub(BaseModel):
+    name = models.CharField(max_length=20, unique=True)
+    address = models.CharField(max_length=30)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
+    latitude = models.DecimalField(max_digits=8, decimal_places=6)  # 纬度,整数位2位-90~90
+    phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
+    opening_hours = models.CharField(max_length=30)
+    images = StringListField()
+    introduction = models.CharField(max_length=120)
+
+    class Meta:
+        db_table = 'club'
+
+
 class Course(models.Model):
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='course')
     course_name = models.CharField(choices=constants.BOXER_ALLOWED_COURSES_CHOICE, max_length=20)
@@ -271,6 +285,7 @@ class Course(models.Model):
     duration = models.IntegerField()  # 时长，单位：min
     validity = models.DateField()  # 有效期
     orders = GenericRelation('PayOrder', related_query_name='course')
+    club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
 
     class Meta:
         db_table = "course"
@@ -287,20 +302,6 @@ class SmsLog(models.Model):
     class Meta:
         db_table = 'sms_log'
         ordering = ("-created_time",)
-
-
-class BoxingClub(BaseModel):
-    club_name = models.CharField(max_length=20, unique=True)
-    address = models.CharField(max_length=30)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
-    latitude = models.DecimalField(max_digits=8, decimal_places=6)  # 纬度,整数位2位-90~90
-    phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
-    opening_hours = models.CharField(max_length=30)
-    images = StringListField()
-    introduction = models.CharField(max_length=120)
-
-    class Meta:
-        db_table = 'club'
 
 
 class BaseAuditModel(BaseModel):
@@ -340,6 +341,7 @@ class PayOrder(models.Model):
     device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
     order_time = models.DateTimeField(auto_now_add=True)
     pay_time = models.DateTimeField(null=True)
+    finish_time = models.DateTimeField(null=True)  # 记录课程订单完成时间
 
     class Meta:
         db_table = 'pay_order'

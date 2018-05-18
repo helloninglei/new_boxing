@@ -12,6 +12,7 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.orders import BoxerCourseOrderViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
@@ -57,6 +58,11 @@ report_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
+]
+
+order_url = [
+    path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
+    path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
 ]
 
 follow_url = [
@@ -122,5 +128,6 @@ urlpatterns += login_urls
 urlpatterns += hot_video_url
 urlpatterns += payment_urls
 urlpatterns += user_urls
+urlpatterns += order_url
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

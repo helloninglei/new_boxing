@@ -10,7 +10,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     serializer_class = BoxingClubSerializer
     queryset = BoxingClub.objects.all()
     filter_backends = (filters.SearchFilter, )
-    search_fields = ('club_name',)
+    search_fields = ('name',)
 
     @transaction.atomic
     def perform_destroy(self, instance):
