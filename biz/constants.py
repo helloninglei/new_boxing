@@ -112,7 +112,7 @@ BOXER_ALLOWED_COURSES_CHOICE = (
     (BOXER_ALLOWED_COURSES_BOXING, "拳击")
 )
 
-# (model名, type_id)
+# 举报 (model名, type_id)
 REPORT_OBJECT_DICT = {
     'message': 1,
     'comment': 2,
@@ -123,6 +123,11 @@ REPORT_OBJECT_DICT = {
 COMMENT_OBJECT_DICT = {
     'message': 1,
     'hot_video': 2,
+}
+
+# 支付
+PAYMENT_OBJECT_DICT = {
+    'hot_video': 1,
 }
 
 PAYMENT_STATUS_UNPAID = 1
@@ -149,9 +154,12 @@ PAYMENT_TYPE = (
     (PAYMENT_TYPE_WALLET, '余额')
 )
 
+DEVICE_PLATFORM_IOS = 1
+DEVICE_PLATFORM_ANDROID = 2
+
 DEVICE_PLATFORM = (
-    (1, 'iOS'),
-    (2, 'Android'),
+    (DEVICE_PLATFORM_IOS, 'iOS'),
+    (DEVICE_PLATFORM_ANDROID, 'Android'),
 )
 
 HOT_VIDEO_USER_ID = 1000000
