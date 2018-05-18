@@ -29,7 +29,7 @@ def save_upload_file(upload_file):
 
 def generate_file_name(f):
     h = hashlib.sha1()
-    while 1:
+    while True:
         block = f.read(128 * 1024)
         if not block:
             break
