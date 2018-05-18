@@ -7,7 +7,6 @@ from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Cours
 from biz import models, constants, redis_client
 
 
-
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
@@ -214,3 +213,19 @@ class CourseOrderSerializer(serializers.ModelSerializer):
         fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
                   "course_name", "course_duration", "course_validity", "user_mobile", "user_id", "user_nickname",
                   "boxer_name", "boxer_mobile", "object_id", "club_name")
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author = serializers.SerializerMethodField()
+    comment_count = serializers.IntegerField(read_only=True)
+
+    def get_author(self, obj):
+        if hasattr(obj.operator, 'user_profile'):
+            return obj.operator.user_profile.nick_name
+        return obj.operator.mobile
+
+    class Meta:
+        model = models.GameNews
+        exclude = ('created_time', 'updated_time')
+        read_only_fields = ('views_count',)
