@@ -154,7 +154,7 @@ class Message(SoftDeleteModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
     content = models.CharField(max_length=140)
     images = StringListField(null=True)
-    video = models.URLField(null=True)
+    video = models.CharField(max_length=200, null=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)

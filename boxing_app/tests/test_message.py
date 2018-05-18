@@ -22,9 +22,15 @@ class MessageTestCase(APITestCase):
 
         redis_client.flushdb()
 
+    def test_create_failed(self):
+        msg1 = {'content': 'hello2', 'images': ['http://img1.com', 'http://img2.com'], 'video': '/uploads/xxx.jpg'}
+        res = self.client1.post('/messages', msg1)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['video'][0], '视频和图片不可同时上传')
+
     def test_create(self):
         msg1 = {'content': 'hello1'}
-        msg2 = {'content': 'hello2', 'images': ['http://img1.com', 'http://img2.com'], 'video': 'https://baidu.com'}
+        msg2 = {'content': 'hello2', 'images': ['http://img1.com', 'http://img2.com']}
         self.client1.post('/messages', msg1)
         self.client1.post('/messages', msg2)
 
@@ -34,13 +40,12 @@ class MessageTestCase(APITestCase):
         results = response.data['results']
         self.assertEqual(msg2['content'], results[0]['content'])
         self.assertEqual(msg2['images'], results[0]['images'])
-        self.assertEqual(msg2['video'], results[0]['video'])
         self.assertEqual(msg1['content'], results[1]['content'])
 
     def test_delete(self):
         res = self.client1.post('/messages', {'content': 'hello'})
         client_1_message_id = res.data['id']
-        self.client1.post('/messages', {'content': 'hello', 'images': ['http://img1.com', 'http://img2.com'], 'video': 'https://baidu.com'})
+        self.client1.post('/messages', {'content': 'hello', 'images': ['http://img1.com', 'http://img2.com']})
         self.client2.post('/messages', {'content': 'hello'})
 
         res = self.client2.delete('/messages/%s' % client_1_message_id)
@@ -86,6 +91,3 @@ class MessageTestCase(APITestCase):
         result = res.data['results']
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0]['user']['id'], self.test_user_2.id)
-
-
-

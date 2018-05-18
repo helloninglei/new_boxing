@@ -41,12 +41,17 @@ class DiscoverUserField(serializers.RelatedField):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    images = serializers.ListField(child=serializers.URLField(), required=False)
-    video = serializers.URLField(required=False)
+    images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
+    video = serializers.CharField(max_length=200, required=False)
     user = DiscoverUserField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     is_like = serializers.BooleanField(read_only=True)
+
+    def validate(self, data):
+        if data.get('video') and data.get('images'):
+            raise ValidationError({'video': ['视频和图片不可同时上传']})
+        return data
 
     class Meta:
         model = models.Message
