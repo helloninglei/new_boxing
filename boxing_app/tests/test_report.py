@@ -4,7 +4,7 @@ from rest_framework import status
 from biz.models import User, Report
 from biz.constants import REPORT_OBJECT_DICT
 from biz.constants import REPORT_REASON_CHOICES
-from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
+from biz.constants import REPORT_OTHER_REASON
 
 
 class LikeTestCase(APITestCase):
@@ -35,7 +35,7 @@ class LikeTestCase(APITestCase):
 
         data = {
             'object_id': self.message_id,
-            'reason': DISCOVER_MESSAGE_REPORT_OTHER_REASON
+            'reason': REPORT_OTHER_REASON
         }
 
         res = self.client2.post('/messages/report', data)
