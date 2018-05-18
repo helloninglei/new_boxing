@@ -15,3 +15,5 @@ crcmod==1.7
 https://github.com/fangzhaowei/python-sdks/raw/master/dysms_python.zip
 django-simple-captcha==0.5.6
 django-cors-headers==2.2.0
+python-alipay-sdk==1.7.1
+weixin-python==0.5.3
