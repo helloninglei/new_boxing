@@ -334,11 +334,7 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
 
     class Meta:
         model = PayOrder
-        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
-                  "finish_time", "course_name", "course_duration", "course_validity", "course_price",
-                  "club_name", "club_address", "club_longitude", "club_latitude", "user_id",
-                  "user_nickname", "user_gender", "user_avatar","comment_score","comment_time",
-                  "comment_content", "comment_images")
+        exclude = ['device']
 
 
 class UserCourseOrderSerializer(BaseCourseOrderSerializer):
@@ -361,11 +357,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
     class Meta:
         model = PayOrder
-        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
-                  "finish_time", "course_name", "course_duration", "course_validity", "course_price",
-                  "club_name", "club_address", "club_longitude", "club_latitude", "boxer_name",
-                  "boxer_gender", "boxer_avatar", "boxer_id","comment_score","comment_time",
-                  "comment_content", "comment_images")
+        exclude = ['device']
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
