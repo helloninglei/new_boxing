@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
@@ -152,3 +153,49 @@ class MessageTestCase(APITestCase):
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
         # TODO 缺少订单评论
+
+    def test_get_user_order_list(self):
+        # 分别为test_user_1、2、3、4创建user_profile
+        self.user_profile_data['user'] = self.test_user_1
+        UserProfile.objects.create(**self.user_profile_data)
+        self.user_profile_data['user'] = self.test_user_2
+        UserProfile.objects.create(**self.user_profile_data)
+        self.user_profile_data['user'] = self.test_user_3
+        UserProfile.objects.create(**self.user_profile_data)
+        self.user_profile_data['user'] = self.test_user_4
+        UserProfile.objects.create(**self.user_profile_data)
+
+        # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
+        self.boxer_data['user'] = self.test_user_4
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+        self.course_order_data['content_object'] = course
+
+        # 用户test_user_2购买课程2个课程
+        self.course_order_data['user'] = self.test_user_2
+        PayOrder.objects.create(**self.course_order_data)
+        PayOrder.objects.create(**self.course_order_data)
+
+        # 用户test_user_3购买课程3个课程
+        self.course_order_data['user'] = self.test_user_3
+        PayOrder.objects.create(**self.course_order_data)
+        PayOrder.objects.create(**self.course_order_data)
+        PayOrder.objects.create(**self.course_order_data)
+
+        # 用户test_user_2获取订单列表,结果应为2条
+        res = self.client2.get('/user/orders')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 2)
+
+        # 用户test_user_3获取订单列表，结果应为3条
+        res = self.client3.get('/user/orders')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 3)
+
+        # 用户test_user_4获取订单列表，结果应为0条
+        res = self.client4.get('/user/orders')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 0)
