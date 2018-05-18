@@ -375,3 +375,22 @@ class ChangeMobileSerializer(serializers.Serializer):
         if not verify_code_service.check_verify_code(attrs['mobile'], attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
+
+
+class NewsSerializer(serializers.ModelSerializer):
+    comment_count = serializers.IntegerField()
+    content = serializers.SerializerMethodField()
+    read_count = serializers.SerializerMethodField()
+
+    def get_content(self, obj):
+        if self.context['request'].META.get('source'):
+            return obj.app_content
+        return obj.share_content or obj.app_content
+
+    def get_read_count(self, obj):
+        return obj.initial_views_count + obj.views_count
+
+    class Meta:
+        model = models.GameNews
+        fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'created_time', 'read_count', 'picture',
+                  'stay_top')

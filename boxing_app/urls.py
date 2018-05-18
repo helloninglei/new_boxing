@@ -22,6 +22,7 @@ from biz.views import captcha_image
 from boxing_app.views.user_profile import UserProfileViewSet
 from boxing_app.views.hot_video import HotVideoViewSet
 from boxing_app.views import pay
+from boxing_app.views import game_news
 from boxing_app.views.user_profile import bind_alipay_account
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
@@ -114,6 +115,11 @@ payment_urls = [
     path('callback/wechat', pay.wechat_calback),
 ]
 
+news_urls = [
+    path('game_news', game_news.NewsViewSet.as_view({'get': 'list'})),
+    path('game_news/<int:pk>', game_news.NewsViewSet.as_view({'get': 'retrieve'})),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -129,5 +135,7 @@ urlpatterns += hot_video_url
 urlpatterns += payment_urls
 urlpatterns += user_urls
 urlpatterns += order_url
+urlpatterns += news_urls
+
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
