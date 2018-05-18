@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from biz import constants
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User
@@ -41,6 +42,19 @@ class MessageTestCase(APITestCase):
         self.assertEqual(msg2['content'], results[0]['content'])
         self.assertEqual(msg2['images'], results[0]['images'])
         self.assertEqual(msg1['content'], results[1]['content'])
+
+    def test_msg_type(self):
+        msg1 = {'content': 'hello1'}
+        msg2 = {'content': 'hello2', 'images': ['http://img1.com', 'http://img2.com']}
+        msg3 = {'content': 'hello2', 'video': '/uploads/xxx.mp4'}
+        res = self.client1.post('/messages', msg1)
+        self.assertEqual(res.data['msg_type'], constants.MESSAGE_TYPE_ONLY_TEXT)
+
+        res = self.client1.post('/messages', msg2)
+        self.assertEqual(res.data['msg_type'], constants.MESSAGE_TYPE_HAS_IMAGE)
+
+        res = self.client1.post('/messages', msg3)
+        self.assertEqual(res.data['msg_type'], constants.MESSAGE_TYPE_HAS_VIDEO)
 
     def test_delete(self):
         res = self.client1.post('/messages', {'content': 'hello'})

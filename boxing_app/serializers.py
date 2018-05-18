@@ -4,7 +4,8 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
+from biz.constants import REPORT_OTHER_REASON
+from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_followed
 from biz import models
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
@@ -47,6 +48,14 @@ class MessageSerializer(serializers.ModelSerializer):
     like_count = serializers.IntegerField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     is_like = serializers.BooleanField(read_only=True)
+    msg_type = serializers.SerializerMethodField()
+
+    def get_msg_type(self, obj):
+        if obj.video:
+            return MESSAGE_TYPE_HAS_VIDEO
+        if obj.images:
+            return MESSAGE_TYPE_HAS_IMAGE
+        return MESSAGE_TYPE_ONLY_TEXT
 
     def validate(self, data):
         if data.get('video') and data.get('images'):
@@ -55,7 +64,8 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Message
-        fields = ['id', 'content', 'images', 'video', 'created_time', 'user', 'like_count', 'comment_count', 'is_like']
+        fields = ['id', 'content', 'images', 'video', 'msg_type', 'created_time', 'user', 'like_count', 'comment_count',
+                  'is_like']
 
 
 class BasicReplySerializer(serializers.ModelSerializer):
@@ -93,7 +103,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     def validate(self, data):
-        if data['reason'] == DISCOVER_MESSAGE_REPORT_OTHER_REASON and not data.get('remark'):
+        if data['reason'] == REPORT_OTHER_REASON and not data.get('remark'):
             raise ValidationError({'remark': ['举报理由是必填项']})
         return data
 
