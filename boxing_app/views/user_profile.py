@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer
 from biz.models import UserProfile
+from biz import redis_client
 
 
 @api_view(['POST'])
@@ -19,3 +20,20 @@ class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 
     def get_object(self):
         return UserProfile.objects.get(user=self.request.user)
+
+
+class BlackListViewSet(viewsets.GenericViewSet):
+
+    def list(self, request):
+        return Response({"result": redis_client.black_user_list(request.user.id)}, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk):
+        return Response({"result": redis_client.is_black_user(request.user.id, pk)}, status=status.HTTP_200_OK)
+
+    def destroy(self, request, pk):
+        redis_client.remove_black_user(request.user.id, pk)
+        return Response(status=status.HTTP_200_OK)
+
+    def create(self, request, pk):
+        redis_client.black_user(request.user.id, pk)
+        return Response(status=status.HTTP_201_CREATED)

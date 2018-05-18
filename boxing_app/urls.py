@@ -3,6 +3,7 @@
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.0/topics/http/urls/
 """
+
 from django.urls import include, path, re_path
 from django.conf import settings
 from biz.views import upload_file
@@ -18,7 +19,7 @@ from boxing_app.views import register
 from boxing_app.views import login
 from boxing_app.views.hot_video import hot_videos_redirect
 from biz.views import captcha_image
-from boxing_app.views.user_profile import UserProfileViewSet
+from boxing_app.views.user_profile import UserProfileViewSet, BlackListViewSet
 from boxing_app.views.hot_video import HotVideoViewSet
 from boxing_app.views import pay
 from boxing_app.views.user_profile import bind_alipay_account
@@ -92,7 +93,9 @@ login_urls = [
 
 user_urls = [
     path("alipay_account", bind_alipay_account),
-    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update"}))
+    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update"})),
+    path("black_list", BlackListViewSet.as_view({"get": "list"})),
+    path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))
 ]
 
 hot_video_url = [

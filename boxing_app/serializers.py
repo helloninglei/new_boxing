@@ -278,6 +278,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profession = serializers.CharField(max_length=20)
     weight = serializers.CharField(max_length=10)
     nick_name = serializers.CharField(max_length=10, required=False)
+    following_count = serializers.SerializerMethodField()
+    followers_count = serializers.SerializerMethodField()
+
+    def get_followers_count(self, instance):
+        return redis_client.follower_count(instance.id)
+
+    def get_following_count(self, instance):
+        return redis_client.followed_count(instance.id)
 
     def get_mobile(self, instance):
         return instance.user.mobile

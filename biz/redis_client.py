@@ -69,3 +69,23 @@ def get_boxing_club_location(club_id):
 
 def del_boxing_club_location(club_id):
     return redis_client.zrem('boxing-club-set', club_id)
+
+
+# 加入黑名单
+def black_user(current_user_id, black_user_id):
+    return redis_client.sadd(f"black_list:{current_user_id}", black_user_id)
+
+
+# 移出黑名单
+def remove_black_user(current_user_id, remove_user_id):
+    return redis_client.srem(f"black_list:{current_user_id}", remove_user_id)
+
+
+# 黑名单列表
+def black_user_list(current_user_id):
+    return redis_client.smembers(f"black_list:{current_user_id}")
+
+
+# 是否在黑名单中
+def is_black_user(current_user_id, user_id):
+    return redis_client.sismember(f"black_list:{current_user_id}", user_id)
