@@ -7,6 +7,9 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.core.validators import MinValueValidator
 
 from biz import validator, constants
+from biz.constants import HOT_VIDEO_USER_ID, FRIDAY_USER_ID, BOXING_USER_ID, USER_IDENTITY_DICT
+
+OFFICIAL_USER_IDS = USER_IDENTITY_DICT.keys()
 
 
 class UserManager(BaseUserManager):
@@ -57,6 +60,16 @@ class User(AbstractUser):
     coin_balance = models.IntegerField(default=0)
     money_balance = models.IntegerField(default=0)  # unit, 分
 
+    @property
+    def identity(self):
+        if hasattr(self, 'boxer_identification') and self.boxer_identification.authentication_state == \
+                constants.BOXER_AUTHENTICATION_STATE_APPROVED:
+            return 'boxer'
+        user_id = self.id
+        if user_id not in OFFICIAL_USER_IDS:
+            return 'user'
+        return USER_IDENTITY_DICT[user_id]
+
     class Meta(AbstractUser.Meta):
         db_table = 'user'
         verbose_name = 'user'
@@ -73,11 +86,11 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  #变动前额度 单位：分
-    change_amount = models.IntegerField(default=0)  #变动额度 单位：分
-    remain_amount = models.IntegerField(default=0)  #变动后额度 单位：分
-    operator = models.ForeignKey(User, on_delete=models.PROTECT)  #操作人
-    remarks = models.CharField(null=True, max_length=50)  #备注
+    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
+    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
+    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
+    operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
+    remarks = models.CharField(null=True, max_length=50)  # 备注
 
     class Meta:
         abstract = True
@@ -88,9 +101,9 @@ class UserProfile(BaseModel):
     nick_name = models.CharField(max_length=30, null=True, blank=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     nation = models.CharField(max_length=30, blank=True, null=True)
-    birthday = models.DateTimeField(blank=True, null=True)
-    weight = models.CharField(max_length=10, blank=True, null=True)
-    height = models.CharField(max_length=10, blank=True, null=True)
+    birthday = models.DateField(blank=True, null=True)
+    weight = models.PositiveSmallIntegerField(blank=True, null=True)
+    height = models.PositiveSmallIntegerField(blank=True, null=True)
     profession = models.CharField(max_length=20, null=True, blank=True)
     avatar = models.CharField(null=True, blank=True, max_length=128)
     gender = models.BooleanField(default=True)  # True-男，False-女
@@ -154,7 +167,7 @@ class Message(SoftDeleteModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
     content = models.CharField(max_length=140)
     images = StringListField(null=True)
-    video = models.URLField(null=True)
+    video = models.CharField(max_length=200, null=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
@@ -165,7 +178,7 @@ class Message(SoftDeleteModel):
         ordering = ('-created_time',)
 
 
-#拳手认证
+# 拳手认证
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
     real_name = models.CharField(max_length=10)
@@ -181,7 +194,7 @@ class BoxerIdentification(BaseModel):
     is_locked = models.BooleanField(default=False)
     experience = models.TextField(null=True, blank=True, max_length=500)
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
-                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE,)
+                                            choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE, )
     honor_certificate_images = StringListField(null=True)
     competition_video = models.URLField(null=True)
     allowed_lessons = StringListField(null=True, blank=True)
@@ -272,7 +285,7 @@ class Course(models.Model):
     duration = models.IntegerField()  # 时长，单位：min
     validity = models.DateField()  # 有效期
     orders = GenericRelation('PayOrder', related_query_name='course')
-    club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False)
+    club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
 
     class Meta:
         db_table = "course"
@@ -302,23 +315,12 @@ class HotVideo(models.Model):
     is_show = models.BooleanField(default=True, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     comments = GenericRelation('Comment')
+    orders = GenericRelation('PayOrder', related_query_name='hot_video')
 
     class Meta:
         db_table = 'hot_video'
         ordering = ("-created_time",)
-
-
-class HotVideoOrder(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
-                                      db_index=True)
-    video = models.ForeignKey(HotVideo, on_delete=models.PROTECT, related_name='orders')
-    order_time = models.DateTimeField(auto_now_add=True)
-    amount = models.PositiveIntegerField()  # 单位元
-    pay_time = models.DateTimeField(null=True)
-
-    class Meta:
-        db_table = 'hot_video_order'
+        verbose_name = '热门视频'
 
 
 class PayOrder(models.Model):

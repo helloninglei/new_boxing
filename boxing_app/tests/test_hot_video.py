@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 from biz import constants
-from django.conf import settings
 from rest_framework.test import APITestCase
-from rest_framework import status
-from biz.models import User, HotVideo, HotVideoOrder
+from biz.models import User, HotVideo, PayOrder
+from biz.services.pay_service import PayService
 
 
 class HotVideoTestCase(APITestCase):
@@ -32,19 +31,24 @@ class HotVideoTestCase(APITestCase):
     def test_video_payment(self):
         video = HotVideo.objects.create(**self.data)
 
-        HotVideoOrder.objects.create(
-            user=self.test_user,
+        PayOrder.objects.create(
+            user=self.test_superuser,
             status=constants.PAYMENT_STATUS_WAIT_USE,
-            video=video,
+            content_object=video,
             amount=video.price,
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
             pay_time=datetime.datetime.now()
         )
-        HotVideoOrder.objects.create(
+        PayOrder.objects.create(
             user=self.test_user3,
             status=constants.PAYMENT_STATUS_UNPAID,
-            video=video,
+            content_object=video,
             amount=video.price,
-            pay_time=datetime.datetime.now()
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
         )
 
         res = self.client1.get(f'/users/{self.test_user.id}/hot_videos')
