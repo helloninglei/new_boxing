@@ -128,20 +128,20 @@ class CourseOrderTestCase(APITestCase):
         search_user_mobile_res = self.client.get('/course/orders', {
             "course__course_name": self.course_data['course_name']})
         self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"course__course_name": "nukonw_course"})
+        search_user_mobile_res = self.client.get('/course/orders', {"course__course_name": "unkonw_course"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过支付方式过滤
         search_user_mobile_res = self.client.get('/course/orders', {
             "payment_type": self.other_order_data['payment_type']})
         self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"payment_type": "nukonw_type"})
+        search_user_mobile_res = self.client.get('/course/orders', {"payment_type": "unknown_type"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过订单状态过滤
         search_user_mobile_res = self.client.get('/course/orders', {"status": self.other_order_data['status']})
         self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"status": "nukonw_status"})
+        search_user_mobile_res = self.client.get('/course/orders', {"status": "unknown_status"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
     def test_course_detail(self):

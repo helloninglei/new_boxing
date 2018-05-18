@@ -5,7 +5,6 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 from django.urls import include, path, re_path
 from django.conf import settings
-from django.conf.urls.static import static
 from biz.views import upload_file
 from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
@@ -118,4 +117,3 @@ urlpatterns += user_urls
 urlpatterns += order_url
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
-    urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
