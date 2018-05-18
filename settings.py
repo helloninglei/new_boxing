@@ -59,6 +59,22 @@ ALI_SMS_ACCESS_KEY_ID = 'key'
 ALI_SMS_ACCESS_SECRET = 'secret'
 ALI_SMS_INTERVAL = 60
 
+ALIPAY = {
+    'appid': "2016082000301642",
+    'app_notify_url': None,
+    'app_private_key_string': 'xxx',
+    'alipay_public_key_string': 'xxxx',
+    'sign_type': "RSA2",
+    'debug': True
+}
+
+WECHAT_PAY = {
+    'app_id': 'wxf0f79d11111',
+    'mch_id': '111111111111',
+    'mch_key': '1111111111',
+    'notify_url': 'http://127.0.0.1/callback/wechat_pay',
+}
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
