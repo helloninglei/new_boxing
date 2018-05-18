@@ -88,9 +88,9 @@ class UserProfile(BaseModel):
     nick_name = models.CharField(max_length=30, null=True, blank=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     nation = models.CharField(max_length=30, blank=True, null=True)
-    birthday = models.DateTimeField(blank=True, null=True)
-    weight = models.CharField(max_length=10, blank=True, null=True)
-    height = models.CharField(max_length=10, blank=True, null=True)
+    birthday = models.DateField(blank=True, null=True)
+    weight = models.PositiveSmallIntegerField(blank=True, null=True)
+    height = models.PositiveSmallIntegerField(blank=True, null=True)
     profession = models.CharField(max_length=20, null=True, blank=True)
     avatar = models.CharField(null=True, blank=True, max_length=128)
     gender = models.BooleanField(default=True)  # True-男，False-女

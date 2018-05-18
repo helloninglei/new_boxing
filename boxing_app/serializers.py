@@ -231,7 +231,7 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    birthday = serializers.DateTimeField(format="%Y-%m-%d")
+    birthday = serializers.DateField()
     boxer_info = serializers.SerializerMethodField()
     mobile = serializers.SerializerMethodField()
     height = serializers.CharField(max_length=10)
@@ -249,8 +249,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UserProfile
-        fields = ["address", "alipay_account", "avatar", "bio", "birthday", "gender", "height", "name", "nation",
-                  "nick_name", "profession", "weight", "boxer_info", "mobile"]
+        exclude = ["created_time", "id", "updated_time", "user"]
         read_only_fields = ["address", "alipay_account", "bio", "gender", "nick_name", "boxer_info", "mobile"]
 
 
@@ -259,7 +258,7 @@ class ChangeMobileSerializer(serializers.Serializer):
     verify_code = serializers.CharField()
 
     def validate(self, attrs):
-        if attrs['mobile'] == self.context['request']:
+        if attrs['mobile'] == self.context['request'].user.mobile:
             raise ValidationError({"message": "手机号和原手机号相同！"})
         if models.User.objects.filter(mobile=attrs['mobile']).exists():
             raise ValidationError({"message": "手机号已绑定一个账号，不能再绑定！"})

@@ -20,7 +20,7 @@ class ChangeMobileTestCase(APILoginTestCase):
             "mobile": self.user.mobile, "verify_code": "567989"
         })
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['message'][0], "手机号已绑定一个账号，不能再绑定！")
+        self.assertEqual(response.data['message'][0], "手机号和原手机号相同！")
 
         response = self.client.post(path="/mobile/change", data={
             "mobile": "19990000000", "verify_code": "567986"
