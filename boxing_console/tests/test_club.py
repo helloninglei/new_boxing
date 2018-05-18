@@ -13,7 +13,7 @@ class BoxingClubTestCase(TestCase):
         self.client = self.client_class()
         self.client.login(username=self.test_user1, password='password')
         self.data = {
-                    "club_name": "拳王01",
+                    "name": "拳王01",
                     "address": "丰台区角门东洋桥",
                     "longitude": 111.123456,
                     "latitude": 11.123456,
@@ -81,7 +81,7 @@ class BoxingClubTestCase(TestCase):
 
     def test_club_list(self):
         data1 = {
-            "club_name": "拳王01",
+            "name": "拳王01",
             "address": "丰台区",
             "longitude": 111.111111,
             "latitude": 11.111111,
@@ -91,7 +91,7 @@ class BoxingClubTestCase(TestCase):
             "introduction": "最牛逼的拳馆"
         }
         data2 = {
-            "club_name": "拳王02",
+            "name": "拳王02",
             "address": "朝阳区",
             "longitude": 112.111111,
             "latitude": 12.111111,
@@ -101,7 +101,7 @@ class BoxingClubTestCase(TestCase):
             "introduction": "最善良的拳馆"
         }
         data3 = {
-            "club_name": "拳王03",
+            "name": "拳王03",
             "address": "海淀区",
             "longitude": 113.111111,
             "latitude": 13.111111,
@@ -123,7 +123,7 @@ class BoxingClubTestCase(TestCase):
                 self.assertEqual(data1[key], list_res.data['results'][0].get(key))
 
         # 通过拳馆名进行搜索,并验证结果
-        search_res = self.client.get('/club', data={'search': data2['club_name']})
+        search_res = self.client.get('/club', data={'search': data2['name']})
         self.assertEqual(search_res.data['count'], 1)
         for key in data2:
             if key in ("longitude", "latitude"):
