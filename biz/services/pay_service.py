@@ -5,7 +5,7 @@ from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
 from biz.models import PayOrder
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_PAID
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -89,4 +89,4 @@ class PayService:
 
     @classmethod
     def success_callback(cls, data):
-        PayOrder.objects.filter(out_trade_no=data['out_trade_no']).update(status=PAYMENT_STATUS_PAID)
+        PayOrder.objects.filter(out_trade_no=data['out_trade_no']).update(status=PAYMENT_STATUS_WAIT_USE)

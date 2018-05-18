@@ -8,7 +8,7 @@ from django.conf import settings
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
-from boxing_console.views.course import CourseViewSet
+from boxing_console.views.course import CourseViewSet, CourseOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
 from biz.views import upload_file, captcha_image
@@ -40,13 +40,16 @@ hot_video_url = [
 
 course_url = [
     path('courses', CourseViewSet.as_view({'get': 'list'}), name='courses_list'),
-    path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail')
+    path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail'),
+    path('course/orders', CourseOrderViewSet.as_view({'get': 'list'})),
+    path('course/order/<int:pk>', CourseOrderViewSet.as_view({'get': 'retrieve'})),
 ]
 
 club_url = [
     path('club', BoxingClubVewSet.as_view({'post': 'create', 'get':'list'})),
     path('club/<int:pk>',BoxingClubVewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}))
 ]
+
 
 login_urls = [
     re_path("^", include("biz.urls"))

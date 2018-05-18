@@ -94,7 +94,7 @@ class HotVideoTestCase(APITestCase):
         video = HotVideo.objects.get(pk=video_id)
         PayOrder.objects.create(
             user=self.test_superuser,
-            status=constants.PAYMENT_STATUS_PAID,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
             content_object=video,
             amount=video.price,
             out_trade_no=PayService.generate_out_trade_no(),
@@ -104,7 +104,7 @@ class HotVideoTestCase(APITestCase):
         )
         PayOrder.objects.create(
             user=self.test_user3,
-            status=constants.PAYMENT_STATUS_PAID,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
             content_object=video,
             amount=video.price,
             out_trade_no=PayService.generate_out_trade_no(),

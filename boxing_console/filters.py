@@ -45,3 +45,12 @@ class HotVideoFilter(CommonFilter):
     class Meta:
         model = models.HotVideo
         fields = ['created_time']
+
+
+class CourseOrderFilter(CommonFilter):
+    pay_time_start = django_filters.DateTimeFilter(name='pay_time', lookup_expr='gte')
+    pay_time_end = django_filters.DateTimeFilter(name='pay_time', lookup_expr='lte')
+
+    class Meta:
+        model = models.PayOrder
+        fields = ['pay_time_start', 'pay_time_end', 'course__course_name', 'payment_type', 'status']

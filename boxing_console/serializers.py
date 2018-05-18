@@ -3,7 +3,7 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
 from biz import models, constants, redis_client
 
 
@@ -169,3 +169,48 @@ class HotVideoSerializer(serializers.ModelSerializer):
         model = HotVideo
         fields = ('id', 'user_id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
                   'operator', 'is_show', 'created_time')
+
+
+class CourseOrderSerializer(serializers.ModelSerializer):
+    user_mobile = serializers.SerializerMethodField()
+    user_id = serializers.SerializerMethodField()
+    user_nickname = serializers.SerializerMethodField()
+    course_name = serializers.SerializerMethodField()
+    course_duration = serializers.SerializerMethodField()
+    course_validity = serializers.SerializerMethodField()
+    boxer_name = serializers.SerializerMethodField()
+    boxer_mobile = serializers.SerializerMethodField()
+    club_name = serializers.SerializerMethodField()
+
+    def get_user_mobile(self, instance):
+        return instance.user.mobile
+
+    def get_user_id(self, instance):
+        return instance.user.pk
+
+    def get_user_nickname(self, instance):
+        return instance.user.user_profile.nick_name
+
+    def get_course_name(self, instance):
+        return instance.content_object.course_name
+
+    def get_course_duration(self, instance):
+        return instance.content_object.duration
+
+    def get_course_validity(self, instance):
+        return instance.content_object.validity
+
+    def get_boxer_name(self, instance):
+        return instance.content_object.boxer.real_name
+
+    def get_boxer_mobile(self, instance):
+        return instance.content_object.boxer.mobile
+
+    def get_club_name(self, instance):
+        return instance.content_object.boxer.club
+
+    class Meta:
+        model = PayOrder
+        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
+                  "course_name", "course_duration", "course_validity", "user_mobile", "user_id", "user_nickname",
+                  "boxer_name", "boxer_mobile", "object_id", "club_name")
