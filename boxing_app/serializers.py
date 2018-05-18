@@ -259,3 +259,47 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not authenticate(username=self.context['user'].mobile, password=attrs['old_password']):
             raise ValidationError({"message": "原密码错误！"})
         return attrs
+
+
+class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BoxerIdentification
+        fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
+                  "is_professional_boxer", "real_name", "weight", "club", "mobile"]
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    birthday = serializers.DateField()
+    boxer_info = serializers.SerializerMethodField()
+    mobile = serializers.SerializerMethodField()
+    height = serializers.CharField(max_length=10)
+    name = serializers.CharField(max_length=30)
+    nation = serializers.CharField(max_length=30)
+    profession = serializers.CharField(max_length=20)
+    weight = serializers.CharField(max_length=10)
+    nick_name = serializers.CharField(max_length=10, required=False)
+
+    def get_mobile(self, instance):
+        return instance.user.mobile
+
+    def get_boxer_info(self, instance):
+        return BoxerInfoReadOnlySerializer(models.BoxerIdentification.objects.filter(user=instance.user).first()).data
+
+    class Meta:
+        model = models.UserProfile
+        exclude = ["created_time", "id", "updated_time", "user"]
+        read_only_fields = ["address", "alipay_account", "bio", "gender", "nick_name", "boxer_info", "mobile"]
+
+
+class ChangeMobileSerializer(serializers.Serializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
+    verify_code = serializers.CharField()
+
+    def validate(self, attrs):
+        if attrs['mobile'] == self.context['request'].user.mobile:
+            raise ValidationError({"message": "手机号和原手机号相同！"})
+        if models.User.objects.filter(mobile=attrs['mobile']).exists():
+            raise ValidationError({"message": "手机号已绑定一个账号，不能再绑定！"})
+        if not verify_code_service.check_verify_code(attrs['mobile'], attrs['verify_code']):
+            raise ValidationError({"message": "短信验证码错误！"})
+        return attrs
