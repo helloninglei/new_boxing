@@ -28,5 +28,4 @@ class BlackListTestCase(APILoginTestCase):
         # 移出黑名单
         response = self.client.delete(path=f"/black_list/{self.user2.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(redis_client.redis_client.smembers(f"black_list:{self.user.id}"))
         self.assertFalse(redis_client.is_black_user(self.user.id, self.user2.id))
