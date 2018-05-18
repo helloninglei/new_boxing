@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from boxing_app.forms import UploadFileForm
-from boxing_app.services import file_service
+from biz.services import file_service
 from biz.serializers import AuthTokenLoginSerializer
 from biz.services.captcha_service import get_captcha
 

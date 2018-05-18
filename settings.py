@@ -41,8 +41,7 @@ REDIS_DB = 5
 if ENVIRONMENT == TEST:
     REDIS_DB = 15  # 用于单元测试，每次会被清空
 
-BASE_UPLOAD_FILE_URL = '/upload/'
-UPLOAD_FILE_LOCAL_STORAGE_DIR = '/var/tmp/boxing'
+UPLOAD_URL_PATH = '/uploads/'
 
 OSS_URL = 'url'
 OSS_KEY = 'key'
@@ -53,12 +52,28 @@ OSS_CONFIG = {
     'url': OSS_URL,
     'app_key': OSS_KEY,
     'app_secret': OSS_SECRET,
-    'bucket': OSS_BUCKET
+    'bucket': OSS_BUCKET,
 }
 
 ALI_SMS_ACCESS_KEY_ID = 'key'
 ALI_SMS_ACCESS_SECRET = 'secret'
 ALI_SMS_INTERVAL = 60
+
+ALIPAY = {
+    'appid': "2016082000301642",
+    'app_notify_url': None,
+    'app_private_key_string': 'xxx',
+    'alipay_public_key_string': 'xxxx',
+    'sign_type': "RSA2",
+    'debug': True
+}
+
+WECHAT_PAY = {
+    'app_id': 'wxf0f79d11111',
+    'mch_id': '111111111111',
+    'mch_key': '1111111111',
+    'notify_url': 'http://127.0.0.1/callback/wechat_pay',
+}
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
@@ -84,7 +99,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

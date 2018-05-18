@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.constants import DISCOVER_MESSAGE_REPORT_OTHER_REASON
+from biz.constants import PAYMENT_TYPE
 from biz.redis_client import is_followed
 from biz import models
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
@@ -12,6 +13,7 @@ from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
 from biz.redis_const import SEND_VERIFY_CODE
 from boxing_app.services import verify_code_service
+from biz.utils import get_client_ip, get_device_platform
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -187,6 +189,24 @@ class HotVideoSerializer(serializers.ModelSerializer):
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
+
+
+class PaySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    device = serializers.SerializerMethodField()
+    ip = serializers.SerializerMethodField()
+    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE)
+    content_object = serializers.SerializerMethodField()
+
+    def get_content_object(self, obj):
+        object_type = self.context['object_type'].title().replace('_', '')
+        return getattr(models, object_type).objects.get(pk=obj['id'])
+
+    def get_ip(self, obj):
+        return get_client_ip(self.context['request'])
+
+    def get_device(self, obj):
+        return get_device_platform(self.context['request'])
 
 
 class BindAlipayAccountSerializer(serializers.Serializer):

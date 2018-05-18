@@ -32,19 +32,4 @@ class Migration(migrations.Migration):
                 'ordering': ('-created_time',),
             },
         ),
-        migrations.CreateModel(
-            name='HotVideoOrder',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.SmallIntegerField(choices=[(1, '未支付'), (2, '已支付')], db_index=True, default=1)),
-                ('order_time', models.DateTimeField(auto_now_add=True)),
-                ('amount', models.PositiveIntegerField()),
-                ('pay_time', models.DateTimeField(null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('video', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='orders', to='biz.HotVideo')),
-            ],
-            options={
-                'db_table': 'hot_video_order',
-            },
-        ),
     ]

@@ -5,7 +5,6 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 from django.urls import include, path, re_path
 from django.conf import settings
-from django.conf.urls.static import static
 from biz.views import upload_file
 from boxing_app.views.boxer import BoxerIdentificationViewSet
 from boxing_app.views import message
@@ -14,12 +13,15 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from boxing_app.views.verify_code import send_verify_code
-from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT
+from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
 from boxing_app.views import login
-from boxing_app.views.hot_video import HotVideoViewSet, hot_videos_redirect
+from boxing_app.views.hot_video import hot_videos_redirect
 from biz.views import captcha_image
-from boxing_app.views.user_profile import bind_alipay_account, UserProfileViewSet
+from boxing_app.views.user_profile import UserProfileViewSet
+from boxing_app.views.hot_video import HotVideoViewSet
+from boxing_app.views import pay
+from boxing_app.views.user_profile import bind_alipay_account
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -98,6 +100,14 @@ hot_video_url = [
     path('hot_videos', hot_videos_redirect),
 ]
 
+payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
+payment_urls = [
+    re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order,
+            name='create-order'),
+    path('callback/alipay', pay.alipay_calback),
+    path('callback/wechat', pay.wechat_calback),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -110,7 +120,7 @@ urlpatterns += verify_code_urls
 urlpatterns += register_urls
 urlpatterns += login_urls
 urlpatterns += hot_video_url
+urlpatterns += payment_urls
 urlpatterns += user_urls
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
-    urlpatterns += static(settings.BASE_UPLOAD_FILE_URL, document_root=settings.UPLOAD_FILE_LOCAL_STORAGE_DIR)
