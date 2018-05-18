@@ -199,3 +199,42 @@ class MessageTestCase(APITestCase):
         res = self.client4.get('/user/orders')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
+
+    def test_get_user_order_detail(self):
+        # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
+        self.user_profile_data['user'] = self.test_user_1
+        UserProfile.objects.create(**self.user_profile_data)
+        self.boxer_data['user'] = self.test_user_1
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+
+        # 为普通用户test_user_2创建用户信息，并购买课程
+        self.user_profile_data['user'] = self.test_user_2
+        self.course_order_data['content_object'] = course
+        self.course_order_data['user'] = self.test_user_2
+        course_order = PayOrder.objects.create(**self.course_order_data)
+
+        # 用户test_user_2获取所购买课程的详情
+        res = self.client2.get(f'/user/order/{course_order.pk}')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['status'], self.course_order_data['status'])
+        self.assertEqual(res.data['out_trade_no'], self.course_order_data['out_trade_no'])
+        self.assertEqual(res.data['payment_type'], self.course_order_data['payment_type'])
+        self.assertEqual(res.data['amount'], self.course_order_data['amount'])
+        self.assertEqual(res.data['order_time'], self.course_order_data['order_time'].strftime('%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(res.data['pay_time'], self.course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(res.data['finish_time'], self.course_order_data['finish_time'].strftime('%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(res.data['boxer_id'], boxer.id)
+        self.assertEqual(res.data['boxer_name'], boxer.real_name)
+        self.assertEqual(res.data['boxer_gender'], boxer.user.user_profile.gender)
+        self.assertEqual(res.data['boxer_avatar'], boxer.user.user_profile.avatar)
+        self.assertEqual(res.data['course_name'], self.course_data['course_name'])
+        self.assertEqual(res.data['course_duration'], self.course_data['duration'])
+        self.assertEqual(res.data['course_validity'].strftime('%Y-%m-%d'), self.course_data['validity'])
+        self.assertEqual(res.data['club_name'], self.club_data['name'])
+        self.assertEqual(res.data['club_address'], self.club_data['address'])
+        self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
+        self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))

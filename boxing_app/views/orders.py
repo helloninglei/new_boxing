@@ -12,6 +12,7 @@ class BoxerCourseOrderViewSet(viewsets.ModelViewSet):
         boxer = BoxerIdentification.objects.get(user=self.request.user)
         return PayOrder.objects.filter(course__boxer=boxer)
 
+
 class UserCourseOrderViewSet(viewsets.ModelViewSet):
     serializer_class = UserCourseOrderSerializer
 
