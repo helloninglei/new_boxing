@@ -41,8 +41,7 @@ REDIS_DB = 5
 if ENVIRONMENT == TEST:
     REDIS_DB = 15  # 用于单元测试，每次会被清空
 
-BASE_UPLOAD_FILE_URL = '/upload/'
-UPLOAD_FILE_LOCAL_STORAGE_DIR = '/var/tmp/boxing'
+UPLOAD_URL_PATH = '/uploads/'
 
 OSS_URL = 'url'
 OSS_KEY = 'key'
@@ -53,7 +52,7 @@ OSS_CONFIG = {
     'url': OSS_URL,
     'app_key': OSS_KEY,
     'app_secret': OSS_SECRET,
-    'bucket': OSS_BUCKET
+    'bucket': OSS_BUCKET,
 }
 
 ALI_SMS_ACCESS_KEY_ID = 'key'
@@ -84,7 +83,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
