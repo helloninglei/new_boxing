@@ -169,4 +169,3 @@ class CourseOrderTestCase(APITestCase):
                 self.assertEqual(self.course_order_data[key].strftime('%Y-%m-%d %H:%M:%S'), res.data.get(key))
             else:
                 self.assertEqual(self.course_order_data[key], res.data.get(key))
-
