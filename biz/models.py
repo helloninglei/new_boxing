@@ -7,6 +7,9 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.core.validators import MinValueValidator
 
 from biz import validator, constants
+from biz.constants import HOT_VIDEO_USER_ID, FRIDAY_USER_ID, BOXING_USER_ID, USER_IDENTITY_DICT
+
+OFFICIAL_USER_IDS = USER_IDENTITY_DICT.keys()
 
 
 class UserManager(BaseUserManager):
@@ -56,6 +59,16 @@ class User(AbstractUser):
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)
     money_balance = models.IntegerField(default=0)  # unit, 分
+
+    @property
+    def identity(self):
+        if hasattr(self, 'boxer_identification') and self.boxer_identification.authentication_state == \
+                constants.BOXER_AUTHENTICATION_STATE_APPROVED:
+            return 'boxer'
+        user_id = self.id
+        if user_id not in OFFICIAL_USER_IDS:
+            return 'user'
+        return USER_IDENTITY_DICT[user_id]
 
     class Meta(AbstractUser.Meta):
         db_table = 'user'

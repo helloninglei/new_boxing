@@ -36,7 +36,10 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
-        result = {'id': user.id}
+        result = {
+            'id': user.id,
+            'identity': user.identity,
+        }
         if hasattr(user, 'user_profile'):
             profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
             result.update(profile)
