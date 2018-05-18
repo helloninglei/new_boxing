@@ -363,4 +363,4 @@ class GameNews(BaseAuditModel):
 
     class Meta:
         db_table = 'game_news'
-        ordering = ('-created_time',)
+        ordering = ('-stay_top', '-created_time',)
