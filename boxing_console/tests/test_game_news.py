@@ -14,7 +14,7 @@ class GameNewsTestCase(APITestCase):
             "title": "搞个大新闻",
             "sub_title": "闷声发大财",
             "initial_views_count": 666,
-            "picture": g_app/serializers.py"/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
+            "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
             "stay_top": True,
             "push_news": False,
             "start_time": "2018-12-31 12:59:00",
