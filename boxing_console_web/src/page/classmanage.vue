@@ -3,17 +3,17 @@
         <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/" secondTitle_name="课程管理" secondTitle_path="/classmanage"></TopBar>
         <div class='container'>
             <header>
-                <div style='display: inline-block;padding-bottom:30px'>
+                <div class="inline_item">
                     <span class="inlimeLabel">拳手</span>
                     <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='姓名/手机号/身份证号' style='width:18rem'></el-input>
                 </div>
-                <div style='display: inline-block;padding-bottom:30px'>
+                <div class="inline_item">
                     <span class="inlimeLabel">价格区间</span>
                     <el-input v-model="sendData.price_min"  class='myInput_40' style='width:9rem' placeholder='请输入'></el-input>
                     <span>-</span>
                     <el-input v-model="sendData.price_max"  class='myInput_40 margin_rt25' style='width:9rem' placeholder='请输入'></el-input>
                 </div>
-                <div style='display: inline-block;padding-bottom:30px'>
+                <div class="inline_item">
                     <span class="inlimeLabel">已开课程</span>
                     <el-select v-model="sendData.courseName" class="margin_rt25" style='width:11rem'>
                         <el-option value="0" label="全部">全部</el-option>
@@ -22,7 +22,7 @@
                         <el-option value="MMA" label="MMA">MMA</el-option>
                     </el-select>
                 </div>
-                <div style='display: inline-block;padding-bottom:30px'>
+                <div class="inline_item">
                     <span class="inlimeLabel">接单状态</span>
                     <el-select v-model="sendData.is_accept_order" style='width:11rem'>
                         <el-option value="0" label="全部">全部</el-option>
@@ -36,7 +36,7 @@
                 </div>
             </header>
             <nav>
-               <Table :tableColumn="tableColumn" :tableData="tableData" @toDetail="toDetail"></Table> 
+               <Table :tableColumn="tableColumn" :tableData="tableData" @toDetail="toDetail" :showBtn1="true"></Table> 
             </nav>
             <footer>
                 <Pagination :total="total" @changePage="changePage"></Pagination>
@@ -50,7 +50,7 @@
 <style>
 nav{min-height: 528px}
 </style>
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     import Table  from 'components/table';
     import Pagination  from 'components/pagination';
@@ -133,50 +133,6 @@ nav{min-height: 528px}
                         "duration": 120, //时长
                         "validity": "2018-08-25" //有效期
                     },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
                 ],
                 tableColumn:[
                     {title:'boxer_name',       name :'拳手姓名',   width:''},
@@ -201,30 +157,30 @@ nav{min-height: 528px}
             getTableData() {
                 //获取data数据
                 let $this   = this
-                for(var i=0;i<this.tableData.length;i++){
-                    this.tableData[i].professional_boxer=this.tableData[i].is_professional_boxer? "职业":"非职业"
-                    this.tableData[i].is_accept_order=this.tableData[i].is_accept_order? "是":"否"
-                }
-                // this.ajax('/courses','get',{},{}).then(function(res){
-                //     if(res&&res.data){
-                //         console.log(res.data)
-                //         for(var i=0;i<res.data.results.length;i++){
-                //             res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
-                //             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
-                //         }
-                //         $this.tableData=res.data.results;
-                //         $this.total = res.data.count;
-                //     }
+                // for(var i=0;i<this.tableData.length;i++){
+                //     this.tableData[i].professional_boxer=this.tableData[i].is_professional_boxer? "职业":"非职业"
+                //     this.tableData[i].is_accept_order=this.tableData[i].is_accept_order? "是":"否"
+                // }
+                this.ajax('/courses','get',{},{}).then(function(res){
+                    if(res&&res.data){
+                        console.log(res.data)
+                        for(var i=0;i<res.data.results.length;i++){
+                            res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
+                            res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
+                        }
+                        $this.tableData=res.data.results;
+                        $this.total = res.data.count;
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             changePage(val){
                 // 要看第几页

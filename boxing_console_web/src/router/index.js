@@ -9,9 +9,14 @@ import Paymentlist      from 'page/paymentlist';
 import Precentlist      from 'page/precentlist';
 import Boxerindentify   from 'page/boxerindentify';
 import Classmanage      from 'page/classmanage';
-import Classdetail      from 'page/classdetail1';
-import Userdetail       from 'page/userdetail';
+import Settlemanage     from 'page/settlemanage';
+import Ordermanage      from 'page/ordermanage';
+import Classdetail      from 'page/class_detail';
+import Userdetail       from 'page/user_detail';
+import Orderdetail      from 'page/order_detail';
+import Boxerindentdetail from 'page/boxer_indent_detail';
 import Walletlist       from 'page/walletlist';
+import UseDialog        from 'components/useDialog';
 
 
 export default [
@@ -68,16 +73,40 @@ export default [
                 component: Classmanage,
             },
             {
+                path: '/classall',
+                component: Classmanage,
+            },
+            {
+                path: '/ordermanage',
+                component: Ordermanage,
+            },
+            {
+                path: '/settlemanage',
+                component: Settlemanage,
+            },
+            {
                 path: '/classdetail',
                 component: Classdetail,
+            },
+            {
+                path: '/orderdetail',
+                component: Orderdetail,
             },
             {
                 path: '/userdetail',
                 component: Userdetail,
             },
             {
+                path: '/boxerindentdetail',
+                component: Boxerindentdetail,
+            },
+            {
                 path: '/walletlist',
                 component: Walletlist,
+            },
+            {
+                path: '/useDialog',
+                component: UseDialog,
             },
         ]
     },

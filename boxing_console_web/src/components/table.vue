@@ -12,10 +12,10 @@
                </el-table-column>
                <el-table-column
                   fixed="right"
-                  label="操作"
-                  width="">
+                  label="操作">
                   <template slot-scope="scope">
-                    <span class='colorFont' @click="handleClick(scope.row)">详情</span>
+                    <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' v-if="showBtnLeft" @click='btnLeftClick(scope.row)'>{{scope.row.is_locked?"解锁":"锁定"}}</el-button>
+                    <span class='colorFont' @click="handleClick(scope.row)">{{operaname}}</span>
                   </template>
                 </el-table-column>
             </el-table>
@@ -24,7 +24,7 @@
 </template>
 
 <style scoped>
-    
+    .myButton_20{padding:3px 10px;}
 </style>
 <style>
 .el-table .cell{text-align:center!important;}
@@ -49,6 +49,18 @@
                 default: function (value) {
                     return value
                 }
+            },
+            operaname :{
+                type : String,
+                default:'详情'
+            },
+            showBtnLeft : {
+                type :Boolean,
+                default:false,
+            },
+            btnLeftName :{
+                type : String,
+                default:''
             }
         },
         watch: {
@@ -67,7 +79,10 @@
             },
             handleClick(row){
                 this.$emit('toDetail',row)
-            }
+            },
+            btnLeftClick(row){
+                this.$emit('btnLeftClick',row)
+            },
         },
     }
 </script>

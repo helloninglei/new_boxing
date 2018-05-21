@@ -24,16 +24,16 @@
                     <el-menu-item index="/" :disabled="disabled">
                         <div class='menu-item-inner'>热门视频</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/classall" :disabled="disabled">
                         <div class='menu-item-inner'>约单管理</div>
                     </el-menu-item>
                     <el-menu-item index="/classmanage" :disabled="disabled">
                         <div class='menu-item-inner'><div class='_hr'></div>课程管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/ordermanage" :disabled="disabled">
                         <div class='menu-item-inner'><div class='_hr'></div>订单管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/settlemanage" :disabled="disabled">
                         <div class='menu-item-inner'><div class='_hr'></div>结算管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxerindentify" :disabled="disabled">
@@ -68,6 +68,9 @@
                     </el-menu-item>
                     <el-menu-item index="/" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
+                    </el-menu-item>
+                    <el-menu-item index="/useDialog" :disabled="disabled">
+                        <div class='menu-item-inner'>弹框管理</div>
                     </el-menu-item>
                 </el-menu>
             </el-col>
