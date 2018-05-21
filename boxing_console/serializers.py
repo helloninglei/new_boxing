@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
+from django.forms.models import model_to_dict
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -232,6 +233,10 @@ class ReportSerializer(serializers.ModelSerializer):
     reported_user = serializers.SerializerMethodField()
     content_type = serializers.SerializerMethodField()
     status = serializers.CharField(source='get_status_display')
+    content = serializers.SerializerMethodField()
+
+    def get_content(self, obj):
+        return model_to_dict(obj.content_object)
 
     def get_reported_user(self, obj):
         return obj.content_object.user.id

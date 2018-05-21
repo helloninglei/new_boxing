@@ -35,6 +35,9 @@ class ReportHandleViewSet(ModelViewSet):
         obj = self.get_object().content_object
         if hasattr(obj, 'is_deleted'):
             obj.soft_delete()
+        elif hasattr(obj, 'is_show'):
+            obj.is_show = False
+            obj.save()
         else:
-            obj.delete()
+            raise Exception('can not delete')  # 不支持软删除的model无法处理
         return Response(status=status.HTTP_200_OK)
