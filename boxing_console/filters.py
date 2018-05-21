@@ -6,6 +6,7 @@ from django.db.models import Q
 
 from biz import models
 from biz.models import Course
+from biz.constants import REPORT_STATUS_NOT_PROCESSED
 
 
 class CommonFilter(django_filters.FilterSet):
@@ -54,3 +55,23 @@ class CourseOrderFilter(CommonFilter):
     class Meta:
         model = models.PayOrder
         fields = ['pay_time_start', 'pay_time_end', 'course__course_name', 'payment_type', 'status']
+
+
+class ReportFilter(django_filters.FilterSet):
+    status = django_filters.CharFilter(method='filter_status')
+
+    def filter_status(self, qs, name, value):
+        if value == 'unprocessed':
+            condition = {
+                'status': REPORT_STATUS_NOT_PROCESSED
+            }
+        else:
+            condition = {
+                'status__gt': REPORT_STATUS_NOT_PROCESSED
+            }
+
+        return qs.filter(**condition)
+
+    class Meta:
+        model = models.Report
+        fields = ['status']

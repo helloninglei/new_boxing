@@ -225,3 +225,28 @@ class NewsSerializer(serializers.ModelSerializer):
         model = models.GameNews
         exclude = ('created_time', 'updated_time')
         read_only_fields = ('views_count',)
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    reason = serializers.CharField(source='get_reason_display')
+    reported_user = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
+    status = serializers.CharField(source='get_status_display')
+
+    def get_reported_user(self, obj):
+        return obj.content_object.user.id
+
+    def get_content_type(self, obj):
+        return obj.content_object._meta.verbose_name
+
+    class Meta:
+        model = models.Report
+        exclude = ('updated_time', 'operator')
+
+
+class ReportHandleSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = models.Report
+        fields = ('id', 'operator')
