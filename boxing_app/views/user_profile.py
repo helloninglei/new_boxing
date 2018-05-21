@@ -2,8 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework import viewsets, mixins
 from rest_framework import status
 from rest_framework.response import Response
-from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer
-from biz.models import UserProfile
+from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer, BlockedUserSerializer
+from biz.models import UserProfile, User
 from biz import redis_client
 
 
@@ -25,7 +25,8 @@ class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 class BlackListViewSet(viewsets.GenericViewSet):
 
     def list(self, request):
-        return Response({"result": redis_client.blocked_user_list(request.user.id)}, status=status.HTTP_200_OK)
+        blocked_user_list = User.objects.filter(id__in=redis_client.blocked_user_list(request.user.id))
+        return Response({"result": BlockedUserSerializer(blocked_user_list, many=True).data}, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk):
         return Response({"result": redis_client.is_blocked(request.user.id, pk)}, status=status.HTTP_200_OK)

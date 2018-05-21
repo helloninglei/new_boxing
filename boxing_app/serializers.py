@@ -311,3 +311,12 @@ class ChangeMobileSerializer(serializers.Serializer):
         if not verify_code_service.check_verify_code(attrs['mobile'], attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
+
+
+class BlockedUserSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, user):
+        representation_dict = {"id": user.id}
+        if hasattr(user, "user_profile"):
+            representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
+        return representation_dict
