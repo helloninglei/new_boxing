@@ -268,7 +268,7 @@ class BoxingClub(BaseModel):
     name = models.CharField(max_length=20, unique=True)
     address = models.CharField(max_length=30)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
-    latitude = models.DecimalField(max_digits=8, decimal_places=6)   # 纬度,整数位2位-90~90
+    latitude = models.DecimalField(max_digits=8, decimal_places=6)  # 纬度,整数位2位-90~90
     phone = models.CharField(max_length=11, validators=[validator.validate_mobile])
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
@@ -304,16 +304,21 @@ class SmsLog(models.Model):
         ordering = ("-created_time",)
 
 
-class HotVideo(models.Model):
+class BaseAuditModel(BaseModel):
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
+
+    class Meta:
+        abstract = True
+
+
+class HotVideo(BaseAuditModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hot_videos')
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=140)
     url = models.CharField(max_length=200)
     try_url = models.CharField(max_length=200)
     price = models.IntegerField(validators=[MinValueValidator(1)])  # 单位元
-    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
     is_show = models.BooleanField(default=True, db_index=True)
-    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
 
@@ -340,3 +345,22 @@ class PayOrder(models.Model):
 
     class Meta:
         db_table = 'pay_order'
+
+
+class GameNews(BaseAuditModel):
+    title = models.CharField(max_length=50)
+    sub_title = models.CharField(max_length=50)
+    views_count = models.PositiveIntegerField(default=0)
+    initial_views_count = models.PositiveIntegerField(default=0)
+    picture = models.CharField(max_length=200)
+    stay_top = models.BooleanField(default=False)
+    push_news = models.BooleanField()  # 是否推送
+    start_time = models.DateTimeField()  # 推送开始时间
+    end_time = models.DateTimeField()  # 推送结束时间
+    app_content = models.TextField()
+    share_content = models.TextField(null=True)
+    comments = GenericRelation('Comment')
+
+    class Meta:
+        db_table = 'game_news'
+        ordering = ('-stay_top', '-created_time',)

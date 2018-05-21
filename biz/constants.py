@@ -139,6 +139,7 @@ REPORT_OBJECT_DICT = {
 COMMENT_OBJECT_DICT = {
     'message': 1,
     'hot_video': 2,
+    'game_news': 3,
 }
 
 # 支付

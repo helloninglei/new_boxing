@@ -8,7 +8,7 @@ from biz.models import PayOrder
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
-from biz.redis_client import is_followed
+from biz.redis_client import is_following
 from biz import models
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
@@ -145,7 +145,7 @@ class FollowUserSerializer(serializers.Serializer):
 
     def get_is_followed(self, user):
         current_user_id = self.context['current_user_id']
-        return bool(is_followed(current_user_id, user.id))
+        return bool(is_following(current_user_id, user.id))
 
     class Meta:
         fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
@@ -377,6 +377,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profession = serializers.CharField(max_length=20)
     weight = serializers.CharField(max_length=10)
     nick_name = serializers.CharField(max_length=10, required=False)
+    following_count = serializers.SerializerMethodField()
+    followers_count = serializers.SerializerMethodField()
+
+    def get_followers_count(self, instance):
+        return redis_client.follower_count(instance.id)
+
+    def get_following_count(self, instance):
+        return redis_client.following_count(instance.id)
 
     def get_mobile(self, instance):
         return instance.user.mobile
@@ -402,3 +410,12 @@ class ChangeMobileSerializer(serializers.Serializer):
         if not verify_code_service.check_verify_code(attrs['mobile'], attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
+
+
+class BlockedUserSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, user):
+        representation_dict = {"id": user.id}
+        if hasattr(user, "user_profile"):
+            representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
+        return representation_dict
