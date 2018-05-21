@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from biz import constants
-from biz.models import User, BoxerIdentification, UserProfile, OperationLog
+from biz.models import User, BoxerIdentification, UserProfile, OperationLog, Course
 
 
 class BoxerIdentificationTestCase(TestCase):
@@ -102,6 +102,8 @@ class BoxerIdentificationTestCase(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
         self.assertEqual(identification.allowed_course, data['allowed_course'])
+        #判断审核后，是否成功添加课程
+        self.assertEqual(Course.objects.filter(boxer=identification).count(), 2)
 
         operation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
                                                 refer_pk=identification.pk)

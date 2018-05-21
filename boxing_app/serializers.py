@@ -401,16 +401,20 @@ class CourseSerializer(serializers.ModelSerializer):
     club_latitude = serializers.SerializerMethodField()
 
     def get_club_name(self, instance):
-        return instance.club.name
+        club = getattr(instance, 'club')
+        return club.name if club else club
 
     def get_club_address(self, instance):
-        return instance.club.address
+        club = getattr(instance, 'club')
+        return club.address if club else club
 
     def get_club_longitude(self, instance):
-        return instance.club.longitude
+        club = getattr(instance, 'club')
+        return club.longitude if club else club
 
     def get_club_latitude(self, instance):
-        return instance.club.latitude
+        club = getattr(instance, 'club')
+        return club.latitude if club else club
 
     class Meta:
         model = models.Course

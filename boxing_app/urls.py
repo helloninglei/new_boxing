@@ -64,7 +64,6 @@ boxer_url = [
 
 course_url = [
     path('boxer/course', BoxerMyCourseViewSet.as_view({'get': 'list', 'post': 'update'})),
-
 ]
 
 order_url = [
