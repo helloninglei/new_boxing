@@ -13,7 +13,7 @@ class BlackListTestCase(APILoginTestCase):
         # 加入黑名单
         response = self.client.post(path=f"/black_list/{self.user2.id}")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(redis_client.is_black_user(self.user.id, self.user2.id))
+        self.assertTrue(redis_client.is_blocked(self.user.id, self.user2.id))
 
         # 在不在黑名单中
         response = self.client.get(path=f"/black_list/{self.user2.id}")
@@ -28,4 +28,4 @@ class BlackListTestCase(APILoginTestCase):
         # 移出黑名单
         response = self.client.delete(path=f"/black_list/{self.user2.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertFalse(redis_client.is_black_user(self.user.id, self.user2.id))
+        self.assertFalse(redis_client.is_blocked(self.user.id, self.user2.id))

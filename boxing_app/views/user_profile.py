@@ -25,15 +25,15 @@ class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 class BlackListViewSet(viewsets.GenericViewSet):
 
     def list(self, request):
-        return Response({"result": redis_client.black_user_list(request.user.id)}, status=status.HTTP_200_OK)
+        return Response({"result": redis_client.blocked_user_list(request.user.id)}, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk):
-        return Response({"result": redis_client.is_black_user(request.user.id, pk)}, status=status.HTTP_200_OK)
+        return Response({"result": redis_client.is_blocked(request.user.id, pk)}, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk):
-        redis_client.remove_black_user(request.user.id, pk)
+        redis_client.unblock_user(request.user.id, pk)
         return Response(status=status.HTTP_200_OK)
 
     def create(self, request, pk):
-        redis_client.black_user(request.user.id, pk)
+        redis_client.block_user(request.user.id, pk)
         return Response(status=status.HTTP_201_CREATED)
