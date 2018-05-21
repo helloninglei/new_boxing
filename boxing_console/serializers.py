@@ -17,6 +17,30 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(format='%Y-%m-%d %H-%M-%S')
     user_basic_info = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    follower_count = serializers.SerializerMethodField()
+    share_count = serializers.SerializerMethodField()
+    is_boxer = serializers.SerializerMethodField()
+    boxer_id = serializers.SerializerMethodField()
+
+    def get_boxer_id(self, instance):
+        boxer = BoxerIdentification.objects.filter(
+            user=instance, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).first()
+        if boxer:
+            return boxer.id
+
+    def get_is_boxer(self, instance):
+        return BoxerIdentification.objects.filter(
+            user=instance, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).exists()
+
+    def get_share_count(self, instance):
+        return 0  # todo 分享数
+
+    def get_follower_count(self, instance):
+        return redis_client.follower_count(instance.id)
+
+    def get_following_count(self, instance):
+        return redis_client.following_count(instance.id)
 
     def get_user_basic_info(self, instance):
         if hasattr(instance, 'user_profile'):
@@ -24,7 +48,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['id', 'username', 'mobile', 'date_joined', 'user_basic_info']
+        fields = [
+            "id", "mobile", "following_count", "follower_count", "share_count", "money_balance", "is_boxer",
+            "user_basic_info", "date_joined", "boxer_id"
+        ]
 
 
 class CoinMoneyBaseSerializer(serializers.ModelSerializer):
