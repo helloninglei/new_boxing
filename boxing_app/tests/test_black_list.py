@@ -23,7 +23,7 @@ class BlackListTestCase(APILoginTestCase):
         # 获取黑名单列表
         response = self.client.get(path="/black_list")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertSetEqual(response.data['result'], {f"{self.user2.id}"})
+        self.assertListEqual(response.data['result'], [{'id': self.user2.id}])
 
         # 移出黑名单
         response = self.client.delete(path=f"/black_list/{self.user2.id}")
