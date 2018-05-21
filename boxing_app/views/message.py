@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from biz.models import Message
 from boxing_app.serializers import MessageSerializer
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
-from biz.redis_client import followed_list_all
+from biz.redis_client import following_list_all
 
 
 class MessageViewSet(viewsets.ModelViewSet):
@@ -38,7 +38,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def followed(self, request, *args, **kwargs):
-        user_id_list = followed_list_all(request.user.id)
+        user_id_list = following_list_all(request.user.id)
         self.queryset = self._get_query_set().filter(user_id__in=user_id_list)
         return super().list(request, *args, **kwargs)
 
