@@ -1,9 +1,10 @@
 body{
-        font-family: 'PingFang SC', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
-        font-family: 'PingFangSC-Light;', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
+    font-family: 'PingFang SC', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
+        /*font-family: 'PingFangSC-Light;', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;*/
 }
 /*距离*/
 .margin_rt25{margin-right:25px;}
+.margin_rt60{margin-right:60px;}
 .margin_lf70{margin-left:70px;}
 .margin_lf50{margin-left:50px;}
 /*button的整体样式*/
@@ -16,13 +17,20 @@ body{
   height:40px!important;
 }
 .el-button--default{margin-left:0px!important;}
-.el-button.myButton_20,.myInput_20 .el-input__inner{
+.el-button.myButton_20{
+  height:25px!important;
+  padding:4px 8px!important;
+  font-size:12px;
+  font-family: 'PingFangSC-Light'
+}
+.myInput_20 .el-input__inner{
   height:20px!important;
   padding:2px 8px!important;
   font-size:12px;
   font-family: 'PingFangSC-Light'
 }
 .btn_width_95{width:95px;}
+.btn_width_200{width:200px;}
 .container{height:100%;width:100%!important;padding:30px;margin:0!important;box-sizing: border-box;}
 /*input的整体样式*/
 .el-input__inner,.usermanage .el-form-item__label{
@@ -48,4 +56,23 @@ body{
 .detail_title{text-align: right}
 .detail_title,.detail_header,.detail_content{font-family: PingFangSC-Regular;font-size: 14px;color: #909399;}
 .detail_content{color: #1D1D27!important;}
-/*.detail_header{margin-top:90px;}*/
+/*行内表单距离样式*/
+.inline_item{display: inline-block;padding-bottom:30px}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

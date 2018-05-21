@@ -1,50 +1,103 @@
 <template>
-    <div class="classDetail">
-        
+    <div class="">
+        <TopBar v-if="isShowTop" firstTitle_name="用户管理" firstTitle_path="/usermanage" secondTitle_name="钱包余额记录" secondTitle_path="/walletlist"></TopBar>
+        <div class="wallerlist">
+            <header>
+                <el-date-picker
+                v-model="sendData.startTime"
+                type="datetime"
+                :default-value= "new Date()"
+                placeholder="开始时间" style='width:200px' class="margin_rt25">
+                </el-date-picker>
+                <el-date-picker
+                v-model="sendData.endTime"
+                type="datetime"
+                :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
+                placeholder="结束时间" style='width:200px' class="margin_rt25">
+                </el-date-picker>
+                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25'>查询</el-button>
+            </header>
+            <nav>
+                <template>
+                    <el-table
+                      :data="tableData"
+                      style="width: 100%"
+                      :highlight-current-row="true">
+                        <el-table-column
+                        label="余额">
+                            <template slot-scope="scope">
+                                <span class='' >{{scope.row.derection=="add"?'+':'-'}}{{scope.row.balance}}</span>
+                            </template>
+                        </el-table-column>
+                         <el-table-column
+                        label="时间"
+                        prop="time">
+                        </el-table-column>
+                         <el-table-column
+                        label="备注"
+                        prop="content">
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </nav>
+            <footer>
+                <Pagination :total="total" @changePage="changePage"></Pagination>
+            </footer>
+        </div>
     </div>
 </template>
 <style scoped>
-</style>
-<style>
-nav{min-height: 528px}
+    .wallerlist{padding:25px 30px;}
+    nav{margin-top:30px;}
 </style>
 <script type="text/ecmascript-6">
     import TopBar from 'components/topBar';
-    import Table  from 'components/table';
     import Pagination  from 'components/pagination';
     export default {
         data() {
             return {
-                res:{
-                    "count": 1,
-                    "next": null,
-                    "previous": null,
-                    "results": [
-                        {
-                            "id": 1,
-                            "boxer_name": "张三", // 拳手姓名
-                            "mobile": "111111111", // 拳手手机号
-                            "is_professional_boxer": true, //是否是专业选手
-                            "is_accept_order": true, // 接单状态
-                            "club": "北京拓天比图拳馆拓天比图拳馆拓天比图拳馆，北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆。500字拓天比图拳馆。500字北京拓天比图拳馆拓天比图拳馆拓天比图拳馆，北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳京拓天比图拳馆拓天比图拳馆拓天比图拳馆。500字拓天比图拳馆。500字", // 约单拳馆
-                            "allowed_lessons": [ // 已通过的课程类型
-                                "THAI_BOXING",
-                                "BOXING",
-                                "MMA"
-                            ],
-                            "boxer_id": 1, //拳手id
-                            "course_name": "THAI_BOXING", // 课程名
-                            "price": 120, // 价格
-                            "duration": 120, // 时长
-                            "validity": "2018-08-25" // 有效期
-                        }
-                    ]
-                }
+                isShowTop : true,
+                sendData  :{
+                    startTime : '',
+                    endTime   : '',
+                },
+                total     : 100,
+                tableData :[
+                    {
+                        derection:"add",
+                        balance : 1000,
+                        time    : "2017-11-03 16:35:17",
+                        content : '充值ID:XXX'
+                    },
+                    {
+                        derection:"",
+                        balance : 1000,
+                        time    : "2017-11-03 16:35:17",
+                        content : '约单(支出)ID:xxxx'
+                    },
+                    {
+                        derection:"",
+                        balance : 1000,
+                        time    : "2017-11-03 16:35:17",
+                        content : '付费视频ID:xxxx'
+                    },
+                    {
+                        derection:"add",
+                        balance : 1000,
+                        time    : "2017-11-03 16:35:17",
+                        content : '约单(收入)ID:XXX'
+                    },
+                    {
+                        derection:"add",
+                        balance : 1000,
+                        time    : "2017-11-03 16:35:17",
+                        content : '提现(拒绝打款)ID:xxxx'
+                    }
+                ]
             }
         },
         components: {
             TopBar,
-            Table ,
             Pagination
         },
         created() {
@@ -55,7 +108,7 @@ nav{min-height: 528px}
             getDetailData(id) {
                 //获取data数据
                 let $this   = this
-                // this.ajax('/course','get',{},{id:id}).then(function(res){
+                // this.ajax('/','get',{},{id:id}).then(function(res){
                 //     if(res&&res.data){
                 //         console.log(res.data)
                 //     }
@@ -70,8 +123,8 @@ nav{min-height: 528px}
                 //     } 
                 // })
             },
-            checkIdent(id){
-                console.log('查看认证信息'+id)
+            changePage(val){
+                console.log(val)
             }
         },
     }
