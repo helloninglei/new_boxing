@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
 from biz import models, constants, redis_client
+from biz.validator import validate_mobile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -225,3 +226,25 @@ class NewsSerializer(serializers.ModelSerializer):
         model = models.GameNews
         exclude = ('created_time', 'updated_time')
         read_only_fields = ('views_count',)
+
+
+class AdminSerializer(serializers.ModelSerializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
+
+    def validate(self, attrs):
+        user = self.Meta.model.objects.filter(mobile=attrs['mobile']).first()
+        if not user:
+            raise ValidationError("该手机号未注册，请先在app注册！")
+        if user and user.is_staff:
+            raise ValidationError("该用户已是管理员，无需再添加！")
+        return attrs
+
+    def create(self, validated_data):
+        user = self.Meta.model.objects.get(mobile=validated_data['mobile'])
+        user.is_staff = True
+        user.save()
+        return user
+
+    class Meta:
+        model = models.User
+        fields = ["id", 'mobile']

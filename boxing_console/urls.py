@@ -13,12 +13,15 @@ from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
 from boxing_console.views.game_news import NewsViewSet
 from biz.views import upload_file, captcha_image
+from boxing_console.views import admin
+from rest_framework.routers import SimpleRouter
+
+router = SimpleRouter()
 
 urlpatterns = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
     path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
     path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
-
     path("users", UserManagementViewSet.as_view({"get": "list"}))
 ]
 
@@ -69,6 +72,9 @@ news_urls = [
     path('game_news/<int:pk>', NewsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 ]
 
+router.register(r"admins", admin.AdminViewSet, base_name="admin")
+
+urlpatterns += router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
 urlpatterns += club_url
