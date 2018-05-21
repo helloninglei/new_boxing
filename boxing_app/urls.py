@@ -13,7 +13,7 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
-from boxing_app.views.orders import BoxerCourseOrderViewSet
+from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
@@ -64,6 +64,9 @@ boxer_url = [
 order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
+    path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail'),
+
 ]
 
 follow_url = [

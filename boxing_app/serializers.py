@@ -262,14 +262,11 @@ class ChangePasswordSerializer(serializers.Serializer):
         return attrs
 
 
-class BoxerCourseOrderSerializer(serializers.ModelSerializer):
-    user_id = serializers.SerializerMethodField()
-    user_nickname = serializers.SerializerMethodField()
-    user_gender = serializers.SerializerMethodField()
-    user_avatar = serializers.SerializerMethodField()
+class BaseCourseOrderSerializer(serializers.ModelSerializer):
     course_name = serializers.SerializerMethodField()
     course_duration = serializers.SerializerMethodField()
     course_validity = serializers.SerializerMethodField()
+    course_price = serializers.SerializerMethodField()
     club_name = serializers.SerializerMethodField()
     club_address = serializers.SerializerMethodField()
     club_longitude = serializers.SerializerMethodField()
@@ -279,18 +276,6 @@ class BoxerCourseOrderSerializer(serializers.ModelSerializer):
     comment_content = serializers.SerializerMethodField()
     comment_images = serializers.SerializerMethodField()
 
-    def get_user_id(self, instance):
-        return instance.user.pk
-
-    def get_user_nickname(self, instance):
-        return instance.user.user_profile.nick_name
-
-    def get_user_gender(self, instance):
-        return instance.user.user_profile.gender
-
-    def get_user_avatar(self, instance):
-        return instance.user.user_profile.avatar
-
     def get_course_name(self, instance):
         return instance.content_object.course_name
 
@@ -299,6 +284,9 @@ class BoxerCourseOrderSerializer(serializers.ModelSerializer):
 
     def get_course_validity(self, instance):
         return instance.content_object.validity
+
+    def get_course_price(self, instance):
+        return instance.content_object.price
 
     def get_club_name(self, instance):
         return instance.content_object.club.name
@@ -325,12 +313,51 @@ class BoxerCourseOrderSerializer(serializers.ModelSerializer):
     def get_comment_images(self, instance):
         return None
 
+
+class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
+    user_id = serializers.SerializerMethodField()
+    user_nickname = serializers.SerializerMethodField()
+    user_gender = serializers.SerializerMethodField()
+    user_avatar = serializers.SerializerMethodField()
+
+    def get_user_id(self, instance):
+        return instance.user.pk
+
+    def get_user_nickname(self, instance):
+        return instance.user.user_profile.nick_name
+
+    def get_user_gender(self, instance):
+        return instance.user.user_profile.gender
+
+    def get_user_avatar(self, instance):
+        return instance.user.user_profile.avatar
+
     class Meta:
         model = PayOrder
-        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time", "finish_time",
-                  "user_id", "user_nickname", "user_gender", "user_avatar", "course_name", "course_duration",
-                  "course_validity", "club_name", "club_address", "club_longitude", "club_latitude",
-                  "comment_score", "comment_time", "comment_content", "comment_images")
+        exclude = ['device']
+
+
+class UserCourseOrderSerializer(BaseCourseOrderSerializer):
+    boxer_id = serializers.SerializerMethodField()
+    boxer_name = serializers.SerializerMethodField()
+    boxer_gender = serializers.SerializerMethodField()
+    boxer_avatar = serializers.SerializerMethodField()
+
+    def get_boxer_name(self, instance):
+        return instance.content_object.boxer.real_name
+
+    def get_boxer_gender(self, instance):
+        return instance.content_object.boxer.user.user_profile.gender
+
+    def get_boxer_avatar(self, instance):
+        return instance.content_object.boxer.user.user_profile.avatar
+
+    def get_boxer_id(self, instance):
+        return instance.content_object.boxer.pk
+
+    class Meta:
+        model = PayOrder
+        exclude = ['device']
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
