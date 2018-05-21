@@ -78,15 +78,15 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
     competition_video = serializers.URLField(required=False)
     nick_name = serializers.SerializerMethodField()
-    allowed_lessons = serializers.ListField(child=serializers.CharField())
+    allowed_course = serializers.ListField(child=serializers.CharField())
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
                 not attrs.get('refuse_reason'):
             raise ValidationError({'refuse_reason': ['驳回理由是必填项']})
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED:
-            if not attrs.get('allowed_lessons'):
-                raise ValidationError({'allowed_lessons': ['可开通的课程类型是必填项']})
+            if not attrs.get('allowed_course'):
+                raise ValidationError({'allowed_course': ['可开通的课程类型是必填项']})
             else:
                 attrs['is_locked'] = False
         return attrs
@@ -108,7 +108,7 @@ class CourseSerializer(serializers.ModelSerializer):
     mobile = serializers.SerializerMethodField()
     is_professional_boxer = serializers.SerializerMethodField()
     is_accept_order = serializers.SerializerMethodField()
-    allowed_lessons = serializers.SerializerMethodField()
+    allowed_course = serializers.SerializerMethodField()
     boxer_id = serializers.SerializerMethodField()
 
     def get_boxer_name(self, instance):
@@ -123,8 +123,8 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_accept_order(self, instance):
         return not instance.boxer.is_locked
 
-    def get_allowed_lessons(self, instance):
-        return instance.boxer.allowed_lessons
+    def get_allowed_course(self, instance):
+        return instance.boxer.allowed_course
 
     def get_boxer_id(self, instance):
         return instance.boxer.pk

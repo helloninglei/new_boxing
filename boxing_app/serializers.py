@@ -392,3 +392,27 @@ class BlockedUserSerializer(serializers.BaseSerializer):
         if hasattr(user, "user_profile"):
             representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
         return representation_dict
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    club_name = serializers.SerializerMethodField()
+    club_address = serializers.SerializerMethodField()
+    club_longitude = serializers.SerializerMethodField()
+    club_latitude = serializers.SerializerMethodField()
+
+    def get_club_name(self, instance):
+        return instance.club.name
+
+    def get_club_address(self, instance):
+        return instance.club.address
+
+    def get_club_longitude(self, instance):
+        return instance.club.longitude
+
+    def get_club_latitude(self, instance):
+        return instance.club.latitude
+
+    class Meta:
+        model = models.Course
+        fields = '__all__'
+        read_only_fields = ('boxer', 'course_name',)
