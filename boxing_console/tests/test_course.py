@@ -153,7 +153,7 @@ class CourseTestCase(APITestCase):
         # 拳手的信息
         update_data = {"real_name": "老王",
                        "mobile": '10000000000',
-                       "allowed_lessons": ["THAI_BOXING", "BOXING", "MMA"],
+                       "allowed_course": ["THAI_BOXING", "BOXING", "MMA"],
                        "is_professional_boxer": True
                        }
         [setattr(identification_list[1], key, update_data[key]) for key in update_data]

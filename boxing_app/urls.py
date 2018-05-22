@@ -13,6 +13,7 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.course import BoxerMyCourseViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
@@ -60,6 +61,10 @@ report_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
+]
+
+course_url = [
+    path('boxer/course', BoxerMyCourseViewSet.as_view({'get': 'list', 'post': 'update'})),
 ]
 
 order_url = [
@@ -141,6 +146,7 @@ urlpatterns += hot_video_url
 urlpatterns += payment_urls
 urlpatterns += user_urls
 urlpatterns += order_url
+urlpatterns += course_url
 urlpatterns += news_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:

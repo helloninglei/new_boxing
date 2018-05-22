@@ -8,7 +8,7 @@ from biz import constants
 from biz.constants import OperationType
 from biz.models import BoxerIdentification
 from biz.services.operation_log_service import log_boxer_identification_operation
-from boxing_console.serializers import BoxerIdentificationSerializer
+from boxing_console.serializers import BoxerIdentificationSerializer, CourseSerializer
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
@@ -38,7 +38,8 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         super().partial_update(request, *args, **kwargs)
         if is_approve:
             operation_type = OperationType.BOXER_AUTHENTICATION_APPROVED
-            content = request.data.get('allowed_lessons')
+            content = request.data.get('allowed_course')
+            self.create_course(request)
         else:
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
             content = request.data.get('refuse_reason')
@@ -47,3 +48,11 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
                                            operation_type=operation_type,
                                            content=content)
         return Response(reverse('boxer_identification_list'))
+
+    def create_course(self, request):
+        allowed_course_list = request.data.get('allowed_course')
+        for course_name in allowed_course_list:
+            boxer = self.get_object()
+            serializer = CourseSerializer(data={"course_name": course_name})
+            serializer.is_valid(raise_exception=True)
+            serializer.save(boxer=boxer)
