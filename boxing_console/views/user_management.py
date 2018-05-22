@@ -7,7 +7,7 @@ from boxing_console.filters import UserFilter
 
 
 class UserManagementViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().prefetch_related(*["user_profile", "boxer_identification"]).order_by("-date_joined")
+    queryset = User.objects.all().prefetch_related("user_profile", "boxer_identification").order_by("-date_joined")
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ("id", "mobile", "user_profile__nick_name")
