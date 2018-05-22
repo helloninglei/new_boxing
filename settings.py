@@ -185,6 +185,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication"
     ),
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
+    "NON_FIELD_ERRORS_KEY": "message",
 }
 
 # Internationalization
