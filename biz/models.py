@@ -354,6 +354,7 @@ class GameNews(BaseAuditModel):
     class Meta:
         db_table = 'game_news'
         ordering = ('-stay_top', '-created_time',)
+        verbose_name = '赛事资讯'
 
 
 class Report(BaseAuditModel):
@@ -369,3 +370,15 @@ class Report(BaseAuditModel):
     class Meta:
         db_table = 'report'
         ordering = ('-created_time',)
+
+
+class Banner(BaseAuditModel):
+    name = models.CharField(max_length=20)
+    order_number = models.PositiveIntegerField()
+    link_type = models.SmallIntegerField(choices=constants.BANNER_LINK_TYPE)
+    link = models.CharField(max_length=200)
+    picture = models.CharField(max_length=200)
+
+    class Meta:
+        db_table = 'banner'
+        ordering = ('-order_number', '-created_time')

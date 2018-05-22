@@ -470,3 +470,10 @@ class CourseSerializer(serializers.ModelSerializer):
         model = models.Course
         fields = '__all__'
         read_only_fields = ('boxer', 'course_name',)
+
+
+class BannerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Banner
+        exclude = ('created_time', 'updated_time', 'operator')

@@ -1,4 +1,5 @@
 # coding=utf-8
+from biz import models
 from biz.constants import DEVICE_PLATFORM_IOS, DEVICE_PLATFORM_ANDROID
 
 
@@ -16,3 +17,6 @@ def get_device_platform(request):
     if value == 'ios':
         return DEVICE_PLATFORM_IOS
 
+
+def get_model_class_by_name(name):
+    return getattr(models, name.title().replace('_', ''))
