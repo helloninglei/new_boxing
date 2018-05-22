@@ -281,8 +281,8 @@ class BoxingClub(BaseModel):
 class Course(models.Model):
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='course')
     course_name = models.CharField(choices=constants.BOXER_ALLOWED_COURSES_CHOICE, max_length=20)
-    price = models.IntegerField(null=True)  # 单位：元
-    duration = models.IntegerField(null=True)  # 时长，单位：min
+    price = models.PositiveIntegerField(null=True)  # 单位：元
+    duration = models.PositiveSmallIntegerField(null=True)  # 时长，单位：min
     validity = models.DateField(null=True)  # 有效期
     orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)

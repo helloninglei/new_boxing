@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from django.shortcuts import redirect
+from rest_framework import viewsets
 
 from biz.models import Course, BoxerIdentification
 from boxing_app.serializers import CourseSerializer
@@ -22,4 +22,4 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(instance=course, data=course_data)
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
-        return Response(status=status.HTTP_200_OK)
+        return redirect('/boxer/course')

@@ -69,7 +69,7 @@ class CourseTestCase(APITestCase):
             "course_list": [{**course1_data}, {**course2_data}]}
         update_res = self.client1.post('/boxer/course', data=json.dumps(update_course_data),
                                        content_type='application/json')
-        self.assertEqual(update_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(update_res.status_code, status.HTTP_302_FOUND)
 
         # 获取修改后的课程数据,
         course_list_res = self.client1.get('/boxer/course')
