@@ -276,6 +276,7 @@ class Course(models.Model):
     validity = models.DateField(null=True)  # 有效期
     orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
+    is_open = models.BooleanField(default=False)
 
     class Meta:
         db_table = "course"
