@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User, Report
-from biz.constants import REPORT_OBJECT_DICT
+from biz.models import User, Report, Message
+from django.contrib.contenttypes.fields import ContentType
 from biz.constants import REPORT_REASON_CHOICES
 from biz.constants import REPORT_OTHER_REASON
 
@@ -31,7 +31,9 @@ class LikeTestCase(APITestCase):
         res = self.client2.post('/messages/report', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         obj = Report.objects.get(id=res.data['id'])
-        self.assertEqual(REPORT_OBJECT_DICT['message'], obj.object_type)
+        msg = Message.objects.get(pk=self.message_id)
+        content_type = ContentType.objects.get_for_model(msg)
+        self.assertEqual(content_type, obj.content_type)
 
         data = {
             'object_id': self.message_id,

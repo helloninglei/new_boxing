@@ -9,9 +9,10 @@
             "url": "https://lerry-test.oss-cn-huhehaote.aliyuncs.com/video/IMG_8749.mp4",
             "try_url": "https://oe90aek4b.qnssl.com/1526288836029398.mp4",
             "price": 9,
-            "operator": 1,
+            "operator_id": 1000000,
             "is_show": true,
-            "created_time": "2018-05-10T11:27:23.506Z"
+            "created_time": "2018-05-10T11:27:23.506Z",
+            "updated_time": "2018-05-10T11:27:23.506Z"
         }
     },
     {
@@ -24,9 +25,10 @@
             "url": "https://lerry-test.oss-cn-huhehaote.aliyuncs.com/video/IMG_8749.mp4",
             "try_url": "https://oe90aek4b.qnssl.com/1526288836029398.mp4",
             "price": 222,
-            "operator": 1,
+            "operator_id": 1000000,
             "is_show": true,
-            "created_time": "2018-05-11T10:15:36.988Z"
+            "created_time": "2018-05-11T10:15:36.988Z",
+            "updated_time": "2018-05-10T11:27:23.506Z"
         }
     }
 ]
