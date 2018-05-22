@@ -444,7 +444,7 @@ class BlockedUserSerializer(serializers.BaseSerializer):
         return representation_dict
 
 
-class CourseBaseSerializer(serializers.ModelSerializer):
+class CourseAllowNullDataSerializer(serializers.ModelSerializer):
     club_name = serializers.SerializerMethodField()
     club_address = serializers.SerializerMethodField()
     club_longitude = serializers.SerializerMethodField()
@@ -472,11 +472,7 @@ class CourseBaseSerializer(serializers.ModelSerializer):
         read_only_fields = ('boxer', 'course_name',)
 
 
-class CourseAllowNullDataSerializer(CourseBaseSerializer):
-    pass
-
-
-class CourseFullDataSerializer(CourseBaseSerializer):
+class CourseFullDataSerializer(CourseAllowNullDataSerializer):
     price = serializers.IntegerField()
     duration = serializers.IntegerField()
     validity = serializers.DateField()
