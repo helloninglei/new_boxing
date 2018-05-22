@@ -416,6 +416,25 @@ class ChangeMobileSerializer(serializers.Serializer):
         return attrs
 
 
+class NewsSerializer(serializers.ModelSerializer):
+    comment_count = serializers.IntegerField()
+    content = serializers.SerializerMethodField()
+    read_count = serializers.SerializerMethodField()
+
+    def get_content(self, obj):
+        if self.context['request'].META.get('source'):
+            return obj.app_content
+        return obj.share_content or obj.app_content
+
+    def get_read_count(self, obj):
+        return obj.initial_views_count + obj.views_count
+
+    class Meta:
+        model = models.GameNews
+        fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'created_time', 'read_count', 'picture',
+                  'stay_top')
+
+
 class BlockedUserSerializer(serializers.BaseSerializer):
 
     def to_representation(self, user):

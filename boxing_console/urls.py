@@ -12,6 +12,7 @@ from boxing_console.views.course import CourseViewSet, CourseOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
 from boxing_console.views.game_news import NewsViewSet
+from boxing_console.views.report import ReportViewSet, ReportHandleViewSet
 from biz.views import upload_file, captcha_image
 from boxing_console.views import admin
 from rest_framework.routers import SimpleRouter
@@ -74,6 +75,13 @@ news_urls = [
 
 router.register(r"admins", admin.AdminViewSet, base_name="admin")
 
+report_urls = [
+    path('report', ReportViewSet.as_view({'get': 'list'}), name='report-list'),
+    path('report/<int:pk>', ReportViewSet.as_view({'get': 'retrieve'}), name='report-detail'),
+    path('report/<int:pk>/proved_false', ReportHandleViewSet.as_view({'post': 'proved_false'})),
+    path('report/<int:pk>/do_delete', ReportHandleViewSet.as_view({'post': 'do_delete'})),
+]
+
 urlpatterns += router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
@@ -84,6 +92,7 @@ urlpatterns += hot_video_url
 urlpatterns += upload_url
 urlpatterns += captcha_urls
 urlpatterns += news_urls
+urlpatterns += report_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
