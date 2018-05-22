@@ -20,6 +20,7 @@ class MessageTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
         self.client3.login(username=self.test_user_3, password='password')
         self.client4.login(username=self.test_user_4, password='password')
+        self.anonymous_client = self.client_class()
 
         redis_client.flushdb()
 
@@ -105,3 +106,13 @@ class MessageTestCase(APITestCase):
         result = res.data['results']
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0]['user']['id'], self.test_user_2.id)
+
+    def test_permissions(self):
+        self.prepare()
+        res = self.anonymous_client.get('/messages')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 5)
+
+        msg = {'content': 'hello1'}
+        res = self.anonymous_client.post('/messages', msg)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

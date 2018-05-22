@@ -379,6 +379,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     nick_name = serializers.CharField(max_length=10, required=False)
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
+    money_balance = serializers.SerializerMethodField()
+
+    def get_money_balance(self, instance):
+        return instance.user.money_balance
 
     def get_followers_count(self, instance):
         return redis_client.follower_count(instance.id)

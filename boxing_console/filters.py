@@ -6,6 +6,7 @@ from django.db.models import Q
 
 from biz import models
 from biz.models import Course
+from biz import constants
 from biz.constants import REPORT_STATUS_NOT_PROCESSED
 
 
@@ -55,6 +56,24 @@ class CourseOrderFilter(CommonFilter):
     class Meta:
         model = models.PayOrder
         fields = ['pay_time_start', 'pay_time_end', 'course__course_name', 'payment_type', 'status']
+
+
+class UserFilter(django_filters.FilterSet):
+    is_boxer = django_filters.CharFilter(method="filter_user_type")
+    start_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="gte")
+    end_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="lte")
+
+    def filter_user_type(self, qs, name, value):
+
+        if value == "true":
+            return qs.filter(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
+        if value == "false":
+            return qs.filter(~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
+        return qs
+
+    class Meta:
+        model = models.User
+        fields = ["is_boxer", "start_time", "end_time"]
 
 
 class ReportFilter(django_filters.FilterSet):

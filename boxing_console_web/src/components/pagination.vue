@@ -68,21 +68,21 @@
             })  
         },
         mounted(){
-            var  firstBtn     = document.createElement('button');  
-            var  lastBtn      = document.createElement('button');  
-            var  span         = document.createElement('span');  
+            var  firstBtn     = document.createElement('button');
+            var  lastBtn      = document.createElement('button');
+            var  span         = document.createElement('span');
             firstBtn.className= "btn-prev";
             firstBtn.id       = "firstPage";
             firstBtn.innerText= "首页";
             lastBtn.className = "btn-prev";
             lastBtn.id        = "lastPage";
-            lastBtn.innerText = "末页"  
+            lastBtn.innerText = "末页"
             span.innerText    = '每页10条'
             span.className    = 'el-pagination__total'
             let pagination=document.getElementsByClassName("el-pagination")[0]
-            pagination.appendChild(lastBtn);  
-            pagination.appendChild(span);  
-            pagination.insertBefore(firstBtn,pagination.childNodes[0]);  
+            pagination.appendChild(lastBtn);
+            pagination.appendChild(span);
+            pagination.insertBefore(firstBtn,pagination.childNodes[0]);
 
         },
         methods: {
