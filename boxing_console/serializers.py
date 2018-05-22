@@ -21,13 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
     follower_count = serializers.SerializerMethodField()
     share_count = serializers.SerializerMethodField()
     is_boxer = serializers.SerializerMethodField()
-    boxer_id = serializers.SerializerMethodField()
-
-    def get_boxer_id(self, instance):
-        boxer = BoxerIdentification.objects.filter(
-            user=instance, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).first()
-        if boxer:
-            return boxer.id
+    boxer_id = serializers.CharField(source="boxer_identification.id")
 
     def get_is_boxer(self, instance):
         return BoxerIdentification.objects.filter(

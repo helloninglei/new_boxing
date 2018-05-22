@@ -63,13 +63,11 @@ class UserFilter(django_filters.FilterSet):
     end_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="lte")
 
     def filter_user_type(self, qs, name, value):
-        boxer_user_ids = models.BoxerIdentification.objects.filter(
-            authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).values_list(*['user'], flat=True)
 
         if value == "true":
-            return qs.filter(id__in=boxer_user_ids)
+            return qs.filter(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
         if value == "false":
-            return qs.filter(~Q(id__in=boxer_user_ids))
+            return qs.filter(~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
         return qs
 
     class Meta:
