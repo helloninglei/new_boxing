@@ -1,6 +1,6 @@
 <template>
     <div class="settlemanage">
-        <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/" secondTitle_name="结算管理" secondTitle_path="/settlemanage"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/classall" secondTitle_name="结算管理" secondTitle_path="/settlemanage"></TopBar>
         <div class='container'>
             <header style='margin-bottom:17px'>
                 <el-form ref="form" :model="form" label-width="100px">
@@ -15,8 +15,8 @@
                                <el-input v-model="form.name"  class='myInput_40 margin_rt25' placeholder='姓名/手机号'></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="实际结算时间" label-width="160px">
+                        <el-col :xl="12" :md="24">
+                            <el-form-item label="实际结算时间" label-width="122px" class='width_change'>
                                <el-date-picker
                                 v-model="form.startTime"
                                 type="datetime"
@@ -77,8 +77,15 @@
 </style>
 <style>
     .settlemanage .el-form-item__label{font-family: PingFangSC-Regular;font-size: 16px!important;color: #000000;text-align: right;height:40px!important;line-height:40px!important;padding-left: 0}
+    @media screen and (min-width:1920px){
+        .width_change{margin-left:22px;}
+    }
+    @media screen and (max-width:1919px){
+       .width_change{margin-left:-22px;} 
+    }
+    
 </style>
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     import Table  from 'components/table';
     import Pagination  from 'components/pagination';

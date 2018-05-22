@@ -1,6 +1,6 @@
 <template>
     <div class="ordermanage">
-        <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/" secondTitle_name="订单管理" secondTitle_path="/ordermanage"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/classall" secondTitle_name="订单管理" secondTitle_path="/ordermanage"></TopBar>
         <div class='container'>
             <header>
                 <el-form ref="form" :model="form" label-width="100px">
@@ -22,17 +22,17 @@
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="下单时间" label-width="160px">
+                        <el-col :xl="12" :md="24">
+                            <el-form-item label="支付时间" label-width="100px" >
                                <el-date-picker
-                                v-model="form.orderStartTime"
+                                v-model="form.pay_time_start"
                                 type="datetime"
                                 :default-value= "new Date()"
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
-                                v-model="form.orderEndTime"
+                                v-model="form.pay_time_end"
                                 type="datetime"
                                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                                 placeholder="请选择"  class="margin_rt25">
@@ -59,23 +59,6 @@
                                     <el-option value="1" label="支付宝">支付宝</el-option>
                                     <el-option value="3" label="余额">余额</el-option>
                                 </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="支付时间" label-width="160px">
-                               <el-date-picker
-                                v-model="form.pay_time_start"
-                                type="datetime"
-                                :default-value= "new Date()"
-                                placeholder="请选择">
-                                </el-date-picker>
-                                <span>-</span>
-                                <el-date-picker
-                                v-model="form.pay_time_end"
-                                type="datetime"
-                                :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
-                                placeholder="请选择"  class="margin_rt25">
-                                </el-date-picker>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -115,11 +98,9 @@ nav{min-height: 528px}
                     payment_type    : '',
                     course_name : '',
                     pay_time_start : '',
-                    orderEndTime : '',
                     pay_time_end   : '',
                     courseStatus : '',
                     status  : '',
-                    orderStartTime  : '',
                     is_accept_order : '',
                 },
                 total     : 1000,
@@ -188,9 +169,9 @@ nav{min-height: 528px}
                 let $this = this
                 let url   = '/course/orders';
                 if(page&&page>1){
-                    url = url+'/'+page
+                    data.page=page
                 }
-                this.ajax(url,'get',{},{}).then(function(res){
+                this.ajax(url,'get',{},data).then(function(res){
                     if(res&&res.data){
                         console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
@@ -236,7 +217,8 @@ nav{min-height: 528px}
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
+                // console.log(val)
+                this.getTableData(this.sendData,val);
             },
             toDetail(row){
                 // console.log(row)
@@ -244,9 +226,18 @@ nav{min-height: 528px}
 
             },
             filter(){
-                console.log(this.sendData)
+                // var phoneReg = /^((13[0-9])|(15[^4,\\D])|(18[0,0-9]))\\d{8}$/;
+                // if(this.form.search){
+                //     console.log(/^\d$/.test(this.form.search))
+                //     console.log(!/^\d$/.test(this.form.search))
+                //     if(/^\d$/.test(this.form.search)&&phoneReg.test(this.form.search)){
+                //         alert('用户名 、手机号输入不合法')
+                //         return;
+                //     }
+                // }
+                console.log(this.form)
                 this.getTableData(this.sendData);
-            }
+            },
         },
     }
 </script>

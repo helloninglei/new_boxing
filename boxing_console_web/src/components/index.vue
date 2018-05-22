@@ -74,7 +74,7 @@
                     </el-menu-item>
                 </el-menu>
             </el-col>
-            <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 220px);float:left">
+            <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 221px);float:left">
                 <router-view></router-view>
             </el-col>
         </el-row>

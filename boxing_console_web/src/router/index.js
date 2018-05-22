@@ -42,7 +42,7 @@ export default [
             },
             {
                 path: '/boxingmanage',
-                component: BoxingManage,
+                component: BoxingList,
             },
             {
                 path: '/boxinglist',
