@@ -24,7 +24,7 @@ class ReportHandleViewSet(ModelViewSet):
     queryset = models.Report.objects.all()
 
     def _get_object(self):
-        return models.Report.objects.filter(pk=self.get_object().pk, status=REPORT_STATUS_NOT_PROCESSED)
+        return self.get_queryset().filter(pk=self.get_object().pk, status=REPORT_STATUS_NOT_PROCESSED)
 
     def proved_false(self, request, *args, **kwargs):
         self._get_object().update(status=REPORT_STATUS_PROVED_FALSE)

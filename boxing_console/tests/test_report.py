@@ -57,7 +57,7 @@ class ReportTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         report = models.Report.objects.get(pk=self.report3.id)
         self.assertEqual(report.status, REPORT_STATUS_DELETED)
-        count = models.HotVideo.objects.filter(pk=self.hot_video.id).count()
+        count = models.HotVideo.objects.filter(pk=self.hot_video.id, is_show=True).count()
         self.assertEqual(count, 0)
 
         res = self.client.get('/report', {'status': 'unprocessed'})
