@@ -470,3 +470,12 @@ class CourseSerializer(serializers.ModelSerializer):
         model = models.Course
         fields = '__all__'
         read_only_fields = ('boxer', 'course_name',)
+
+
+class CourseOrderCommentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    images = serializers.ListField(child=serializers.CharField(), required=False)
+
+    class Meta:
+        model = models.OrderComment
+        fields = '__all__'

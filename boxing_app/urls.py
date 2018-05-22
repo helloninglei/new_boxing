@@ -14,7 +14,7 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from boxing_app.views.course import BoxerMyCourseViewSet
-from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet
+from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
@@ -72,7 +72,11 @@ order_url = [
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
     path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail'),
+]
 
+order_comment_url = [
+    path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
 ]
 
 follow_url = [
@@ -148,6 +152,7 @@ urlpatterns += user_urls
 urlpatterns += order_url
 urlpatterns += course_url
 urlpatterns += news_urls
+urlpatterns += order_comment_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
