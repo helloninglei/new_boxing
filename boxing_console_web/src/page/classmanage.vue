@@ -30,7 +30,7 @@
                         <el-option :value="false" label="否">否</el-option>
                     </el-select>
                 </div>
-                <div style='margin-bottom:50px'>
+                <div style='margin-bottom:50px;margin-left:52px'>
                     <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
                     <el-button  class='myButton_40 btn_width_95'>重置</el-button>
                 </div>
