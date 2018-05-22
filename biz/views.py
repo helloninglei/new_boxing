@@ -24,6 +24,7 @@ def upload_file(request):
 
 class AuthTokenLogin(ObtainAuthToken):
     serializer_class = AuthTokenLoginSerializer
+    authentication_classes = []
 
 
 @api_view(['GET'])
