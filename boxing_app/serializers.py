@@ -4,7 +4,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder
+from biz.models import PayOrder, BoxingClub
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
@@ -444,7 +444,7 @@ class BlockedUserSerializer(serializers.BaseSerializer):
         return representation_dict
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class CourseAllowNullDataSerializer(serializers.ModelSerializer):
     club_name = serializers.SerializerMethodField()
     club_address = serializers.SerializerMethodField()
     club_longitude = serializers.SerializerMethodField()
@@ -470,6 +470,18 @@ class CourseSerializer(serializers.ModelSerializer):
         model = models.Course
         fields = '__all__'
         read_only_fields = ('boxer', 'course_name',)
+
+
+class CourseFullDataSerializer(CourseAllowNullDataSerializer):
+    price = serializers.IntegerField()
+    duration = serializers.IntegerField()
+    validity = serializers.DateField()
+    is_open = serializers.BooleanField()
+
+    def validate(self, attrs):
+        if not attrs['club']:
+            raise serializers.ValidationError('拳馆不存在')
+        return attrs
 
 
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
