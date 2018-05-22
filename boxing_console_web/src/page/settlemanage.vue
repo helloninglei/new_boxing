@@ -55,7 +55,7 @@
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="6">
+                        <el-col :span="8">
                             <el-form-item label="">
                                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
                                 <el-button  class='myButton_40 btn_width_95'>重置</el-button>

@@ -59,6 +59,7 @@ export default {
 .img-view .img img {
     max-width: 100%;
     display: block;
+    height:600px;
     position: absolute;
     left: 0;
     right: 0;

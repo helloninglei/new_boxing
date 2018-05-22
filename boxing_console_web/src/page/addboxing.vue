@@ -14,7 +14,7 @@
                                     <el-button type="danger" class='myColor_red myButton_40 btn_width_95'>上传</el-button>
                                 </el-col>
                                 <el-col :span="10">
-                                    <div class='img'>
+                                    <div class='image'>
                                         <img src="" alt="">
                                     </div>
                                 </el-col>
@@ -55,8 +55,8 @@
 #addBoxing .el-form-item{margin-bottom:30px;}
 </style>
 <style scope>
-    .img{height:140px;width:140px;border:1px solid #ccc;vertical-align: middle}
-    .img img{height:100%;}
+    .image{height:140px;width:140px;border:1px solid #ccc;vertical-align: middle}
+    .image img{height:100%;}
 </style>
 <script>
     import TopBar from 'components/topBar';
