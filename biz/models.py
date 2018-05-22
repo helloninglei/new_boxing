@@ -199,7 +199,7 @@ class BoxerIdentification(BaseModel):
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE, )
     honor_certificate_images = StringListField(null=True)
-    competition_video = models.URLField(null=True)
+    competition_video = models.CharField(max_length=256, null=True)
     allowed_course = StringListField(null=True, blank=True)
     refuse_reason = models.CharField(max_length=100, null=True, blank=True)
 
