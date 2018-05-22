@@ -153,6 +153,7 @@ class SoftDeleteManager(models.Manager):
 
 class SoftDeleteModel(models.Model):
     objects = SoftDeleteManager()
+    all_objects = models.Manager()
 
     class Meta:
         abstract = True
@@ -172,10 +173,12 @@ class Message(SoftDeleteModel):
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
     comments = GenericRelation('Comment')
+    reports = GenericRelation('Report')
 
     class Meta:
         db_table = 'discover_message'
         ordering = ('-created_time',)
+        verbose_name = '动态'
 
 
 # 拳手认证
@@ -239,19 +242,6 @@ class Like(models.Model):
         ordering = ('-created_time',)
 
 
-class Report(models.Model):
-    object_id = models.IntegerField()
-    object_type = models.SmallIntegerField(db_index=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    reason = models.SmallIntegerField(choices=constants.REPORT_REASON_CHOICES)
-    remark = models.CharField(max_length=20, null=True)
-    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
-
-    class Meta:
-        db_table = 'discover_report'
-        ordering = ('-created_time',)
-
-
 class OperationLog(models.Model):
     refer_type = models.CharField(choices=constants.OperationTarget.CHOICES, max_length=50)
     refer_pk = models.BigIntegerField()
@@ -305,7 +295,7 @@ class SmsLog(models.Model):
 
 
 class BaseAuditModel(BaseModel):
-    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False)
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+', db_index=False, null=True)
 
     class Meta:
         abstract = True
@@ -364,3 +354,18 @@ class GameNews(BaseAuditModel):
     class Meta:
         db_table = 'game_news'
         ordering = ('-stay_top', '-created_time',)
+
+
+class Report(BaseAuditModel):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    reason = models.SmallIntegerField(choices=constants.REPORT_REASON_CHOICES)
+    remark = models.CharField(max_length=20, null=True)
+    status = models.SmallIntegerField(choices=constants.REPORT_STATUS_CHOICES,
+                                      default=constants.REPORT_STATUS_NOT_PROCESSED)
+
+    class Meta:
+        db_table = 'report'
+        ordering = ('-created_time',)

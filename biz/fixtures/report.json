@@ -1,0 +1,62 @@
+[
+    {
+        "model": "biz.report",
+        "pk": 1,
+        "fields": {
+            "created_time": "2018-05-21T07:18:21.281Z",
+            "updated_time": "2018-05-21T07:18:21.281Z",
+            "operator": null,
+            "user": 1000001,
+            "content_type": 10,
+            "object_id": 1,
+            "reason": 1,
+            "remark": null,
+            "status": 1
+        }
+    },
+    {
+        "model": "biz.report",
+        "pk": 2,
+        "fields": {
+            "created_time": "2018-05-21T07:18:29.699Z",
+            "updated_time": "2018-05-21T07:18:29.699Z",
+            "operator": null,
+            "user": 1000001,
+            "content_type": 10,
+            "object_id": 1,
+            "reason": 3,
+            "remark": null,
+            "status": 1
+        }
+    },
+    {
+        "model": "biz.report",
+        "pk": 3,
+        "fields": {
+            "created_time": "2018-05-21T07:18:38.279Z",
+            "updated_time": "2018-05-21T07:18:38.279Z",
+            "operator": null,
+            "user": 1000001,
+            "content_type": 10,
+            "object_id": 1,
+            "reason": 7,
+            "remark": "\u4e3e\u62a5\u6d4b\u8bd5",
+            "status": 1
+        }
+    },
+    {
+        "model": "biz.report",
+        "pk": 4,
+        "fields": {
+            "created_time": "2018-05-21T07:24:28.524Z",
+            "updated_time": "2018-05-21T07:24:28.524Z",
+            "operator": null,
+            "user": 1000001,
+            "content_type": 19,
+            "object_id": 1,
+            "reason": 4,
+            "remark": null,
+            "status": 1
+        }
+    }
+]

@@ -2,15 +2,15 @@
     <div class='login_bg'>
         <div class="login">
             <div class='title'><b>拳民出击</b>—后台管理系统</div>
-            <el-form ref="form" :model="form" label-width="173px" class='form'>
+            <el-form ref="form" :model="form" label-width="173px" class='form' id='login'>
                 <el-form-item label="账号">
                     <el-input v-model="form.username" class='myInput' placeholder='请输入账号'></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
-                    <el-input v-model="form.password" class='myInput' placeholder='请输入密码'></el-input>
+                    <el-input v-model="form.password" type="password" class='myInput' placeholder='请输入密码'></el-input>
                 </el-form-item>
                 <el-form-item label="验证码">
-                    <el-input v-model="form.captcha" class='myInput width-234' placeholder='请输入图形验证码'></el-input>
+                    <el-input v-model="form.captcha.captcha_code" class='myInput width-234' placeholder='请输入图形验证码'></el-input>
                     <div class='yzPicture' id='yzPicture' @click='getCaptcha'>
                         <img :src="captcha" alt="" width='100%' height='100%'>
                     </div>
@@ -43,15 +43,15 @@
         /*font-family: 'PingFang SC', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;*/
         font-family: 'PingFangSC-Light;', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
     }
-    .el-input__inner,.el-form-item__label{
+    .login_bg .el-input__inner,.el-form-item__label{
         height:60px!important;
         line-height:60px!important;
         padding-left:30px;
-        font-size:20px;
+        font-size:20px!important;
         font-family: 'PingFangSC-Light', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
 
     }
-    .el-form-item__label{
+    .login_bg .el-form-item__label{
         /*font-family: "PingFangSC-Regular";*/
         font-size: 20px;
         color: #FFFFFF;
@@ -60,15 +60,15 @@
         font-weight:lighter;
         padding-right:26px;
     }
-    .el-button{
+    .login_bg .el-button{
         height:60px!important;
         border-radius: 4px;
         font-size:20px;
     }
-    .el-button.myColor_red{
+    .login_bg .el-button.myColor_red{
         background: #F95862;
     }
-    .el-form-item{
+    .login_bg .el-form-item{
         margin-bottom:15px!important;
     }
 </style>
@@ -78,9 +78,12 @@
             return {
                 disabled: false,
                 form: {
-                   username: '',
-                   password: '',
-                   captcha:''
+                    username: '',
+                    password: '',
+                    captcha:{
+                        captcha_hash: "",
+                        captcha_code: ''
+                    }
                 },
                 captcha:'',
                 isShowErr:false,
@@ -106,15 +109,13 @@
             getCaptcha() {
                 let $this=this;
                 this.ajax('/captcha-image').then(function(res){
-                    console.log(res.data)
-                    console.log($this.captcha)
-                    $this.captcha=$this.config.baseUrl+res.data.url;
+                    $this.captcha         =$this.config.baseUrl+res.data.url;
+                    $this.form.captcha.captcha_hash=res.data.captcha_hash;
                 },function(err){
                     console.log(err)
                 })
             },
             onSubmit() {
-                console.log(this.config.baseUrl)
                 var reg=/^[a-zA-Z0-9]{6,16}$/
                 if(!this.form.username){
                     this.errText='请输入账号'
@@ -128,15 +129,27 @@
                     this.errText='密码格式不正确'
                     this.isShowErr=true;
                     return
-                }else if(!this.form.captcha){
+                }else if(!this.form.captcha.captcha_code){
                     this.errText='请输入图形验证码'
                     this.isShowErr=true;
                     return
                 }else{
                     this.isShowErr=false;
-                    console.log('submit!');
-                    console.log(this.form)
-                    this.$router.push({path:'/index'});
+                    let $this=this;
+                    this.ajax('/login','post',this.form).then(function(res){
+                        if(res&&res.data){
+                            localStorage.token=res.data.token;
+                            $this.$router.push({path:'/index'});
+                        }
+
+                    },function(err){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.errText=errors[key]
+                            $this.isShowErr=true;
+                            return
+                        }
+                    })
                 }
                 
             }
