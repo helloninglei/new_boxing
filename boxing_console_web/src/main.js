@@ -1,13 +1,13 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import Vue        from 'vue';
+import VueRouter  from 'vue-router';
 import VueResoure from 'vue-resource';
-import App from './App';
-import store from './store/index'
-import axios from './common/axios'
-import config from './common/my_config'
-import ElementUI from 'element-ui';
+import App        from './App';
+import store      from './store/index'
+import axios      from './common/axios'
+import config     from './common/my_config'
+import ElementUI  from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import routes from './router/index.js';
+import routes     from './router/index.js';
 
 Vue.use(VueRouter);
 Vue.use(VueResoure);
@@ -18,6 +18,7 @@ let linkActiveClass = 'active';
 //添加全局函数用this调用
 Vue.prototype.ajax    = axios
 Vue.prototype.config  = config
+Vue.prototype.token   = ''
 
 let router = new VueRouter({
   routes,
