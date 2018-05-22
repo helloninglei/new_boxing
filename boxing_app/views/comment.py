@@ -2,13 +2,14 @@
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = (OnlyOwnerCanDeletePermission,)
+    permission_classes = (OnlyOwnerCanDeletePermission, IsAuthenticatedOrReadOnly)
     serializer_class = CommentSerializer
 
     @property

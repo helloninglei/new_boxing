@@ -12,6 +12,7 @@ class CommentTestCase(APITestCase):
         self.client1.login(username=self.test_user_1, password='password')
         self.client2 = self.client_class()
         self.client2.login(username=self.test_user_2, password='password')
+        self.anonymous_client = self.client_class()
 
     def prepare(self):
         res = self.client1.post('/messages', {'content': 'message1'})
@@ -100,3 +101,16 @@ class CommentTestCase(APITestCase):
         reply = replies['results'][0]
         self.assertEqual(reply['id'], reply_to_reply_id)
         self.assertIsNone(reply['to_user'])
+
+    def test_permission(self):
+        self.prepare()
+        res = self.anonymous_client.get(f'/messages/{self.message_id}/comments')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 2)
+
+        reply_data = {
+            'content': 'reply to comment 1'
+        }
+        res = self.anonymous_client.post('/messages/%s/comments/%s' % (self.message_id, self.comment1['id']),
+                                         reply_data)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

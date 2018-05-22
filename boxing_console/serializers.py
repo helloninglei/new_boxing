@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
+from django.forms.models import model_to_dict
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
 from biz import models, constants, redis_client
+from biz.validator import validate_mobile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -16,6 +18,24 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     date_joined = serializers.DateTimeField(format='%Y-%m-%d %H-%M-%S')
     user_basic_info = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    follower_count = serializers.SerializerMethodField()
+    share_count = serializers.SerializerMethodField()
+    is_boxer = serializers.SerializerMethodField()
+    boxer_id = serializers.CharField(source="boxer_identification.id")
+
+    def get_is_boxer(self, instance):
+        return BoxerIdentification.objects.filter(
+            user=instance, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).exists()
+
+    def get_share_count(self, instance):
+        return 0  # todo 分享数
+
+    def get_follower_count(self, instance):
+        return redis_client.follower_count(instance.id)
+
+    def get_following_count(self, instance):
+        return redis_client.following_count(instance.id)
 
     def get_user_basic_info(self, instance):
         if hasattr(instance, 'user_profile'):
@@ -23,7 +43,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['id', 'username', 'mobile', 'date_joined', 'user_basic_info']
+        fields = [
+            "id", "mobile", "following_count", "follower_count", "share_count", "money_balance", "is_boxer",
+            "user_basic_info", "date_joined", "boxer_id"
+        ]
 
 
 class CoinMoneyBaseSerializer(serializers.ModelSerializer):
@@ -225,3 +248,54 @@ class NewsSerializer(serializers.ModelSerializer):
         model = models.GameNews
         exclude = ('created_time', 'updated_time')
         read_only_fields = ('views_count',)
+
+
+class AdminSerializer(serializers.ModelSerializer):
+    mobile = serializers.CharField(validators=[validate_mobile])
+
+    def validate(self, attrs):
+        user = self.Meta.model.objects.filter(mobile=attrs['mobile']).first()
+        if not user:
+            raise ValidationError("该手机号未注册，请先在app注册！")
+        if user and user.is_staff:
+            raise ValidationError("该用户已是管理员，无需再添加！")
+        return attrs
+
+    def create(self, validated_data):
+        user = self.Meta.model.objects.get(mobile=validated_data['mobile'])
+        user.is_staff = True
+        user.save()
+        return user
+
+    class Meta:
+        model = models.User
+        fields = ["id", 'mobile']
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    reason = serializers.CharField(source='get_reason_display')
+    reported_user = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
+    status = serializers.CharField(source='get_status_display')
+    content = serializers.SerializerMethodField()
+
+    def get_content(self, obj):
+        return model_to_dict(obj.content_object)
+
+    def get_reported_user(self, obj):
+        return obj.content_object.user.id
+
+    def get_content_type(self, obj):
+        return obj.content_object._meta.verbose_name
+
+    class Meta:
+        model = models.Report
+        exclude = ('updated_time', 'operator')
+
+
+class ReportHandleSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = models.Report
+        fields = ('id', 'operator')

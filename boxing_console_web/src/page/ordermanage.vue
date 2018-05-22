@@ -6,13 +6,20 @@
                 <el-form ref="form" :model="form" label-width="100px">
                     <el-row>
                         <el-col :span="6">
-                            <el-form-item label="用户">
-                                <el-input v-model="form.name" placeholder='姓名／昵称／手机号'></el-input>
+                            <el-form-item label="用户/拳手">
+                                <el-input v-model="form.search" placeholder='姓名／昵称／手机号'></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item label="拳手">
-                               <el-input v-model="form.name"  class='myInput_40 margin_rt25' placeholder='姓名/手机号'></el-input>
+                            <el-form-item label="订单状态">
+                               <el-select v-model="form.status" class="margin_rt25">
+                                    <el-option value="0" label="全部">全部</el-option>
+                                    <el-option value="1" label="待付款">待付款</el-option>
+                                    <el-option value="2" label="待使用">待使用</el-option>
+                                    <el-option value="3" label="待评价">待评价</el-option>
+                                    <el-option value="4" label="已完成">已完成</el-option>
+                                    <el-option value="5" label="已过期">已过期</el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -36,7 +43,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="购买课程">
-                                <el-select v-model="form.courseName">
+                                <el-select v-model="form.course_name">
                                     <el-option value="0" label="全部">全部</el-option>
                                     <el-option value="拳馆" label="拳馆">拳馆</el-option>
                                     <el-option value="泰拳" label="泰拳">泰拳</el-option>
@@ -46,25 +53,25 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="支付方式">
-                                <el-select v-model="form.payType" >
-                                    <el-option value="全部" label="全部">全部</el-option>
-                                    <el-option value="微信" label="微信">微信</el-option>
-                                    <el-option value="支付宝" label="支付宝">支付宝</el-option>
-                                    <el-option value="余额" label="余额">余额</el-option>
+                                <el-select v-model="form.payment_type" >
+                                    <el-option value="" label="全部">全部</el-option>
+                                    <el-option value="2" label="微信">微信</el-option>
+                                    <el-option value="1" label="支付宝">支付宝</el-option>
+                                    <el-option value="3" label="余额">余额</el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="支付时间" label-width="160px">
                                <el-date-picker
-                                v-model="form.payStartTime"
+                                v-model="form.pay_time_start"
                                 type="datetime"
                                 :default-value= "new Date()"
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
-                                v-model="form.payEndTime"
+                                v-model="form.pay_time_end"
                                 type="datetime"
                                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                                 placeholder="请选择"  class="margin_rt25">
@@ -73,19 +80,7 @@
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="6">
-                            <el-form-item label="订单状态">
-                               <el-select v-model="form.orderStatus" class="margin_rt25">
-                                    <el-option value="0" label="全部">全部</el-option>
-                                    <el-option value="待付款" label="待付款">待付款</el-option>
-                                    <el-option value="待使用" label="待使用">待使用</el-option>
-                                    <el-option value="待评价" label="待评价">待评价</el-option>
-                                    <el-option value="已完成" label="已完成">已完成</el-option>
-                                    <el-option value="已过期" label="已过期">已过期</el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
+                        <el-col :span="6" style="margin-left:100px">
                                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
                                 <el-button  class='myButton_40 btn_width_95'>重置</el-button>
                         </el-col>
@@ -116,15 +111,14 @@ nav{min-height: 528px}
             return {
                 isShowTop : true,
                 form : {
-                    name       : '',
                     search     : '',
-                    payType    : '',
-                    courseName : '',
-                    payStartTime : '',
+                    payment_type    : '',
+                    course_name : '',
+                    pay_time_start : '',
                     orderEndTime : '',
-                    payEndTime   : '',
+                    pay_time_end   : '',
                     courseStatus : '',
-                    orderStatus  : '',
+                    status  : '',
                     orderStartTime  : '',
                     is_accept_order : '',
                 },
@@ -189,10 +183,14 @@ nav{min-height: 528px}
             this.getTableData();
         },
         methods: {
-            getTableData(data) {
+            getTableData(data,page) {
                 //获取data数据
-                let $this   = this
-                this.ajax('/course/orders','get',{},{}).then(function(res){
+                let $this = this
+                let url   = '/course/orders';
+                if(page&&page>1){
+                    url = url+'/'+page
+                }
+                this.ajax(url,'get',{},{}).then(function(res){
                     if(res&&res.data){
                         console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){

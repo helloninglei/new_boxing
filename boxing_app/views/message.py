@@ -3,6 +3,7 @@ from django.db.models import Count, Q
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz.models import Message
 from boxing_app.serializers import MessageSerializer
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
@@ -10,7 +11,7 @@ from biz.redis_client import following_list_all
 
 
 class MessageViewSet(viewsets.ModelViewSet):
-    permission_classes = (OnlyOwnerCanDeletePermission,)
+    permission_classes = (OnlyOwnerCanDeletePermission, IsAuthenticatedOrReadOnly)
 
     queryset = Message.objects.all().prefetch_related('user')
     serializer_class = MessageSerializer
@@ -23,8 +24,8 @@ class MessageViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def _get_query_set(self):
-        user = self.request.user
-        is_like = Count('likes', filter=Q(likes__user=user))
+        user_id = self.request.user.id
+        is_like = Count('likes', filter=Q(likes__user_id=user_id))
         return Message.objects.annotate(like_count=Count('likes'), comment_count=Count('comments'),
                                         is_like=is_like).prefetch_related('user__boxer_identification')
 
