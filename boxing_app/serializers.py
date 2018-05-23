@@ -20,8 +20,8 @@ from biz.utils import get_client_ip, get_device_platform
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
-    competition_video = serializers.URLField(required=False)
+    honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
+    competition_video = serializers.CharField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
 
@@ -273,10 +273,26 @@ class BaseCourseOrderSerializer(serializers.ModelSerializer):
     club_address = serializers.CharField(source='content_object.club.address')
     club_longitude = serializers.CharField(source='content_object.club.longitude')
     club_latitude = serializers.CharField(source='content_object.club.latitude')
-    comment_score = serializers.IntegerField(source='comments.score')
-    comment_time = serializers.DateTimeField(source='comments.created_time')
-    comment_content = serializers.CharField(source='comments.content')
-    comment_images = serializers.ListField(source='comments.images')
+    # comment_score = serializers.IntegerField(source='comments.score')
+    # comment_time = serializers.DateTimeField(source='comments.created_time')
+    # comment_content = serializers.CharField(source='comments.content')
+    # comment_images = serializers.ListField(source='comments.images')
+    comment_score = serializers.SerializerMethodField()
+    comment_time = serializers.SerializerMethodField()
+    comment_content = serializers.SerializerMethodField()
+    comment_images = serializers.SerializerMethodField()
+
+    def get_comment_score(self, instance):
+        return instance.comments.score
+
+    def get_comment_time(self, instance):
+        return instance.comments.created_time
+
+    def get_comment_content(self, instance):
+        return instance.comments.content
+
+    def get_comment_images(self, instance):
+        return instance.comments.images
 
     class Meta:
         model = PayOrder
