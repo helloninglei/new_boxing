@@ -472,6 +472,12 @@ class CourseAllowNullDataSerializer(serializers.ModelSerializer):
         read_only_fields = ('boxer', 'course_name',)
 
 
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Banner
+        exclude = ('created_time', 'updated_time', 'operator')
+
+
 class CourseFullDataSerializer(CourseAllowNullDataSerializer):
     price = serializers.IntegerField()
     duration = serializers.IntegerField()
