@@ -9,7 +9,7 @@ from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_following
-from biz import models
+from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
@@ -487,6 +487,11 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     images = serializers.ListField(child=serializers.CharField(), required=False)
+
+    def validate(self, attrs):
+        if  attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+            raise ValidationError('订单不是未评论状态，不能评论！')
+        return attrs
 
     class Meta:
         model = models.OrderComment

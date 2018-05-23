@@ -105,6 +105,13 @@ class MessageTestCase(APITestCase):
             "images": ["img1.png", "img2.png", "img3.png"],
             "order": course_order.pk,
         }
+        # 订单状态是待使用，不能进行评论
+        do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment', data=json.dumps(conmment_data), content_type='application/json')
+        self.assertEqual(do_comment_res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # 修改订单状态为待评论，可以正常评论
+        course_order.status = constants.PAYMENT_STATUS_WAIT_COMMENT
+        course_order.save()
         do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment', data=json.dumps(conmment_data), content_type='application/json')
         self.assertEqual(do_comment_res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(do_comment_res.data['user'], self.test_user_1.id)
