@@ -25,13 +25,13 @@ class UserProfileTestCase(APILoginTestCase):
 
     def test_change_avatar(self):
         data = {"avatar": "新头像"}
-        response = self.client.patch(path="/user_profile", data=data, format="json")
+        response = self.client.put(path="/user_profile_patch", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(UserProfile.objects.get(id=self.user.user_profile.id).avatar, data['avatar'])
 
     def test_change_nick_name(self):
         data = {"nick_name": "新昵称"}
-        response = self.client.patch(path="/user_profile", data=data, format="json")
+        response = self.client.put(path="/user_profile_patch", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(UserProfile.objects.get(id=self.user.user_profile.id).nick_name, data['nick_name'])
 
