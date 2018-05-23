@@ -12,7 +12,7 @@ class NewsViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         news = serializer.save()
-        if serializer.data['push_news']:
+        if news.push_news:
             broadcast_news(news)
 
     perform_update = perform_create

@@ -13,7 +13,7 @@ def hot_videos_redirect(request):
     return redirect(url)
 
 
-class HotVideoViewSet(viewsets.ModelViewSet):
+class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HotVideoSerializer
     permission_classes = (permissions.AllowAny,)
 

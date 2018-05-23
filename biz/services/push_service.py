@@ -39,12 +39,15 @@ def broadcast_message(content, jump_to=None, start_time=None, end_time=None):
 
 
 def _build_message(content, jump_to, start_time, end_time, device):
-    msg = PushMessage().title('拳民出击').description(content).extra({'jump_to': jump_to})
+    msg = PushMessage().title('拳民出击').description(content).extra({'jump_to': jump_to}).restricted_package_name(
+        settings.ANDROID_PACKAGE_NAME)
     if device == 'android':
-        msg.payload(content).notify_type(1).restricted_package_name(
-            settings.ANDROID_PACKAGE_NAME)
+        msg.payload(content).notify_type(1)
+    else:
+        msg.restricted_package_name(
+            settings.IOS_PACKAGE_NAME)
     if start_time:
-        msg.time_to_send(int(mktime(start_time)) * 1000)
+        msg.time_to_send(int(mktime(start_time.timetuple())) * 1000)
     if end_time:
         msg.time_to_live((end_time - start_time).microseconds)
     return msg

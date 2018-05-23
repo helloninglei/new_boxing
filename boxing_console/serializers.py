@@ -246,16 +246,18 @@ class NewsSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
-        if attrs.push_news:
-            if attrs.start_time < datetime.now():
-                raise ValidationError({'message': ['开始时间必须以后的时间']})
-            if attrs.start_time > datetime.now() + timedelta(days=7):
-                raise ValidationError({'message': ['开始时间必须是七天内']})
-            if attrs.end_time < attrs.start_time:
-                raise ValidationError({'message': ['结束时间大于开始时间']})
-            if attrs.end_time > attrs.start_time + timedelta(days=14):
-                raise ValidationError({'message': ['结束时间必须在开始时间以后的14天内']})
+        if attrs.get('push_news'):
+            start_time = attrs.get('start_time').replace(tzinfo=None)
+            end_time = attrs.get('end_time').replace(tzinfo=None)
 
+            if start_time < datetime.now():
+                raise ValidationError({'message': ['开始时间必须是以后的时间']})
+            if start_time > datetime.now() + timedelta(days=7):
+                raise ValidationError({'message': ['开始时间必须是七天内']})
+            if end_time < start_time:
+                raise ValidationError({'message': ['结束时间必须大于开始时间']})
+            if end_time > start_time + timedelta(days=14):
+                raise ValidationError({'message': ['结束时间必须在开始时间以后的14天内']})
         return attrs
 
     def get_author(self, obj):

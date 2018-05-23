@@ -117,6 +117,8 @@ user_urls = [
 
 hot_video_url = [
     path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'}), name='hot-video'),
+    path('users/<int:user_id>/hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve'}),
+         name='hot-video-detail'),
     path('hot_videos', hot_videos_redirect),
 ]
 
