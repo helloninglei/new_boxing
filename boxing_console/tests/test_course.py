@@ -186,3 +186,5 @@ class CourseTestCase(APITestCase):
                 self.assertEqual(res.data['boxer_name'], update_data[key])
             else:
                 self.assertEqual(res.data[key], update_data[key])
+        self.assertIsNot(res.data['is_accept_order'], data['boxer'].is_locked)
+

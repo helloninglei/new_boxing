@@ -139,7 +139,6 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_accept_order(self, instance):
         return not instance.boxer.is_locked
 
-
     class Meta:
         model = Course
         exclude = ('boxer',)
