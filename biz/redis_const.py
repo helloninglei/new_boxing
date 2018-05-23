@@ -9,3 +9,6 @@ REGISTER_INFO = "REGISTER:{mobile}"
 # login
 HAS_LOGINED = "LOGINED:{mobile}"
 LOGIN_INTERVAL = 60
+
+# easemob
+EASEMOB_TOKEN = "EASEMOB_TOKEN"
