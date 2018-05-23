@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from django.db.models import Count
 from biz import models
 from boxing_console import serializers
-from biz.services.push_service import push_message
+from biz.services.push_service import broadcast_news
 
 
 class NewsViewSet(viewsets.ModelViewSet):
@@ -13,4 +13,6 @@ class NewsViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         news = serializer.save()
         if serializer.data['push_news']:
-            push_message(news)
+            broadcast_news(news)
+
+    perform_update = perform_create

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta, datetime
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.core.validators import URLValidator
@@ -11,8 +12,8 @@ from biz.utils import get_model_class_by_name
 from biz.validator import validate_mobile
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
 
-
 url_validator = URLValidator()
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -243,6 +244,19 @@ class NewsSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     author = serializers.SerializerMethodField()
     comment_count = serializers.IntegerField(read_only=True)
+
+    def validate(self, attrs):
+        if attrs.push_news:
+            if attrs.start_time < datetime.now():
+                raise ValidationError({'message': ['开始时间必须以后的时间']})
+            if attrs.start_time > datetime.now() + timedelta(days=7):
+                raise ValidationError({'message': ['开始时间必须是七天内']})
+            if attrs.end_time < attrs.start_time:
+                raise ValidationError({'message': ['结束时间大于开始时间']})
+            if attrs.end_time > attrs.start_time + timedelta(days=14):
+                raise ValidationError({'message': ['结束时间必须在开始时间以后的14天内']})
+
+        return attrs
 
     def get_author(self, obj):
         if hasattr(obj.operator, 'user_profile'):

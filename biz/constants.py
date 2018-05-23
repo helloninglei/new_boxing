@@ -197,9 +197,12 @@ BANNER_LINK_TYPE = (
     (BANNER_LINK_TYPE_IN_APP_NATIVE, 'app内本地跳转'),
 )
 
+
+APP_JUMP_OBEJCT_NEWS = 'game_news'
+
 # banner 跳转对象model
 BANNER_LINK_MODEL_TYPE = (
     # 'game_votes',  # 赛事投票
     # 'game_apply',  # 赛事报名
-    'game_news',  # 赛事资讯
+    APP_JUMP_OBEJCT_NEWS,  # 赛事资讯
 )

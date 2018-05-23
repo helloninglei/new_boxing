@@ -82,6 +82,10 @@ WECHAT_PAY = {
     'notify_url': 'http://118.187.56.164:60001/pay/wx/notify',
 }
 
+ANDROID_PACKAGE_NAME = 'com.tuotiansudai.boxing.test'
+XIAOMI_PUSH_APP_SECRET_ANDROID = 'ZqV+ZrPXfIrVwbNEt5CTHw=='
+XIAOMI_PUSH_APP_SECRET_IOS = 'x0biMqLL7WlScMz6oQ1sAQ=='
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
