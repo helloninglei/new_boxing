@@ -93,7 +93,7 @@ class CommentSerializer(serializers.ModelSerializer):
         latest = obj.reply_list()
         return {
             'count': latest.count(),
-            'results': BasicReplySerializer(latest, many=True).data
+            'results': BasicReplySerializer(latest, many=True, context=self.context).data
         }
 
     class Meta:
