@@ -346,8 +346,8 @@ class GameNews(BaseAuditModel):
     picture = models.CharField(max_length=200)
     stay_top = models.BooleanField(default=False)
     push_news = models.BooleanField()  # 是否推送
-    start_time = models.DateTimeField()  # 推送开始时间
-    end_time = models.DateTimeField()  # 推送结束时间
+    start_time = models.DateTimeField(null=True)  # 推送开始时间
+    end_time = models.DateTimeField(null=True)  # 推送结束时间
     app_content = models.TextField()
     share_content = models.TextField(null=True)
     comments = GenericRelation('Comment')
