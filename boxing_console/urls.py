@@ -12,6 +12,7 @@ from boxing_console.views.course import CourseViewSet, CourseOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
 from boxing_console.views.game_news import NewsViewSet
+from boxing_console.views.banner import BannerViewSet
 from boxing_console.views.report import ReportViewSet, ReportHandleViewSet
 from biz.views import upload_file, captcha_image
 from boxing_console.views import admin
@@ -82,6 +83,12 @@ report_urls = [
     path('report/<int:pk>/do_delete', ReportHandleViewSet.as_view({'post': 'do_delete'})),
 ]
 
+banner_urls = [
+    path('banners', BannerViewSet.as_view({'get': 'list', 'post': 'create'}), name='banner-list'),
+    path('banners/<int:pk>', BannerViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='banner-detail'),
+]
+
 urlpatterns += router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
@@ -93,6 +100,7 @@ urlpatterns += upload_url
 urlpatterns += captcha_urls
 urlpatterns += news_urls
 urlpatterns += report_urls
+urlpatterns += banner_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
