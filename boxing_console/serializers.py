@@ -98,7 +98,7 @@ class MoneyLogSerializer(CoinMoneyBaseSerializer):
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
-    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
+    honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
     competition_video = serializers.CharField(required=False)
     nick_name = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     allowed_course = serializers.ListField(child=serializers.CharField())
