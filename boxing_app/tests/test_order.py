@@ -7,7 +7,7 @@ from biz import constants
 from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder
 
 
-class MessageTestCase(APITestCase):
+class OrderTestCase(APITestCase):
     def setUp(self):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
         self.test_user_2 = User.objects.create_user(mobile='11111111112', password='password')
