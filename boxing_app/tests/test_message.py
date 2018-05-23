@@ -82,18 +82,18 @@ class MessageTestCase(APITestCase):
 
         self.client4.post('/messages', msg)
 
-    def test_followed_and_user_messages(self):
+    def test_following_and_user_messages(self):
         self.prepare()
         self.client1.post('/follow', {'user_id': self.test_user_2.id})
         self.client1.post('/follow', {'user_id': self.test_user_3.id})
 
-        # followed
-        res = self.client1.get('/messages/followed')
+        # following
+        res = self.client1.get('/messages/following')
         result = res.data['results']
         self.assertEqual(len(result), 3)
-        followed_user_ids = [self.test_user_2.id, self.test_user_3.id]
+        following_user_ids = [self.test_user_2.id, self.test_user_3.id]
         for message in result:
-            self.assertIn(message['user']['id'], followed_user_ids)
+            self.assertIn(message['user']['id'], following_user_ids)
 
         # mine
         res = self.client1.get('/messages/mine')
