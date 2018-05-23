@@ -114,6 +114,7 @@ login_urls = [
 user_urls = [
     path("alipay_account", bind_alipay_account),
     path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update"})),
+    path("user_profile/<int:pk>", UserProfileViewSet.as_view({"get": 'retrieve'})),
     path("user_profile_patch", UserProfileViewSet.as_view({"put": "partial_update"})),
     path("black_list", BlackListViewSet.as_view({"get": "list"})),
     path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))

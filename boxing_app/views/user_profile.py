@@ -18,8 +18,11 @@ def bind_alipay_account(request):
 
 class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
 
     def get_object(self):
+        if "pk" in self.kwargs:
+            return super().get_object()
         return UserProfile.objects.get(user=self.request.user)
 
 
