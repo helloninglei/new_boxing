@@ -34,7 +34,7 @@ discover_urls = [
     path('messages', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
     path('messages/hot', message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
     path('messages/mine', message.MessageViewSet.as_view({'get': 'mine'}), name='message-mine'),
-    path('messages/followed', message.MessageViewSet.as_view({'get': 'followed'}), name='message-followed'),
+    path('messages/following', message.MessageViewSet.as_view({'get': 'following'}), name='message-following'),
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
     path('messages/<int:message_id>/like',
@@ -79,7 +79,7 @@ order_url = [
 follow_url = [
     path('follow', follow.BaseFollowView.as_view()),
     path('follower', follow.FollowerView.as_view()),
-    path('followed', follow.FollowedView.as_view()),
+    path('following', follow.FollowingView.as_view()),
     path('unfollow', follow.UnFollowView.as_view()),
 ]
 

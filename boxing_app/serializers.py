@@ -40,7 +40,9 @@ class DiscoverUserField(serializers.RelatedField):
         result = {
             'id': user.id,
             'identity': user.identity,
+            'is_following': bool(is_following(self.context['request'].user.id, user.id)),
         }
+
         if hasattr(user, 'user_profile'):
             profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
             result.update(profile)
@@ -91,7 +93,7 @@ class CommentSerializer(serializers.ModelSerializer):
         latest = obj.reply_list()
         return {
             'count': latest.count(),
-            'results': BasicReplySerializer(latest, many=True).data
+            'results': BasicReplySerializer(latest, many=True, context=self.context).data
         }
 
     class Meta:
@@ -124,7 +126,7 @@ class FollowUserSerializer(serializers.Serializer):
     nick_name = serializers.SerializerMethodField()
     address = serializers.SerializerMethodField()
     bio = serializers.SerializerMethodField()
-    is_followed = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
 
     def _get_profile(self, user):
         if hasattr(user, 'user_profile'):
@@ -143,7 +145,7 @@ class FollowUserSerializer(serializers.Serializer):
     def get_bio(self, user):
         return self._get_profile(user).get('bio')
 
-    def get_is_followed(self, user):
+    def get_is_following(self, user):
         current_user_id = self.context['current_user_id']
         return bool(is_following(current_user_id, user.id))
 

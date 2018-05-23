@@ -32,8 +32,8 @@ class BaseFollowView(APIView):
 
     def delete(self, request, *args, **kwargs):
         current_user_id = request.user.id
-        followed_user_id = request.data['user_id']
-        unfollow_user(current_user_id, followed_user_id)
+        following_user_id = request.data['user_id']
+        unfollow_user(current_user_id, following_user_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def _make_response(self, user_id_list, page, has_more):
@@ -51,8 +51,8 @@ class BaseFollowView(APIView):
 class UnFollowView(APIView):
     def post(self, request, *args, **kwargs):
         current_user_id = request.user.id
-        followed_user_id = request.data['user_id']
-        unfollow_user(current_user_id, followed_user_id)
+        following_user_id = request.data['user_id']
+        unfollow_user(current_user_id, following_user_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -60,5 +60,5 @@ class FollowerView(BaseFollowView):
     list_type = 'follower'
 
 
-class FollowedView(BaseFollowView):
-    list_type = 'followed'
+class FollowingView(BaseFollowView):
+    list_type = 'following'
