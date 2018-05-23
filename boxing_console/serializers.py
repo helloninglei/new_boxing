@@ -100,9 +100,9 @@ class MoneyLogSerializer(CoinMoneyBaseSerializer):
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
     competition_video = serializers.CharField(required=False)
-    nick_name = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
+    nick_name = serializers.CharField(source='user.user_profile.nick_name')
     allowed_course = serializers.ListField(child=serializers.CharField())
-    gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
+    gender = serializers.BooleanField(source='user.user_profile.gender')
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
@@ -120,7 +120,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('user', 'real_name', 'height', 'weight', 'birthday', 'identity_number',
                             'mobile', 'is_professional_boxer', 'club', 'job', 'introduction', 'experience',
-                            'honor_certificate_images', 'competition_video')
+                            'honor_certificate_images', 'competition_video', 'nick_name', 'gender')
 
 
 class CourseSerializer(serializers.ModelSerializer):
