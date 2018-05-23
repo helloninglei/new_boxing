@@ -34,7 +34,7 @@ discover_urls = [
     path('messages', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
     path('messages/hot', message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
     path('messages/mine', message.MessageViewSet.as_view({'get': 'mine'}), name='message-mine'),
-    path('messages/followed', message.MessageViewSet.as_view({'get': 'followed'}), name='message-followed'),
+    path('messages/following', message.MessageViewSet.as_view({'get': 'following'}), name='message-following'),
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
     path('messages/<int:message_id>/like',
@@ -83,7 +83,7 @@ order_comment_url = [
 follow_url = [
     path('follow', follow.BaseFollowView.as_view()),
     path('follower', follow.FollowerView.as_view()),
-    path('followed', follow.FollowedView.as_view()),
+    path('following', follow.FollowingView.as_view()),
     path('unfollow', follow.UnFollowView.as_view()),
 ]
 
@@ -113,7 +113,8 @@ login_urls = [
 
 user_urls = [
     path("alipay_account", bind_alipay_account),
-    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update"})),
+    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update"})),
+    path("user_profile_patch", UserProfileViewSet.as_view({"put": "partial_update"})),
     path("black_list", BlackListViewSet.as_view({"get": "list"})),
     path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))
 ]
