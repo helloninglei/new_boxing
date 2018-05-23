@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.forms.models import model_to_dict
+from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
 from biz import models, constants, redis_client
+from biz.utils import get_model_class_by_name
 from biz.validator import validate_mobile
+from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
 
+
+url_validator = URLValidator()
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -251,3 +256,27 @@ class ReportHandleSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Report
         fields = ('id', 'operator')
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate(self, attrs):
+        link = attrs.get('link')
+        if attrs.get('link_type') == BANNER_LINK_TYPE_IN_APP_NATIVE:
+            params = link.split(':')
+            if len(params) != 2:
+                raise ValidationError({'message': ['链接格式错误: model_name:obj_id']})
+            model_name, obj_id = params
+            if model_name not in BANNER_LINK_MODEL_TYPE:
+                raise ValidationError({'message': ['未知的链接对象']})
+            model_class = get_model_class_by_name(model_name)
+            if not model_class.objects.filter(pk=obj_id).exists():
+                raise ValidationError({'message': [f'{model_class._meta.verbose_name}:{obj_id} 不存在']})
+        else:
+            url_validator(link)
+        return attrs
+
+    class Meta:
+        model = models.Banner
+        exclude = ('created_time', 'updated_time')
