@@ -33,6 +33,4 @@ class CourseOrderCommentViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def do_order_finish(self, order_id):
-        order = PayOrder.objects.get(id=order_id)
-        order.status = constants.PAYMENT_STATUS_FINISHED
-        order.save()
+        PayOrder.objects.filter(id=order_id).update(status=constants.PAYMENT_STATUS_FINISHED)
