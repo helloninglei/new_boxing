@@ -8,21 +8,14 @@ from biz import constants
 from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder
 
 
-class MessageTestCase(APITestCase):
+class OrderCommentTestCase(APITestCase):
     def setUp(self):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
         self.test_user_2 = User.objects.create_user(mobile='11111111112', password='password')
-        self.test_user_3 = User.objects.create_user(mobile='11111111113', password='password')
-        self.test_user_4 = User.objects.create_user(mobile='11111111114', password='password')
-        self.test_user = None
         self.client1 = self.client_class()
         self.client2 = self.client_class()
-        self.client3 = self.client_class()
-        self.client4 = self.client_class()
         self.client1.login(username=self.test_user_1, password='password')
         self.client2.login(username=self.test_user_2, password='password')
-        self.client3.login(username=self.test_user_3, password='password')
-        self.client4.login(username=self.test_user_4, password='password')
         self.user_profile_data = {
             "user": self.test_user_1,
             "nick_name": "赵柳",
