@@ -102,7 +102,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     competition_video = serializers.CharField(required=False)
     nick_name = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     allowed_course = serializers.ListField(child=serializers.CharField())
-    gender = serializers.CharField(source='user.user_profile.gender', read_only=True)
+    gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
