@@ -347,6 +347,10 @@ class OrderComment(SoftDeleteModel):
     order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='order_comments')
 
+    class Meta:
+        db_table = 'order_comment'
+        ordering = ('-created_time',)
+
 
 class GameNews(BaseAuditModel):
     title = models.CharField(max_length=50)
