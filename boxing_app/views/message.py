@@ -38,7 +38,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         self.queryset = self._get_query_set().order_by('-like_count')
         return super().list(request, *args, **kwargs)
 
-    def followed(self, request, *args, **kwargs):
+    def following(self, request, *args, **kwargs):
         user_id_list = following_list_all(request.user.id)
         self.queryset = self._get_query_set().filter(user_id__in=user_id_list)
         return super().list(request, *args, **kwargs)

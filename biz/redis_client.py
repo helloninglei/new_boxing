@@ -20,14 +20,14 @@ def follow_user(current_user_id, follower_id):
     if not is_following(current_user_id, follower_id):
         p = redis_client.pipeline()
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
-        p.zadd(f'followed_{current_user_id}', _get_timestamp(), follower_id)
+        p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
         p.execute()
 
 
 def unfollow_user(current_user_id, follower_id):
     p = redis_client.pipeline()
     p.zrem(f'follower_{follower_id}', current_user_id)
-    p.zrem(f'followed_{current_user_id}', follower_id)
+    p.zrem(f'following_{current_user_id}', follower_id)
     p.execute()
 
 
@@ -36,7 +36,7 @@ def is_follower(current_user_id, follower_id):
 
 
 def is_following(current_user_id, follower_id):
-    return redis_client.zscore(f'followed_{current_user_id}', follower_id)
+    return redis_client.zscore(f'following_{current_user_id}', follower_id)
 
 
 def follower_list(current_user_id, page=1):
@@ -44,11 +44,11 @@ def follower_list(current_user_id, page=1):
 
 
 def following_list(current_user_id, page=1):
-    return redis_client.zrevrange(f'followed_{current_user_id}', PAGE_SIZE * (page - 1), PAGE_SIZE * page)
+    return redis_client.zrevrange(f'following_{current_user_id}', PAGE_SIZE * (page - 1), PAGE_SIZE * page)
 
 
 def following_list_all(current_user_id):
-    return redis_client.zrevrange(f'followed_{current_user_id}', 0, -1)
+    return redis_client.zrevrange(f'following_{current_user_id}', 0, -1)
 
 
 def follower_count(current_user_id):
@@ -56,7 +56,7 @@ def follower_count(current_user_id):
 
 
 def following_count(current_user_id):
-    return redis_client.zcard(f'followed_{current_user_id}')
+    return redis_client.zcard(f'following_{current_user_id}')
 
 
 def record_boxing_club_location(club):
