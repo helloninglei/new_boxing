@@ -20,8 +20,8 @@ from biz.utils import get_client_ip, get_device_platform
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
-    competition_video = serializers.URLField(required=False)
+    honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
+    competition_video = serializers.CharField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
 
