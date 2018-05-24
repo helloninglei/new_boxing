@@ -33,8 +33,6 @@ class GameNewsTestCase(APITestCase):
         result = res.data
 
         # test author
-        self.assertEqual(result['author'], self.test_user.mobile)
-
         nick_name = 'Lerry'
         models.UserProfile.objects.create(user=self.test_user, nick_name=nick_name)
         res = self.client.get(f'/game_news/{res.data["id"]}')

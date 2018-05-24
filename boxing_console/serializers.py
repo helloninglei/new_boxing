@@ -242,7 +242,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    author = serializers.SerializerMethodField()
+    author = serializers.CharField(source='operator.user_profile.nick_name', read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
 
     def validate(self, attrs):
@@ -259,11 +259,6 @@ class NewsSerializer(serializers.ModelSerializer):
             if end_time > start_time + timedelta(days=14):
                 raise ValidationError({'message': ['结束时间必须在开始时间以后的14天内']})
         return attrs
-
-    def get_author(self, obj):
-        if hasattr(obj.operator, 'user_profile'):
-            return obj.operator.user_profile.nick_name
-        return obj.operator.mobile
 
     class Meta:
         model = models.GameNews
