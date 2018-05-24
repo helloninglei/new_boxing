@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from biz.models import User, UserProfile
 from biz import redis_client, redis_const
 from boxing_app.serializers import RegisterSerializer, RegisterWithInfoSerializer, ChangeMobileSerializer
+from boxing_app.tasks import register_easemob_account
 
 
 @api_view(['GET'])
@@ -47,6 +48,7 @@ def register_with_user_info(request):
                                avatar=serializer.validated_data['avatar'],
                                nick_name=serializer.validated_data['nick_name'])
     redis_client.redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
+    register_easemob_account.delay(*[user.id])
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 

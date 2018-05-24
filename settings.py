@@ -82,6 +82,18 @@ WECHAT_PAY = {
     'notify_url': 'http://118.187.56.164:60001/pay/wx/notify',
 }
 
+# easemob conf
+EASEMOB_CONF = {
+    'app_name': 'boxing-test',
+    'client_id': 'YXA6q7ypMLofEeePIPvuLhnF1A',
+    'client_secret': 'YXA6zFSfb74m4g8FsXGFEmO5IzOpjiY',
+    'org_name': 'douqu',
+    'url': 'https://a1.easemob.com/'
+}
+
+# celery conf
+BROKER_REDIS_DB = "0"
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
@@ -98,6 +110,8 @@ INSTALLED_APPS = [
     'rest_framework',
     "rest_framework.authtoken",
     'biz',
+    'boxing_app',
+    'boxing_console',
     'captcha',
     'django_filters',
 ]
