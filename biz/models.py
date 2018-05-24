@@ -344,7 +344,7 @@ class OrderComment(SoftDeleteModel):
     images = StringListField(null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
-    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, related_name='comments')
+    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, related_name='comment')
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='order_comments')
 
     class Meta:
