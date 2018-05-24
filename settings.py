@@ -83,13 +83,13 @@ WECHAT_PAY = {
 }
 
 # easemob conf
-EASEMOB_CONF = dict(
-    client_id="YXA6q7ypMLofEeePIPvuLhnF1A",
-    client_secret="YXA6zFSfb74m4g8FsXGFEmO5IzOpjiY",
-    org_name="douqu",
-    app_name="boxing-test",
-    url="https://a1.easemob.com/"
-)
+EASEMOB_CONF = {
+    'app_name': 'boxing-test',
+    'client_id': 'YXA6q7ypMLofEeePIPvuLhnF1A',
+    'client_secret': 'YXA6zFSfb74m4g8FsXGFEmO5IzOpjiY',
+    'org_name': 'douqu',
+    'url': 'https://a1.easemob.com/'
+}
 
 # celery conf
 BROKER_REDIS_DB = "0"

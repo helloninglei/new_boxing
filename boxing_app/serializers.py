@@ -380,6 +380,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
     money_balance = serializers.SerializerMethodField()
+    user_id = serializers.CharField(source="user.id")
 
     def get_money_balance(self, instance):
         return instance.user.money_balance

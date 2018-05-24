@@ -1,7 +1,8 @@
 import requests
 import json
 from django.conf import settings
-from biz import redis_client, redis_const
+from biz import redis_const
+from biz.redis_client import redis_client
 
 
 class EaseMobClient:
@@ -15,13 +16,13 @@ class EaseMobClient:
 
     @classmethod
     def _get_token(cls):
-        if redis_client.redis_client.exists(redis_const.EASEMOB_TOKEN):
-            return redis_client.redis_client.get(redis_const.EASEMOB_TOKEN)
+        if redis_client.exists(redis_const.EASEMOB_TOKEN):
+            return redis_client.get(redis_const.EASEMOB_TOKEN)
         resp = requests.post(url=f"{cls.domain}{cls.org_name}/{cls.app_name}/token", json={
             "grant_type": "client_credentials", "client_id": cls.client_id, "client_secret": cls.client_secret
         })
         resp_data = json.loads(resp.text)
-        redis_client.redis_client.setex(
+        redis_client.setex(
             redis_const.EASEMOB_TOKEN, int(resp_data.get("expires_in")) - 60, resp_data.get("access_token"))
         return resp_data.get("access_token")
 
