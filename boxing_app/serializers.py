@@ -344,6 +344,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
     money_balance = serializers.SerializerMethodField()
+    user_id = serializers.CharField(source="user.id")
     boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
 
     def get_money_balance(self, instance):
