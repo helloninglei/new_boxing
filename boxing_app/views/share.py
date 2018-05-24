@@ -1,5 +1,6 @@
 # coding=utf-8
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes, authentication_classes
@@ -45,7 +46,7 @@ def _truncate_text(s, length):
 @api_view(['GET'])
 def share_view(request, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
-    obj = model_class.objects.get(pk=object_id)
+    obj = get_object_or_404(model_class, pk=object_id)
     sub_title = picture = ''
     if isinstance(obj, Message):
         user = obj.user
