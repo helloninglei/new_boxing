@@ -14,7 +14,7 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from boxing_app.views.course import BoxerMyCourseViewSet
-from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet
+from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
@@ -25,6 +25,7 @@ from boxing_app.views.user_profile import UserProfileViewSet, BlackListViewSet
 from boxing_app.views.hot_video import HotVideoViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
+from boxing_app.views.banner import BannerViewSet
 from boxing_app.views.user_profile import bind_alipay_account
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
@@ -33,7 +34,7 @@ discover_urls = [
     path('messages', message.MessageViewSet.as_view({'get': 'list', 'post': 'create'}), name='message-latest'),
     path('messages/hot', message.MessageViewSet.as_view({'get': 'hot'}), name='message-hot'),
     path('messages/mine', message.MessageViewSet.as_view({'get': 'mine'}), name='message-mine'),
-    path('messages/followed', message.MessageViewSet.as_view({'get': 'followed'}), name='message-followed'),
+    path('messages/following', message.MessageViewSet.as_view({'get': 'following'}), name='message-following'),
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
     path('messages/<int:message_id>/like',
@@ -72,13 +73,17 @@ order_url = [
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
     path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail'),
+]
 
+order_comment_url = [
+    path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
 ]
 
 follow_url = [
     path('follow', follow.BaseFollowView.as_view()),
     path('follower', follow.FollowerView.as_view()),
-    path('followed', follow.FollowedView.as_view()),
+    path('following', follow.FollowingView.as_view()),
     path('unfollow', follow.UnFollowView.as_view()),
 ]
 
@@ -108,7 +113,9 @@ login_urls = [
 
 user_urls = [
     path("alipay_account", bind_alipay_account),
-    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update", "patch": "partial_update"})),
+    path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update"})),
+    path("user_profile/<int:pk>", UserProfileViewSet.as_view({"get": 'retrieve'})),
+    path("user_profile_patch", UserProfileViewSet.as_view({"put": "partial_update"})),
     path("black_list", BlackListViewSet.as_view({"get": "list"})),
     path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))
 ]
@@ -131,6 +138,10 @@ news_urls = [
     path('game_news/<int:pk>', game_news.NewsViewSet.as_view({'get': 'retrieve'})),
 ]
 
+banner_urls = [
+    path('banners', BannerViewSet.as_view({'get': 'list'}), name='banner-list'),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -148,6 +159,8 @@ urlpatterns += user_urls
 urlpatterns += order_url
 urlpatterns += course_url
 urlpatterns += news_urls
+urlpatterns += order_comment_url
+urlpatterns += banner_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

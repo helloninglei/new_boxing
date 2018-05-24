@@ -4,12 +4,12 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder
+from biz.models import PayOrder, BoxingClub
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_following
-from biz import models
+from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
@@ -20,8 +20,8 @@ from biz.utils import get_client_ip, get_device_platform
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
-    competition_video = serializers.URLField(required=False)
+    honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
+    competition_video = serializers.CharField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
 
@@ -40,7 +40,11 @@ class DiscoverUserField(serializers.RelatedField):
         result = {
             'id': user.id,
             'identity': user.identity,
+            'is_following': bool(is_following(self.context['request'].user.id, user.id)),
+            'nick_name': None,
+            'avatar': None,
         }
+
         if hasattr(user, 'user_profile'):
             profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
             result.update(profile)
@@ -91,7 +95,7 @@ class CommentSerializer(serializers.ModelSerializer):
         latest = obj.reply_list()
         return {
             'count': latest.count(),
-            'results': BasicReplySerializer(latest, many=True).data
+            'results': BasicReplySerializer(latest, many=True, context=self.context).data
         }
 
     class Meta:
@@ -124,7 +128,7 @@ class FollowUserSerializer(serializers.Serializer):
     nick_name = serializers.SerializerMethodField()
     address = serializers.SerializerMethodField()
     bio = serializers.SerializerMethodField()
-    is_followed = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
 
     def _get_profile(self, user):
         if hasattr(user, 'user_profile'):
@@ -143,7 +147,7 @@ class FollowUserSerializer(serializers.Serializer):
     def get_bio(self, user):
         return self._get_profile(user).get('bio')
 
-    def get_is_followed(self, user):
+    def get_is_following(self, user):
         current_user_id = self.context['current_user_id']
         return bool(is_following(current_user_id, user.id))
 
@@ -381,6 +385,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     money_balance = serializers.SerializerMethodField()
     user_id = serializers.CharField(source="user.id")
+    boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
 
     def get_money_balance(self, instance):
         return instance.user.money_balance
@@ -400,7 +405,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
         exclude = ["created_time", "id", "updated_time", "user"]
-        read_only_fields = ["address", "alipay_account", "bio", "gender", "nick_name", "boxer_info", "mobile"]
+        read_only_fields = ["alipay_account", "gender", "nick_name", "boxer_info", "mobile"]
 
 
 class ChangeMobileSerializer(serializers.Serializer):
@@ -445,7 +450,7 @@ class BlockedUserSerializer(serializers.BaseSerializer):
         return representation_dict
 
 
-class CourseSerializer(serializers.ModelSerializer):
+class CourseAllowNullDataSerializer(serializers.ModelSerializer):
     club_name = serializers.SerializerMethodField()
     club_address = serializers.SerializerMethodField()
     club_longitude = serializers.SerializerMethodField()
@@ -471,3 +476,35 @@ class CourseSerializer(serializers.ModelSerializer):
         model = models.Course
         fields = '__all__'
         read_only_fields = ('boxer', 'course_name',)
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Banner
+        exclude = ('created_time', 'updated_time', 'operator')
+
+
+class CourseFullDataSerializer(CourseAllowNullDataSerializer):
+    price = serializers.IntegerField()
+    duration = serializers.IntegerField()
+    validity = serializers.DateField()
+    is_open = serializers.BooleanField()
+
+    def validate(self, attrs):
+        if not attrs['club']:
+            raise serializers.ValidationError('拳馆不存在')
+        return attrs
+
+
+class CourseOrderCommentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    images = serializers.ListField(child=serializers.CharField(), required=False)
+
+    def validate(self, attrs):
+        if  attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+            raise ValidationError('订单不是未评论状态，不能评论！')
+        return attrs
+
+    class Meta:
+        model = models.OrderComment
+        fields = '__all__'

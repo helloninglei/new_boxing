@@ -186,3 +186,20 @@ DEVICE_PLATFORM = (
     (DEVICE_PLATFORM_IOS, 'iOS'),
     (DEVICE_PLATFORM_ANDROID, 'Android'),
 )
+
+BANNER_LINK_TYPE_IN_APP_WEB = 1
+BANNER_LINK_TYPE_OUT_APP_WEB = 2
+BANNER_LINK_TYPE_IN_APP_NATIVE = 3
+
+BANNER_LINK_TYPE = (
+    (BANNER_LINK_TYPE_IN_APP_WEB, 'app内网页跳转'),
+    (BANNER_LINK_TYPE_OUT_APP_WEB, 'app外网页跳转'),
+    (BANNER_LINK_TYPE_IN_APP_NATIVE, 'app内本地跳转'),
+)
+
+# banner 跳转对象model
+BANNER_LINK_MODEL_TYPE = (
+    # 'game_votes',  # 赛事投票
+    # 'game_apply',  # 赛事报名
+    'game_news',  # 赛事资讯
+)

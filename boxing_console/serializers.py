@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.forms.models import model_to_dict
+from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
 from biz import models, constants, redis_client
+from biz.utils import get_model_class_by_name
 from biz.validator import validate_mobile
+from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
 
+
+url_validator = URLValidator()
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,10 +103,11 @@ class MoneyLogSerializer(CoinMoneyBaseSerializer):
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
-    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
-    competition_video = serializers.URLField(required=False)
-    nick_name = serializers.SerializerMethodField()
+    honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
+    competition_video = serializers.CharField(required=False)
+    nick_name = serializers.CharField(source='user.user_profile.nick_name')
     allowed_course = serializers.ListField(child=serializers.CharField())
+    gender = serializers.BooleanField(source='user.user_profile.gender')
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
@@ -119,38 +125,19 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('user', 'real_name', 'height', 'weight', 'birthday', 'identity_number',
                             'mobile', 'is_professional_boxer', 'club', 'job', 'introduction', 'experience',
-                            'honor_certificate_images', 'competition_video')
-
-    def get_nick_name(self, obj):
-        has_profile = hasattr(obj.user, 'user_profile')
-        return obj.user.user_profile.nick_name if has_profile else None
+                            'honor_certificate_images', 'competition_video', 'nick_name', 'gender')
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    boxer_name = serializers.SerializerMethodField()
-    mobile = serializers.SerializerMethodField()
-    is_professional_boxer = serializers.SerializerMethodField()
+    boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
+    mobile = serializers.CharField(source='boxer.mobile', read_only=True)
+    is_professional_boxer = serializers.BooleanField(source='boxer.is_professional_boxer', read_only=True)
     is_accept_order = serializers.SerializerMethodField()
-    allowed_course = serializers.SerializerMethodField()
-    boxer_id = serializers.SerializerMethodField()
-
-    def get_boxer_name(self, instance):
-        return instance.boxer.real_name
-
-    def get_mobile(self, instance):
-        return instance.boxer.mobile
-
-    def get_is_professional_boxer(self, instance):
-        return instance.boxer.is_professional_boxer
+    allowed_course = serializers.ListField(source='boxer.allowed_course', read_only=True)
+    boxer_id = serializers.IntegerField(source='boxer.pk', read_only=True)
 
     def get_is_accept_order(self, instance):
         return not instance.boxer.is_locked
-
-    def get_allowed_course(self, instance):
-        return instance.boxer.allowed_course
-
-    def get_boxer_id(self, instance):
-        return instance.boxer.pk
 
     class Meta:
         model = Course
@@ -190,48 +177,24 @@ class HotVideoSerializer(serializers.ModelSerializer):
 
 
 class CourseOrderSerializer(serializers.ModelSerializer):
-    user_mobile = serializers.SerializerMethodField()
-    user_id = serializers.SerializerMethodField()
-    user_nickname = serializers.SerializerMethodField()
-    course_name = serializers.SerializerMethodField()
-    course_duration = serializers.SerializerMethodField()
-    course_validity = serializers.SerializerMethodField()
-    boxer_name = serializers.SerializerMethodField()
-    boxer_mobile = serializers.SerializerMethodField()
-    club_name = serializers.SerializerMethodField()
-
-    def get_user_mobile(self, instance):
-        return instance.user.mobile
-
-    def get_user_id(self, instance):
-        return instance.user.pk
-
-    def get_user_nickname(self, instance):
-        return instance.user.user_profile.nick_name
-
-    def get_course_name(self, instance):
-        return instance.content_object.course_name
-
-    def get_course_duration(self, instance):
-        return instance.content_object.duration
-
-    def get_course_validity(self, instance):
-        return instance.content_object.validity
-
-    def get_boxer_name(self, instance):
-        return instance.content_object.boxer.real_name
-
-    def get_boxer_mobile(self, instance):
-        return instance.content_object.boxer.mobile
-
-    def get_club_name(self, instance):
-        return instance.content_object.club.name
+    user_mobile = serializers.CharField(source='user.mobile', read_only=True)
+    user_id = serializers.IntegerField(source='user.pk', read_only=True)
+    user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
+    course_name = serializers.CharField(source='content_object.course_name', read_only=True)
+    course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
+    course_price = serializers.IntegerField(source='content_object.price', read_only=True)
+    course_validity = serializers.DateField(source='content_object.validity', read_only=True)
+    boxer_id = serializers.IntegerField(source='content_object.boxer.pk', read_only=True)
+    boxer_name = serializers.CharField(source='content_object.boxer.real_name', read_only=True)
+    boxer_mobile = serializers.CharField(source='content_object.boxer.mobile', read_only=True)
+    club_name = serializers.CharField(source='content_object.club.name', read_only=True)
 
     class Meta:
         model = PayOrder
         fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
-                  "course_name", "course_duration", "course_validity", "user_mobile", "user_id", "user_nickname",
-                  "boxer_name", "boxer_mobile", "object_id", "club_name")
+                  "course_name", "course_duration", "course_validity", "course_price", "user_mobile",
+                  "user_id", "user_nickname", "boxer_name", "boxer_mobile", "object_id", "club_name",
+                  'boxer_id')
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -299,3 +262,27 @@ class ReportHandleSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Report
         fields = ('id', 'operator')
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate(self, attrs):
+        link = attrs.get('link')
+        if attrs.get('link_type') == BANNER_LINK_TYPE_IN_APP_NATIVE:
+            params = link.split(':')
+            if len(params) != 2:
+                raise ValidationError({'message': ['链接格式错误: model_name:obj_id']})
+            model_name, obj_id = params
+            if model_name not in BANNER_LINK_MODEL_TYPE:
+                raise ValidationError({'message': ['未知的链接对象']})
+            model_class = get_model_class_by_name(model_name)
+            if not model_class.objects.filter(pk=obj_id).exists():
+                raise ValidationError({'message': [f'{model_class._meta.verbose_name}:{obj_id} 不存在']})
+        else:
+            url_validator(link)
+        return attrs
+
+    class Meta:
+        model = models.Banner
+        exclude = ('created_time', 'updated_time')

@@ -55,12 +55,12 @@ class FollowTestCase(APITestCase):
         result = res.data['result']
         self.assertEqual(len(result), 1)
 
-        # test followed list
-        res = self.client1.get('/followed')
+        # test following list
+        res = self.client1.get('/following')
         result = res.data['result']
         self.assertEqual(len(result), 2)
 
-        res = self.client2.get('/followed')
+        res = self.client2.get('/following')
         result = res.data['result']
         self.assertEqual(len(result), 1)
 
@@ -71,7 +71,7 @@ class FollowTestCase(APITestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], self.test_user_2.id)
 
-        res = self.client1.get('/followed')
+        res = self.client1.get('/following')
         result = res.data['result']
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], self.test_user_2.id)

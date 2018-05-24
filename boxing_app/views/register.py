@@ -57,5 +57,4 @@ def change_mobile(request):
     serializer = ChangeMobileSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
     User.objects.filter(id=request.user.id).update(mobile=serializer.validated_data['mobile'])
-    request.user.auth_token.delete()
     return Response(data={"message": "ok"}, status=status.HTTP_200_OK)
