@@ -4,10 +4,10 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder
+from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder, OrderComment
 
 
-class MessageTestCase(APITestCase):
+class OrderTestCase(APITestCase):
     def setUp(self):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
         self.test_user_2 = User.objects.create_user(mobile='11111111112', password='password')
@@ -77,6 +77,13 @@ class MessageTestCase(APITestCase):
             "pay_time": datetime.now(),
             "finish_time": (datetime.now() + timedelta(days=1))
         }
+        self.conmment_data = {
+            "score": 6,
+            "content": "i have comment",
+            "images": ["img1.png", "img2.png", "img3.png"],
+            "order": None,
+            "user": self.test_user_1
+        }
 
     def test_get_boxer_order_list(self):
 
@@ -133,6 +140,10 @@ class MessageTestCase(APITestCase):
         self.course_order_data['content_object'] = course
         courser_order = PayOrder.objects.create(**self.course_order_data)
 
+        # 为订单创建评论
+        self.conmment_data['order'] = courser_order
+        OrderComment.objects.create(**self.conmment_data)
+
         res = self.client4.get(f'/boxer/order/{courser_order.pk}')
         self.assertEqual(res.data['status'], self.course_order_data['status'])
         self.assertEqual(res.data['out_trade_no'], self.course_order_data['out_trade_no'])
@@ -147,12 +158,15 @@ class MessageTestCase(APITestCase):
         self.assertEqual(res.data['user_avatar'],  self.user_profile_data['avatar'])
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
-        self.assertEqual(res.data['course_validity'].strftime('%Y-%m-%d'), self.course_data['validity'])
+        self.assertEqual(res.data['course_validity'], self.course_data['validity'])
         self.assertEqual(res.data['club_name'], self.club_data['name'])
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
-        # TODO 缺少订单评论
+        self.assertEqual(res.data['comment_score'], self.conmment_data['score'])
+        self.assertEqual(res.data['comment_images'], self.conmment_data['images'])
+        self.assertEqual(res.data['comment_score'], self.conmment_data['score'])
+        self.assertIsNotNone(res.data['comment_time'])
 
     def test_get_user_order_list(self):
         # 分别为test_user_1、2、3、4创建user_profile
@@ -233,7 +247,7 @@ class MessageTestCase(APITestCase):
         self.assertEqual(res.data['boxer_avatar'], boxer.user.user_profile.avatar)
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
-        self.assertEqual(res.data['course_validity'].strftime('%Y-%m-%d'), self.course_data['validity'])
+        self.assertEqual(res.data['course_validity'], self.course_data['validity'])
         self.assertEqual(res.data['club_name'], self.club_data['name'])
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))

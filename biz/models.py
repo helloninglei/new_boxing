@@ -338,6 +338,20 @@ class PayOrder(models.Model):
         db_table = 'pay_order'
 
 
+class OrderComment(SoftDeleteModel):
+    score = models.PositiveSmallIntegerField()
+    content = models.TextField(max_length=300)
+    images = StringListField(null=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, related_name='comment')
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='order_comments')
+
+    class Meta:
+        db_table = 'order_comment'
+        ordering = ('-created_time',)
+
+
 class GameNews(BaseAuditModel):
     title = models.CharField(max_length=50)
     sub_title = models.CharField(max_length=50)

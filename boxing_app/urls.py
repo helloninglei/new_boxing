@@ -14,7 +14,7 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from boxing_app.views.course import BoxerMyCourseViewSet
-from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet
+from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT
 from boxing_app.views import register
@@ -73,7 +73,11 @@ order_url = [
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
     path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail'),
+]
 
+order_comment_url = [
+    path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
 ]
 
 follow_url = [
@@ -110,6 +114,7 @@ login_urls = [
 user_urls = [
     path("alipay_account", bind_alipay_account),
     path("user_profile", UserProfileViewSet.as_view({"get": "retrieve", "put": "update"})),
+    path("user_profile/<int:pk>", UserProfileViewSet.as_view({"get": 'retrieve'})),
     path("user_profile_patch", UserProfileViewSet.as_view({"put": "partial_update"})),
     path("black_list", BlackListViewSet.as_view({"get": "list"})),
     path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))
@@ -156,6 +161,7 @@ urlpatterns += user_urls
 urlpatterns += order_url
 urlpatterns += course_url
 urlpatterns += news_urls
+urlpatterns += order_comment_url
 urlpatterns += banner_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
