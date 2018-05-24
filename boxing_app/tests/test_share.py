@@ -2,6 +2,7 @@
 from django.conf import settings
 from rest_framework.test import APITestCase
 from biz import models
+from biz.redis_client import get_number_of_share
 
 h5_base_url = settings.SHARE_H5_BASE_URL
 oss_base_url = settings.OSS_CONFIG['url']
@@ -84,3 +85,9 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/game_news/{news.id}/share').data
         self.assertEqual(data['title'], self.news_data['title'][:11] + '...')
+
+    def test_share_count(self):
+        count = get_number_of_share(self.test_user.id)
+        self.client.get(f'/game_news/{self.news.id}/share')
+        new_count = get_number_of_share(self.test_user.id)
+        self.assertEqual(count + 1, new_count)
