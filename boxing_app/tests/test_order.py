@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from rest_framework import status
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from biz import constants
@@ -14,10 +15,10 @@ class OrderTestCase(APITestCase):
         self.test_user_3 = User.objects.create_user(mobile='11111111113', password='password')
         self.test_user_4 = User.objects.create_user(mobile='11111111114', password='password')
         self.test_user = None
-        self.client1 = self.client_class()
-        self.client2 = self.client_class()
-        self.client3 = self.client_class()
-        self.client4 = self.client_class()
+        self.client1 = self.client_class(source='iOS')
+        self.client2 = self.client_class(source='iOS')
+        self.client3 = self.client_class(source='iOS')
+        self.client4 = self.client_class(source='iOS')
         self.client1.login(username=self.test_user_1, password='password')
         self.client2.login(username=self.test_user_2, password='password')
         self.client3.login(username=self.test_user_3, password='password')
@@ -252,3 +253,29 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
+
+    def test_create_course_order(self):
+        # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
+        self.user_profile_data['user'] = self.test_user_1
+        UserProfile.objects.create(**self.user_profile_data)
+        self.boxer_data['user'] = self.test_user_1
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+
+        # 为用户test_user_2创建订单,比较数据
+        self.user_profile_data['user'] = self.test_user_2
+        UserProfile.objects.create(**self.user_profile_data)
+        order_data = {'amount': 100000, 'course_id': course.id}
+        res = self.client2.post(reverse('create-course-order', kwargs={'course_id': course.id}), data=order_data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['user'], self.test_user_2.pk)
+        self.assertEqual(res.data['device'], constants.DEVICE_PLATFORM_IOS)
+        self.assertEqual(res.data['content_type'], 'course')
+        self.assertEqual(res.data['object_id'], course.id)
+        self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
+        self.assertEqual(res.data['amount'], order_data['amount'])
+        self.assertIsNotNone(res.data['order_time'])
+        self.assertIsNotNone(res.data['out_trade_no'])

@@ -327,7 +327,7 @@ class PayOrder(models.Model):
     status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
                                       db_index=True)
     out_trade_no = models.BigIntegerField()
-    payment_type = models.SmallIntegerField(choices=constants.PAYMENT_TYPE)
+    payment_type = models.SmallIntegerField(choices=constants.PAYMENT_TYPE, null=True)
     amount = models.PositiveIntegerField()  # 单位分
     device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
     order_time = models.DateTimeField(auto_now_add=True)

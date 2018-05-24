@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, BoxingClub, OrderComment
+from biz.models import PayOrder, BoxingClub, OrderComment, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_following
 from biz import models, constants
+from biz.services.pay_service import PayService
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
@@ -268,6 +270,12 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class BaseCourseOrderSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    content_type = serializers.CharField(read_only=True)
+    object_id = serializers.IntegerField(read_only=True)
+    course_id = serializers.IntegerField(write_only=True)
+    out_trade_no = serializers.IntegerField(read_only=True)
+    device = serializers.IntegerField(read_only=True)
     course_name = serializers.CharField(source='content_object.course_name', read_only=True)
     course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
     course_validity = serializers.DateField(source='content_object.validity', read_only=True)
@@ -277,9 +285,20 @@ class BaseCourseOrderSerializer(serializers.ModelSerializer):
     club_longitude = serializers.CharField(source='content_object.club.longitude', read_only=True)
     club_latitude = serializers.CharField(source='content_object.club.latitude', read_only=True)
 
+    def validate(self, attrs):
+        if not Course.objects.filter(id=attrs['course_id']).exists():
+            raise ValidationError('课程不存在')
+        attrs['object_id'] = attrs['course_id']
+        attrs.pop('course_id')
+        attrs['content_type'] = ContentType.objects.get(app_label="biz", model="course")
+        attrs['user'] = self.context['request'].user
+        attrs['out_trade_no'] = PayService.generate_out_trade_no()
+        attrs['device'] = get_device_platform(self.context['request'])
+        return attrs
+
     class Meta:
         model = PayOrder
-        exclude = ['device']
+        fields = '__all__'
 
 
 class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
