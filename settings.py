@@ -82,6 +82,10 @@ WECHAT_PAY = {
     'notify_url': 'http://118.187.56.164:60001/pay/wx/notify',
 }
 
+ANDROID_PACKAGE_NAME = 'com.douqu.boxing.test'
+IOS_PACKAGE_NAME = 'com.douqu.boxing'
+XIAOMI_PUSH_APP_SECRET_ANDROID = 'xiEtuYB4fZZzuort3lPD7A=='
+XIAOMI_PUSH_APP_SECRET_IOS = 'RUtLcNFYgGdcy1eNIWZAcQ=='
 # easemob conf
 EASEMOB_CONF = {
     'app_name': 'boxing-test',

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta, datetime
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.core.validators import URLValidator
@@ -11,8 +12,8 @@ from biz.utils import get_model_class_by_name
 from biz.validator import validate_mobile
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
 
-
 url_validator = URLValidator()
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -199,13 +200,23 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    author = serializers.SerializerMethodField()
+    author = serializers.CharField(source='operator.user_profile.nick_name', read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
 
-    def get_author(self, obj):
-        if hasattr(obj.operator, 'user_profile'):
-            return obj.operator.user_profile.nick_name
-        return obj.operator.mobile
+    def validate(self, attrs):
+        if attrs.get('push_news'):
+            start_time = attrs.get('start_time').replace(tzinfo=None)
+            end_time = attrs.get('end_time').replace(tzinfo=None)
+
+            if start_time < datetime.now():
+                raise ValidationError({'message': ['开始时间必须是以后的时间']})
+            if start_time > datetime.now() + timedelta(days=7):
+                raise ValidationError({'message': ['开始时间必须是七天内']})
+            if end_time < start_time:
+                raise ValidationError({'message': ['结束时间必须大于开始时间']})
+            if end_time > start_time + timedelta(days=14):
+                raise ValidationError({'message': ['结束时间必须在开始时间以后的14天内']})
+        return attrs
 
     class Meta:
         model = models.GameNews
