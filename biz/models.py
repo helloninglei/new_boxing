@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+from json import loads, dumps
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -7,9 +7,10 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.core.validators import MinValueValidator
 
 from biz import validator, constants
-from biz.constants import HOT_VIDEO_USER_ID, FRIDAY_USER_ID, BOXING_USER_ID, USER_IDENTITY_DICT
+from biz.constants import USER_IDENTITY_DICT
 
-OFFICIAL_USER_IDS = USER_IDENTITY_DICT.keys()
+OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
+USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
 
 
 class UserManager(BaseUserManager):
@@ -68,7 +69,7 @@ class User(AbstractUser):
         user_id = self.id
         if user_id not in OFFICIAL_USER_IDS:
             return 'user'
-        return USER_IDENTITY_DICT[user_id]
+        return USER_IDENTITY_DICT_REVERSED[user_id]
 
     class Meta(AbstractUser.Meta):
         db_table = 'user'
@@ -86,9 +87,9 @@ class BaseModel(models.Model):
 
 
 class PropertyChangeLog(BaseModel):
-    last_amount = models.IntegerField(default=0)  # 变动前额度 单位：分
-    change_amount = models.IntegerField(default=0)  # 变动额度 单位：分
-    remain_amount = models.IntegerField(default=0)  # 变动后额度 单位：分
+    last_amount = models.IntegerField(default=0)  # 变动前额度, 单位：分
+    change_amount = models.IntegerField(default=0)  # 变动额度, 单位：分
+    remain_amount = models.IntegerField(default=0)  # 变动后额度, 单位：分
     operator = models.ForeignKey(User, on_delete=models.PROTECT)  # 操作人
     remarks = models.CharField(null=True, max_length=50)  # 备注
 
@@ -136,14 +137,26 @@ class MoneyChangeLog(PropertyChangeLog):
 
 
 class StringListField(models.TextField):
+    def value_to_string(self, value):
+        return self.value_from_object(value)
+
+    def to_python(self, value):
+        if not value:
+            value = []
+
+        if isinstance(value, list):
+            return value
+
+        return loads(value)
+
     def get_prep_value(self, value):
         if value:
-            return json.dumps(value)
+            return dumps(value)
 
     def from_db_value(self, value, *args):
         if not value:
             return []
-        return json.loads(value)
+        return loads(value)
 
 
 class SoftDeleteManager(models.Manager):
@@ -199,8 +212,8 @@ class BoxerIdentification(BaseModel):
     authentication_state = models.CharField(max_length=10, default=constants.BOXER_AUTHENTICATION_STATE_WAITING,
                                             choices=constants.BOXER_AUTHENTICATION_STATE_CHOICE, )
     honor_certificate_images = StringListField(null=True)
-    competition_video = models.URLField(null=True)
-    allowed_lessons = StringListField(null=True, blank=True)
+    competition_video = models.CharField(max_length=256, null=True)
+    allowed_course = StringListField(null=True, blank=True)
     refuse_reason = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
@@ -271,11 +284,12 @@ class BoxingClub(BaseModel):
 class Course(models.Model):
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='course')
     course_name = models.CharField(choices=constants.BOXER_ALLOWED_COURSES_CHOICE, max_length=20)
-    price = models.IntegerField()  # 单位：元
-    duration = models.IntegerField()  # 时长，单位：min
-    validity = models.DateField()  # 有效期
+    price = models.PositiveIntegerField(null=True)  # 单位：元
+    duration = models.PositiveSmallIntegerField(null=True)  # 时长，单位：min
+    validity = models.DateField(null=True)  # 有效期
     orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
+    is_open = models.BooleanField(default=False)
 
     class Meta:
         db_table = "course"
@@ -337,6 +351,20 @@ class PayOrder(models.Model):
         db_table = 'pay_order'
 
 
+class OrderComment(SoftDeleteModel):
+    score = models.PositiveSmallIntegerField()
+    content = models.TextField(max_length=300)
+    images = StringListField(null=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, related_name='comment')
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='order_comments')
+
+    class Meta:
+        db_table = 'order_comment'
+        ordering = ('-created_time',)
+
+
 class GameNews(BaseAuditModel):
     title = models.CharField(max_length=50)
     sub_title = models.CharField(max_length=50)
@@ -345,8 +373,8 @@ class GameNews(BaseAuditModel):
     picture = models.CharField(max_length=200)
     stay_top = models.BooleanField(default=False)
     push_news = models.BooleanField()  # 是否推送
-    start_time = models.DateTimeField()  # 推送开始时间
-    end_time = models.DateTimeField()  # 推送结束时间
+    start_time = models.DateTimeField(null=True)  # 推送开始时间
+    end_time = models.DateTimeField(null=True)  # 推送结束时间
     app_content = models.TextField()
     share_content = models.TextField(null=True)
     comments = GenericRelation('Comment')
@@ -354,6 +382,7 @@ class GameNews(BaseAuditModel):
     class Meta:
         db_table = 'game_news'
         ordering = ('-stay_top', '-created_time',)
+        verbose_name = '赛事资讯'
 
 
 class Report(BaseAuditModel):
@@ -369,3 +398,15 @@ class Report(BaseAuditModel):
     class Meta:
         db_table = 'report'
         ordering = ('-created_time',)
+
+
+class Banner(BaseAuditModel):
+    name = models.CharField(max_length=20)
+    order_number = models.PositiveIntegerField()
+    link_type = models.SmallIntegerField(choices=constants.BANNER_LINK_TYPE)
+    link = models.CharField(max_length=200)
+    picture = models.CharField(max_length=200)
+
+    class Meta:
+        db_table = 'banner'
+        ordering = ('-order_number', '-created_time')

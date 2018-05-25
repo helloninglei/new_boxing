@@ -39,6 +39,8 @@ REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
 
+SHARE_H5_BASE_URL = 'http://39.105.73.10/#!/'
+
 if ENVIRONMENT == TEST:
     REDIS_DB = 15  # 用于单元测试，每次会被清空
 
@@ -82,6 +84,22 @@ WECHAT_PAY = {
     'notify_url': 'http://118.187.56.164:60001/pay/wx/notify',
 }
 
+ANDROID_PACKAGE_NAME = 'com.douqu.boxing.test'
+IOS_PACKAGE_NAME = 'com.douqu.boxing'
+XIAOMI_PUSH_APP_SECRET_ANDROID = 'xiEtuYB4fZZzuort3lPD7A=='
+XIAOMI_PUSH_APP_SECRET_IOS = 'RUtLcNFYgGdcy1eNIWZAcQ=='
+# easemob conf
+EASEMOB_CONF = {
+    'app_name': 'boxing-test',
+    'client_id': 'YXA6q7ypMLofEeePIPvuLhnF1A',
+    'client_secret': 'YXA6zFSfb74m4g8FsXGFEmO5IzOpjiY',
+    'org_name': 'douqu',
+    'url': 'https://a1.easemob.com/'
+}
+
+# celery conf
+BROKER_REDIS_DB = "0"
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
@@ -98,6 +116,8 @@ INSTALLED_APPS = [
     'rest_framework',
     "rest_framework.authtoken",
     'biz',
+    'boxing_app',
+    'boxing_console',
     'captcha',
     'django_filters',
 ]

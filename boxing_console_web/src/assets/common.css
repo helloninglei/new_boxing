@@ -58,6 +58,9 @@ body{
 .detail_title{text-align: right}
 .detail_title,.detail_header,.detail_content{font-family: PingFangSC-Regular;font-size: 14px;color: #909399;}
 .detail_content{color: #1D1D27!important;}
+/*左对齐*/
+.text_lf{text-align: left}
+.text_rt{text-align: right}
 /*行内表单距离样式*/
 .inline_item{display: inline-block;padding-bottom:30px}
 .dl_line {display: inline-block;}

@@ -4,14 +4,14 @@ MESSAGE_TYPE_ONLY_TEXT = 'only_text'
 MESSAGE_TYPE_HAS_IMAGE = 'has_image'
 MESSAGE_TYPE_HAS_VIDEO = 'has_video'
 
-HOT_VIDEO_USER_ID = 100000
+HOT_VIDEO_USER_ID = 1000000
 FRIDAY_USER_ID = 1000001
 BOXING_USER_ID = 1000002
 
 USER_IDENTITY_DICT = {
-    HOT_VIDEO_USER_ID: 'hot_video',
-    FRIDAY_USER_ID: 'friday',
-    BOXING_USER_ID: 'boxing'
+    'hot_video': HOT_VIDEO_USER_ID,
+    'friday': FRIDAY_USER_ID,
+    'boxing': BOXING_USER_ID,
 }
 
 BOXER_AUTHENTICATION_STATE_WAITING = "WAITING"
@@ -150,6 +150,9 @@ COMMENT_OBJECT_DICT = {
     'game_news': 3,
 }
 
+# 分享
+SHARE_OBJECT_DICT = COMMENT_OBJECT_DICT
+
 # 支付
 PAYMENT_OBJECT_DICT = {
     'hot_video': 1,
@@ -185,4 +188,23 @@ DEVICE_PLATFORM_ANDROID = 2
 DEVICE_PLATFORM = (
     (DEVICE_PLATFORM_IOS, 'iOS'),
     (DEVICE_PLATFORM_ANDROID, 'Android'),
+)
+
+BANNER_LINK_TYPE_IN_APP_WEB = 1
+BANNER_LINK_TYPE_OUT_APP_WEB = 2
+BANNER_LINK_TYPE_IN_APP_NATIVE = 3
+
+BANNER_LINK_TYPE = (
+    (BANNER_LINK_TYPE_IN_APP_WEB, 'app内网页跳转'),
+    (BANNER_LINK_TYPE_OUT_APP_WEB, 'app外网页跳转'),
+    (BANNER_LINK_TYPE_IN_APP_NATIVE, 'app内本地跳转'),
+)
+
+APP_JUMP_OBEJCT_NEWS = 'game_news'
+
+# banner 跳转对象model
+BANNER_LINK_MODEL_TYPE = (
+    # 'game_votes',  # 赛事投票
+    # 'game_apply',  # 赛事报名
+    APP_JUMP_OBEJCT_NEWS,  # 赛事资讯
 )

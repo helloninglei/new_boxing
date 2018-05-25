@@ -1,24 +1,40 @@
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view
-from rest_framework import viewsets, mixins
-from rest_framework import status
+from rest_framework import viewsets, mixins, status, permissions
+from rest_framework.reverse import reverse
 from rest_framework.response import Response
+from rest_framework.decorators import permission_classes, authentication_classes
 from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer, BlockedUserSerializer
 from biz.models import UserProfile, User
 from biz import redis_client
+from biz.constants import USER_IDENTITY_DICT
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+@authentication_classes([])
+def user_profile_redirect(request, user_identity):
+    user_id = USER_IDENTITY_DICT[user_identity]
+    url = reverse('user-profile', kwargs={'pk': user_id})
+    return redirect(url)
 
 
 @api_view(['POST'])
 def bind_alipay_account(request):
     serializer = BindAlipayAccountSerializer(data=request.data, context={"user": request.user})
     serializer.is_valid(raise_exception=True)
-    UserProfile.objects.update_or_create(user=request.user, alipay_account=serializer.validated_data['alipay_account'])
+    UserProfile.objects.update_or_create(
+        user=request.user, defaults={"alipay_account": serializer.validated_data['alipay_account']})
     return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
 class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
 
     def get_object(self):
+        if "pk" in self.kwargs:
+            return UserProfile.objects.filter(user=self.kwargs['pk']).first()
         return UserProfile.objects.get(user=self.request.user)
 
 

@@ -31,6 +31,10 @@
           content:{
             type : String,
             default:"",
+          },
+          id:{
+            type : [String,Number],
+            default:"",
           }
         },
         watch:{
@@ -50,7 +54,7 @@
         },
         methods: {
             confirm(){
-            	this.$emit('confirm')
+            	this.$emit('confirm',this.id)
             },
             close(){
               this.$emit('cancel',false)

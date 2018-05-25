@@ -3,26 +3,36 @@
         <TopBar v-if="isShowTop" firstTitle_name="用户管理" firstTitle_path="/usermanage" disNone="disNone"></TopBar>
         <div class='container'>
             <header>
-                <el-input v-model="sendData.keywards"  class='myInput_40 margin_rt25' placeholder='输入用户ID/用户账号/昵称/手机号' style='width:284px'></el-input>
-                <el-date-picker
-                v-model="sendData.startTime"
-                type="datetime"
-                :default-value= "new Date()"
-                placeholder="注册开始时间" style='width:200px' class="margin_rt25">
-                </el-date-picker>
-                <el-date-picker
-                v-model="sendData.endTime"
-                type="datetime"
-                :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
-                placeholder="注册结束时间" style='width:200px' class="margin_rt25">
-                </el-date-picker>
-                <el-select v-model="sendData.userType">
-                    <el-option value="0" label="全部">全部</el-option>
-                    <el-option value="1" label="普通用户">普通用户</el-option>
-                    <el-option value="2" label="认证拳手">认证拳手</el-option>
-                </el-select>
-                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70'>查询</el-button>
-                <el-button  class='myButton_40 btn_width_95 myBtnHover_red'>重置</el-button>
+                 <el-row>
+                    <el-col :span="5" style='width:314px'>
+                        <el-input v-model="sendData.keywards"  class='myInput_40 margin_rt25' placeholder='输入用户ID/用户账号/昵称/手机号' style='width:284px'></el-input>
+                    </el-col> 
+                    <el-col :span="7" style='width:460px'>
+                        <el-date-picker
+                        v-model="sendData.startTime"
+                        type="datetime"
+                        :default-value= "new Date()"
+                        placeholder="注册开始时间" style='width:200px' class="margin_rt25">
+                        </el-date-picker>
+                        <el-date-picker
+                        v-model="sendData.endTime"
+                        type="datetime"
+                        :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
+                        placeholder="注册结束时间" style='width:200px' class="margin_rt25">
+                        </el-date-picker>
+                    </el-col>  
+                    <el-col :span="3">
+                        <el-select v-model="sendData.userType" class="margin_rt25">
+                            <el-option value="0" label="全部">全部</el-option>
+                            <el-option value="1" label="普通用户">普通用户</el-option>
+                            <el-option value="2" label="认证拳手">认证拳手</el-option>
+                        </el-select>
+                    </el-col>     
+                    <el-col :md="24" :xl='5'>
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70 margin_top_30'>查询</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red'>重置</el-button>
+                    </el-col>     
+                </el-row>
             </header>
             <p class="showTotal">注册用户数:{{userTotal}}</p>
             <nav class='myTable'>
@@ -88,10 +98,13 @@
 </template>
 <style scoped>
     .myTable{font-size:14px!important;}
+    @media screen and (max-width:1919px){
+       .margin_top_30{margin-top:30px;margin-left:0!important;} 
+    } 
 </style>
 <style>
 </style>
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     import Table  from 'components/table';
     import Pagination  from 'components/pagination';

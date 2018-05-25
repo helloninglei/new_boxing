@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder
+from biz.models import PayOrder, BoxingClub, OrderComment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_following
-from biz import models
+from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
 from biz.redis_const import SEND_VERIFY_CODE
 from boxing_app.services import verify_code_service
-from biz.utils import get_client_ip, get_device_platform
+from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
-    honor_certificate_images = serializers.ListField(child=serializers.URLField(), required=False)
-    competition_video = serializers.URLField(required=False)
+    honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
+    competition_video = serializers.CharField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
 
@@ -40,7 +41,11 @@ class DiscoverUserField(serializers.RelatedField):
         result = {
             'id': user.id,
             'identity': user.identity,
+            'is_following': bool(is_following(self.context['request'].user.id, user.id)),
+            'nick_name': None,
+            'avatar': None,
         }
+
         if hasattr(user, 'user_profile'):
             profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
             result.update(profile)
@@ -91,7 +96,7 @@ class CommentSerializer(serializers.ModelSerializer):
         latest = obj.reply_list()
         return {
             'count': latest.count(),
-            'results': BasicReplySerializer(latest, many=True).data
+            'results': BasicReplySerializer(latest, many=True, context=self.context).data
         }
 
     class Meta:
@@ -120,35 +125,19 @@ class ReportSerializer(serializers.ModelSerializer):
 
 class FollowUserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    avatar = serializers.SerializerMethodField()
-    nick_name = serializers.SerializerMethodField()
-    address = serializers.SerializerMethodField()
-    bio = serializers.SerializerMethodField()
-    is_followed = serializers.SerializerMethodField()
+    avatar = serializers.CharField(source='user_profile.avatar')
+    nick_name = serializers.CharField(source='user_profile.nick_name')
+    address = serializers.CharField(source='user_profile.address')
+    bio = serializers.CharField(source='user_profile.bio')
+    gender = serializers.BooleanField(source='user_profile.gender')
+    is_following = serializers.SerializerMethodField()
 
-    def _get_profile(self, user):
-        if hasattr(user, 'user_profile'):
-            return user.user_profile
-        return {}
-
-    def get_avatar(self, user):
-        return self._get_profile(user).get('avatar')
-
-    def get_nick_name(self, user):
-        return self._get_profile(user).get('nick_name')
-
-    def get_address(self, user):
-        return self._get_profile(user).get('address')
-
-    def get_bio(self, user):
-        return self._get_profile(user).get('bio')
-
-    def get_is_followed(self, user):
+    def get_is_following(self, user):
         current_user_id = self.context['current_user_id']
         return bool(is_following(current_user_id, user.id))
 
     class Meta:
-        fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
+        fields = ['id', 'gender', 'avatar', 'nick_name', 'address', 'bio', 'is_follow', 'identity']
         read_only_fields = '__all__'
 
 
@@ -218,8 +207,8 @@ class PaySerializer(serializers.Serializer):
     content_object = serializers.SerializerMethodField()
 
     def get_content_object(self, obj):
-        object_type = self.context['object_type'].title().replace('_', '')
-        return getattr(models, object_type).objects.get(pk=obj['id'])
+        object_class = get_model_class_by_name(self.context['object_type'])
+        return object_class.objects.get(pk=obj['id'])
 
     def get_ip(self, obj):
         return get_client_ip(self.context['request'])
@@ -263,101 +252,60 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class BaseCourseOrderSerializer(serializers.ModelSerializer):
-    course_name = serializers.SerializerMethodField()
-    course_duration = serializers.SerializerMethodField()
-    course_validity = serializers.SerializerMethodField()
-    course_price = serializers.SerializerMethodField()
-    club_name = serializers.SerializerMethodField()
-    club_address = serializers.SerializerMethodField()
-    club_longitude = serializers.SerializerMethodField()
-    club_latitude = serializers.SerializerMethodField()
+    course_name = serializers.CharField(source='content_object.course_name', read_only=True)
+    course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
+    course_validity = serializers.DateField(source='content_object.validity', read_only=True)
+    course_price = serializers.IntegerField(source='content_object.price', read_only=True)
+    club_name = serializers.CharField(source='content_object.club.name', read_only=True)
+    club_address = serializers.CharField(source='content_object.club.address', read_only=True)
+    club_longitude = serializers.CharField(source='content_object.club.longitude', read_only=True)
+    club_latitude = serializers.CharField(source='content_object.club.latitude', read_only=True)
+
+    class Meta:
+        model = PayOrder
+        exclude = ['device']
+
+
+class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
+    user_id = serializers.IntegerField(source='user.pk', read_only=True)
+    user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
+    user_gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
+    user_avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
     comment_score = serializers.SerializerMethodField()
     comment_time = serializers.SerializerMethodField()
     comment_content = serializers.SerializerMethodField()
     comment_images = serializers.SerializerMethodField()
 
-    def get_course_name(self, instance):
-        return instance.content_object.course_name
-
-    def get_course_duration(self, instance):
-        return instance.content_object.duration
-
-    def get_course_validity(self, instance):
-        return instance.content_object.validity
-
-    def get_course_price(self, instance):
-        return instance.content_object.price
-
-    def get_club_name(self, instance):
-        return instance.content_object.club.name
-
-    def get_club_address(self, instance):
-        return instance.content_object.club.address
-
-    def get_club_longitude(self, instance):
-        return instance.content_object.club.longitude
-
-    def get_club_latitude(self, instance):
-        return instance.content_object.club.latitude
-
-    # TODO 等待订单评论部分
     def get_comment_score(self, instance):
-        return None
+        comment = self.get_comment(instance)
+        return comment.score if comment else None
 
     def get_comment_time(self, instance):
-        return None
+        comment = self.get_comment(instance)
+        return comment.created_time if comment else None
 
     def get_comment_content(self, instance):
-        return None
+        comment = self.get_comment(instance)
+        return comment.content if comment else None
 
     def get_comment_images(self, instance):
-        return None
+        comment = self.get_comment(instance)
+        return comment.images if comment else None
 
-
-class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
-    user_id = serializers.SerializerMethodField()
-    user_nickname = serializers.SerializerMethodField()
-    user_gender = serializers.SerializerMethodField()
-    user_avatar = serializers.SerializerMethodField()
-
-    def get_user_id(self, instance):
-        return instance.user.pk
-
-    def get_user_nickname(self, instance):
-        return instance.user.user_profile.nick_name
-
-    def get_user_gender(self, instance):
-        return instance.user.user_profile.gender
-
-    def get_user_avatar(self, instance):
-        return instance.user.user_profile.avatar
-
-    class Meta:
-        model = PayOrder
-        exclude = ['device']
+    @staticmethod
+    def get_comment(instance):
+        try:
+            comment = OrderComment.objects.get(order=instance)
+            return comment
+        except ObjectDoesNotExist:
+            return None
 
 
 class UserCourseOrderSerializer(BaseCourseOrderSerializer):
-    boxer_id = serializers.SerializerMethodField()
-    boxer_name = serializers.SerializerMethodField()
-    boxer_gender = serializers.SerializerMethodField()
-    boxer_avatar = serializers.SerializerMethodField()
-
-    def get_boxer_name(self, instance):
-        return instance.content_object.boxer.real_name
-
-    def get_boxer_gender(self, instance):
-        return instance.content_object.boxer.user.user_profile.gender
-
-    def get_boxer_avatar(self, instance):
-        return instance.content_object.boxer.user.user_profile.avatar
-
-    def get_boxer_id(self, instance):
-        return instance.content_object.boxer.pk
-
-    class Meta:
-        model = PayOrder
-        exclude = ['device']
+    boxer_id = serializers.IntegerField(source='content_object.boxer.pk', read_only=True)
+    boxer_name = serializers.CharField(source='content_object.boxer.real_name', read_only=True)
+    boxer_gender = serializers.BooleanField(source='content_object.boxer.user.user_profile.gender', read_only=True)
+    boxer_avatar = serializers.CharField(source='content_object.boxer.user.user_profile.avatar', read_only=True)
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
@@ -380,6 +328,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
     money_balance = serializers.SerializerMethodField()
+    user_id = serializers.CharField(source="user.id", read_only=True)
+    boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
+    identity = serializers.CharField(source="user.identity", read_only=True)
+    is_following = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_following(self, instance):
+        return bool(is_following(self.context['request'].user.id, instance.id))
 
     def get_money_balance(self, instance):
         return instance.user.money_balance
@@ -399,7 +354,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
         exclude = ["created_time", "id", "updated_time", "user"]
-        read_only_fields = ["address", "alipay_account", "bio", "gender", "nick_name", "boxer_info", "mobile"]
+        read_only_fields = ["alipay_account", "gender", "nick_name", "boxer_info", "mobile"]
 
 
 class ChangeMobileSerializer(serializers.Serializer):
@@ -442,3 +397,56 @@ class BlockedUserSerializer(serializers.BaseSerializer):
         if hasattr(user, "user_profile"):
             representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
         return representation_dict
+
+
+class CourseAllowNullDataSerializer(serializers.ModelSerializer):
+    club_name = serializers.CharField(source='club.name', read_only=True)
+    club_address = serializers.CharField(source='club.address', read_only=True)
+    club_longitude = serializers.CharField(source='club.longitude', read_only=True)
+    club_latitude = serializers.CharField(source='club.latitude', read_only=True)
+
+    class Meta:
+        model = models.Course
+        fields = '__all__'
+        read_only_fields = ('boxer', 'course_name')
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Banner
+        exclude = ('created_time', 'updated_time', 'operator')
+
+
+class CourseFullDataSerializer(CourseAllowNullDataSerializer):
+    price = serializers.IntegerField()
+    duration = serializers.IntegerField()
+    validity = serializers.DateField()
+    is_open = serializers.BooleanField()
+
+    def validate(self, attrs):
+        if not attrs['club']:
+            raise serializers.ValidationError('拳馆不存在')
+        return attrs
+
+
+class CourseOrderCommentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    images = serializers.ListField(child=serializers.CharField(), required=False)
+
+    def validate(self, attrs):
+        if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+            raise ValidationError('订单不是未评论状态，不能评论！')
+        return attrs
+
+    class Meta:
+        model = models.OrderComment
+        fields = '__all__'
+
+
+class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
+    change_type = serializers.CharField(source='get_change_type_display')
+    created_time = serializers.DateTimeField()
+
+    class Meta:
+        model = models.MoneyChangeLog
+        fields = ['change_amount', "change_type", "created_time"]
