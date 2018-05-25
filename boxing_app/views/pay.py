@@ -10,12 +10,13 @@ from biz.services.pay_service import PayService
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def create_order(request, object_type):
-    serializer, order = perform_create_order(request, object_type)
-    name = PayService.generate_name(serializer.data['content_object'])
-    data = PayService.generate_data(order.out_trade_no, order.amount, name)
-    pay_info = PayService.get_payment_info(payment_type=serializer.validated_data['payment_type'],
-                                           data=data,
-                                           ip=serializer.data['ip'])
+    serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
+    serializer.is_valid(raise_exception=True)
+    pay_info = PayService.create_order(user = request.user,
+                                       obj = serializer.data['content_object'],
+                                       payment_type = serializer.validated_data['payment_type'],
+                                       device = serializer.data['device'],
+                                       ip = serializer.data['ip'])
     return Response({'pay_info': pay_info})
 
 
@@ -34,7 +35,6 @@ def perform_create_order(request, object_type):
                                             payment_type=serializer.validated_data.get('payment_type'),
                                             device=serializer.data['device'])
     return serializer, order
-
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
