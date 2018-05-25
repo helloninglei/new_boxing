@@ -4,8 +4,10 @@ from datetime import datetime
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
-from biz.models import PayOrder
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE
+from biz.models import PayOrder, User
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
+    MONEY_CHANGE_TYPE_INCREASE_RECHARGE
+from biz.services import money_balance_service
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -13,7 +15,6 @@ logger = logging.getLogger()
 
 
 class PayService:
-
     @classmethod
     def generate_out_trade_no(cls):
         return datetime.now().strftime('%y%m%d%H%M%S%f')
@@ -27,10 +28,14 @@ class PayService:
         return dict(out_trade_no=out_trade_no, amount=amount, name=name)
 
     @classmethod
-    def create_order(cls, user, obj, payment_type, device, ip):
+    def create_order(cls, user, obj, payment_type, device, ip, amount=None):
         order = cls.perform_create_order(user, obj, device, payment_type)
         name = cls.generate_name(obj)
-        data = cls.generate_data(order.out_trade_no, obj.price, name)
+        data = cls.generate_data(
+            order.out_trade_no,
+            obj.price if hasattr(obj, "price") else amount,
+            name
+        )
         return cls.get_payment_info(payment_type, data, ip)
 
     @classmethod
@@ -39,7 +44,7 @@ class PayService:
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=obj.price*100,
+            amount=obj.price * 100,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
@@ -105,4 +110,12 @@ class PayService:
 
     @classmethod
     def success_callback(cls, data):
-        PayOrder.objects.filter(out_trade_no=data['out_trade_no']).update(status=PAYMENT_STATUS_WAIT_USE)
+        pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
+        pay_order.status = PAYMENT_STATUS_WAIT_USE
+        pay_order.save()
+        if isinstance(pay_order.content_object, User):
+            money_balance_service.change_money(
+                user=pay_order.content_object,
+                amount=pay_order.amount,
+                change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE
+            )

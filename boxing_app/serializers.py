@@ -452,3 +452,7 @@ class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MoneyChangeLog
         fields = ['change_amount', "change_type", "created_time"]
+
+
+class RechargeSerializer(serializers.Serializer):
+    amount = serializers.CharField()

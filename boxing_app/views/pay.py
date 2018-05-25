@@ -13,11 +13,11 @@ def create_order(request, object_type):
     serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
     pay_info = PayService.create_order(
-        user = request.user,
-        obj = serializer.data['content_object'],
-        payment_type = serializer.validated_data['payment_type'],
-        device = serializer.data['device'],
-        ip = serializer.data['ip'])
+        user=request.user,
+        obj=serializer.data['content_object'],
+        payment_type=serializer.validated_data['payment_type'],
+        device=serializer.data['device'],
+        ip=serializer.data['ip'])
     return Response({'pay_info': pay_info})
 
 
