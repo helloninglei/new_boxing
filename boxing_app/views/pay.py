@@ -12,29 +12,27 @@ from biz.services.pay_service import PayService
 def create_order(request, object_type):
     serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
-    pay_info = PayService.create_order(user = request.user,
-                                       obj = serializer.data['content_object'],
-                                       payment_type = serializer.validated_data['payment_type'],
-                                       device = serializer.data['device'],
-                                       ip = serializer.data['ip'])
+    pay_info = PayService.create_order(
+        user = request.user,
+        obj = serializer.data['content_object'],
+        payment_type = serializer.validated_data['payment_type'],
+        device = serializer.data['device'],
+        ip = serializer.data['ip'])
     return Response({'pay_info': pay_info})
 
 
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def create_unpaid_order(request, object_type):
-    perform_create_order(request, object_type)
-    return Response(status=status.HTTP_201_CREATED)
-
-
-def perform_create_order(request, object_type):
     serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
-    order = PayService.perform_create_order(user=request.user,
-                                            obj=serializer.data['content_object'],
-                                            payment_type=serializer.validated_data.get('payment_type'),
-                                            device=serializer.data['device'])
-    return serializer, order
+    PayService.perform_create_order(
+        user=request.user,
+        obj=serializer.data['content_object'],
+        payment_type=serializer.validated_data.get('payment_type'),
+        device=serializer.data['device'])
+    return Response(status=status.HTTP_201_CREATED)
+
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
