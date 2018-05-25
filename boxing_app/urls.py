@@ -74,7 +74,7 @@ order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail'),
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail')
 ]
 
 order_comment_url = [
@@ -137,6 +137,8 @@ payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
 payment_urls = [
     re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order,
             name='create-order'),
+    re_path(r'^(?P<object_type>({0}))s/create_unpaid_order'.format(payment_object_string), pay.create_unpaid_order,
+            name='create-unpaid-order'),
     path('callback/alipay', pay.alipay_calback),
     path('callback/wechat', pay.wechat_calback),
 ]

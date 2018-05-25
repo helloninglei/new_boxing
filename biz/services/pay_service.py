@@ -19,17 +19,33 @@ class PayService:
         return datetime.now().strftime('%y%m%d%H%M%S%f')
 
     @classmethod
+    def generate_name(cls, obj):
+        return f'{obj.__class__._meta.verbose_name} {obj.id}'
+
+    @classmethod
+    def generate_data(cls, out_trade_no, amount, name):
+        return dict(out_trade_no=out_trade_no, amount=amount, name=name)
+
+    @classmethod
     def create_order(cls, user, obj, payment_type, device, ip):
-        order = PayOrder.objects.create(
+        order = cls.perform_create_order(user, obj, device, payment_type)
+        name = cls.generate_name(obj)
+        data = cls.generate_data(order.out_trade_no, obj.price, name)
+        return cls.get_payment_info(payment_type, data, ip)
+
+    @classmethod
+    def perform_create_order(cls, user, obj, device, payment_type=None):
+        return PayOrder.objects.create(
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=obj.price * 100,
+            amount=obj.price*100,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
-        name = f'{obj.__class__._meta.verbose_name} {obj.id}'
-        data = dict(out_trade_no=order.out_trade_no, amount=obj.price, name=name)
+
+    @classmethod
+    def get_payment_info(cls, payment_type, data, ip):
         if payment_type == PAYMENT_TYPE_ALIPAY:
             return cls.get_alipay_payment_info(**data)
         elif payment_type == PAYMENT_TYPE_WECHAT:

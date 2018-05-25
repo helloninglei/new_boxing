@@ -1,3 +1,4 @@
+
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import viewsets
 
@@ -6,7 +7,7 @@ from biz.models import BoxerIdentification, PayOrder, Course, OrderComment
 from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
-class BoxerCourseOrderViewSet(viewsets.ModelViewSet):
+class BoxerCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = BoxerCourseOrderSerializer
 
     def get_queryset(self):
@@ -14,7 +15,7 @@ class BoxerCourseOrderViewSet(viewsets.ModelViewSet):
         return PayOrder.objects.filter(course__boxer=boxer)
 
 
-class UserCourseOrderViewSet(viewsets.ModelViewSet):
+class UserCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserCourseOrderSerializer
 
     def get_queryset(self):
