@@ -2,34 +2,44 @@ var path = require('path')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
-
+var webpack=require("webpack")
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
 module.exports = {
-  entry: {
-    app: './src/main.js'
-  },
-  output: {
-    path: config.build.assetsRoot,
-    filename: '[name].js',
-    publicPath: process.env.NODE_ENV === 'production'
-      ? config.build.assetsPublicPath
-      : config.dev.assetsPublicPath
-  },
-  resolve: {
-    extensions: ['.js', '.vue', '.json'],
-    modules: [
-      resolve('src'),
-      resolve('node_modules')
+    entry: {
+        app: './src/main.js'
+    },
+    // externals: {
+    //     "BMap": "BMap"
+    // },
+    plugins: [
+        new webpack.optimize.CommonsChunkPlugin('common.js'),
+        new webpack.ProvidePlugin({
+            jQuery: "jquery",
+            $: "jquery"
+        })
     ],
-    alias: {
-      'vue$': 'vue/dist/vue.common.js',
-      'src': resolve('../src'),
-      'components': resolve('src/components'),
-      'pages': resolve('src/pages'),
-      'assets': resolve('src/assets')
+    output: {
+        path: config.build.assetsRoot,
+        filename: '[name].js',
+        publicPath: process.env.NODE_ENV === 'production'
+        ? config.build.assetsPublicPath
+        : config.dev.assetsPublicPath
+    },
+    resolve: {
+        extensions: ['.js', '.vue', '.json'],
+        modules: [
+            resolve('src'),
+            resolve('node_modules')
+        ],
+        alias: {
+        'vue$': 'vue/dist/vue.common.js',
+        'src': resolve('../src'),
+        'components': resolve('src/components'),
+        'pages': resolve('src/pages'),
+        'assets': resolve('src/assets')
     }
   },
   module: {

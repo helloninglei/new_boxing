@@ -65,7 +65,7 @@ nav{min-height: 528px}
                     courseName : '',
                     is_accept_order : '',
                 },
-                total     : 1000,
+                total     : 20,
                 tableData : [
                     {
                         "id": 1,
@@ -168,7 +168,7 @@ nav{min-height: 528px}
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
                         }
                         $this.tableData=res.data.results;
-                        $this.total = res.data.count;
+                        // $this.total = res.data.count;
                     }
 
                 },function(err){
@@ -183,7 +183,7 @@ nav{min-height: 528px}
             },
             changePage(val){
                 // 要看第几页
-                // console.log(val)
+                console.log(val)
                 this.getTableData(this.sendData,val) 
             },
             toDetail(row){

@@ -4,19 +4,19 @@
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 import axios from 'axios';
+
 // import router from './router';
-axios.defaults.withCredentials = true;
+  axios.defaults.withCredentials = true;
   export default {
     data() {
       return {}
     },
     methods: {
-
     },
     created() {
-       
+
     }
   };
 </script>

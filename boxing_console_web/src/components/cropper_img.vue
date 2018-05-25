@@ -1,22 +1,19 @@
 <template>
-  <div id="demo">  
+  <div id="demo_strok">  
     <!-- 遮罩层 -->  
     <div class="container" v-show="panel">  
       <div>  
-        <img id="image" :src="url" alt="Picture">  
+        <img id="images" :src="url" alt="Picture">  
       </div>
       <button type="button" id="button" @click="crop">确定</button>
     </div>  
-    <div>
-      <img id="image" :src="headerImage" alt="Picture">  
-    </div>
     <div style="padding:20px;">  
         <div class="show">  
-          <div class="picture" :style="'backgroundImage:url('+headerImage+')'">  
+          <div class="picture" :style="'backgroundImage:url('+headerImage_strock+')'" @click="addImg('change')">  
           </div>  
         </div>
         <div style="margin-top:20px;">  
-          <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('change')">上传</el-button>
+          <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('change')">上传</el-button> -->
           <input type="file" id="change" style='display:none' accept="image" @change="change">  
           <label for="change"></label>  
         </div>  
@@ -24,12 +21,12 @@
     </div>  
   </div> 
 </template>
-<style>
+<style scope>
     *{  
       margin: 0;  
       padding: 0;  
     }  
-    #demo #button {  
+    #demo_strok #button {  
       position: absolute;  
       right: 10px;  
       top: 10px;  
@@ -39,15 +36,15 @@
       border-radius: 5px;  
       background:white;  
     }  
-    #demo .show {  
-      width: 100px;  
-      height: 100px;  
+    #demo_strok .show {  
+      width: 95px;  
+      height: 65px;  
       overflow: hidden;  
       position: relative;  
       /*border-radius: 50%;  */
       border: 1px solid #d5d5d5;  
     }  
-    #demo .picture {  
+    #demo_strok .picture {  
       width: 100%;  
       height: 100%;  
       overflow: hidden;  
@@ -55,7 +52,7 @@
       background-repeat: no-repeat;  
       background-size: cover;   
     }  
-    #demo .container {  
+    #demo_strok .container {  
         z-index: 99;  
         position: fixed;  
         padding-top: 60px;  
@@ -65,7 +62,7 @@
         bottom: 0;  
         background:rgba(0,0,0,1);  
     }
-    #demo #image {  
+    #demo_strok #image {  
       max-width: 100%;  
     }
     .cropper-view-box,.cropper-face {  
@@ -351,20 +348,30 @@
     },  
     data () {  
       return {  
-        headerImage:'',  
+        headerImage_strock:'',  
         picValue:'',  
         cropper:'',  
         croppable:false,  
         panel:false,  
         url:''  
       }  
+    },
+    props: {
+        index: {
+            type: Number,
+            default: 0,
+        },
+        classname: {
+            type: String,
+            default: 0,
+        },
     },  
     mounted () {  
       //初始化这个裁剪框  
       var self = this;  
       var image = document.getElementById('image');  
       this.cropper = new Cropper(image, {  
-        aspectRatio: 1,  
+        aspectRatio: 95/65,  
         viewMode: 1,  
         background:false,  
         zoomable:false, 
@@ -419,7 +426,7 @@
           // Round  
           roundedCanvas = this.getRoundedCanvas(croppedCanvas);  
 
-          this.headerImage = roundedCanvas.toDataURL();  
+          this.headerImage_strock = roundedCanvas.toDataURL();  
           this.postImg()  
 
       },  
