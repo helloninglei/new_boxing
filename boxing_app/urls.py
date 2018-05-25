@@ -27,6 +27,7 @@ from boxing_app.views import pay
 from boxing_app.views import game_news
 from boxing_app.views.banner import BannerViewSet
 from boxing_app.views.user_profile import bind_alipay_account
+from boxing_app.views.wallet import MoneyChangeLogViewSet
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -144,6 +145,10 @@ banner_urls = [
     path('banners', BannerViewSet.as_view({'get': 'list'}), name='banner-list'),
 ]
 
+wallet_urls = [
+    path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"}))
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -163,6 +168,7 @@ urlpatterns += course_url
 urlpatterns += news_urls
 urlpatterns += order_comment_url
 urlpatterns += banner_urls
+urlpatterns += wallet_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
