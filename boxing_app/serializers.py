@@ -441,7 +441,7 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
 
 class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     change_type = serializers.CharField(source='get_change_type_display')
-    created_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+    created_time = serializers.DateTimeField()
 
     class Meta:
         model = models.MoneyChangeLog
