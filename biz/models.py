@@ -397,3 +397,11 @@ class Banner(BaseAuditModel):
     class Meta:
         db_table = 'banner'
         ordering = ('-order_number', '-created_time')
+
+
+class CourseSettleOrder(models.Model):
+    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, db_index=False, related_name='+')
+    course = models.ForeignKey(Course, on_delete=models.PROTECT, db_index=False, related_name='+')
+    settled = models.BooleanField(default=False)
+    settled_date = models.DateField(null=True)
+    settled_amount = models.PositiveIntegerField()  # 单位分
