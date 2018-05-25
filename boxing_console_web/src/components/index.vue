@@ -51,10 +51,10 @@
                     <el-menu-item index="/addBoxing" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>添加拳馆</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/infoList" :disabled="disabled">
                         <div class='menu-item-inner'>赛事管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/infoList" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>资讯</div>
                     </el-menu-item>
                     <el-menu-item index="/" :disabled="disabled">
