@@ -8,6 +8,7 @@ from boxing_app.filters import MoneyChangeLogFilter
 from biz.services.pay_service import PayService
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT
 from biz.utils import get_client_ip, get_device_platform
+from biz import constants
 
 
 @api_view(['GET'])
@@ -39,3 +40,12 @@ def recharge(request, payment_type):
         amount=serializer.validated_data['amount'],
     )
     return Response({"result": pay_info}, status=status.HTTP_200_OK)
+
+
+class RechargeLogViewSet(mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
+    serializer_class = MoneyChangeLogReadOnlySerializer
+
+    def get_queryset(self):
+        return MoneyChangeLog.objects.filter(
+            user=self.request.user, change_type=constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE).order_by('-created_time')
