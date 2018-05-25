@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from biz import models
 from boxing_app.serializers import ReportSerializer
 from biz.constants import REPORT_REASON_CHOICES
+from biz.utils import get_model_class_by_name
 
 
 class ReportViewSet(ModelViewSet):
@@ -13,8 +13,7 @@ class ReportViewSet(ModelViewSet):
         return Response(dict(REPORT_REASON_CHOICES))
 
     def perform_create(self, serializer):
-        object_type = self.kwargs['object_type']
-        object_class = getattr(models, object_type.title().replace('_', ''))
+        object_class = get_model_class_by_name(self.kwargs['object_type'])
         content_object = object_class.objects.get(id=self.request.POST['object_id'])
         kwargs = {
             'user': self.request.user,

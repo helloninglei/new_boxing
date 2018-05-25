@@ -39,6 +39,8 @@ REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
 
+SHARE_H5_BASE_URL = 'http://39.105.73.10/#!/'
+
 if ENVIRONMENT == TEST:
     REDIS_DB = 15  # 用于单元测试，每次会被清空
 
