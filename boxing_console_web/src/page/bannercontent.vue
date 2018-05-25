@@ -40,7 +40,7 @@
                         </el-radio>
                     </el-radio-group>
                 </template>
-                <el-form-item label="展示图片">
+                <el-form-item label="展示图片" required>
                     <el-upload
                             class="avatar-uploader"
                             :action=action
@@ -48,7 +48,7 @@
                             :on-success="handleAvatarSuccess"
                             style="position: relative;width: 375px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
                         <template v-if="picture">
-                            <i class="el-icon-circle-close" @click.stop="removeImageEv"></i>
+                            <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
                             <img  :src="picture" class="avatar">
                         </template>
                         <template v-else>

@@ -24,6 +24,7 @@ import Map1             from 'components/map';
 import Admin            from 'page/admin';
 import Report           from 'page/report';
 import Hotvideo         from 'page/hot_videos';
+import InfoList         from 'page/infoList';
 
 export default [
     {
@@ -125,6 +126,8 @@ export default [
             {
                 path: '/bannercontent',
                 component: BannerContent,
+            },
+            {
                 path: '/cropper',
                 component: Cropper,
             },
@@ -143,6 +146,10 @@ export default [
             {
                 path: '/hotvideo',
                 component: Hotvideo,
+            },
+            {
+                path: '/infoList',
+                component: InfoList,
             },
         ]
     },
