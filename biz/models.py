@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+from json import loads, dumps
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -137,14 +137,26 @@ class MoneyChangeLog(PropertyChangeLog):
 
 
 class StringListField(models.TextField):
+    def value_to_string(self, value):
+        return self.value_from_object(value)
+
+    def to_python(self, value):
+        if not value:
+            value = []
+
+        if isinstance(value, list):
+            return value
+
+        return loads(value)
+
     def get_prep_value(self, value):
         if value:
-            return json.dumps(value)
+            return dumps(value)
 
     def from_db_value(self, value, *args):
         if not value:
             return []
-        return json.loads(value)
+        return loads(value)
 
 
 class SoftDeleteManager(models.Manager):
