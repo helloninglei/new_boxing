@@ -1,6 +1,5 @@
 import django_filters
 from biz.models import MoneyChangeLog
-from django.db.models import F
 
 
 class MoneyChangeLogFilter(django_filters.FilterSet):
@@ -8,9 +7,9 @@ class MoneyChangeLogFilter(django_filters.FilterSet):
 
     def filter_keyword(self, qs, name, value):
         if value == "income":
-            return qs.filter(last_amount__lt=F("remain_amount"))
+            return qs.filter(change_amount__gt=0)
         if value == "expend":
-            return qs.filter(last_amount__gt=F("remain_amount"))
+            return qs.filter(change_amount__lt=0)
         return qs
 
     class Meta:
