@@ -336,16 +336,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     is_following = serializers.SerializerMethodField(read_only=True)
 
     def get_is_following(self, instance):
-        return bool(is_following(self.context['request'].user.id, instance.id))
+        return bool(is_following(self.context['request'].user.id, instance.user.id))
 
     def get_money_balance(self, instance):
         return instance.user.money_balance
 
     def get_followers_count(self, instance):
-        return redis_client.follower_count(instance.id)
+        return redis_client.follower_count(instance.user.id)
 
     def get_following_count(self, instance):
-        return redis_client.following_count(instance.id)
+        return redis_client.following_count(instance.user.id)
 
     def get_mobile(self, instance):
         return instance.user.mobile
