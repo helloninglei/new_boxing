@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
 
 from biz.models import Course, PayOrder, CourseSettleOrder
-from boxing_console.filters import CourseFilter, CourseOrderFilter
+from boxing_console.filters import CourseFilter, CourseOrderFilter, CourseSettleOrderFilter
 from boxing_console.serializers import CourseSerializer, CourseOrderSerializer, CourseSettleOrderSerializer
 
 
@@ -27,4 +27,6 @@ class CourseOrderViewSet(viewsets.ModelViewSet):
 
 class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSettleOrderSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = CourseSettleOrderFilter
     queryset = CourseSettleOrder.objects.all().prefetch_related('course', 'order', 'order__user', 'course__boxer')

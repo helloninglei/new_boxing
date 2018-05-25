@@ -308,8 +308,11 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     course_amount = serializers.IntegerField(source='course.price')
     buyer_mobile = serializers.CharField(source='order.user.mobile')
     predicted_settle_date = serializers.SerializerMethodField()
-    actual_settle_date = serializers.DateField(source='settled_date')
+    actual_settle_date = serializers.DateField(source='settled_date', format='%Y%m%d')
+
+    def get_predicted_settle_date(self, attrs):
+        return (attrs.created_time + timedelta(days=7)).strftime('%Y%m%d')
 
     class Meta:
         model = models.CourseSettleOrder
-        exclude = ('order', 'course')
+        exclude = ('order', 'course', 'created_time')

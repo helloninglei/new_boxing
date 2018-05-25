@@ -28,7 +28,8 @@ deploy(){
 }
 
 start_app_celery(){
-    celery -A boxing_app worker -l info
+    celery -A boxing_app worker -l info &
+    celery -A boxing_app beat -l info
 }
 
 cd /work && clear_cache && install && migrate && deploy && start_app_celery
