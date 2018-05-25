@@ -35,7 +35,7 @@
         border:1px solid rgba(0,0,0,0.1)!important;
     }
 </style>
-<script type="text/ecmascript-6">
+<script>
     export default {
         data() {
             return {

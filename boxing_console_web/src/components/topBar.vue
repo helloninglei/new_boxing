@@ -1,7 +1,7 @@
 <template>
     <div id="topBar" :class="disNone">
         <div class='index-top'>
-            <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='close()'>退出</el-button>
+            <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='openConfirm()'>退出</el-button>
             <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95'>退出</el-button> -->
             <div class='user_name'>{{user_name}}</div>
             <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -9,6 +9,7 @@
               <el-breadcrumb-item :to="{ path: secondTitle_path }"><div class="titles">{{secondTitle_name}}</div></el-breadcrumb-item>
             </el-breadcrumb>
         </div>
+        <Confirm1 :isshow="confirmData.isshow" @confirm="close()" @cancel="cancel1()" :content="confirmData.content"></Confirm1>
     </div>
 </template>
 
@@ -24,13 +25,21 @@
     #topBar .el-breadcrumb__separator.el-icon-arrow-right{margin-top:50px!important;margin-left:20px;font-size:8px;}
     #topBar.disNone .el-breadcrumb__separator.el-icon-arrow-right{display: none}
 </style>
-<script type="text/ecmascript-6">
+<script >
+    import Confirm1 from "components/confirm"
     export default {
         data() {
             return {
                 user_name: 'admin',
-                
+                confirmData:{
+                    isshow: false,
+                    id    :'',
+                    content:'确认退出？'
+                },
             }
+        },
+        components: {
+            Confirm1
         },
         props: {
             firstTitle_name: {
@@ -58,8 +67,6 @@
         // 监测路由变化,只要变化了就调用获取路由参数方法将数据存储本组件即可
           '$route': 'getParams'
         },
-        components: {
-        },
         created() {
             
         },
@@ -67,6 +74,12 @@
             getParams(){
                 let routerParams = this.$route.params.dataobj
                 this.getMsg      = routerParams
+            },
+            openConfirm(){
+                this.confirmData.isshow=true
+            },
+            cancel1(){
+                this.confirmData.isshow=false
             },
             close(){
                 let $this=this;

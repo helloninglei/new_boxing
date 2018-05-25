@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/" secondTitle_name="课程管理" secondTitle_path="/classmanage"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="约单管理" firstTitle_path="/classall" secondTitle_name="课程管理" secondTitle_path="/classmanage"></TopBar>
         <div class='container'>
             <header>
                 <div class="inline_item">
@@ -9,9 +9,9 @@
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">价格区间</span>
-                    <el-input v-model="sendData.price_min"  class='myInput_40' style='width:9rem' placeholder='请输入'></el-input>
+                    <el-input v-model="sendData.price_min"  class='myInput_40' type='number' style='width:9rem' placeholder='请输入'></el-input>
                     <span>-</span>
-                    <el-input v-model="sendData.price_max"  class='myInput_40 margin_rt25' style='width:9rem' placeholder='请输入'></el-input>
+                    <el-input v-model="sendData.price_max"  class='myInput_40 margin_rt25' type='number' style='width:9rem' placeholder='请输入'></el-input>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">已开课程</span>
@@ -32,7 +32,7 @@
                 </div>
                 <div style='margin-bottom:50px;margin-left:52px'>
                     <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                    <el-button  class='myButton_40 btn_width_95'>重置</el-button>
+                    <el-button  class='myButton_40 btn_width_95' @click="refresh()">重置</el-button>
                 </div>
             </header>
             <nav>
@@ -65,7 +65,7 @@ nav{min-height: 528px}
                     courseName : '',
                     is_accept_order : '',
                 },
-                total     : 1000,
+                total     : 20,
                 tableData : [
                     {
                         "id": 1,
@@ -154,14 +154,13 @@ nav{min-height: 528px}
             this.getTableData();
         },
         methods: {
-            getTableData() {
+            getTableData(data,page) {
                 //获取data数据
                 let $this   = this
-                // for(var i=0;i<this.tableData.length;i++){
-                //     this.tableData[i].professional_boxer=this.tableData[i].is_professional_boxer? "职业":"非职业"
-                //     this.tableData[i].is_accept_order=this.tableData[i].is_accept_order? "是":"否"
-                // }
-                this.ajax('/courses','get',{},{}).then(function(res){
+                if(page&&page>1){
+                    data.page=page
+                }
+                this.ajax('/courses','get',{},{data}).then(function(res){
                     if(res&&res.data){
                         console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
@@ -169,7 +168,7 @@ nav{min-height: 528px}
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
                         }
                         $this.tableData=res.data.results;
-                        $this.total = res.data.count;
+                        // $this.total = res.data.count;
                     }
 
                 },function(err){
@@ -185,6 +184,7 @@ nav{min-height: 528px}
             changePage(val){
                 // 要看第几页
                 console.log(val)
+                this.getTableData(this.sendData,val) 
             },
             toDetail(row){
                 // console.log(row)
@@ -192,7 +192,10 @@ nav{min-height: 528px}
 
             },
             filter(){
-                console.log(this.sendData)
+                this.getTableData(this.sendData) 
+            },
+            refresh(){
+                this.sendData={};
             }
         },
     }
