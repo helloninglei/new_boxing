@@ -17,7 +17,8 @@ import Orderdetail      from 'page/order_detail';
 import Boxerindentdetail from 'page/boxer_indent_detail';
 import Walletlist       from 'page/walletlist';
 import UseDialog        from 'components/useDialog';
-
+import BannerManage     from 'page/bannermanage';
+import BannerContent     from 'page/BannerContent';
 
 export default [
     {
@@ -107,6 +108,14 @@ export default [
             {
                 path: '/useDialog',
                 component: UseDialog,
+            },
+            {
+                path: '/bannermanage',
+                component: BannerManage,
+            },
+            {
+                path: '/bannercontent',
+                component: BannerContent,
             },
         ]
     },

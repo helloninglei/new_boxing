@@ -39,7 +39,7 @@
                     <el-menu-item index="/boxerindentify" :disabled="disabled">
                         <div class='menu-item-inner'>拳手认证审核管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/bannermanage" :disabled="disabled">
                         <div class='menu-item-inner'>Banner管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxingmanage" :disabled="disabled">
@@ -74,7 +74,7 @@
                     </el-menu-item>
                 </el-menu>
             </el-col>
-            <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 220px);float:left">
+            <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 225px);float:left">
                 <router-view></router-view>
             </el-col>
         </el-row>
