@@ -17,3 +17,5 @@ WSGI_APPLICATION = 'boxing_app.wsgi.application'
 REST_FRAMEWORK['DEFAULT_PAGINATION_CLASS'] = 'boxing_app.pagination.BoxingPagination'
 
 PROJECT_PROPERTY = PROJECT_API
+
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{BROKER_REDIS_DB}'

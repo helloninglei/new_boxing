@@ -4,7 +4,7 @@ MESSAGE_TYPE_ONLY_TEXT = 'only_text'
 MESSAGE_TYPE_HAS_IMAGE = 'has_image'
 MESSAGE_TYPE_HAS_VIDEO = 'has_video'
 
-HOT_VIDEO_USER_ID = 100000
+HOT_VIDEO_USER_ID = 1000000
 FRIDAY_USER_ID = 1000001
 BOXING_USER_ID = 1000002
 
@@ -198,9 +198,11 @@ BANNER_LINK_TYPE = (
     (BANNER_LINK_TYPE_IN_APP_NATIVE, 'app内本地跳转'),
 )
 
+APP_JUMP_OBEJCT_NEWS = 'game_news'
+
 # banner 跳转对象model
 BANNER_LINK_MODEL_TYPE = (
     # 'game_votes',  # 赛事投票
     # 'game_apply',  # 赛事报名
-    'game_news',  # 赛事资讯
+    APP_JUMP_OBEJCT_NEWS,  # 赛事资讯
 )
