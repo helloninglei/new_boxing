@@ -1,17 +1,10 @@
 
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import viewsets, mixins, status
-from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
+from rest_framework import viewsets
 
 from biz import constants
 from biz.models import BoxerIdentification, PayOrder, Course, OrderComment
-from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer, \
-    BaseCourseOrderSerializer
-
-
-class CreateCoureOrderViewSet(mixins.CreateModelMixin, GenericViewSet):
-    serializer_class = BaseCourseOrderSerializer
+from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
 class BoxerCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):

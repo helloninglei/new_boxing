@@ -153,6 +153,7 @@ COMMENT_OBJECT_DICT = {
 # 支付
 PAYMENT_OBJECT_DICT = {
     'hot_video': 1,
+    'course': 2
 }
 
 PAYMENT_STATUS_UNPAID = 1

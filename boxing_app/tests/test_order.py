@@ -254,8 +254,8 @@ class OrderTestCase(APITestCase):
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
 
-    def test_create_course_order(self):
-        # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
+    def test_create_unpaid_order(self):
+        # 为拳手用户test_user_1创建1个课程
         self.user_profile_data['user'] = self.test_user_1
         UserProfile.objects.create(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_1
@@ -265,17 +265,18 @@ class OrderTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
 
-        # 为用户test_user_2创建订单,比较数据
-        self.user_profile_data['user'] = self.test_user_2
-        UserProfile.objects.create(**self.user_profile_data)
-        order_data = {'amount': 100000, 'course_id': course.id}
-        res = self.client2.post(reverse('create-course-order', kwargs={'course_id': course.id}), data=order_data)
+        # test_user_2成功创建了未支付订单
+        order_data = {'id': course.id}
+        res = self.client2.post(reverse('create-unpaid-order', kwargs={'object_type': 'course'}), data=order_data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res.data['user'], self.test_user_2.pk)
-        self.assertEqual(res.data['device'], constants.DEVICE_PLATFORM_IOS)
-        self.assertEqual(res.data['content_type'], 'course')
-        self.assertEqual(res.data['object_id'], course.id)
-        self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
-        self.assertEqual(res.data['amount'], order_data['amount'])
-        self.assertIsNotNone(res.data['order_time'])
-        self.assertIsNotNone(res.data['out_trade_no'])
+
+        # 查询课程的订单，核对订单数据
+        self.assertEqual(course.orders.count(), 1)
+        course_order = PayOrder.objects.get(course=course)
+        self.assertEqual(course_order.amount, course.price*100)
+        self.assertEqual(course_order.device, constants.DEVICE_PLATFORM_IOS)
+        self.assertEqual(course_order.status, constants.PAYMENT_STATUS_UNPAID)
+        self.assertEqual(course_order.user, self.test_user_2)
+        self.assertIsNone(course_order.payment_type)
+        self.assertIsNone(course_order.pay_time)
+        self.assertEqual(course_order.content_object, course)

@@ -221,7 +221,7 @@ class PaySerializer(serializers.Serializer):
     id = serializers.IntegerField()
     device = serializers.SerializerMethodField()
     ip = serializers.SerializerMethodField()
-    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE)
+    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE, required=False)
     content_object = serializers.SerializerMethodField()
 
     def get_content_object(self, obj):
@@ -270,12 +270,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class BaseCourseOrderSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    content_type = serializers.CharField(read_only=True)
-    object_id = serializers.IntegerField(read_only=True)
-    course_id = serializers.IntegerField(write_only=True)
-    out_trade_no = serializers.IntegerField(read_only=True)
-    device = serializers.IntegerField(read_only=True)
     course_name = serializers.CharField(source='content_object.course_name', read_only=True)
     course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
     course_validity = serializers.DateField(source='content_object.validity', read_only=True)
@@ -285,20 +279,9 @@ class BaseCourseOrderSerializer(serializers.ModelSerializer):
     club_longitude = serializers.CharField(source='content_object.club.longitude', read_only=True)
     club_latitude = serializers.CharField(source='content_object.club.latitude', read_only=True)
 
-    def validate(self, attrs):
-        if not Course.objects.filter(id=attrs['course_id']).exists():
-            raise ValidationError('课程不存在')
-        attrs['object_id'] = attrs['course_id']
-        attrs.pop('course_id')
-        attrs['content_type'] = ContentType.objects.get(app_label="biz", model="course")
-        attrs['user'] = self.context['request'].user
-        attrs['out_trade_no'] = PayService.generate_out_trade_no()
-        attrs['device'] = get_device_platform(self.context['request'])
-        return attrs
-
     class Meta:
         model = PayOrder
-        fields = '__all__'
+        exclude = ['device']
 
 
 class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):

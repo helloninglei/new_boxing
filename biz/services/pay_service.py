@@ -28,18 +28,18 @@ class PayService:
 
     @classmethod
     def create_order(cls, user, obj, payment_type, device, ip):
-        order = cls.perform_create_order(user, obj, obj.price*100, device, payment_type)
+        order = cls.perform_create_order(user, obj, device, payment_type)
         name = cls.generate_name(obj)
         data = cls.generate_data(order.out_trade_no, obj.price, name)
         return cls.get_payment_info(payment_type, data, ip)
 
     @classmethod
-    def perform_create_order(cls, user, obj, amount, device, payment_type=None):
+    def perform_create_order(cls, user, obj, device, payment_type=None):
         return PayOrder.objects.create(
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=amount,
+            amount=obj.price*100,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
