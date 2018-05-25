@@ -46,6 +46,7 @@
                     <el-table-column
                     label="举报时间"
                     prop="created_time"
+                    width="200"
                     >
                     </el-table-column>
                     <el-table-column
@@ -55,10 +56,11 @@
                     </el-table-column>
                     <el-table-column
                       fixed="right"
+                      width='200'
                       label="操作" >
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click=''>删除</el-button>
-                            <el-button class='myColor_red myButton_20' style='margin-right:20px' @click=''>修改</el-button>                         
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='openConfirm(scope.row.id,false)'>核实为假</el-button>
+                            <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='openConfirm(scope.row.id,true)'>删除内容</el-button>                         
                         </template>
                     </el-table-column>
                 </el-table>
@@ -91,6 +93,7 @@
                     <el-table-column
                     label="举报时间"
                     prop="created_time"
+                    width="200"
                     >
                     </el-table-column>
                     <el-table-column
@@ -110,7 +113,8 @@
                     </el-table-column>
                     <el-table-column
                     label="处理时间"
-                    prop="status"
+                    prop="created_time"
+                    width="200"
                     >
                     </el-table-column>
                 </el-table>
@@ -120,6 +124,7 @@
             <Pagination :total="total" @changePage="changePage"></Pagination>
         </footer>
         <ReportContent :getData="detailData.allData" :isshow="detailData.isshow" @cancel="cancel"></ReportContent>
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id'></Confirm>
     </div>
 </template>
 
@@ -152,8 +157,9 @@
 </style>
 <script >
     import TopBar  from 'components/topBar';
-    import Pagination  from 'components/pagination';
+    import Pagination    from 'components/pagination';
     import ReportContent from 'page/report_content'
+    import Confirm       from "components/confirm"
     export default {
         data() {
             return {
@@ -166,6 +172,12 @@
                 detailData:{
                     allData:{},
                     isshow :false,
+                },
+                confirmData:{
+                    isshow: false,
+                    id    :'',
+                    content:'',
+                    isDel :true,
                 },
                 tableData : [
                     {
@@ -218,7 +230,8 @@
         components: {
             TopBar,
             Pagination,
-            ReportContent
+            ReportContent,
+            Confirm
         },
         watch:{
            'sendData.status'(val){
@@ -231,28 +244,38 @@
         methods: {
             getData(data){
                 let $this=this
-                // this.ajax('/report','get',{},data).then(function(res){
-                //     if(res&&res.data){
-                //         console.log(res.data)
-                //         // $this.tableData = res.data.results
-                //         // $this.total = res.data.count;
-                //     }
+                this.ajax('/report','get',{},data).then(function(res){
+                    if(res&&res.data){
+                        console.log(res.data)
+                        $this.tableData = res.data.results
+                        $this.total = res.data.count;
+                    }
 
-                // },function(err){
-                //     console.log(err.response.status)
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    console.log(err.response.status)
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             openContent(val){
                 this.detailData.allData = val;
                 this.detailData.isshow  = true
                 console.log(val)
+            },
+            openConfirm(id,isDel){
+                this.confirmData.id    = id
+                this.confirmData.isDel = isDel;
+                if(isDel){
+                    this.confirmData.content = '您确定核实这条内容，并做删除内容处理'
+                }else{
+                    this.confirmData.content = '您确定核实这条内容，并做核实为假处理'
+                }
+                this.confirmData.isshow= true
             },
             changePage(val){
                 // 要看第几页
@@ -265,7 +288,66 @@
             },
             cancel(val){
                 this.detailData.isshow  = val ;
-            }
+            },
+            cancel1(val){
+                this.confirmData.isshow=val;
+            },
+            update(id){
+                this.confirmData.isshow=false;
+                console.log(this.tableData)
+                for(var i=0;i<this.tableData.length;i++){
+                    console.log(this.tableData[i].id)
+                    if(this.tableData[i].id==id){
+                        this.tableData.splice(i,1)
+                    }
+                } 
+            },
+            conform1(id){
+                console.log(id,this.confirmData.isDel)
+                let $this=this;
+                if(this.confirmData.isDel){
+                    //删除
+                    this.ajax('/report/'+id+'/do_delete','post').then(function(res){
+                        if(res&&res.status==200){
+                            // alert('删除成功')
+                            $this.update(id);
+                        }else{
+                          console.log(res)  
+                        }
+
+                    },function(err){
+                        console.log(err.response.status)
+                        if(err&&err.response){
+                            let errors=err.response.data
+                            for(var key in errors){
+                                console.log(errors[key])
+                                // return
+                            } 
+                        } 
+                    })
+                }else{
+                    //核实为假
+                    this.ajax('/report/'+id+'/proved_false','post').then(function(res){
+                        if(res&&res.status==200){
+                            // alert('核实为假')
+                            $this.update(id);
+                        }else{
+                          console.log(res)  
+                        }
+
+                    },function(err){
+                        console.log(err.response.status)
+                        if(err&&err.response){
+                            let errors=err.response.data
+                            for(var key in errors){
+                                console.log(errors[key])
+                                // return
+                            } 
+                        } 
+                    })
+                }
+                
+            },
         },
     }
 </script>

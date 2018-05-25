@@ -146,7 +146,7 @@
                 let $this=this;
                 this.ajax('/admins/'+id+'/','delete').then(function(res){
                     if(res&&res.status==204){
-                        for(var i=1;i<$this.tableData.length;i++){
+                        for(var i=0;i<$this.tableData.length;i++){
                             if($this.tableData[i].id==id){
                                 $this.tableData.splice(i,1)
                                 $this.confirmData.isshow=false;

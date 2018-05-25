@@ -66,7 +66,7 @@
         components: {
         },
         created() {
-          console.log(this.getData)
+          // console.log(this.getData)
         },
         methods: {
             close(){
