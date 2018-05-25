@@ -31,6 +31,8 @@ def bind_alipay_account(request):
 class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     serializer_class = UserProfileSerializer
     queryset = UserProfile.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
 
     def get_object(self):
         if "pk" in self.kwargs:
