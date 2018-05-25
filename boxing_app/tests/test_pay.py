@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 from biz import constants
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -41,4 +40,3 @@ class PaymentTestCase(APITestCase):
         self.assertEqual(order.amount, self.data['price'] * 100)
         self.assertEqual(order.payment_type, constants.PAYMENT_TYPE_ALIPAY)
         self.assertEqual(order.device, constants.DEVICE_PLATFORM_IOS)
-

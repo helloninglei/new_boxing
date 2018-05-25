@@ -18,20 +18,23 @@ def create_order(request, object_type):
                                            ip=serializer.data['ip'])
     return Response({'pay_info': pay_info})
 
+
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated,))
 def create_unpaid_order(request, object_type):
     perform_create_order(request, object_type)
     return Response(status=status.HTTP_201_CREATED)
 
+
 def perform_create_order(request, object_type):
     serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
-    order =  PayService.perform_create_order(user=request.user,
-                                             obj=serializer.data['content_object'],
-                                             payment_type=serializer.validated_data.get('payment_type'),
-                                             device=serializer.data['device'])
+    order = PayService.perform_create_order(user=request.user,
+                                            obj=serializer.data['content_object'],
+                                            payment_type=serializer.validated_data.get('payment_type'),
+                                            device=serializer.data['device'])
     return serializer, order
+
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
