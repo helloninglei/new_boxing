@@ -334,9 +334,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     is_following = serializers.SerializerMethodField(read_only=True)
 
     def get_is_following(self, instance):
-        if is_following(self.context['request'].user.id, instance.id):
-            return True
-        return False
+        return bool(is_following(self.context['request'].user.id, instance.id))
 
     def get_money_balance(self, instance):
         return instance.user.money_balance
