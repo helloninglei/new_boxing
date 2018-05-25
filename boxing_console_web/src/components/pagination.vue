@@ -35,7 +35,7 @@
         border:1px solid rgba(0,0,0,0.1)!important;
     }
 </style>
-<script type="text/ecmascript-6">
+<script>
     export default {
         data() {
             return {
@@ -57,15 +57,15 @@
         created() {
             //事件委托
             let $this=this
-            document.addEventListener('click',function(event){  
-                var target = event.target; 
-                if(target.id == "firstPage"){  
+            document.addEventListener('click',function(event){
+                var target = event.target;
+                if(target.id == "firstPage"){
                     $this.currentPage=1;
-                }  
-                if(target.id == "lastPage"){  
+                }
+                if(target.id == "lastPage"){
                     $this.currentPage=($this.total%10>0)?parseInt($this.total/10)+1:parseInt($this.total/10);
-                } 
-            })  
+                }
+            })
         },
         mounted(){
             var  firstBtn     = document.createElement('button');

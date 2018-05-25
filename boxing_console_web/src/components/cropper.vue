@@ -7,11 +7,8 @@
       </div>
       <button type="button" id="button" @click="crop">确定</button>
     </div>  
-    <div>
-      <img id="image" :src="headerImage" alt="Picture">  
-    </div>
     <div style="padding:20px;">  
-        <div class="show">  
+        <div :class='classname'>  
           <div class="picture" :style="'backgroundImage:url('+headerImage+')'">  
           </div>  
         </div>
@@ -24,7 +21,7 @@
     </div>  
   </div> 
 </template>
-<style>
+<style scope>
     *{  
       margin: 0;  
       padding: 0;  
@@ -42,6 +39,14 @@
     #demo .show {  
       width: 100px;  
       height: 100px;  
+      overflow: hidden;  
+      position: relative;  
+      /*border-radius: 50%;  */
+      border: 1px solid #d5d5d5;  
+    }  
+    #demo .shows {  
+      width: 96px;  
+      height: 54px;  
       overflow: hidden;  
       position: relative;  
       /*border-radius: 50%;  */
@@ -359,21 +364,81 @@
         url:''  
       }  
     },  
+    props: {
+        index: {
+            type: Number,
+            default: 0,
+        },
+        classname: {
+            type: String,
+            default: 0,
+        },
+    },
     mounted () {  
       //初始化这个裁剪框  
       var self = this;  
       var image = document.getElementById('image');  
-      this.cropper = new Cropper(image, {  
-        aspectRatio: 1,  
-        viewMode: 1,  
-        background:false,  
-        zoomable:false, 
-        // minContainerWidth:144, 
-        cropBoxResizable:true,//裁剪框能放大缩小
-        ready: function () {  
-          self.croppable = true;  
-        }  
-      });  
+      let minWidth = 140; 
+      let minHeight = 140; 
+      if(this.classname=='show'){
+        this.cropper = new Cropper(image, {  
+          aspectRatio: 1,  
+          // viewMode: 1,  
+          background:false,  
+          zoomable:false, 
+          minCanvasWidth:144,
+          minCanvasHeight:144,
+          // minContainerWidth:144, 
+          cropBoxResizable:true,//裁剪框能放大缩小
+          // ready: function () {  
+          //   self.croppable = true;  
+          // } 
+          // aspectRatio:picScale.width/picScale.height,
+          // autoCrop:false,
+          // zoomable:false,
+          // scalable:false,
+          // rotatable:false,
+          ready:function(){
+            self.croppable = true;
+            $(image).cropper('crop');
+            $(image).cropper('setData',{
+                width:minWidth,
+                height:minHeight
+            });
+          }, 
+          built: function () {  
+              $(image).cropper('getCroppedCanvas')  
+              $(image).cropper('getCroppedCanvas',{
+                width: 160,  
+                height: 90 
+              })  
+          }
+        }); 
+        // $(image).on('cropmove',function(e){
+        //     var data=$(image).cropper('getData');
+        // });
+        // $(image).on('cropend',function(e){
+        //     var data=$(image).cropper('getData');
+        //     if(data.width<picScale.width||data.height<picScale.height){
+        //         $(image).cropper('setData',{ width:picScale.width,
+        //             height:picScale.height});
+        //     }
+        // }); 
+      }
+      // else{
+      //   this.cropper = new Cropper(image, {  
+      //     aspectRatio: 96/54,  
+      //     viewMode: 1,  
+      //     background:false,  
+      //     zoomable:false, 
+      //     // minContainerWidth:144, 
+      //     cropBoxResizable:true,//裁剪框能放大缩小
+      //     ready: function () {  
+      //       self.croppable = true;  
+      //     }  
+      //   });  
+      // }
+      
     },  
     methods: {  
       getObjectURL (file) {  

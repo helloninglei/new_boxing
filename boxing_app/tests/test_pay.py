@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 from biz import constants
 from rest_framework import status
 from rest_framework.test import APITestCase

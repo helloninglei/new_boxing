@@ -17,7 +17,13 @@ import Orderdetail      from 'page/order_detail';
 import Boxerindentdetail from 'page/boxer_indent_detail';
 import Walletlist       from 'page/walletlist';
 import UseDialog        from 'components/useDialog';
-
+import BannerManage     from 'page/bannermanage';
+import BannerContent     from 'page/BannerContent';
+import Cropper         from 'components/cropper';
+import Map1             from 'components/map';
+import Admin            from 'page/admin';
+import Report           from 'page/report';
+import Hotvideo         from 'page/hot_videos';
 
 export default [
     {
@@ -40,6 +46,10 @@ export default [
                 path: '/usermanage',
                 component: UserManage,
             },
+            // {
+            //     path: '/boxingmanage',
+            //     component: BoxingList,
+            // },
             {
                 path: '/boxingmanage',
                 component: BoxingManage,
@@ -107,6 +117,32 @@ export default [
             {
                 path: '/useDialog',
                 component: UseDialog,
+            },
+            {
+                path: '/bannermanage',
+                component: BannerManage,
+            },
+            {
+                path: '/bannercontent',
+                component: BannerContent,
+                path: '/cropper',
+                component: Cropper,
+            },
+            {
+                path: '/map',
+                component: Map1,
+            },
+            {
+                path: '/admin',
+                component: Admin,
+            },
+            {
+                path: '/report',
+                component: Report,
+            },
+            {
+                path: '/hotvideo',
+                component: Hotvideo,
             },
         ]
     },
