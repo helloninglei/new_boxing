@@ -27,7 +27,7 @@ from boxing_app.views import pay
 from boxing_app.views import game_news
 from boxing_app.views.banner import BannerViewSet
 from boxing_app.views.user_profile import bind_alipay_account
-from boxing_app.views.wallet import MoneyChangeLogViewSet
+from boxing_app.views.wallet import MoneyChangeLogViewSet, money_balance
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -146,7 +146,8 @@ banner_urls = [
 ]
 
 wallet_urls = [
-    path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"}))
+    path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"})),
+    path('money_balance', money_balance)
 ]
 
 urlpatterns = []
