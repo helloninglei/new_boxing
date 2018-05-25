@@ -18,7 +18,7 @@ export default function(url='',method='get',data={},params={},headers={}){
         data:data,
         params:params,
         headers: headers,
-        method:method,  
+        method:method,
         withCredentials:false
     })
 }
