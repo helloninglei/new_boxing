@@ -35,7 +35,7 @@ class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 
     def get_object(self):
         if "pk" in self.kwargs:
-            return super().get_object()
+            return UserProfile.objects.filter(user=self.kwargs['pk']).first()
         return UserProfile.objects.get(user=self.request.user)
 
 

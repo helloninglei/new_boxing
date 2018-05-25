@@ -26,6 +26,7 @@ from boxing_app.views.hot_video import HotVideoViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
 from boxing_app.views.banner import BannerViewSet
+from boxing_app.views.wallet import MoneyChangeLogViewSet, money_balance
 from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
 
@@ -149,6 +150,11 @@ banner_urls = [
     path('banners', BannerViewSet.as_view({'get': 'list'}), name='banner-list'),
 ]
 
+wallet_urls = [
+    path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"})),
+    path('money_balance', money_balance)
+]
+
 share_object_string = '|'.join(SHARE_OBJECT_DICT.keys())
 share_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view, name='share'),
@@ -173,6 +179,7 @@ urlpatterns += course_url
 urlpatterns += news_urls
 urlpatterns += order_comment_url
 urlpatterns += banner_urls
+urlpatterns += wallet_urls
 urlpatterns += share_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
