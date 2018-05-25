@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+from json import loads, dumps
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -7,9 +7,10 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.core.validators import MinValueValidator
 
 from biz import validator, constants
-from biz.constants import HOT_VIDEO_USER_ID, FRIDAY_USER_ID, BOXING_USER_ID, USER_IDENTITY_DICT
+from biz.constants import USER_IDENTITY_DICT
 
-OFFICIAL_USER_IDS = USER_IDENTITY_DICT.keys()
+OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
+USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
 
 
 class UserManager(BaseUserManager):
@@ -68,7 +69,7 @@ class User(AbstractUser):
         user_id = self.id
         if user_id not in OFFICIAL_USER_IDS:
             return 'user'
-        return USER_IDENTITY_DICT[user_id]
+        return USER_IDENTITY_DICT_REVERSED[user_id]
 
     class Meta(AbstractUser.Meta):
         db_table = 'user'
@@ -136,14 +137,26 @@ class MoneyChangeLog(PropertyChangeLog):
 
 
 class StringListField(models.TextField):
+    def value_to_string(self, value):
+        return self.value_from_object(value)
+
+    def to_python(self, value):
+        if not value:
+            value = []
+
+        if isinstance(value, list):
+            return value
+
+        return loads(value)
+
     def get_prep_value(self, value):
         if value:
-            return json.dumps(value)
+            return dumps(value)
 
     def from_db_value(self, value, *args):
         if not value:
             return []
-        return json.loads(value)
+        return loads(value)
 
 
 class SoftDeleteManager(models.Manager):

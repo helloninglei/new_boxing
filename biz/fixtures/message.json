@@ -1,0 +1,67 @@
+[
+    {
+        "model": "biz.message",
+        "pk": 2,
+        "fields": {
+            "user": 1000000,
+            "content": "\u4e0a\u6d77\u7231\u7434\u6d77",
+            "images": [],
+            "video": "/uploads/a1/ff/7fb7421ef9b445bae16be8f7a96820723e7d.mp4",
+            "is_deleted": false,
+            "created_time": "2018-05-23T06:57:52.597Z",
+            "updated_time": "2018-05-23T06:57:52.597Z"
+        }
+    },
+    {
+        "model": "biz.message",
+        "pk": 3,
+        "fields": {
+            "user": 1000000,
+            "content": "\u79cb\u5929\u7684\u67ab\u53f6",
+            "images": ["/uploads/7e/06/6a231227c02ea32ef311eac826276d2d0e2e.jpg"],
+            "video": null,
+            "is_deleted": false,
+            "created_time": "2018-05-23T06:59:28.411Z",
+            "updated_time": "2018-05-23T06:59:28.411Z"
+        }
+    },
+    {
+        "model": "biz.message",
+        "pk": 4,
+        "fields": {
+            "user": 1000000,
+            "content": "\u98ce\u666f",
+            "images": ["/uploads/b2/ca/4dafe1ac7cde2c9ec07f309ef9493225aeca.jpg", "/uploads/31/9e/838678d0449140e5262832eb6361b0b5edaf.jpg"],
+            "video": null,
+            "is_deleted": false,
+            "created_time": "2018-05-23T07:01:42.391Z",
+            "updated_time": "2018-05-23T07:01:42.391Z"
+        }
+    },
+    {
+        "model": "biz.message",
+        "pk": 5,
+        "fields": {
+            "user": 1000000,
+            "content": "\u5b89\u5fbd\u63a8\u884c\u73ed\u4e3b\u4efb\u8bd5\u559d\u725b\u5976\u5236\u5ea6 \u73ed\u4e3b\u4efb\u610f\u89c1\u5927\u88ab\u53eb\u505c",
+            "images": [],
+            "video": null,
+            "is_deleted": false,
+            "created_time": "2018-05-23T07:02:51.850Z",
+            "updated_time": "2018-05-23T07:02:51.850Z"
+        }
+    },
+    {
+        "model": "biz.message",
+        "pk": 6,
+        "fields": {
+            "user": 1000000,
+            "content": "\u6cb3\u8fb9\u98ce\u666f",
+            "images": [],
+            "video": "/uploads/7a/0c/5e7615519c323324e8667495e77e7adb2cf3.mp4",
+            "is_deleted": false,
+            "created_time": "2018-05-23T07:05:02.494Z",
+            "updated_time": "2018-05-23T07:05:02.494Z"
+        }
+    }
+]

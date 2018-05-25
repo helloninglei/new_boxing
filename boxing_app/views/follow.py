@@ -2,6 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 from biz.models import User
 from biz.redis_client import following_list, follower_list, follow_user, unfollow_user, follower_count, following_count
@@ -11,14 +12,18 @@ PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
 
 
 class BaseFollowView(APIView):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
     def get(self, request, *args, **kwargs):
         page = int(request.query_params.get('page', 1))
         if self.__class__.list_type == 'follower':
             count_func, list_func = follower_count, follower_list
         else:
             count_func, list_func = following_count, following_list
-        user_id_list = list_func(request.user.id, page)
-        has_more = count_func(request.user.id) > page * PAGE_SIZE
+
+        user_id = self.kwargs.get('user_id') or request.user.id
+        user_id_list = list_func(user_id, page)
+        has_more = count_func(user_id) > page * PAGE_SIZE
         return self._make_response(user_id_list, page, has_more)
 
     def post(self, request, *args, **kwargs):
