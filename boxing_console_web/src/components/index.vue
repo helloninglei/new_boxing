@@ -21,7 +21,7 @@
                     <el-menu-item index="/" :disabled="disabled">
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/hotvideo" :disabled="disabled">
                         <div class='menu-item-inner'>热门视频</div>
                     </el-menu-item>
                     <el-menu-item index="/classall" :disabled="disabled">

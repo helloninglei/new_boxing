@@ -21,6 +21,7 @@ import Cropper         from 'components/cropper';
 import Map1             from 'components/map';
 import Admin            from 'page/admin';
 import Report           from 'page/report';
+import Hotvideo         from 'page/hot_videos';
 
 
 export default [
@@ -131,6 +132,10 @@ export default [
             {
                 path: '/report',
                 component: Report,
+            },
+            {
+                path: '/hotvideo',
+                component: Hotvideo,
             },
         ]
     },
