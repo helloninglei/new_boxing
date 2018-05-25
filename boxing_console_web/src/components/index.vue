@@ -63,10 +63,10 @@
                     <el-menu-item index="/" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>查看报名</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/report" :disabled="disabled">
                         <div class='menu-item-inner'>举报处理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/admin" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
                     </el-menu-item>
                     <el-menu-item index="/useDialog" :disabled="disabled">

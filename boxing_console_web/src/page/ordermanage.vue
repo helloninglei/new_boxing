@@ -103,7 +103,7 @@ nav{min-height: 528px}
                     status  : '',
                     is_accept_order : '',
                 },
-                total     : 1000,
+                total     : 20,
                 tableData : [
                     {
                         "id": 1,
@@ -164,9 +164,10 @@ nav{min-height: 528px}
             this.getTableData();
         },
         methods: {
-            getTableData(data,page) {
+            getTableData(senddata,page) {
                 //获取data数据
-                let $this = this
+                let $this = this ;
+                let data  =senddata?senddata:{};
                 let url   = '/course/orders';
                 if(page&&page>1){
                     data.page=page
@@ -202,7 +203,7 @@ nav{min-height: 528px}
                         }
 
                         $this.tableData=res.data.results;
-                        $this.total = res.data.count;
+                        // $this.total = res.data.count;
                     }
 
                 },function(err){
@@ -217,7 +218,7 @@ nav{min-height: 528px}
             },
             changePage(val){
                 // 要看第几页
-                // console.log(val)
+                console.log(val)
                 this.getTableData(this.sendData,val);
             },
             toDetail(row){

@@ -10,18 +10,12 @@
                         </el-form-item>
                         <el-form-item label="宣传图" prop="club_name">
                             <el-row>
-                                <el-col :span="8">
-                                    <el-button type="danger" class='myColor_red myButton_40 btn_width_95'>上传</el-button>
-                                </el-col>
-                                <el-col :span="10">
-                                    <div class='image'>
-                                        <img src="" alt="">
-                                    </div>
-                                </el-col>
+                                <Cropper :index='0' classname="show"></Cropper>
                             </el-row>
                         </el-form-item>
                         <el-form-item label="地址" prop="address">
-                            <el-input v-model="ruleForm.address"></el-input>
+                            <span style='position:absolute;z-index:1000;'><el-button class="button" icon="el-icon-location" circle></el-button></span>
+                            <el-input  v-model="ruleForm.address" class="myAddress"></el-input>
                         </el-form-item>
                         <el-form-item label="电话" prop="phone">
                             <el-input v-model="ruleForm.phone"></el-input>
@@ -33,11 +27,25 @@
                             <el-input type="textarea" v-model="ruleForm.introduction" :rows="6"></el-input>
                         </el-form-item>
                         <el-form-item label="展示图" prop="club_name">
-                            <el-input v-model="ruleForm.club_name"></el-input>
+                            <el-row>
+                                <el-col :span="6">
+                                    <CropperImg :index='1' classname="shows"></CropperImg>
+                                </el-col>
+                                <el-col :span="6">
+                                    <CropperImg :index='2' classname="shows"></CropperImg>
+                                </el-col>
+                                <el-col :span="6">
+                                    <CropperImg :index='3' classname="shows"></CropperImg>
+                                </el-col>
+                                <el-col :span="6">
+                                    <CropperImg :index='4' classname="shows"></CropperImg>
+                                </el-col>
+                            </el-row>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-                            <el-button @click="resetForm('ruleForm')">重置</el-button>
+                            <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
+                             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">提交</el-button>
+                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="resetForm('ruleForm')">重置</el-button>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -53,6 +61,8 @@
     color: #000000;
 }
 #addBoxing .el-form-item{margin-bottom:30px;}
+#addBoxing .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
+#addBoxing .myAddress input{padding-left:50px;}
 </style>
 <style scope>
     .image{height:140px;width:140px;border:1px solid #ccc;vertical-align: middle}
@@ -60,6 +70,8 @@
 </style>
 <script>
     import TopBar from 'components/topBar';
+    import Cropper from 'components/cropper';
+    import CropperImg from 'components/cropper_img';
     export default {
         data() {
             return {
@@ -95,7 +107,9 @@
             }
         },
         components: {
-            TopBar
+            TopBar,
+            Cropper,
+            CropperImg
         },
         created() {
             

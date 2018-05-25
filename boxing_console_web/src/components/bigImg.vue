@@ -11,15 +11,15 @@
     </transition>
 </template>
 <script>
-export default {
-    props: ['imgSrc'],
-    methods: {
-        bigImg() {
-            // 发送事件
-            this.$emit('clickit')
+    export default {
+        props: ['imgSrc'],
+        methods: {
+            bigImg() {
+                // 发送事件
+                this.$emit('clickit')
+            }
         }
     }
-}
 </script>
 <style scoped>
 /*动画*/
