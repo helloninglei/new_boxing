@@ -33,7 +33,8 @@ class BoxingClubTestCase(TestCase):
             else:
                 self.assertEqual(res.data[key], self.data.get(key))
         # 判断redis中已记录位置信息
-        redis_location_record = redis_client.get_boxing_club_location(res.data['id'])
+        club = BoxingClub.objects.get(id=res.data['id'])
+        redis_location_record = redis_client.get_object_location(club)
         self.assertAlmostEqual(self.data['longitude'], redis_location_record[0][0], delta=0.00001)
         self.assertAlmostEqual(self.data['latitude'], redis_location_record[0][1], delta=0.00001)
 
@@ -64,7 +65,8 @@ class BoxingClubTestCase(TestCase):
                 self.assertEqual(update_res.data[key], str(self.data.get(key)))
             else:
                 self.assertEqual(update_res.data[key], self.data.get(key))
-        redis_location_record = redis_client.get_boxing_club_location(update_res.data['id'])
+        club = BoxingClub.objects.get(id=update_res.data['id'])
+        redis_location_record = redis_client.get_object_location(club)
         # 判断redis中位置记录已更新
         self.assertAlmostEqual(self.data['longitude'], redis_location_record[0][0], delta=0.00001)
         self.assertAlmostEqual(self.data['latitude'], redis_location_record[0][1], delta=0.00001)
@@ -76,7 +78,9 @@ class BoxingClubTestCase(TestCase):
         # 判断拳馆已删除
         self.assertFalse(BoxingClub.objects.filter(id=create_res.data['id']).exists())
         # 判断redis记录已删除
-        redis_location_record = redis_client.get_boxing_club_location(create_res.data['id'])
+        self.data['id'] = create_res.data['id']
+        club = BoxingClub.objects.create(**self.data)
+        redis_location_record = redis_client.get_object_location(club)
         self.assertIsNone(redis_location_record[0])
 
     def test_club_list(self):

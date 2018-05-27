@@ -59,17 +59,25 @@ def following_count(current_user_id):
     return redis_client.zcard(f'following_{current_user_id}')
 
 
-def record_boxing_club_location(club):
-    return redis_client.geoadd('boxing-club-set', club.longitude, club.latitude, club.id)
+def record_object_location(obj, longitude, latitude):
+    return redis_client.geoadd(f'{obj._meta.model_name}-location-set', longitude, latitude, obj.id)
 
 
-def get_boxing_club_location(club_id):
-    return redis_client.geopos('boxing-club-set', club_id)
+def get_object_location(obj):
+    return redis_client.geopos(f'{obj._meta.model_name}-location-set', obj.id)
 
 
-def del_boxing_club_location(club_id):
-    return redis_client.zrem('boxing-club-set', club_id)
+def del_object_location(obj):
+    return redis_client.zrem(f'{obj._meta.model_name}-location-set', obj.id)
 
+
+def get_near_object(obj_or_cls, longitude, latitude, radius=10000, unit='km'):
+    return redis_client.georadius(name=f'{obj_or_cls._meta.model_name}-location-set',
+                                  longitude=longitude,
+                                  latitude=latitude,
+                                  radius=radius,
+                                  unit=unit,
+                                  sort='ASC')
 
 # 加入黑名单
 def block_user(current_user_id, black_user_id):

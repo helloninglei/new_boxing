@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
+
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.core.validators import URLValidator
@@ -151,7 +153,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def save(self, **kwargs):
         instance = super().save(**kwargs)
-        redis_client.record_boxing_club_location(instance)
+        redis_client.record_object_location(instance, instance.longitude, instance.latitude)
         return instance
 
     class Meta:
