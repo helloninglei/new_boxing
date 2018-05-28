@@ -418,7 +418,7 @@ class WithdrawLog(BaseAuditModel):
     status = models.CharField(choices=constants.WITHDRAW_STATUS_CHOICE, default=constants.WITHDRAW_STATUS_WAITING,
                               max_length=10)
     withdraw_account = models.CharField(max_length=20)
-    order_number = models.CharField(max_length=50, unique=True, null=True)
+    order_number = models.CharField(max_length=50, unique=True)
 
     class Meta:
         db_table = 'withdraw_log'

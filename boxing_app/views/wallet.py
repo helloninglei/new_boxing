@@ -3,10 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from biz.models import MoneyChangeLog
-from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, WithdrawSerializer
-from boxing_app.filters import MoneyChangeLogFilter
 from biz.models import WithdrawLog
-from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, RechargeSerializer
+from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, RechargeSerializer, WithdrawSerializer
 from boxing_app.filters import MoneyChangeLogFilter
 from biz.services.pay_service import PayService
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT
