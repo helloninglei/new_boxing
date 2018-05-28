@@ -41,7 +41,8 @@ boxer_url = [
 
 hot_video_url = [
     path('hot_videos', HotVideoViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('hot_videos/<int:pk>',
+         HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'})),
 ]
 
 course_url = [

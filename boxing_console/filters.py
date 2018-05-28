@@ -43,7 +43,7 @@ class CourseFilter(django_filters.FilterSet):
         fields = ['price_min', 'price_max', 'course_name', 'is_accept_order']
 
 
-class HotVideoFilter(CommonFilter):
+class CreateTimeFilter(CommonFilter):
     class Meta:
         model = models.HotVideo
         fields = ['created_time']

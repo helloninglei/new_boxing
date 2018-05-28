@@ -31,3 +31,7 @@ def get_share_img_url(url, is_video=False):
             return f'{oss_base_url}{url}?x-oss-process=video/snapshot,t_10000,f_jpg,w_120,h_120,m_fast'
         return f'{oss_base_url}{url}?x-oss-process=image/resize,w_120,h_120'
 
+
+def get_video_cover_url(url):
+    if url:
+        return f'{url}?x-oss-process=video/snapshot,t_10000,f_jpg,w_800,m_fast'
