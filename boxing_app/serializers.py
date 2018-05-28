@@ -49,12 +49,10 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     allowed_course = serializers.ListField(read_only=True)
 
     def get_longitude(self, instance):
-        boxer_loacation =  self.get_boxer_loacation(instance)
-        return boxer_loacation[0]
+        return instance.course.first().club.longitude
 
     def get_latitude(self, instance):
-        boxer_loacation =  self.get_boxer_loacation(instance)
-        return boxer_loacation[1]
+        return instance.course.first().club.latitude
 
     @staticmethod
     def get_boxer_loacation(obj):
@@ -63,10 +61,10 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BoxerIdentification
-        fields = ['id', 'longitude', 'course', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
+        fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
                   'allowed_course']
-        read_only_fields = ['boxer_id', 'course', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
-                  'allowed_course']
+        read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
+                            'real_name','allowed_course']
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
