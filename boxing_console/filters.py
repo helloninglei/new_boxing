@@ -43,10 +43,19 @@ class CourseFilter(django_filters.FilterSet):
         fields = ['price_min', 'price_max', 'course_name', 'is_accept_order']
 
 
-class CreateTimeFilter(CommonFilter):
+class HotVideoFilter(CommonFilter):
     class Meta:
         model = models.HotVideo
-        fields = ['created_time']
+        fields = ('created_time',)
+
+
+class GameNewsFilter(django_filters.FilterSet):
+    start_date = django_filters.DateFilter(name='created_time', lookup_expr='gte')
+    end_date = django_filters.DateFilter(name='created_time', lookup_expr='lte')
+
+    class Meta:
+        model = models.GameNews
+        fields = ('created_time',)
 
 
 class CourseOrderFilter(CommonFilter):
@@ -68,7 +77,8 @@ class UserFilter(django_filters.FilterSet):
         if value == "true":
             return qs.filter(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
         if value == "false":
-            return qs.filter(~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
+            return qs.filter(
+                ~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
         return qs
 
     class Meta:

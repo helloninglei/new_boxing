@@ -5,15 +5,15 @@ from django.db.models import Count
 from biz import models
 from boxing_console import serializers
 from biz.services.push_service import broadcast_news
-from boxing_console.filters import CreateTimeFilter
+from boxing_console.filters import GameNewsFilter
 
 
 class NewsViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NewsSerializer
     queryset = models.GameNews.objects.annotate(comment_count=Count('comments')).prefetch_related('operator')
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
-    filter_class = CreateTimeFilter
-    search_fields = ('user__id', 'name')
+    filter_class = GameNewsFilter
+    search_fields = ('title', 'sub_title', 'app_content', 'share_content')
 
     def perform_create(self, serializer):
         news = serializer.save()

@@ -5,13 +5,13 @@ from django.db.models import Count, Sum, Q
 from biz import models
 from biz.constants import PAYMENT_STATUS_WAIT_USE
 from boxing_console.serializers import HotVideoSerializer, HotVideoShowSerializer
-from boxing_console.filters import CreateTimeFilter
+from boxing_console.filters import HotVideoFilter
 
 
 class HotVideoViewSet(viewsets.ModelViewSet):
     serializer_class = HotVideoSerializer
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
-    filter_class = CreateTimeFilter
+    filter_class = HotVideoFilter
     search_fields = ('user__id', 'name')
 
     def get_queryset(self):
