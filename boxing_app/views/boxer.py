@@ -30,7 +30,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = NearbyBoxerIdentificationSerializer
     queryset = BoxerIdentification.objects.all()
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend,)
     filter_class = NearbyBoxerFilter
 
     def get_queryset(self):
