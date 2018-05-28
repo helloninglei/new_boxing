@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.contenttypes.models import ContentType
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from django.forms.models import model_to_dict
@@ -10,15 +11,17 @@ from biz.models import PayOrder, BoxingClub, OrderComment, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
-from biz.redis_client import is_following
+from biz.redis_client import is_following, follower_count, following_count
 from biz import models, constants
 from biz.services.pay_service import PayService
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
-from biz import redis_client, redis_const
+from biz import redis_const
+from biz.redis_client import redis_client
 from biz.redis_const import SEND_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name
+from biz.constants import WITHDRAW_MIN_CONFINE
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -153,7 +156,7 @@ class SendVerifyCodeSerializer(serializers.Serializer):
             if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
+            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "需要图形验证码！"})
         return attrs
 
@@ -178,7 +181,7 @@ class RegisterWithInfoSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
 
     def validate(self, attrs):
-        if not redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
+        if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
             raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
         return attrs
 
@@ -342,10 +345,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance.user.money_balance
 
     def get_followers_count(self, instance):
-        return redis_client.follower_count(instance.id)
+        return follower_count(instance.id)
 
     def get_following_count(self, instance):
-        return redis_client.following_count(instance.id)
+        return following_count(instance.id)
 
     def get_mobile(self, instance):
         return instance.user.mobile
@@ -452,3 +455,31 @@ class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MoneyChangeLog
         fields = ['change_amount', "change_type", "created_time"]
+
+
+class WithdrawSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if not user.user_profile.alipay_account:
+            raise ValidationError("该用户未绑定支付宝账号，请先绑定支付宝账号！")
+        if attrs['amount'] < WITHDRAW_MIN_CONFINE:
+            raise ValidationError(f"提现金额必须大于{WITHDRAW_MIN_CONFINE/100}元")
+        if attrs['amount'] > user.money_balance:
+            raise ValidationError("提现金额不能大于账户余额！")
+        attrs['user'] = user
+        attrs['withdraw_account'] = user.user_profile.alipay_account
+        attrs['order_number'] = datetime.now().strftime(
+            f"%Y%m%d{str(redis_client.incr(redis_const.WITHDRAW_ORDER_NUMBER_INCR)).zfill(5)}")
+        return attrs
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        validated_data['user'].money_balance -= validated_data['amount']
+        validated_data['user'].save()
+        return instance
+
+    class Meta:
+        model = models.WithdrawLog
+        fields = ['amount', "order_number", "created_time"]
+        read_only_fields = ['status', "order_number", "created_time"]
