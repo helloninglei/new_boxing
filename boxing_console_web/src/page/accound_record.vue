@@ -1,38 +1,8 @@
 <template>
     <div class="usermanage">
-        <TopBar v-if="isShowTop" firstTitle_name="热门视频" firstTitle_path="/usermanage" disNone="disNone"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="公司账户金额记录"  disNone="disNone"></TopBar>
         <div class='container'>
-            <header>
-                 <el-row>
-                    <el-col :span="5" style='width:314px'>
-                        <el-input v-model="sendData.keywards"  class='myInput_40 margin_rt25' placeholder='用户ID/视频名称' style='width:284px'></el-input>
-                    </el-col> 
-                    <el-col :span="7" style='width:460px'>
-                        <el-date-picker
-                        v-model="sendData.start_time"
-                        type="datetime"
-                        value-format="yyyy-MM-dd hh:mm:ss"
-                        :default-value= "new Date()"
-                        placeholder="发布开始时间" style='width:200px' class="margin_rt25">
-                        </el-date-picker>
-                        <el-date-picker
-                        v-model="sendData.end_time"
-                        type="datetime"
-                        value-format="yyyy-MM-dd hh:mm:ss"
-                        :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
-                        placeholder="发布结束时间" style='width:200px' class="margin_rt25">
-                        </el-date-picker>
-                    </el-col>      
-                    <el-col :span='6'>
-                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red'>重置</el-button>
-                    </el-col>   
-                    <el-col :span='24'>
-                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25'  @click="toDetail()" style='margin-top:30px'>新增视频</el-button>
-                    </el-col>   
-                </el-row>
-            </header>
-            <p class="showTotal">付费人数:{{userTotal}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付费金额(元)：{{moneyTotal}}</p>
+            <p class="showTotal">公司账户金额汇总:{{moneyTotal}}</p>
             <nav class='myTable'>
                 <template>
                     <el-table
@@ -40,19 +10,26 @@
                       style="width: 100%"
                       :highlight-current-row="true">
                         <el-table-column
-                        :prop="value.title"
-                        :label="value.name"
-                        :width="value.width"
-                        v-for="value in tableColumn">
+                        prop="id"
+                        label="ID"
+                        >
                         </el-table-column>
                         <el-table-column
-                          fixed="right"
-                          label="操作">
+                        label="收入/支出"
+                        >
                             <template slot-scope="scope">
-                                    <el-button  class='myBtnHover_red myButton_20' @click="toDetail(scope.row)">修改</el-button>
-                                    <el-button class='myBtnHover_red myButton_20 ' @click="openConfirm(scope.row.id)">删除</el-button>                          
-                                    <el-button class='myBtnHover_red myButton_20 ' @click="changeShow(scope.row.id)">{{scope.row.is_show?'隐藏':'显示'}}</el-button>                          
+                                <span>{{scope.row.derection=='in'?'+':'-'}} {{scope.row.account}}</span>                 
                             </template>
+                        </el-table-column>
+                        <el-table-column
+                        prop="time"
+                        label="时间"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                        prop="description"
+                        label="备注"
+                        >
                         </el-table-column>
                     </el-table>
                 </template>
@@ -61,7 +38,6 @@
                 <Pagination :total="total" @changePage="changePage"></Pagination>
             </footer>
         </div>
-        <Confirm :isshow="confirmData.isshow" @confirm="deleteClick" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id'></Confirm>
     </div>
 </template>
 <style scoped>
@@ -76,75 +52,41 @@
     import TopBar from 'components/topBar';
     import Table  from 'components/table';
     import Pagination  from 'components/pagination';
-    import Confirm     from "components/confirm"
     export default {
         data() {
             return {
                 isShowTop : true,
-                sendData  : {
-                    start_time : '',
-                    end_time   : '',
-                    keywards  : '',
-                },
-                confirmData:{
-                    isshow: false,
-                    id    :'',
-                    content:'确定删除这条记录？',
-                    isDel :true,
-                },
-                userTotal : 1000000,//付费人数
                 moneyTotal : 1000000,//付费金额
                 total     : 1000,//数据的总条数
                 tableData : [
                     {
                         "id": 1,
-                        "user_id": 1,
-                        "name": "test",
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
                         "description": "test",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "1111",
-                        "try_url": "11111222",
-                        "price": 111,
-                        "is_show": true,
-                        "created_time": "2018-05-10 18:51:03"
+                        "derection":'in'
                     },
                     {
                         "id": 2,
-                        "user_id": 1,
-                        "name": "2",
-                        "description": "9992",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "http://127.0.0.1:8000/hot_videos",
-                        "try_url": "http://127.0.0.1:8000/hot_videos1",
-                        "price": 22222,
-                        "is_show": true,
-                        "created_time": "2018-05-10 18:34:43"
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'in'
                     },
                     {
                         "id": 3,
-                        "user_id": 1,
-                        "name": "2",
-                        "description": "999",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "http://127.0.0.1:8000/hot_videos",
-                        "try_url": "http://127.0.0.1:8000/hot_videos1",
-                        "price": 22222,
-                        "is_show": false,
-                        "created_time": "2018-05-10 18:23:49"
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'in'
+                    },
+                    {
+                        "id": 4,
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'out'
                     }
-                ],
-                tableColumn:[
-                    {title:'id',    name :'ID',   width: '80'},
-                    {title:'name',  name :'视频名称',width: ''},
-                    {title:'user_id',name :'用户ID' ,width: '80'},
-                    {title:'price',name :'价格（元）',width: '100'},
-                    {title:'sales_count', name :'付费人数'   ,width: ''},
-                    {title:'price_amount',name :'付费金额（元）',width: '90'},
-                    {title:'created_time',name :'发布时间' ,width: '200'},
-                    {title:'is_show_name',name :'显示状态' ,width: '90'},
                 ],
             }
         },
@@ -152,7 +94,6 @@
             TopBar,
             Table,
             Pagination,
-            Confirm
         },
         created() {
             this.getTableData();

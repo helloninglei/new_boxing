@@ -18,7 +18,7 @@
                     <el-menu-item index="/" :disabled="disabled">
                         <div class='menu-item-inner'>公司拳豆记录</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/accound_record" :disabled="disabled">
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
                     <el-menu-item index="/hotvideo" :disabled="disabled">
