@@ -9,9 +9,9 @@ FRIDAY_USER_ID = 1000001
 BOXING_USER_ID = 1000002
 
 USER_IDENTITY_DICT = {
-    HOT_VIDEO_USER_ID: 'hot_video',
-    FRIDAY_USER_ID: 'friday',
-    BOXING_USER_ID: 'boxing'
+    'hot_video': HOT_VIDEO_USER_ID,
+    'friday': FRIDAY_USER_ID,
+    'boxing': BOXING_USER_ID,
 }
 
 BOXER_AUTHENTICATION_STATE_WAITING = "WAITING"
@@ -150,9 +150,13 @@ COMMENT_OBJECT_DICT = {
     'game_news': 3,
 }
 
+# 分享
+SHARE_OBJECT_DICT = COMMENT_OBJECT_DICT
+
 # 支付
 PAYMENT_OBJECT_DICT = {
     'hot_video': 1,
+    'course': 2
 }
 
 PAYMENT_STATUS_UNPAID = 1

@@ -12,6 +12,7 @@ from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Cours
 from biz import models, constants, redis_client
 from biz.utils import get_model_class_by_name
 from biz.validator import validate_mobile
+from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
 
 url_validator = URLValidator()
@@ -37,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
             user=instance, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).exists()
 
     def get_share_count(self, instance):
-        return 0  # todo 分享数
+        return get_number_of_share(instance.id)
 
     def get_follower_count(self, instance):
         return redis_client.follower_count(instance.id)

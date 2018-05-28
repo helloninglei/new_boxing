@@ -21,7 +21,7 @@
                     <el-menu-item index="/" :disabled="disabled">
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/hotvideo" :disabled="disabled">
                         <div class='menu-item-inner'>热门视频</div>
                     </el-menu-item>
                     <el-menu-item index="/classall" :disabled="disabled">
@@ -39,7 +39,7 @@
                     <el-menu-item index="/boxerindentify" :disabled="disabled">
                         <div class='menu-item-inner'>拳手认证审核管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/bannermanage" :disabled="disabled">
                         <div class='menu-item-inner'>Banner管理</div>
                     </el-menu-item>
                     <el-menu-item index="/boxingmanage" :disabled="disabled">
@@ -51,10 +51,10 @@
                     <el-menu-item index="/addBoxing" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>添加拳馆</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/infoList" :disabled="disabled">
                         <div class='menu-item-inner'>赛事管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/infoList" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>资讯</div>
                     </el-menu-item>
                     <el-menu-item index="/" :disabled="disabled">
@@ -63,10 +63,10 @@
                     <el-menu-item index="/" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>查看报名</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/report" :disabled="disabled">
                         <div class='menu-item-inner'>举报处理</div>
                     </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/admin" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
                     </el-menu-item>
                     <el-menu-item index="/useDialog" :disabled="disabled">
@@ -74,7 +74,7 @@
                     </el-menu-item>
                 </el-menu>
             </el-col>
-            <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 220px);float:left">
+            <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 225px);float:left">
                 <router-view></router-view>
             </el-col>
         </el-row>

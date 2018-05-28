@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Min
 from rest_framework import serializers
@@ -12,12 +13,13 @@ from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_following
 from biz import models, constants
+from biz.services.pay_service import PayService
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
 from biz.redis_const import SEND_VERIFY_CODE
 from boxing_app.services import verify_code_service
-from biz.utils import get_client_ip, get_device_platform
+from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -160,35 +162,19 @@ class ReportSerializer(serializers.ModelSerializer):
 
 class FollowUserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    avatar = serializers.SerializerMethodField()
-    nick_name = serializers.SerializerMethodField()
-    address = serializers.SerializerMethodField()
-    bio = serializers.SerializerMethodField()
+    avatar = serializers.CharField(source='user_profile.avatar')
+    nick_name = serializers.CharField(source='user_profile.nick_name')
+    address = serializers.CharField(source='user_profile.address')
+    bio = serializers.CharField(source='user_profile.bio')
+    gender = serializers.BooleanField(source='user_profile.gender')
     is_following = serializers.SerializerMethodField()
-
-    def _get_profile(self, user):
-        if hasattr(user, 'user_profile'):
-            return user.user_profile
-        return {}
-
-    def get_avatar(self, user):
-        return self._get_profile(user).get('avatar')
-
-    def get_nick_name(self, user):
-        return self._get_profile(user).get('nick_name')
-
-    def get_address(self, user):
-        return self._get_profile(user).get('address')
-
-    def get_bio(self, user):
-        return self._get_profile(user).get('bio')
 
     def get_is_following(self, user):
         current_user_id = self.context['current_user_id']
         return bool(is_following(current_user_id, user.id))
 
     class Meta:
-        fields = ['id', 'avatar', 'nick_name', 'address', 'bio', 'is_follow']
+        fields = ['id', 'gender', 'avatar', 'nick_name', 'address', 'bio', 'is_follow', 'identity']
         read_only_fields = '__all__'
 
 
@@ -254,12 +240,12 @@ class PaySerializer(serializers.Serializer):
     id = serializers.IntegerField()
     device = serializers.SerializerMethodField()
     ip = serializers.SerializerMethodField()
-    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE)
+    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE, required=False)
     content_object = serializers.SerializerMethodField()
 
     def get_content_object(self, obj):
-        object_type = self.context['object_type'].title().replace('_', '')
-        return getattr(models, object_type).objects.get(pk=obj['id'])
+        object_class = get_model_class_by_name(self.context['object_type'])
+        return object_class.objects.get(pk=obj['id'])
 
     def get_ip(self, obj):
         return get_client_ip(self.context['request'])
@@ -381,15 +367,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
     money_balance = serializers.SerializerMethodField()
     user_id = serializers.CharField(source="user.id", read_only=True)
     boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
+    identity = serializers.CharField(source="user.identity", read_only=True)
+    is_following = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_following(self, instance):
+        return bool(is_following(self.context['request'].user.id, instance.user.id))
 
     def get_money_balance(self, instance):
         return instance.user.money_balance
 
     def get_followers_count(self, instance):
-        return redis_client.follower_count(instance.id)
+        return redis_client.follower_count(instance.user.id)
 
     def get_following_count(self, instance):
-        return redis_client.following_count(instance.id)
+        return redis_client.following_count(instance.user.id)
 
     def get_mobile(self, instance):
         return instance.user.mobile
@@ -487,3 +478,12 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrderComment
         fields = '__all__'
+
+
+class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
+    change_type = serializers.CharField(source='get_change_type_display')
+    created_time = serializers.DateTimeField()
+
+    class Meta:
+        model = models.MoneyChangeLog
+        fields = ['change_amount', "change_type", "created_time"]

@@ -97,3 +97,12 @@ def blocked_user_list(current_user_id):
 # 是否在黑名单中
 def is_blocked(current_user_id, user_id):
     return redis_client.sismember(f"user_{current_user_id}_black_list", user_id)
+
+
+# 用户发布资源被分享次数
+def incr_number_of_share(user_id):
+    return redis_client.hincrby('sns_share', user_id, 1)
+
+
+def get_number_of_share(user_id):
+    return int(redis_client.hget('sns_share', user_id) or 0)
