@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from json import loads, dumps
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
@@ -423,3 +424,23 @@ class WithdrawLog(BaseAuditModel):
     class Meta:
         db_table = 'withdraw_log'
         ordering = ("-created_time",)
+
+
+class CourseSettleOrder(models.Model):
+    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, db_index=False, related_name='+')
+    course = models.ForeignKey(Course, on_delete=models.PROTECT, db_index=False, related_name='+')
+    created_time = models.DateTimeField(auto_now_add=True)
+    settled = models.BooleanField(default=False)
+    settled_date = models.DateField(null=True)
+    settled_amount = models.PositiveIntegerField(null=True)  # 单位元
+
+    class Meta:
+        db_table = 'course_settle_order'
+        ordering = ('-created_time',)
+
+    def settle_order(self):
+        self.settled = True
+        self.settled_date = datetime.now()
+        self.settled_amount = self.course.price
+        self.save()
+        # TODO 更新钱包记录
