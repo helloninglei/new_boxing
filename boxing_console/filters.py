@@ -125,3 +125,12 @@ class CourseSettleOrderFilter(django_filters.FilterSet):
     class Meta:
         model = models.CourseSettleOrder
         fields = ('buyer', 'boxer', 'start_date', 'end_date', 'course', 'status')
+
+
+class MoneyChangeLogFilter(django_filters.FilterSet):
+    start_time = django_filters.DateTimeFilter(name="created_time", lookup_expr="gte")
+    end_time = django_filters.DateTimeFilter(name="created_time", lookup_expr="lte")
+
+    class Meta:
+        model = models.MoneyChangeLog
+        fields = ("start_time", "end_time")
