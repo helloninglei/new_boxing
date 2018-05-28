@@ -46,7 +46,7 @@ class CourseFilter(django_filters.FilterSet):
 class HotVideoFilter(CommonFilter):
     class Meta:
         model = models.HotVideo
-        fields = ['created_time']
+        fields = ('created_time',)
 
 
 class CourseOrderFilter(CommonFilter):
@@ -68,7 +68,8 @@ class UserFilter(django_filters.FilterSet):
         if value == "true":
             return qs.filter(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
         if value == "false":
-            return qs.filter(~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
+            return qs.filter(
+                ~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
         return qs
 
     class Meta:
@@ -94,3 +95,33 @@ class ReportFilter(django_filters.FilterSet):
     class Meta:
         model = models.Report
         fields = ['status']
+
+
+class CourseSettleOrderFilter(django_filters.FilterSet):
+    buyer = django_filters.CharFilter(name='order__user__mobile')
+    boxer = django_filters.CharFilter(method='boxer_filter')
+    start_date = django_filters.DateFilter(name='settled_date', lookup_expr='gte')
+    end_date = django_filters.DateFilter(name='settled_date', lookup_expr='lte')
+    course = django_filters.CharFilter(method='course_filter')
+    status = django_filters.CharFilter(method='status_filter')
+
+    def course_filter(self, qs, name, value):
+        value = value.lower()
+        if value == 'all':
+            return qs
+        return qs.filter(course__course_name=value)
+
+    def status_filter(self, qs, name, value):
+        value = value.lower()
+        if value == 'settled':
+            return qs.filter(settled=True)
+        elif value == 'unsettled':
+            return qs.filter(settled=False)
+        return qs
+
+    def boxer_filter(self, qs, name, value):
+        return qs.filter(Q(course__boxer__real_name=value) | Q(course__boxer__mobile=value))
+
+    class Meta:
+        model = models.CourseSettleOrder
+        fields = ('buyer', 'boxer', 'start_date', 'end_date', 'course', 'status')

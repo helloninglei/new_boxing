@@ -10,7 +10,7 @@ from boxing_app.views.boxer import NearbyBoxerListViewSet
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
-from boxing_console.views.course import CourseViewSet, CourseOrderViewSet
+from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
 from boxing_console.views.game_news import NewsViewSet
@@ -51,6 +51,7 @@ course_url = [
     path('course/<int:pk>', CourseViewSet.as_view({'get': 'retrieve'}), name='course_detail'),
     path('course/orders', CourseOrderViewSet.as_view({'get': 'list'})),
     path('course/order/<int:pk>', CourseOrderViewSet.as_view({'get': 'retrieve'})),
+    path('course/settle_orders', CourseSettleOrderViewSet.as_view({'get': 'list'})),
 ]
 
 club_url = [

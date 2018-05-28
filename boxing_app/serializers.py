@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Min
 from rest_framework import serializers
@@ -7,13 +6,12 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, BoxingClub, OrderComment, Course
+from biz.models import PayOrder, OrderComment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
 from biz.redis_client import is_following, get_object_location
 from biz import models, constants
-from biz.services.pay_service import PayService
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_client, redis_const
@@ -480,3 +478,7 @@ class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MoneyChangeLog
         fields = ['change_amount', "change_type", "created_time"]
+
+
+class RechargeSerializer(serializers.Serializer):
+    amount = serializers.CharField()
