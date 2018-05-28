@@ -51,7 +51,7 @@
                             <template slot-scope="scope">
                                     <el-button  class='myBtnHover_red myButton_20' @click="toDetail(scope.row)">修改</el-button>
                                     <el-button class='myBtnHover_red myButton_20 ' @click="openConfirm(scope.row.id)">删除</el-button>                          
-                                    <el-button class='myBtnHover_red myButton_20 ' @click="changeShow(scope.row.id)">{{scope.row.is_show?'隐藏':'显示'}}</el-button>                          
+                                    <el-button class='myBtnHover_red myButton_20 ' @click="changeShow(scope.row.id,!scope.row.is_show,scope.$index)">{{scope.row.is_show?'隐藏':'显示'}}</el-button>                          
                             </template>
                         </el-table-column>
                     </el-table>
@@ -168,7 +168,7 @@
                             res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                         }
-                        // $this.tableData=res.data.results;
+                        $this.tableData=res.data.results;
                         $this.total = res.data.count;
                     }
 
@@ -193,30 +193,41 @@
                 //修改详情页
                 this.$router.push({path: '/hotvideodetail', query:row});
             },
-            changeShow(id){
+            changeShow(id,isshow,index){
                 // 显示隐藏
-                console.log(id)
+                console.log(index)
                 let $this = this;
-                this.ajax('/','get',{},this.sendData).then(function(res){
-                    if(res&&res.data){
-                        // console.log(res.data)
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
-                            res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
-                        }
-                        $this.tableData=res.data.results;
-                        $this.total = res.data.count;
-                    }
+                // this.gc[0] ={name:'lisi',age:22} //这样直接修改不能被vue监听到
+                let resData = {
+                                    "id": 1,
+                                    "user_id": 1000000,
+                                    "name": "222",
+                                    "description": "333",
+                                    "sales_count": 0,
+                                    "price_amount": null,
+                                    "url": "/uploads/a1/ff/7fb7421ef9b445bae16be8f7a96820723e7d.mp4",
+                                    "try_url": "/uploads/a1/ff/7fb7421ef9b445bae16be8f7a96820723e7d.mp4",
+                                    "price": 222,
+                                    "is_show": isshow,
+                                    "created_time": "2018-05-11 18:15:36"
+                                }
+                resData.is_show_name = resData.is_show?'显示':'隐藏'
+                $this.tableData.splice(index,1,resData);
+                // this.ajax('/hot_videos/'+id,'patch',{isshow:isshow}).then(function(res){
+                //     if(res&&res.data){
+                //         console.log(res.data)
+                //         $this[index] = res.data
+                //     }
 
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
+                // },function(err){
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             console.log(errors[key])
+                //             // return
+                //         } 
+                //     } 
+                // })
             },
             openConfirm(id){
                 this.confirmData.id    = id
@@ -224,7 +235,7 @@
             },
             deleteClick(id){
                 // 删除
-                console.log(id)
+                let $this=this
                 this.ajax('/hot_videos/'+id,'delete').then(function(res){
                     if(res&&res.status==204){
                         for(var i=0;i<$this.tableData.length;i++){

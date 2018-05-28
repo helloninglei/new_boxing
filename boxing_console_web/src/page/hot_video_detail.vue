@@ -18,10 +18,10 @@
                             <el-input v-model="ruleForm.price" :span="5"></el-input>
                         </el-form-item>
                         <el-form-item label="完整视频" prop="tsurl" style='display: none'>
-                            <el-input v-model="ruleForm.tsurl" type='file' id='full_video'></el-input>
+                            <el-input v-model="ruleForm.tsurl" type='file' id='full_video' @change='getFullVideo'></el-input>
                         </el-form-item>
                         <el-form-item label="完整视频" prop="try_ts_url" style='display: none'>
-                            <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video'></el-input>
+                            <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo'></el-input>
                         </el-form-item>
                         <el-form-item label="完整视频">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
@@ -94,16 +94,17 @@
               }
             };
             return {
-                isShowTop : true,
+                isShowTop   : true,
                 tsurl       : '',
-                try_ts_url   : '',
+                try_ts_url  : '',
                 secondTitle_name:'添加视频',
+                id          :'',
                 ruleForm: {
-                    user_id: '',
-                    name: '',
+                    user_id : '',
+                    name    : '',
                     description: '',
-                    price: '',
-                    tsurl:'',
+                    price   : '',
+                    tsurl   :'',
                     try_ts_url: '',
                 },
                 rules:{
@@ -157,20 +158,12 @@
                 
             }
         },
-        watch:{
-            'ruleForm.tsurl'(val){
-                this.tsurl = val
-            },
-            'ruleForm.try_ts_url'(val){
-                // console.log(val)
-                this.try_ts_url = val
-            },
-        },
         components: {
             TopBar,
         },
         created() {
             let query     = this.$route.query
+            this.id = query.id
             this.ruleForm.user_id = query.user_id;
             this.ruleForm.name    = query.name;
             this.ruleForm.price   = query.price;
@@ -181,21 +174,91 @@
             this.try_ts_url= query.try_url
             $('#full_video').val(tsurl) 
             $('#little_video').val(try_ts_url) 
-            if(query.user_id){
+            if(this.id){
                 this.secondTitle_name = '修改视频'
             }
             // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
             console.log(query)
         },
         methods: {
+            getData(){
+
+            },
+            getFullVideo(){
+                var _this=this
+                var file=event.target.files;
+                var $this=this
+                this.upload(file[0],function(url){
+                    $this.tsurl = url
+                });
+            },
+            getLittleVideo(){
+                var _this=this
+                var file=event.target.files;
+                var $this=this
+                this.upload(file[0],function(url){
+                    $this.try_ts_url = url
+                });
+            },
+            upload(file,fun){
+                // console.log(file)
+                let formData = new FormData() 
+                formData.append('file', file) 
+                this.ajax('/upload','post',formData).then(function(res){
+                    if(res&&res.data){
+                        fun(res.data.url)
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
+            },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let sendData = this.ruleForm;
                         sendData.try_url = this.try_ts_url;
                         sendData.url = this.tsurl;
-                        console.log(this.ruleForm)
-                        alert('submit!');
+                        let $this = this
+                        if(this.id){
+                            //编辑
+                            this.ajax('/hot_videos/'+this.id,'put',sendData).then(function(res){
+                                if(res&&res.data){
+                                    $this.resetForm(formName)
+                                }
+
+                            },function(err){
+                                if(err&&err.response){
+                                    let errors=err.response.data
+                                    for(var key in errors){
+                                        console.log(errors[key])
+                                        // return
+                                    } 
+                                } 
+                            })
+                        }else{
+                            //新建
+                            this.ajax('/hot_videos','post',sendData).then(function(res){
+                                if(res&&res.data){
+                                    $this.resetForm(formName)
+                                }
+
+                            },function(err){
+                                if(err&&err.response){
+                                    let errors=err.response.data
+                                    for(var key in errors){
+                                        console.log(errors[key])
+                                        // return
+                                    } 
+                                } 
+                            })
+                        }
                     } else {
                         console.log('error submit!!');
                         return false;
@@ -223,10 +286,8 @@
                 
             },
             deleteTryUrl(){
-                console.log(111)
                 this.try_ts_url=''
                 this.ruleForm.try_ts_url=''
-                console.log(this.try_ts_url)
             },
         },
     }
