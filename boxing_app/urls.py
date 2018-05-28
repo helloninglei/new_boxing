@@ -26,7 +26,7 @@ from boxing_app.views.hot_video import HotVideoViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
 from boxing_app.views.banner import BannerViewSet
-from boxing_app.views.wallet import MoneyChangeLogViewSet, money_balance
+from boxing_app.views.wallet import MoneyChangeLogViewSet, money_balance, recharge, RechargeLogViewSet
 from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
 
@@ -154,7 +154,9 @@ banner_urls = [
 
 wallet_urls = [
     path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"})),
-    path('money_balance', money_balance)
+    path('money_balance', money_balance),
+    re_path("^(?P<payment_type>(alipay|wechat))/recharge", recharge),
+    path("recharge_log", RechargeLogViewSet.as_view({"get": "list"}))
 ]
 
 share_object_string = '|'.join(SHARE_OBJECT_DICT.keys())
