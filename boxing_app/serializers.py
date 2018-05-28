@@ -460,15 +460,16 @@ class RechargeSerializer(serializers.Serializer):
 
 
 class WithdrawSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="get_status_display", read_only=True)
 
     def validate(self, attrs):
         user = self.context['request'].user
         if not user.user_profile.alipay_account:
             raise ValidationError("该用户未绑定支付宝账号，请先绑定支付宝账号！")
         if attrs['amount'] < WITHDRAW_MIN_CONFINE:
-            raise ValidationError(f"提现金额必须大于{WITHDRAW_MIN_CONFINE/100}元")
+            raise ValidationError(f"提现金额必须大于{WITHDRAW_MIN_CONFINE/100}元!")
         if attrs['amount'] > user.money_balance:
-            raise ValidationError("提现金额不能大于账户余额！")
+            raise ValidationError("提现金额不能大于账户余额!")
         attrs['user'] = user
         attrs['withdraw_account'] = user.user_profile.alipay_account
         attrs['order_number'] = datetime.now().strftime(
@@ -483,5 +484,5 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.WithdrawLog
-        fields = ['amount', "order_number", "created_time"]
-        read_only_fields = ['status', "order_number", "created_time"]
+        fields = ['amount', "order_number", "created_time", "status"]
+        read_only_fields = ["order_number", "created_time"]

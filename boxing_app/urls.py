@@ -156,7 +156,7 @@ banner_urls = [
 wallet_urls = [
     path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"})),
     path('money_balance', money_balance),
-    path("withdraw", WithdrawViewSet.as_view({"post": "create"})),
+    path("withdraw", WithdrawViewSet.as_view({"post": "create", "get": "list"})),
     re_path("^(?P<payment_type>(alipay|wechat))/recharge", recharge),
     path("recharge_log", RechargeLogViewSet.as_view({"get": "list"}))
 ]
