@@ -55,7 +55,7 @@ class GameNewsFilter(django_filters.FilterSet):
 
     class Meta:
         model = models.GameNews
-        fields = ('created_time',)
+        fields = ('start_date', 'end_date')
 
 
 class CourseOrderFilter(CommonFilter):
