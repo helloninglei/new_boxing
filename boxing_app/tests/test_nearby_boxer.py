@@ -173,7 +173,7 @@ class NearbyBoxerTestCase(APITestCase):
         redis_client.record_object_location(boxer5, club1.longitude, club1.latitude)
 
         # 获取用户周围的拳手列表（假设用户在北京奥林匹克森林公园，经纬度为116.39737,40.024919)
-        res = self.client6.post(reverse('nearby-boxer'), data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919')
         # 比较获取boxer结果的排序是否与redis中获取的距离排序一致
         boxer_id_list = redis_client.get_near_object(BoxerIdentification, 116.39737, 40.024919)
         nearby_boxer_id_list = [str(res.data['results'][i]['id']) for i in range(len(res.data['results']))]
@@ -182,8 +182,8 @@ class NearbyBoxerTestCase(APITestCase):
         # 验证获取到的拳手信息是否完整且正确
         boxer = res.data['results'][0]
         self.assertEqual(boxer['id'], int(boxer_id_list[0]))
-        self.assertEqual(float(boxer['longitude']), self.club2_data['longitude'])
-        self.assertEqual(float(boxer['latitude']), self.club2_data['latitude'])
+        self.assertAlmostEqual(float(boxer['longitude']), self.club2_data['longitude'], delta=0.00001)
+        self.assertAlmostEqual(float(boxer['latitude']), self.club2_data['latitude'], delta=0.00001)
         self.assertEqual(boxer['course_min_price'], self.course_data['price'])
         self.assertEqual(boxer['order_count'], 0)
         self.assertEqual(boxer['gender'], self.user_profile_data['gender'])
@@ -191,25 +191,19 @@ class NearbyBoxerTestCase(APITestCase):
         self.assertEqual(boxer['allowed_course'], self.boxer_data['allowed_course'])
 
         # 通过课程最低价筛选拳手
-        res = self.client6.post(f'/nearby/boxers?min_price={self.course_data["price"]}',
-                                data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919&&min_price={self.course_data["price"]}')
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.post(f'/nearby/boxers?min_price={self.course_data["price"] + 1}',
-                                data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919&&min_price={self.course_data["price"] + 1}')
         self.assertEqual(len(res.data['results']), 0)
 
         # 通过课程最高价筛选拳手
-        res = self.client6.post(f'/nearby/boxers?max_price={self.course_data["price"]}',
-                                data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919&&max_price={self.course_data["price"]}')
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.post(f'/nearby/boxers?max_price={self.course_data["price"] - 1}',
-                                data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919&&max_price={self.course_data["price"] - 1}')
         self.assertEqual(len(res.data['results']), 0)
 
         # 通过课程名筛选拳手
-        res = self.client6.post(f'/nearby/boxers?course_name={self.course_data["course_name"]}',
-                                data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919&&course_name={self.course_data["course_name"]}')
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.post(f'/nearby/boxers?course_name="unknow_course"',
-                                data={"longitude": 116.39737, "latitude": 40.024919})
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&&latitude=40.024919&&course_name="unknow_course"')
         self.assertEqual(len(res.data['results']), 0)

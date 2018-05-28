@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Case, When
+from django.db.models import Case, When, Count, Min
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins, filters
 from rest_framework.response import Response
@@ -29,16 +29,18 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
 class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = NearbyBoxerIdentificationSerializer
-    queryset = BoxerIdentification.objects.all()
+    queryset = BoxerIdentification.objects.filter(course__is_open=True,
+                                                  authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
+                                                  is_locked=False).annotate(order_count=Count('course__orders'),
+                                                                            course_min_price=Min('course__price')).prefetch_related('course')
     filter_backends = (DjangoFilterBackend,)
     filter_class = NearbyBoxerFilter
 
     def get_queryset(self):
-        longitude = self.request.data.get('longitude')
-        latitude = self.request.data.get('latitude')
-        boxer_id_list = redis_client.get_near_object(BoxerIdentification, longitude, latitude)
-        sort_rule = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(boxer_id_list)])
-        return super().get_queryset().filter(id__in=boxer_id_list,
-                                             course__is_open=True,
-                                             authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                             is_locked=False).order_by(sort_rule)
+        longitude = self.request.query_params.get('longitude')
+        latitude = self.request.query_params.get('latitude')
+        if longitude and latitude:
+            boxer_id_list = redis_client.get_near_object(BoxerIdentification, longitude, latitude)
+            sort_rule = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(boxer_id_list)])
+            return super().get_queryset().filter(id__in=boxer_id_list).order_by(sort_rule)
+        return super().get_queryset()

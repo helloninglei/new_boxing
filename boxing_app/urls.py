@@ -64,7 +64,7 @@ report_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
-    path('nearby/boxers', NearbyBoxerListViewSet.as_view({'post': 'list'}), name='nearby-boxer')
+    path('nearby/boxers', NearbyBoxerListViewSet.as_view({'get': 'list'}), name='nearby-boxer')
 
 ]
 
