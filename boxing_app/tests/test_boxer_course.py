@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.utils import json
 
-from biz import constants
+from biz import constants, redis_client
 from biz.models import User, BoxerIdentification, Course, BoxingClub
 
 
@@ -111,3 +111,9 @@ class CourseTestCase(APITestCase):
         self.assertEqual(course_result[2]['club_address'], self.club_data['address'])
         self.assertEqual(str(course_result[2]['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(course_result[2]['club_latitude']), str(self.club_data['latitude']))
+
+        # 判断是否将拳手位置存入了redis,并校验正确性
+        boxer = BoxerIdentification.objects.get(user=self.user1)
+        boxer_location = redis_client.get_object_location(boxer)
+        self.assertAlmostEqual(boxer_location[0][0], self.club_data['longitude'], delta=0.00001)
+        self.assertAlmostEqual(boxer_location[0][1], self.club_data['latitude'], delta=0.00001)
