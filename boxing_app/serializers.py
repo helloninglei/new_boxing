@@ -37,13 +37,14 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         read_only_fields = ('authentication_state', 'is_locked')
 
 
-class OrderdBoxerIdentificationSerializer(serializers.ModelSerializer):
+class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     longitude = serializers.SerializerMethodField()
     latitude = serializers.SerializerMethodField()
     course_min_price = serializers.SerializerMethodField()
     order_count = serializers.SerializerMethodField()
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    allowed_course = serializers.ListField(read_only=True)
 
     def get_longitude(self, instance):
         club = BoxingClub.objects.filter(course__boxer=instance).first()
@@ -355,7 +356,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
     boxer_id = serializers.IntegerField(source='content_object.boxer.pk', read_only=True)
     boxer_name = serializers.CharField(source='content_object.boxer.real_name', read_only=True)
     boxer_gender = serializers.BooleanField(source='content_object.boxer.user.user_profile.gender', read_only=True)
-    boxer_avatar = serializers.CharField(source='content_object.boxer.user.user_profile.avatar',read_only=True)
+    boxer_avatar = serializers.CharField(source='content_object.boxer.user.user_profile.avatar', read_only=True)
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
@@ -479,7 +480,7 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), required=False)
 
     def validate(self, attrs):
-        if  attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+        if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
             raise ValidationError('订单不是未评论状态，不能评论！')
         return attrs
 

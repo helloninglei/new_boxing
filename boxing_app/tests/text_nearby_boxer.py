@@ -109,16 +109,15 @@ class NearbyBoxerTestCase(APITestCase):
             'price': 122,
             'duration': 367,
             "validity": "2018-04-25",
-            "course_name": "BOXING"
+            "course_name": constants.BOXER_ALLOWED_COURSES_BOXING
         }
 
     def test_get_nearby_boxer(self):
-        # 创建club1-5
+        # 创建club1-4
         club1 = BoxingClub.objects.create(**self.club1_data)
         club2 = BoxingClub.objects.create(**self.club2_data)
         club3 = BoxingClub.objects.create(**self.club3_data)
         club4 = BoxingClub.objects.create(**self.club4_data)
-        club5 = BoxingClub.objects.create(**self.club5_data)
 
         # 为user1-5创建user_profile
         self.user_profile_data['user'] = self.user1
@@ -152,19 +151,19 @@ class NearbyBoxerTestCase(APITestCase):
         # 分别为boxer1-5创建课程，其中course5和course1的club相同
         self.course_data['club'] = club1
         self.course_data['boxer'] = boxer1
-        course1 = Course.objects.create(**self.course_data)
+        Course.objects.create(**self.course_data)
         self.course_data['club'] = club2
         self.course_data['boxer'] = boxer2
-        course2 = Course.objects.create(**self.course_data)
+        Course.objects.create(**self.course_data)
         self.course_data['club'] = club3
         self.course_data['boxer'] = boxer3
-        course3 = Course.objects.create(**self.course_data)
+        Course.objects.create(**self.course_data)
         self.course_data['club'] = club4
         self.course_data['boxer'] = boxer4
-        course4 = Course.objects.create(**self.course_data)
+        Course.objects.create(**self.course_data)
         self.course_data['club'] = club1
         self.course_data['boxer'] = boxer5
-        course5 = Course.objects.create(**self.course_data)
+        Course.objects.create(**self.course_data)
 
         # 将boxer1-5的位置存入redis(boxer位置为所开课程的club的位置，其中boxer1与boxer5位置相同）
         redis_client.record_object_location(boxer1, club1.longitude, club1.latitude)
@@ -191,7 +190,26 @@ class NearbyBoxerTestCase(APITestCase):
         self.assertEqual(boxer['avatar'], self.user_profile_data['avatar'])
         self.assertEqual(boxer['allowed_course'], self.boxer_data['allowed_course'])
 
+        # 通过课程最低价筛选拳手
+        res = self.client6.post(f'/nearby/boxers?min_price={self.course_data["price"]}',
+                                data={"longitude": 116.39737, "latitude": 40.024919})
+        self.assertEqual(len(res.data['results']), 5)
+        res = self.client6.post(f'/nearby/boxers?min_price={self.course_data["price"] + 1}',
+                                data={"longitude": 116.39737, "latitude": 40.024919})
+        self.assertEqual(len(res.data['results']), 0)
 
+        # 通过课程最高价筛选拳手
+        res = self.client6.post(f'/nearby/boxers?max_price={self.course_data["price"]}',
+                                data={"longitude": 116.39737, "latitude": 40.024919})
+        self.assertEqual(len(res.data['results']), 5)
+        res = self.client6.post(f'/nearby/boxers?max_price={self.course_data["price"] - 1}',
+                                data={"longitude": 116.39737, "latitude": 40.024919})
+        self.assertEqual(len(res.data['results']), 0)
 
-
-
+        # 通过课程名筛选拳手
+        res = self.client6.post(f'/nearby/boxers?course_name={self.course_data["course_name"]}',
+                                data={"longitude": 116.39737, "latitude": 40.024919})
+        self.assertEqual(len(res.data['results']), 5)
+        res = self.client6.post(f'/nearby/boxers?course_name="unknow_course"',
+                                data={"longitude": 116.39737, "latitude": 40.024919})
+        self.assertEqual(len(res.data['results']), 0)
