@@ -38,8 +38,7 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
         latitude = self.request.data.get('latitude')
         boxer_id_list = redis_client.get_near_object(BoxerIdentification, longitude, latitude)
         preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(boxer_id_list)])
-        return  super().get_queryset().filter(id__in=boxer_id_list,
-                                                   course__is_open=True,
-                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                                   is_locked=False).order_by(preserved)
-
+        return super().get_queryset().filter(id__in=boxer_id_list,
+                                             course__is_open=True,
+                                             authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
+                                             is_locked=False).order_by(preserved)
