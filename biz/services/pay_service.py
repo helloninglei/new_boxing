@@ -34,7 +34,7 @@ class PayService:
         name = cls.generate_name(obj)
         data = cls.generate_data(
             order.out_trade_no,
-            obj.price if hasattr(obj, "price") else amount,
+            amount if amount else obj.price,
             name
         )
         return cls.get_payment_info(payment_type, data, ip)
