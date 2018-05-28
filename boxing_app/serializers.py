@@ -9,8 +9,9 @@ from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.models import PayOrder, OrderComment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
+from biz.redis_client import follower_count, following_count
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
-from biz.redis_client import is_following, follower_count, following_count
+from biz.redis_client import is_following, get_object_location
 from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
@@ -39,6 +40,33 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('authentication_state', 'is_locked')
 
+
+class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
+    longitude = serializers.SerializerMethodField()
+    latitude = serializers.SerializerMethodField()
+    course_min_price = serializers.IntegerField()
+    order_count = serializers.IntegerField()
+    gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
+    avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    allowed_course = serializers.ListField(read_only=True)
+
+    def get_longitude(self, instance):
+        return instance.course.first().club.longitude
+
+    def get_latitude(self, instance):
+        return instance.course.first().club.latitude
+
+    @staticmethod
+    def get_boxer_loacation(obj):
+        return get_object_location(obj)[0]
+
+
+    class Meta:
+        model = models.BoxerIdentification
+        fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
+                  'allowed_course']
+        read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
+                            'real_name','allowed_course']
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):

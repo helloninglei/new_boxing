@@ -5,6 +5,8 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 from django.urls import include, path, re_path
 from django.conf import settings
+
+from boxing_app.views.boxer import NearbyBoxerListViewSet
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
