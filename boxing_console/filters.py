@@ -114,13 +114,10 @@ class CourseSettleOrderFilter(django_filters.FilterSet):
     def status_filter(self, qs, name, value):
         value = value.lower()
         if value == 'settled':
-            condition = {'settled': True}
+            return qs.filter(settled=True)
         elif value == 'unsettled':
-            condition = {'settled': False}
-        else:
-            condition = {}
-
-        return qs.filter(**condition)
+            return qs.filter(settled=False)
+        return qs
 
     def boxer_filter(self, qs, name, value):
         return qs.filter(Q(course__boxer__real_name=value) | Q(course__boxer__mobile=value))
