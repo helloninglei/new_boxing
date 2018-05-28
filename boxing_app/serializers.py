@@ -9,7 +9,7 @@ from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
 from biz.models import PayOrder, OrderComment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
-from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
+from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
 from biz.redis_client import is_following, follower_count, following_count
 from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
@@ -20,6 +20,7 @@ from biz.redis_const import SEND_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name
 from biz.constants import WITHDRAW_MIN_CONFINE
+from biz.services.money_balance_service import change_money
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -478,8 +479,7 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         instance = super().create(validated_data)
-        validated_data['user'].money_balance -= validated_data['amount']
-        validated_data['user'].save()
+        change_money(instance.user, instance.amount, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW, remarks=f"{instance.id}")
         return instance
 
     class Meta:

@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User, WithdrawLog, UserProfile
+from biz.models import User, WithdrawLog, UserProfile, MoneyChangeLog
 
 
 class WithdrawTestCase(APITestCase):
@@ -39,6 +39,7 @@ class WithdrawTestCase(APITestCase):
         self.assertEqual(response.data['status'], "审核中")
         self.assertEqual(response.data['amount'], 30000)
         self.assertTrue(WithdrawLog.objects.filter(user=self.user).exists())
+        self.assertTrue(MoneyChangeLog.objects.filter(user=self.user).exists())
 
         response = self.client.get(path="/withdraw")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
