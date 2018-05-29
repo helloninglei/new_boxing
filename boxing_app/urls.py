@@ -49,7 +49,8 @@ comment_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/comments$'.format(comment_object_string),
             comment.CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comment-list'),
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string),
-            comment.ReplyViewSet.as_view({'post': 'create', 'delete': 'destroy'}), name='comment-detail'),
+            comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}),
+            name='comment-detail'),
 ]
 
 upload_urls = [
@@ -118,7 +119,6 @@ login_urls = [
     path("password/change", login.change_password)
 ]
 
-
 official_user_string = '|'.join(USER_IDENTITY_DICT.keys())
 user_urls = [
     path("alipay_account", bind_alipay_account),
@@ -165,7 +165,8 @@ wallet_urls = [
 
 share_object_string = '|'.join(SHARE_OBJECT_DICT.keys())
 share_urls = [
-    re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view, name='share'),
+    re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view,
+            name='share'),
 ]
 
 urlpatterns = []

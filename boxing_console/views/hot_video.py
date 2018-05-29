@@ -17,8 +17,8 @@ class HotVideoViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         _filter = Q(orders__status=PAYMENT_STATUS_WAIT_USE)
         return models.HotVideo.objects.annotate(
-            sales_count=Count('orders', filter=_filter),
-            price_amount=Sum('orders__amount', filter=_filter)
+            sales_count=Count('orders', filter=_filter, distinct=True),
+            price_amount=Sum('orders__amount', filter=_filter, distinct=True)
         ).order_by('-created_time')
 
     def partial_update(self, request, *args, **kwargs):
