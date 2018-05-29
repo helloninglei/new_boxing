@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
 
-from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.core.validators import URLValidator
@@ -318,3 +317,14 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CourseSettleOrder
         exclude = ('order', 'course', 'created_time')
+
+
+class WithdrawLogSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(source="user.id")
+    user_nickname = serializers.CharField(source="user.user_profile.nick_name")
+    user_mobile = serializers.CharField(source="user.mobile")
+
+    class Meta:
+        model = models.WithdrawLog
+        fields = ["id", "order_number", "user_id", "user_nickname", "user_mobile", "created_time", "amount",
+                  "withdraw_account"]

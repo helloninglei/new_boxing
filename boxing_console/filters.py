@@ -125,3 +125,22 @@ class CourseSettleOrderFilter(django_filters.FilterSet):
     class Meta:
         model = models.CourseSettleOrder
         fields = ('buyer', 'boxer', 'start_date', 'end_date', 'course', 'status')
+
+
+class WithdrawLogFilter(django_filters.FilterSet):
+    status = django_filters.CharFilter(method="status_filter")
+
+    def status_filter(self, qs, name, value):
+        if value.lower() == "waiting":
+            return qs.filter(status=constants.WITHDRAW_STATUS_WAITING)
+        if value.lower() == "finished":
+            return qs.filter(~Q(status=constants.WITHDRAW_STATUS_WAITING))
+        if value.lower() == "approved":
+            return qs.filter(status=constants.WITHDRAW_STATUS_APPROVED)
+        if value.lower() == "rejected":
+            return qs.filter(status=constants.WITHDRAW_STATUS_REJECTED)
+        return qs
+
+    class Meta:
+        model = models.WithdrawLog
+        fields = ("status",)
