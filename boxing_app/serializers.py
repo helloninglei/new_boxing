@@ -113,7 +113,7 @@ class BasicReplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = ['id', 'content', 'user', 'to_user']
+        fields = ['id', 'content', 'user', 'to_user', 'created_time']
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -129,7 +129,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = ['id', 'content', 'user', 'replies']
+        fields = ['id', 'content', 'user', 'replies', 'created_time']
 
 
 class LikeSerializer(serializers.ModelSerializer):

@@ -49,6 +49,15 @@ class HotVideoFilter(CommonFilter):
         fields = ('created_time',)
 
 
+class GameNewsFilter(django_filters.FilterSet):
+    start_date = django_filters.DateFilter(name='created_time', lookup_expr='gte')
+    end_date = django_filters.DateFilter(name='created_time', lookup_expr='lte')
+
+    class Meta:
+        model = models.GameNews
+        fields = ('start_date', 'end_date')
+
+
 class CourseOrderFilter(CommonFilter):
     pay_time_start = django_filters.DateTimeFilter(name='pay_time', lookup_expr='gte')
     pay_time_end = django_filters.DateTimeFilter(name='pay_time', lookup_expr='lte')

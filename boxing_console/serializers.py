@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
-
-from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from django.db import transaction
-from django.forms.models import model_to_dict
 from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
+    Message, Comment
 from biz import models, constants, redis_client
-from biz.utils import get_model_class_by_name
+from biz.utils import get_model_class_by_name, get_video_cover_url
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
 
 url_validator = URLValidator()
+datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -180,6 +180,12 @@ class HotVideoSerializer(serializers.ModelSerializer):
                   'operator', 'is_show', 'created_time')
 
 
+class HotVideoShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HotVideo
+        fields = ('is_show',)
+
+
 class CourseOrderSerializer(serializers.ModelSerializer):
     user_mobile = serializers.CharField(source='user.mobile', read_only=True)
     user_id = serializers.IntegerField(source='user.pk', read_only=True)
@@ -256,8 +262,27 @@ class ReportSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='get_status_display')
     content = serializers.SerializerMethodField()
 
-    def get_content(self, obj):
-        return model_to_dict(obj.content_object)
+    def get_content(self, instance):
+        obj = instance.content_object
+        user = obj.user
+        created_time = obj.created_time
+        if isinstance(obj, Message):
+            content = obj.content
+            pictures = obj.images[:]
+            if obj.video:
+                pictures.append(get_video_cover_url(obj.video))
+        elif isinstance(obj, Comment):
+            content = obj.content
+            pictures = []
+        else:
+            content = obj.name
+            pictures = [get_video_cover_url(obj.try_url)]
+        return {
+            'nick_name': user.user_profile.nick_name if hasattr(user, 'user_profile') else None,
+            'created_time': created_time.strftime(datetime_format),
+            'content': content,
+            'pictures': pictures,
+        }
 
     def get_reported_user(self, obj):
         return obj.content_object.user.id
