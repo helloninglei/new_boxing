@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, OrderComment
+from biz.models import PayOrder, OrderComment, BoxingClub
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -515,3 +515,11 @@ class WithdrawSerializer(serializers.ModelSerializer):
         model = models.WithdrawLog
         fields = ['amount', "order_number", "created_time", "status"]
         read_only_fields = ["order_number", "created_time"]
+
+
+class BoxingClubSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField(), read_only=True)
+
+    class Meta:
+        model = BoxingClub
+        fields = '__all__'
