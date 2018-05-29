@@ -8,7 +8,7 @@ import config     from './common/my_config'
 import ElementUI  from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import routes     from './router/index.js';
-import $          from 'jquery'
+// import $          from 'jquery'
 import Cropper    from "cropper"
 // import VueCropper from "vue-cropper"
 
