@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 
-from biz import constants
-from biz.constants import OperationType
+from biz import constants, sms_client
+from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE
 from biz.models import BoxerIdentification
 from biz.services.operation_log_service import log_boxer_identification_operation
 from boxing_console.serializers import BoxerIdentificationSerializer, CourseSerializer
@@ -36,23 +36,28 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     def approved_or_refuse(self, request, is_approve, *args, **kwargs):
         super().partial_update(request, *args, **kwargs)
+        boxer = self.get_object()
         if is_approve:
             operation_type = OperationType.BOXER_AUTHENTICATION_APPROVED
             content = request.data.get('allowed_course')
-            self.create_course(request)
+            course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
+            allowed_courses = [course_dict.get(key) for key in content]
+            self.create_course(boxer=boxer, allowed_courses=content)
+            sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
         else:
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
             content = request.data.get('refuse_reason')
+            sms_client.send_boxer_refuse_message(boxer.mobile, refuse_reason=content)
+
         log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,
                                            operation_type=operation_type,
                                            content=content)
         return Response(reverse('boxer_identification_list'))
 
-    def create_course(self, request):
-        allowed_course_list = request.data.get('allowed_course')
-        for course_name in allowed_course_list:
-            boxer = self.get_object()
+    @staticmethod
+    def create_course(boxer, allowed_courses):
+        for course_name in allowed_courses:
             serializer = CourseSerializer(data={"course_name": course_name})
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)

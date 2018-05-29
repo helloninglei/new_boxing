@@ -1,11 +1,11 @@
 <template>
 	<div id="report_content">
 		<el-dialog  :visible.sync="showDialog">
-        <h3 style='color:#909399'>用户昵称：{{getData.user}}</h3>
-        <p class="detail_title text_lf">发布时间：2018-10-1 18:00:00</p>
+        <h3 style='color:#909399'>用户昵称：{{getData.nick_name}}</h3>
+        <p class="detail_title text_lf">发布时间：{{getData.created_time}}</p>
         <p style='font-size:14px'>{{getData.content}}</p>
         <div class='imgs'>
-          
+          <img :src="value" alt="" v-for='value in getData.pictures'>
         </div>
       <div slot="footer" class="dialog-footer" style='text-align:center'>
         <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">关闭</el-button>
@@ -53,7 +53,6 @@
         		this.showDialog=newval;
         	},
         	showDialog(val){
-          	console.log(val)
             if(!val){
               this.$emit('cancel',val)
             }
@@ -66,7 +65,7 @@
         components: {
         },
         created() {
-          // console.log(this.getData)
+          console.log(this.getData)
         },
         methods: {
             close(){
