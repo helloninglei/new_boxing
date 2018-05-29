@@ -150,6 +150,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), required=False)
+    avatar = serializers.CharField(max_length=128, required=True)
 
     @transaction.atomic
     def save(self, **kwargs):

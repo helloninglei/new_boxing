@@ -100,6 +100,12 @@ EASEMOB_CONF = {
 # celery conf
 BROKER_REDIS_DB = "0"
 
+# baidu api
+BAIDU_API = {
+    'base_url': 'http://api.map.baidu.com/geocoder/v2/',
+    'ak': 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
+}
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
