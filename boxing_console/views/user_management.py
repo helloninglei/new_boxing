@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from django_filters.rest_framework import DjangoFilterBackend
-from biz.models import User
-from rest_framework import viewsets, filters
-from boxing_console.serializers import UserSerializer
-from boxing_console.filters import UserFilter
+from biz.models import User, MoneyChangeLog
+from rest_framework import viewsets, filters, mixins
+from boxing_console.serializers import UserSerializer, MoneyBalanceChangeLogSerializer
+from boxing_console.filters import UserFilter, MoneyChangeLogFilter
 
 
 class UserManagementViewSet(viewsets.ModelViewSet):
@@ -12,3 +12,12 @@ class UserManagementViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ("id", "mobile", "user_profile__nick_name")
     filter_class = UserFilter
+
+
+class MoneyBalanceChangeLogViewSet(viewsets.GenericViewSet,
+                                   mixins.ListModelMixin):
+
+    serializer_class = MoneyBalanceChangeLogSerializer
+    queryset = MoneyChangeLog.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = MoneyChangeLogFilter

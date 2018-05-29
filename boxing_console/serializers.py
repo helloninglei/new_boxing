@@ -318,3 +318,11 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CourseSettleOrder
         exclude = ('order', 'course', 'created_time')
+
+
+class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):
+    change_type = serializers.CharField(source="get_change_type_display")
+
+    class Meta:
+        model = models.MoneyChangeLog
+        fields = ["change_amount", "created_time", "remarks", "change_type"]
