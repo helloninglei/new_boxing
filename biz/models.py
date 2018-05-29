@@ -340,7 +340,7 @@ class PayOrder(models.Model):
     status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
                                       db_index=True)
     out_trade_no = models.BigIntegerField()
-    payment_type = models.SmallIntegerField(choices=constants.PAYMENT_TYPE)
+    payment_type = models.SmallIntegerField(choices=constants.PAYMENT_TYPE, null=True)
     amount = models.PositiveIntegerField()  # 单位分
     device = models.SmallIntegerField(choices=constants.DEVICE_PLATFORM)
     order_time = models.DateTimeField(auto_now_add=True)
@@ -410,3 +410,23 @@ class Banner(BaseAuditModel):
     class Meta:
         db_table = 'banner'
         ordering = ('-order_number', '-created_time')
+
+
+class CourseSettleOrder(models.Model):
+    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, db_index=False, related_name='+')
+    course = models.ForeignKey(Course, on_delete=models.PROTECT, db_index=False, related_name='+')
+    created_time = models.DateTimeField(auto_now_add=True)
+    settled = models.BooleanField(default=False)
+    settled_date = models.DateField(null=True)
+    settled_amount = models.PositiveIntegerField(null=True)  # 单位元
+
+    class Meta:
+        db_table = 'course_settle_order'
+        ordering = ('-created_time',)
+
+    def settle_order(self):
+        self.settled = True
+        self.settled_date = datetime.now()
+        self.settled_amount = self.course.price
+        self.save()
+        # TODO 更新钱包记录

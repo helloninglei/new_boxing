@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
-
+from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub
+from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub, CourseSettleOrder
 
 
 class CourseOrderTestCase(APITestCase):
@@ -171,3 +171,65 @@ class CourseOrderTestCase(APITestCase):
                 self.assertEqual(self.course_order_data[key], res.data.get(key))
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['course_price'], self.course_data['price'])
+
+    def test_course_settle_order_filter(self):
+        # 创建user_profile->创建boxer->创建club->创建course->创建course_order
+        UserProfile.objects.create(**self.user_profile_data)
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+        self.course_order_data['content_object'] = course
+
+        order1 = PayOrder.objects.create(**self.course_order_data)
+        order2 = PayOrder.objects.create(**self.course_order_data)
+        order3 = PayOrder.objects.create(**self.other_order_data)
+
+        CourseSettleOrder.objects.create(order=order1, course=course)
+        CourseSettleOrder.objects.create(order=order2, course=course, settled=True, settled_date='2018-05-21')
+        CourseSettleOrder.objects.create(order=order3, course=course)
+
+        res = self.client.get('/course/settle_orders')
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'buyer': '123'})
+        self.assertEqual(res.data['count'], 0)
+
+        res = self.client.get('/course/settle_orders', {'buyer': self.course_order_data['user'].mobile})
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'boxer': '李四'})
+        self.assertEqual(res.data['count'], 0)
+
+        res = self.client.get('/course/settle_orders', {'boxer': boxer.real_name})
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'boxer': boxer.mobile})
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'course': 'mmb'})
+        self.assertEqual(res.data['count'], 0)
+
+        res = self.client.get('/course/settle_orders', {'course': 'all'})
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'course': 'mma'})
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'status': 'all'})
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client.get('/course/settle_orders', {'status': 'settled'})
+        self.assertEqual(res.data['count'], 1)
+
+        res = self.client.get('/course/settle_orders', {'status': 'unsettled'})
+        self.assertEqual(res.data['count'], 2)
+
+        res = self.client.get('/course/settle_orders', {'start_date': '2018-05-20'})
+        self.assertEqual(res.data['count'], 1)
+
+        res = self.client.get('/course/settle_orders', {'start_date': '2018-05-22'})
+        self.assertEqual(res.data['count'], 0)
+
+

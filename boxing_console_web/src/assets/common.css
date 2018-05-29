@@ -3,6 +3,8 @@ body{
         /*font-family: 'PingFangSC-Light;', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;*/
 }
 /*距离*/
+.margin_tp30 {margin-top: 30px;}
+.margin_bt20 {margin-bottom: 20px;}
 .margin_rt25{margin-right:25px;}
 .margin_rt60{margin-right:60px;}
 .margin_lf70{margin-left:70px;}
@@ -61,6 +63,7 @@ body{
 .text_rt{text-align: right}
 /*行内表单距离样式*/
 .inline_item{display: inline-block;padding-bottom:30px}
+.dl_line {display: inline-block;}
 
 
 

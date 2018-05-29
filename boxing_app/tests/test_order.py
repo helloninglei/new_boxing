@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from rest_framework import status
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from biz import constants
@@ -14,10 +15,10 @@ class OrderTestCase(APITestCase):
         self.test_user_3 = User.objects.create_user(mobile='11111111113', password='password')
         self.test_user_4 = User.objects.create_user(mobile='11111111114', password='password')
         self.test_user = None
-        self.client1 = self.client_class()
-        self.client2 = self.client_class()
-        self.client3 = self.client_class()
-        self.client4 = self.client_class()
+        self.client1 = self.client_class(source='iOS')
+        self.client2 = self.client_class(source='iOS')
+        self.client3 = self.client_class(source='iOS')
+        self.client4 = self.client_class(source='iOS')
         self.client1.login(username=self.test_user_1, password='password')
         self.client2.login(username=self.test_user_2, password='password')
         self.client3.login(username=self.test_user_3, password='password')
@@ -252,3 +253,30 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
+
+    def test_create_unpaid_order(self):
+        # 为拳手用户test_user_1创建1个课程
+        self.user_profile_data['user'] = self.test_user_1
+        UserProfile.objects.create(**self.user_profile_data)
+        self.boxer_data['user'] = self.test_user_1
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+
+        # test_user_2成功创建了未支付订单
+        order_data = {'id': course.id}
+        res = self.client2.post(reverse('create-unpaid-order', kwargs={'object_type': 'course'}), data=order_data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # 查询课程的订单，核对订单数据
+        self.assertEqual(course.orders.count(), 1)
+        course_order = PayOrder.objects.get(course=course)
+        self.assertEqual(course_order.amount, course.price*100)
+        self.assertEqual(course_order.device, constants.DEVICE_PLATFORM_IOS)
+        self.assertEqual(course_order.status, constants.PAYMENT_STATUS_UNPAID)
+        self.assertEqual(course_order.user, self.test_user_2)
+        self.assertIsNone(course_order.payment_type)
+        self.assertIsNone(course_order.pay_time)
+        self.assertEqual(course_order.content_object, course)

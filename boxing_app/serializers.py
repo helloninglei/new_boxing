@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Min
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, BoxingClub, OrderComment
+from biz.models import PayOrder, OrderComment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO
-from biz.redis_client import is_following
+from biz.redis_client import is_following, get_object_location
 from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
@@ -35,6 +36,33 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('authentication_state', 'is_locked')
 
+
+class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
+    longitude = serializers.SerializerMethodField()
+    latitude = serializers.SerializerMethodField()
+    course_min_price = serializers.IntegerField()
+    order_count = serializers.IntegerField()
+    gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
+    avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    allowed_course = serializers.ListField(read_only=True)
+
+    def get_longitude(self, instance):
+        return instance.course.first().club.longitude
+
+    def get_latitude(self, instance):
+        return instance.course.first().club.latitude
+
+    @staticmethod
+    def get_boxer_loacation(obj):
+        return get_object_location(obj)[0]
+
+
+    class Meta:
+        model = models.BoxerIdentification
+        fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
+                  'allowed_course']
+        read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
+                            'real_name','allowed_course']
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
@@ -203,7 +231,7 @@ class PaySerializer(serializers.Serializer):
     id = serializers.IntegerField()
     device = serializers.SerializerMethodField()
     ip = serializers.SerializerMethodField()
-    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE)
+    payment_type = serializers.ChoiceField(choices=PAYMENT_TYPE, required=False)
     content_object = serializers.SerializerMethodField()
 
     def get_content_object(self, obj):
@@ -334,16 +362,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     is_following = serializers.SerializerMethodField(read_only=True)
 
     def get_is_following(self, instance):
-        return bool(is_following(self.context['request'].user.id, instance.id))
+        return bool(is_following(self.context['request'].user.id, instance.user.id))
 
     def get_money_balance(self, instance):
         return instance.user.money_balance
 
     def get_followers_count(self, instance):
-        return redis_client.follower_count(instance.id)
+        return redis_client.follower_count(instance.user.id)
 
     def get_following_count(self, instance):
-        return redis_client.following_count(instance.id)
+        return redis_client.following_count(instance.user.id)
 
     def get_mobile(self, instance):
         return instance.user.mobile
@@ -450,3 +478,7 @@ class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MoneyChangeLog
         fields = ['change_amount', "change_type", "created_time"]
+
+
+class RechargeSerializer(serializers.Serializer):
+    amount = serializers.CharField()
