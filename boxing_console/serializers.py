@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
+
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.core.validators import URLValidator
@@ -152,7 +154,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def save(self, **kwargs):
         instance = super().save(**kwargs)
-        redis_client.record_boxing_club_location(instance)
+        redis_client.record_object_location(instance, instance.longitude, instance.latitude)
         return instance
 
     class Meta:
@@ -298,3 +300,21 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Banner
         exclude = ('created_time', 'updated_time')
+
+
+class CourseSettleOrderSerializer(serializers.ModelSerializer):
+    order_id = serializers.IntegerField(source='order.id')
+    course_name = serializers.CharField(source='course.get_course_name_display')
+    boxer_name = serializers.CharField(source='course.boxer.real_name')
+    boxer_mobile = serializers.CharField(source='course.boxer.mobile')
+    course_amount = serializers.IntegerField(source='course.price')
+    buyer_mobile = serializers.CharField(source='order.user.mobile')
+    predicted_settle_date = serializers.SerializerMethodField()
+    actual_settle_date = serializers.DateField(source='settled_date', format='%Y%m%d')
+
+    def get_predicted_settle_date(self, attrs):
+        return (attrs.created_time + timedelta(days=7)).strftime('%Y%m%d')
+
+    class Meta:
+        model = models.CourseSettleOrder
+        exclude = ('order', 'course', 'created_time')

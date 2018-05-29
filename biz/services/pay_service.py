@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
+from django.db.transaction import atomic
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
-from biz.models import PayOrder
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE
+from biz.models import PayOrder, User
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
+    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID
+from biz.services import money_balance_service
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -13,14 +16,32 @@ logger = logging.getLogger()
 
 
 class PayService:
-
     @classmethod
     def generate_out_trade_no(cls):
         return datetime.now().strftime('%y%m%d%H%M%S%f')
 
     @classmethod
-    def create_order(cls, user, obj, payment_type, device, ip):
-        order = PayOrder.objects.create(
+    def generate_name(cls, obj):
+        return f'{obj.__class__._meta.verbose_name} {obj.id}'
+
+    @classmethod
+    def generate_data(cls, out_trade_no, amount, name):
+        return dict(out_trade_no=out_trade_no, amount=amount, name=name)
+
+    @classmethod
+    def create_order(cls, user, obj, payment_type, device, ip, amount=None):
+        order = cls.perform_create_order(user, obj, device, payment_type)
+        name = cls.generate_name(obj)
+        data = cls.generate_data(
+            order.out_trade_no,
+            amount if amount else obj.price,
+            name
+        )
+        return cls.get_payment_info(payment_type, data, ip)
+
+    @classmethod
+    def perform_create_order(cls, user, obj, device, payment_type=None):
+        return PayOrder.objects.create(
             user=user,
             content_object=obj,
             payment_type=payment_type,
@@ -28,8 +49,9 @@ class PayService:
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
-        name = f'{obj.__class__._meta.verbose_name} {obj.id}'
-        data = dict(out_trade_no=order.out_trade_no, amount=obj.price, name=name)
+
+    @classmethod
+    def get_payment_info(cls, payment_type, data, ip):
         if payment_type == PAYMENT_TYPE_ALIPAY:
             return cls.get_alipay_payment_info(**data)
         elif payment_type == PAYMENT_TYPE_WECHAT:
@@ -88,5 +110,13 @@ class PayService:
             return '签名验证失败'
 
     @classmethod
+    @atomic
     def success_callback(cls, data):
-        PayOrder.objects.filter(out_trade_no=data['out_trade_no']).update(status=PAYMENT_STATUS_WAIT_USE)
+        pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
+        if pay_order.status == PAYMENT_STATUS_UNPAID and isinstance(pay_order.content_object, User):
+            money_balance_service.change_money(user=pay_order.content_object, amount=pay_order.amount,
+                                               change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
+                                               remarks=pay_order.out_trade_no)
+
+        pay_order.status = PAYMENT_STATUS_WAIT_USE
+        pay_order.save()
