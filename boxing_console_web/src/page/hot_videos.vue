@@ -81,6 +81,7 @@
         data() {
             return {
                 isShowTop : true,
+                issearch  :false,
                 sendData  : {
                     start_time : '',
                     end_time   : '',
@@ -158,9 +159,17 @@
             this.getTableData();
         },
         methods: {
-            getTableData() {
+            getTableData(page) {
                 //获取data数据
                 let $this   = this
+                if(this.issearch){
+                    let sendData=this.sendData
+                }else{
+                    let sendData={}
+                }
+                if(page){
+                    sendData.page=page
+                }
                 this.ajax('/hot_videos','get',{},this.sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
@@ -184,10 +193,12 @@
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
+                this.getTableData(val) 
             },
             filter(){
-                console.log(this.sendData)
+                this.issearch=true;
+                //搜索是先看第一页
+                this.getTableData(1) 
             },
             toDetail(row){
                 //修改详情页
