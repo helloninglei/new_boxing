@@ -42,7 +42,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             content = request.data.get('allowed_course')
             course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
             allowed_courses = [course_dict.get(key) for key in content]
-            self.create_course(request, boxer=boxer)
+            self.create_course(boxer=boxer, allowed_courses=content)
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
         else:
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
@@ -55,9 +55,9 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
                                            content=content)
         return Response(reverse('boxer_identification_list'))
 
-    def create_course(self, request, boxer):
-        allowed_course_list = request.data.get('allowed_course')
-        for course_name in allowed_course_list:
+    @staticmethod
+    def create_course(boxer, allowed_courses):
+        for course_name in allowed_courses:
             serializer = CourseSerializer(data={"course_name": course_name})
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
