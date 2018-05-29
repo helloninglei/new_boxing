@@ -415,10 +415,10 @@ class Banner(BaseAuditModel):
 
 class WithdrawLog(BaseAuditModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="withdraw_logs")
-    amount = models.PositiveIntegerField()
+    amount = models.PositiveIntegerField()  # unit:元
     status = models.CharField(choices=constants.WITHDRAW_STATUS_CHOICE, default=constants.WITHDRAW_STATUS_WAITING,
                               max_length=10)
-    withdraw_account = models.CharField(max_length=20)
+    withdraw_account = models.CharField(max_length=30)
     order_number = models.CharField(max_length=50, unique=True)
 
     class Meta:
