@@ -320,11 +320,13 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
 
 
 class WithdrawLogSerializer(serializers.ModelSerializer):
-    user_id = serializers.CharField(source="user.id")
-    user_nickname = serializers.CharField(source="user.user_profile.nick_name")
-    user_mobile = serializers.CharField(source="user.mobile")
+    user_id = serializers.CharField(source="user.id", read_only=True)
+    user_nickname = serializers.CharField(source="user.user_profile.nick_name", read_only=True)
+    user_mobile = serializers.CharField(source="user.mobile", read_only=True)
+    status = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
         model = models.WithdrawLog
         fields = ["id", "order_number", "user_id", "user_nickname", "user_mobile", "created_time", "amount",
-                  "withdraw_account"]
+                  "withdraw_account", "status"]
+        read_only_fields = ("order_number", "created_time", "amount", "withdraw_account")

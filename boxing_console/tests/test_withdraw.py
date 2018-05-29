@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User, UserProfile, WithdrawLog
-from biz.constants import WITHDRAW_STATUS_WAITING
+from biz.constants import WITHDRAW_STATUS_WAITING, WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED
 
 
 class WithdrawLogTestCase(APITestCase):
@@ -28,3 +28,20 @@ class WithdrawLogTestCase(APITestCase):
         response = self.client.get(path="/withdraw_logs", data={"status": "waiting"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)
+
+    def test_approved_withdraw(self):
+        withdraw = WithdrawLog.objects.create(user=self.user, amount=4000, status=WITHDRAW_STATUS_WAITING,
+                                              withdraw_account=self.user.mobile, order_number="2018030200001"
+                                              )
+        response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(WithdrawLog.objects.get(id=withdraw.id).status, WITHDRAW_STATUS_APPROVED)
+
+    def test_rejected_withdraw(self):
+        withdraw = WithdrawLog.objects.create(
+            user=self.user, amount=4000, status=WITHDRAW_STATUS_WAITING,
+            withdraw_account=self.user.mobile, order_number="2018030200001"
+        )
+        response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/rejected")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(WithdrawLog.objects.get(id=withdraw.id).status, WITHDRAW_STATUS_REJECTED)

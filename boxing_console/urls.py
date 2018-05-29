@@ -93,7 +93,8 @@ banner_urls = [
 ]
 
 withdraw_urls = [
-    path("withdraw_logs", WithdrawLogViewSet.as_view({"get": "list"}))
+    path("withdraw_logs", WithdrawLogViewSet.as_view({"get": "list"})),
+    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$", WithdrawLogViewSet.as_view({"put": "update"}))
 ]
 
 urlpatterns += router.urls
