@@ -32,11 +32,11 @@ SMS_TEMPLATES = {
     },
     "boxerApproved": {
         "code": "SMS_135803000",
-        "text": "恭喜您，您在拳城出击app提交的拳手认证已经通过了审核，您可以开通的课程为:{courses}；快去查看。",
+        "text": "恭喜您，您在拳城出击app提交的拳手认证已经通过了审核，您可以开通的课程为: {courses}；快去查看。",
     },
     "boxerRefused": {
-        "code": "refuse_code",
-        "text": "您在拳城出击app提交的拳手认证已经被驳回，驳回原因为：{reason}，快去查看。",
+        "code": "SMS_135793085",
+        "text": "您在拳城出击app提交的拳手认证已经被驳回，驳回原因为: {reason}，快去查看。",
     }
 }
 
