@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
+
+import requests
 from django.conf import settings
 from django.db import transaction
 from django.core.validators import URLValidator
@@ -13,7 +15,6 @@ from biz.utils import get_model_class_by_name, get_video_cover_url
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
-
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 
@@ -151,12 +152,40 @@ class CourseSerializer(serializers.ModelSerializer):
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), required=False)
     avatar = serializers.CharField(max_length=128, required=True)
+    province = serializers.CharField(max_length=10, required=False)
+    city = serializers.CharField(max_length=10, required=False)
+    address = serializers.CharField(max_length=30, required=False)
+
+    def validate(self, attrs):
+        longitude = attrs['longitude']
+        latitude = attrs['latitude']
+        province, city, address = self.get_location_info(longitude, latitude)
+        attrs['province'] = province
+        attrs['city'] = city
+        attrs['address'] = address
+        return attrs
 
     @transaction.atomic
     def save(self, **kwargs):
         instance = super().save(**kwargs)
         redis_client.record_object_location(instance, instance.longitude, instance.latitude)
         return instance
+
+    @staticmethod
+    def get_location_info(longitude, latitude):
+        url = settings.BAIDU_API['base_url']
+        params = {'location': f'{latitude},{longitude}',
+                  'ak': settings.BAIDU_API['ak'],
+                  'output': 'json'
+                  }
+        res = requests.get(url=url, params=params)
+        json_res = res.json()
+        result = json_res.get('result')
+        address = result.get('formatted_address')
+        location_detail = result.get('addressComponent')
+        province = location_detail.get('province')
+        city = location_detail.get('city')
+        return province, city, address
 
     class Meta:
         model = BoxingClub

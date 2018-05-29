@@ -61,13 +61,13 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     def get_boxer_loacation(obj):
         return get_object_location(obj)[0]
 
-
     class Meta:
         model = models.BoxerIdentification
         fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
                   'allowed_course']
         read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
                             'real_name','allowed_course']
+
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
