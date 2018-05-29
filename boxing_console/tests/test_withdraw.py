@@ -36,6 +36,11 @@ class WithdrawLogTestCase(APITestCase):
         response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(WithdrawLog.objects.get(id=withdraw.id).status, WITHDRAW_STATUS_APPROVED)
+        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 4000)
+
+        response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "该条记录已经审核过了，不能重复审核！")
 
     def test_rejected_withdraw(self):
         withdraw = WithdrawLog.objects.create(
@@ -45,3 +50,8 @@ class WithdrawLogTestCase(APITestCase):
         response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/rejected")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(WithdrawLog.objects.get(id=withdraw.id).status, WITHDRAW_STATUS_REJECTED)
+        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 0)
+
+        response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "该条记录已经审核过了，不能重复审核！")
