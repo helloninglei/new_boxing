@@ -27,6 +27,7 @@ import Hotvideo         from 'page/hot_videos';
 import Hotvideodetail   from 'page/hot_video_detail';
 import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infoList';
+import InfoDetail       from 'page/info_detail';
 
 export default [
     {
@@ -160,6 +161,10 @@ export default [
             {
                 path: '/infoList',
                 component: InfoList,
+            },
+            {
+                path: '/infodetail',
+                component: InfoDetail,
             },
         ]
     },

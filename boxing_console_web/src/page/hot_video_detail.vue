@@ -9,7 +9,7 @@
                             <el-input v-model="ruleForm.user_id"></el-input>
                         </el-form-item>
                         <el-form-item label="视频名称" prop="name">
-                            <el-input v-model="ruleForm.name" :rows="6"></el-input>
+                            <el-input v-model="ruleForm.name" :rows="6" :maxlength="40"></el-input>
                         </el-form-item>
                         <el-form-item label="视频介绍" prop="description">
                             <el-input type="textarea" v-model="ruleForm.description"></el-input>
@@ -109,20 +109,10 @@
                 },
                 rules:{
                     user_id:[
-                        { required:false,message:'请输入用户id', trigger:'change' }
+                        { required:true,message:'请输入用户id', trigger:'blur' }
                     ],
                     name:[
-                        { validator: (rule, value, callback) => {
-                            let reg = /^[1-9]\d{1,}$/
-                                if(value===''){
-                                    callback(new Error('请输入视频名称'));
-                                }else if (value.length>40) {
-                                    callback(new Error('限制40字数'));
-                                } else {
-                                
-                                    callback();
-                                }
-                        }, trigger: 'blur' },
+                        { required:true,message:'请输入视频名称', trigger:'blur' }
                     ],
                     description:[
                         { validator: (rule, value, callback) => {
@@ -139,14 +129,13 @@
                     ],
                     price:[
                         { validator: (rule, value, callback) => {
-                            let reg = /^[1-9]\d{1,}$/
-                              if (!reg.test(value)) {
-                                callback(new Error('付费金额为自然整数'));
+                              if (value <= 0 || !/^[0-9]*$/.test(value)) {
+                                callback(new Error('付费金额为自然整数，不可以为0'));
                               } else {
                                 
                                 callback();
                               }
-                        }, trigger: 'blur' }
+                        }, trigger: 'blur',required:true }
                     ],
                     tsurl:[
                         { validator: validateUrl, trigger: 'blur' }
