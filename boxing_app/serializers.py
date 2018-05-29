@@ -30,6 +30,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     competition_video = serializers.CharField(required=False)
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
+    allowed_course = serializers.ListField(child=serializers.CharField(), required=False)
 
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
