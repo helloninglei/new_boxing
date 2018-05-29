@@ -29,6 +29,14 @@ SMS_TEMPLATES = {
     "verifyCode": {
         "code": "SMS_134110376",
         "text": "您的验证码：{code}，您正进行身份验证，打死不告诉别人！",
+    },
+    "boxerApproved": {
+        "code": "SMS_135803000",
+        "text": "恭喜您，您在拳城出击app提交的拳手认证已经通过了审核，您可以开通的课程为: {courses}；快去查看。",
+    },
+    "boxerRefused": {
+        "code": "SMS_135793085",
+        "text": "您在拳城出击app提交的拳手认证已经被驳回，驳回原因为: {reason}，快去查看。",
     }
 }
 
@@ -89,3 +97,15 @@ def send_verify_code(mobile, interval=SEND_VERIFY_CODE_INTERVAL):
     redis_pipeline.setex(SEND_VERIFY_CODE.format(mobile=mobile), VERIFY_CODE_EXPIRED_INTERVAL, verify_code)
     redis_pipeline.execute()
     return _send_template_sms(template, mobile, template['text'].format(code=verify_code), {"code": verify_code})
+
+
+def send_boxer_approved_message(mobile, allowed_courses):
+    template = SMS_TEMPLATES['boxerApproved']
+    return _send_template_sms(template, mobile, template['text'].format(courses=allowed_courses),
+                              {"courses": allowed_courses})
+
+
+def send_boxer_refuse_message(mobile, refuse_reason):
+    template = SMS_TEMPLATES['boxerRefused']
+    return _send_template_sms(template, mobile, template['text'].format(reason=refuse_reason),
+                              {"reason": refuse_reason})

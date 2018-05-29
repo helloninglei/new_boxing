@@ -19,7 +19,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return object_class.objects.get(pk=self.kwargs['object_id'])
 
     def get_queryset(self):
-        return self.content_object.comments.filter(parent=None).prefetch_related('user')
+        return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')
 
     def perform_create(self, serializer):
         kwargs = {

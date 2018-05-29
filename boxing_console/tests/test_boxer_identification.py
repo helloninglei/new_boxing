@@ -6,7 +6,9 @@ from django.urls import reverse
 from rest_framework import status
 
 from biz import constants
-from biz.models import User, BoxerIdentification, UserProfile, OperationLog, Course
+from biz.constants import BOXER_ALLOWED_COURSES_CHOICE
+from biz.models import User, BoxerIdentification, UserProfile, OperationLog, Course, SmsLog
+from biz.sms_client import SMS_TEMPLATES
 
 
 class BoxerIdentificationTestCase(TestCase):
@@ -106,11 +108,16 @@ class BoxerIdentificationTestCase(TestCase):
         self.assertEqual(Course.objects.filter(boxer=identification).count(), 2)
 
         operation_log = OperationLog.objects.get(refer_type=constants.OperationTarget.BOXER_IDENTIFICATION,
-                                                refer_pk=identification.pk)
+                                                 refer_pk=identification.pk)
         self.assertEqual(operation_log.operator, self.fake_user1)
         self.assertEqual(operation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_APPROVED)
         self.assertEqual(operation_log.content, "{}".format(data['allowed_course']))
-
+        #判断审核后，是否正确发送短信
+        approve_message_log = SmsLog.objects.get(mobile=identification.mobile)
+        course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
+        allowed_courses = [course_dict.get(key) for key in data['allowed_course']]
+        courses = '、'.join(allowed_courses)
+        self.assertEqual(approve_message_log.content, (SMS_TEMPLATES['boxerApproved']["text"]).format(courses=courses))
 
     def test_boxer_identification_approve_failed_without_course(self):
         identification_data = {
@@ -155,7 +162,7 @@ class BoxerIdentificationTestCase(TestCase):
         data = {'authentication_state': constants.BOXER_AUTHENTICATION_STATE_REFUSE,
                 'refuse_reason': '身份信息不全，审核不通过'}
         identification = BoxerIdentification.objects.create(**identification_data)
-        res = self.client.post(reverse('identification_refuse', kwargs={'pk': identification.pk}),data)
+        res = self.client.post(reverse('identification_refuse', kwargs={'pk': identification.pk}), data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         identification = BoxerIdentification.objects.get(user=self.fake_user1)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_REFUSE)
@@ -165,6 +172,11 @@ class BoxerIdentificationTestCase(TestCase):
         self.assertEqual(opeation_log.operator, self.fake_user1)
         self.assertEqual(opeation_log.operation_type, constants.OperationType.BOXER_AUTHENTICATION_REFUSE)
         self.assertEqual(opeation_log.content, data['refuse_reason'])
+
+        #判断驳回审核后是否正确发送短信
+        refuse_message_log = SmsLog.objects.get(mobile=identification.mobile)
+        refuse_reason = data['refuse_reason']
+        self.assertEqual(refuse_message_log.content, SMS_TEMPLATES['boxerRefused']["text"].format(reason=refuse_reason))
 
     def test_boxer_identification_refuse_faild_without_reason(self):
         identification_data = {

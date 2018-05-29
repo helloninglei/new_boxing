@@ -138,6 +138,7 @@ class BoxerIdentificationTestCase(APITestCase):
                                                            is_professional_boxer=True,
                                                            club='111',
                                                            job='hhh',
+                                                           allowed_course=['MMA'],
                                                            introduction='hhh',
                                                            honor_certificate_images=[],
                                                            competition_video='')
@@ -151,6 +152,7 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(response.data['identity_number'], boxer_dentity.identity_number)
         self.assertEqual(response.data['is_professional_boxer'], boxer_dentity.is_professional_boxer)
         self.assertEqual(response.data['club'], boxer_dentity.club)
+        self.assertEqual(response.data['allowed_course'], boxer_dentity.allowed_course)
 
     def test_update_identification(self):
         boxer_dentity = BoxerIdentification.objects.create(real_name='张三',
