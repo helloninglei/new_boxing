@@ -19,15 +19,9 @@ from boxing_console.views.report import ReportViewSet, ReportHandleViewSet
 from biz.views import upload_file, captcha_image
 from boxing_console.views import admin
 from rest_framework.routers import SimpleRouter
+from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet
 
 router = SimpleRouter()
-
-urlpatterns = [
-    path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
-    path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
-    path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
-    path("users", UserManagementViewSet.as_view({"get": "list"}))
-]
 
 boxer_url = [
     path('boxer/identification', BoxerIdentificationViewSet.as_view({'get': 'list'}), name='boxer_identification_list'),
@@ -43,7 +37,8 @@ boxer_url = [
 
 hot_video_url = [
     path('hot_videos', HotVideoViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('hot_videos/<int:pk>',
+         HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'})),
 ]
 
 course_url = [
@@ -92,7 +87,15 @@ banner_urls = [
          name='banner-detail'),
 ]
 
-urlpatterns += router.urls
+user_management_urls = [
+    path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
+    path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
+    path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
+    path("users", UserManagementViewSet.as_view({"get": "list"})),
+    path("money_change_logs", MoneyBalanceChangeLogViewSet.as_view({"get": "list"}))
+]
+
+urlpatterns = router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
 urlpatterns += club_url
@@ -104,6 +107,7 @@ urlpatterns += captcha_urls
 urlpatterns += news_urls
 urlpatterns += report_urls
 urlpatterns += banner_urls
+urlpatterns += user_management_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

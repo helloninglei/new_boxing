@@ -18,12 +18,14 @@ import Boxerindentdetail from 'page/boxer_indent_detail';
 import Walletlist       from 'page/walletlist';
 import UseDialog        from 'components/useDialog';
 import BannerManage     from 'page/bannermanage';
-import BannerContent     from 'page/BannerContent';
-import Cropper         from 'components/cropper';
+import BannerContent    from 'page/BannerContent';
+import Cropper          from 'components/cropper';
 import Map1             from 'components/map';
 import Admin            from 'page/admin';
 import Report           from 'page/report';
 import Hotvideo         from 'page/hot_videos';
+import Hotvideodetail   from 'page/hot_video_detail';
+import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infoList';
 
 export default [
@@ -146,6 +148,14 @@ export default [
             {
                 path: '/hotvideo',
                 component: Hotvideo,
+            },
+            {
+                path: '/hotvideodetail',
+                component: Hotvideodetail,
+            },
+            {
+                path: '/accound_record',
+                component: AccoundRecord,
             },
             {
                 path: '/infoList',

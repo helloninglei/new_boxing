@@ -29,6 +29,7 @@ from boxing_app.views.banner import BannerViewSet
 from boxing_app.views.wallet import MoneyChangeLogViewSet, money_balance, recharge, RechargeLogViewSet
 from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
+from boxing_app.views.wallet import WithdrawViewSet
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -157,6 +158,7 @@ banner_urls = [
 wallet_urls = [
     path('money_change_log', MoneyChangeLogViewSet.as_view({"get": "list"})),
     path('money_balance', money_balance),
+    path("withdraw", WithdrawViewSet.as_view({"post": "create", "get": "list"})),
     re_path("^(?P<payment_type>(alipay|wechat))/recharge", recharge),
     path("recharge_log", RechargeLogViewSet.as_view({"get": "list"}))
 ]

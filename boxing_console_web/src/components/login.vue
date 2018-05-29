@@ -120,18 +120,22 @@
                 if(!this.form.username){
                     this.errText='请输入账号'
                     this.isShowErr=true;
+                    this.getCaptcha();
                     return
                 }else if(!this.form.password){
                     this.errText='请输入密码'
                     this.isShowErr=true;
+                    this.getCaptcha();
                     return
                 }else if(!reg.test(this.form.password)){
                     this.errText='密码格式不正确'
                     this.isShowErr=true;
+                    this.getCaptcha();
                     return
                 }else if(!this.form.captcha.captcha_code){
                     this.errText='请输入图形验证码'
                     this.isShowErr=true;
+                    this.getCaptcha();
                     return
                 }else{
                     this.isShowErr=false;
@@ -147,6 +151,7 @@
                         for(var key in errors){
                             $this.errText=errors[key]
                             $this.isShowErr=true;
+                            $this.getCaptcha();
                             return
                         }
                     })

@@ -265,7 +265,7 @@
             openContent(val){
                 this.detailData.allData = val;
                 this.detailData.isshow  = true
-                console.log(val)
+                console.log(this.detailData.allData)
             },
             openConfirm(id,isDel){
                 this.confirmData.id    = id
