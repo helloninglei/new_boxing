@@ -7,7 +7,7 @@ from boxing_console.filters import WithdrawLogFilter
 
 
 class WithdrawLogViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.UpdateModelMixin):
-    queryset = WithdrawLog.objects.all().order_by("-created_time")
+    queryset = WithdrawLog.objects.all().select_related("user").order_by("-created_time")
     serializer_class = WithdrawLogSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ["order_number", "user__id", "user__user_profile__nick_name", "user__mobile"]
@@ -20,7 +20,8 @@ class WithdrawLogViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.
 
 
 class PayOrdersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
-    queryset = PayOrder.objects.filter(~Q(content_type__model="user")).order_by("-order_time")
+    queryset = PayOrder.objects.filter(
+        ~Q(content_type__model="user")).select_related("user", "user__user_profile").order_by("-order_time")
     serializer_class = PayOrdersReadOnlySerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ['user__id', "user__mobile", "user__user_profile__nick_name", "out_trade_no"]
