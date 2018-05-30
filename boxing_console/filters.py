@@ -140,13 +140,14 @@ class WithdrawLogFilter(django_filters.FilterSet):
     status = django_filters.CharFilter(method="status_filter")
 
     def status_filter(self, qs, name, value):
-        if value.lower() == "waiting":
+        value = value.lower()
+        if value == "waiting":
             return qs.filter(status=constants.WITHDRAW_STATUS_WAITING)
-        if value.lower() == "finished":
+        if value == "finished":
             return qs.filter(~Q(status=constants.WITHDRAW_STATUS_WAITING))
-        if value.lower() == "approved":
+        if value == "approved":
             return qs.filter(status=constants.WITHDRAW_STATUS_APPROVED)
-        if value.lower() == "rejected":
+        if value == "rejected":
             return qs.filter(status=constants.WITHDRAW_STATUS_REJECTED)
         return qs
 
