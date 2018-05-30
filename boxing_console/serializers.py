@@ -362,6 +362,7 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
             attrs['status'] = WITHDRAW_STATUS_REJECTED
         return attrs
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
         if instance.status == WITHDRAW_STATUS_REJECTED:
