@@ -259,10 +259,24 @@ class AdminSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     reason = serializers.CharField(source='get_reason_display')
-    reported_user = serializers.SerializerMethodField()
-    content_type = serializers.SerializerMethodField()
-    status = serializers.CharField(source='get_status_display')
+    reported_user = serializers.IntegerField(source='content_object.user.id')
+    content_type = serializers.CharField(source='content_object._meta.verbose_name')
+    status = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
+    operator = serializers.SerializerMethodField()
+    result = serializers.SerializerMethodField()
+
+    def get_operator(self, ins):
+        return ins.operator.user_profile.nick_name if ins.operator and ins.operator.user_profile else None
+
+    def get_status(self, ins):
+        if ins.status == 1:
+            return '未处理'
+        return '已处理'
+
+    def get_result(self, ins):
+        if ins.status > 1:
+            return ins.get_status_display()
 
     def get_content(self, instance):
         obj = instance.content_object
@@ -286,23 +300,9 @@ class ReportSerializer(serializers.ModelSerializer):
             'pictures': pictures,
         }
 
-    def get_reported_user(self, obj):
-        return obj.content_object.user.id
-
-    def get_content_type(self, obj):
-        return obj.content_object._meta.verbose_name
-
     class Meta:
         model = models.Report
-        exclude = ('updated_time', 'operator')
-
-
-class ReportHandleSerializer(serializers.ModelSerializer):
-    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = models.Report
-        fields = ('id', 'operator')
+        exclude = ('updated_time',)
 
 
 class BannerSerializer(serializers.ModelSerializer):
