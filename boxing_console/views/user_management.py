@@ -18,6 +18,8 @@ class MoneyBalanceChangeLogViewSet(viewsets.GenericViewSet,
                                    mixins.ListModelMixin):
 
     serializer_class = MoneyBalanceChangeLogSerializer
-    queryset = MoneyChangeLog.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filter_class = MoneyChangeLogFilter
+
+    def get_queryset(self):
+        return MoneyChangeLog.objects.filter(user=self.kwargs['pk'])
