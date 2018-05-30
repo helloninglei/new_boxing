@@ -173,7 +173,25 @@ class BoxingClubSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_location_info(longitude, latitude):
-        # http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad 百度api文档说明
+        """
+        http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad 百度api文档说明
+        response data:
+        {
+            "status":0,
+            "result":{
+                "location":{
+                    "lng":116.32899999999994,
+                    "lat":39.93400007551505},
+                "formatted_address":"北京市海淀区增光路35-6号",
+                "addressComponent":{
+                    "country":"中国",
+                    "province":"北京市",
+                    "city":"北京市",
+                    "district":"海淀区",,
+                    "street":"增光路",,
+                    "distance":"13"}}
+        }
+        """
         url = settings.BAIDU_MAP_URL
         params = {'location': f'{latitude},{longitude}',
                   'ak': settings.BAIDU_MAP_AK,
