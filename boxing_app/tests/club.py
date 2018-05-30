@@ -1,6 +1,8 @@
+from rest_framework import status
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from biz.models import User
+from biz.models import User, BoxingClub
 
 
 class ClubTestCase(APITestCase):
@@ -20,6 +22,21 @@ class ClubTestCase(APITestCase):
             "introduction": "最牛逼的拳馆"
         }
 
-    def test_get_club_list(self):
+    def test_club_list_and_detail(self):
+        club = BoxingClub.objects.create(**self.club_data)
+
+        # 获取拳馆列表
         res = self.client1.get('/clubs')
-        print(res)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 1)
+
+        # 通过城市名筛选拳馆列表
+        res = self.client1.get(f'/clubs?city={self.club_data["city"]}')
+        self.assertEqual(len(res.data['results']), 1)
+        res = self.client1.get(f'/clubs?city=unknown_city')
+        self.assertEqual(len(res.data['results']), 0)
+
+        # 获取拳馆详情
+        res = self.client1.get(reverse('club-detail', kwargs={'pk': club.pk}))
+        for key in self.club_data:
+            self.assertEqual(self.club_data[key], res.data[key])

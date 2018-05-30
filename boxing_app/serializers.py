@@ -523,6 +523,8 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), read_only=True)
+    longitude = serializers.FloatField(read_only=True)
+    latitude = serializers.FloatField(read_only=True)
 
     class Meta:
         model = BoxingClub
