@@ -136,6 +136,26 @@ class CourseSettleOrderFilter(django_filters.FilterSet):
         fields = ('buyer', 'boxer', 'start_date', 'end_date', 'course', 'status')
 
 
+class WithdrawLogFilter(django_filters.FilterSet):
+    status = django_filters.CharFilter(method="status_filter")
+
+    def status_filter(self, qs, name, value):
+        value = value.lower()
+        if value == "waiting":
+            return qs.filter(status=constants.WITHDRAW_STATUS_WAITING)
+        if value == "finished":
+            return qs.filter(~Q(status=constants.WITHDRAW_STATUS_WAITING))
+        if value == "approved":
+            return qs.filter(status=constants.WITHDRAW_STATUS_APPROVED)
+        if value == "rejected":
+            return qs.filter(status=constants.WITHDRAW_STATUS_REJECTED)
+        return qs
+
+    class Meta:
+        model = models.WithdrawLog
+        fields = ("status",)
+
+
 class MoneyChangeLogFilter(django_filters.FilterSet):
     start_time = django_filters.DateTimeFilter(name="created_time", lookup_expr="gte")
     end_time = django_filters.DateTimeFilter(name="created_time", lookup_expr="lte")

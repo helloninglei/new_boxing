@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
+
+import requests
 from django.conf import settings
 from django.db import transaction
 from django.core.validators import URLValidator
@@ -9,10 +11,12 @@ from rest_framework.exceptions import ValidationError
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
     Message, Comment
 from biz import models, constants, redis_client
+from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, get_video_cover_url
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
-from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
+from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
+    WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK
 
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -150,12 +154,57 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), required=False)
+    avatar = serializers.CharField(max_length=128, required=True)
+    province = serializers.CharField(max_length=10, required=False)
+    city = serializers.CharField(max_length=10, required=False)
+    address = serializers.CharField(max_length=30, required=False)
+
+    def validate(self, attrs):
+        longitude = attrs['longitude']
+        latitude = attrs['latitude']
+        attrs['province'], attrs['city'], attrs['address'] = self.get_location_info(longitude, latitude)
+        return attrs
 
     @transaction.atomic
     def save(self, **kwargs):
         instance = super().save(**kwargs)
         redis_client.record_object_location(instance, instance.longitude, instance.latitude)
         return instance
+
+    @staticmethod
+    def get_location_info(longitude, latitude):
+        """
+        http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad 百度api文档说明
+        response data:
+        {
+            "status":0,
+            "result":{
+                "location":{
+                    "lng":116.32899999999994,
+                    "lat":39.93400007551505},
+                "formatted_address":"北京市海淀区增光路35-6号",
+                "addressComponent":{
+                    "country":"中国",
+                    "province":"北京市",
+                    "city":"北京市",
+                    "district":"海淀区",,
+                    "street":"增光路",,
+                    "distance":"13"}}
+        }
+        """
+        url = settings.BAIDU_MAP_URL
+        params = {'location': f'{latitude},{longitude}',
+                  'ak': settings.BAIDU_MAP_AK,
+                  'output': 'json'
+                  }
+        res = requests.get(url=url, params=params)
+        json_res = res.json()
+        result = json_res.get('result')
+        address = result.get('formatted_address')
+        location_detail = result.get('addressComponent')
+        province = location_detail.get('province')
+        city = location_detail.get('city')
+        return province, city, address
 
     class Meta:
         model = BoxingClub
@@ -343,6 +392,35 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CourseSettleOrder
         exclude = ('order', 'course', 'created_time')
+
+
+class WithdrawLogSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(source="user.id", read_only=True)
+    user_nickname = serializers.CharField(source="user.user_profile.nick_name", read_only=True)
+    user_mobile = serializers.CharField(source="user.mobile", read_only=True)
+    status = serializers.CharField(source="get_status_display", read_only=True)
+
+    def validate(self, attrs):
+        if self.instance.status != WITHDRAW_STATUS_WAITING:
+            raise ValidationError("该条记录已经审核过了，不能重复审核！")
+        if self.context['operate_type'] == "approved":
+            attrs['status'] = WITHDRAW_STATUS_APPROVED
+        if self.context['operate_type'] == "rejected":
+            attrs['status'] = WITHDRAW_STATUS_REJECTED
+        return attrs
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        if instance.status == WITHDRAW_STATUS_REJECTED:
+            change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK)
+        return instance
+
+    class Meta:
+        model = models.WithdrawLog
+        fields = ["id", "order_number", "user_id", "user_nickname", "user_mobile", "created_time", "amount",
+                  "withdraw_account", "status"]
+        read_only_fields = ("order_number", "created_time", "amount", "withdraw_account")
 
 
 class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):

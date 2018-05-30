@@ -55,6 +55,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.club1_data = {
             "name": "北京大学拳馆",
             "address": "东北五环",
+            "city": "北京市",
             "longitude": 116.318031,
             "latitude": 39.999222,
             "phone": "11111111111",
@@ -65,6 +66,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.club2_data = {
             "name": "清华大学拳馆",
             "address": "东北五环",
+            "city": "北京市",
             "longitude": 116.332404,
             "latitude": 40.01116,
             "phone": "11111111111",
@@ -75,6 +77,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.club3_data = {
             "name": "北京工人体育场拳馆",
             "address": "东北五环",
+            "city": "北京市",
             "longitude": 116.453712,
             "latitude": 39.937732,
             "phone": "11111111111",
@@ -85,6 +88,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.club4_data = {
             "name": "石家庄拳馆",
             "address": "河北石家庄",
+            "city": "北京市",
             "longitude": 114.496699,
             "latitude": 38.05242,
             "phone": "11111111111",
@@ -95,6 +99,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.club5_data = {
             "name": "重庆拳馆",
             "address": "重庆市",
+            "city": "北京市",
             "longitude": 106.657151,
             "latitude": 29.516309,
             "phone": "11111111111",
@@ -205,5 +210,11 @@ class NearbyBoxerTestCase(APITestCase):
         # 通过课程名筛选拳手
         res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&course_name={self.course_data["course_name"]}')
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&course_name="unknow_course"')
+        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&course_name=unknow_course')
+        self.assertEqual(len(res.data['results']), 0)
+
+        # 通过城市筛选(已知经纬度116.39737,40.024919为北京奥林匹克森林公园位置)
+        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&city=北京市')
+        self.assertEqual(len(res.data['results']), 5)
+        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&city=上海市')
         self.assertEqual(len(res.data['results']), 0)
