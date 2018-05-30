@@ -26,7 +26,10 @@ class MessageViewSet(viewsets.ModelViewSet):
     def _get_query_set(self):
         user_id = self.request.user.id
         is_like = Count('likes', filter=Q(likes__user_id=user_id), distinct=True)
-        return Message.objects.annotate(like_count=Count('likes', distinct=True), comment_count=Count('comments', distinct=True),
+        comment_count = Count('comments', filter=Q(comments__is_deleted=False) & (
+                    Q(comments__ancestor__is_deleted=False) | Q(comments__ancestor__isnull=True)),
+                              distinct=True)
+        return Message.objects.annotate(like_count=Count('likes', distinct=True), comment_count=comment_count,
                                         is_like=is_like).prefetch_related('user__boxer_identification',
                                                                           'user__user_profile')
 

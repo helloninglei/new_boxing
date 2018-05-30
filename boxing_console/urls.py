@@ -6,7 +6,6 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.urls import include, path, re_path
 from django.conf import settings
 
-from boxing_app.views.boxer import NearbyBoxerListViewSet
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
@@ -18,6 +17,7 @@ from boxing_console.views.banner import BannerViewSet
 from boxing_console.views.report import ReportViewSet, ReportHandleViewSet
 from biz.views import upload_file, captcha_image
 from boxing_console.views import admin
+from boxing_console.views.withdraw import WithdrawLogViewSet
 from rest_framework.routers import SimpleRouter
 from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet
 
@@ -87,6 +87,11 @@ banner_urls = [
          name='banner-detail'),
 ]
 
+withdraw_urls = [
+    path("withdraw_logs", WithdrawLogViewSet.as_view({"get": "list"})),
+    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$", WithdrawLogViewSet.as_view({"put": "update"}))
+]
+
 user_management_urls = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
     path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
@@ -107,6 +112,7 @@ urlpatterns += captcha_urls
 urlpatterns += news_urls
 urlpatterns += report_urls
 urlpatterns += banner_urls
+urlpatterns += withdraw_urls
 urlpatterns += user_management_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:

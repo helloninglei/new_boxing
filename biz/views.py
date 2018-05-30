@@ -16,10 +16,12 @@ from biz.services.captcha_service import get_captcha
 def upload_file(request):
     form = UploadFileForm(request.POST, request.FILES)
     if form.is_valid():
-        f = request.FILES['file']
-        url = file_service.save_upload_file(f)
-        return JsonResponse({"url": url})
-    return JsonResponse({'data': form.errors})
+        urls = []
+        for f in request.FILES.getlist('file'):
+            url = file_service.save_upload_file(f)
+            urls.append(url)
+        return JsonResponse({'urls': urls})
+    return JsonResponse({'message': form.errors})
 
 
 class AuthTokenLogin(ObtainAuthToken):
