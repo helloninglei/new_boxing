@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
+
+import requests
 from django.conf import settings
 from django.db import transaction
 from django.core.validators import URLValidator
@@ -152,12 +154,57 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), required=False)
+    avatar = serializers.CharField(max_length=128, required=True)
+    province = serializers.CharField(max_length=10, required=False)
+    city = serializers.CharField(max_length=10, required=False)
+    address = serializers.CharField(max_length=30, required=False)
+
+    def validate(self, attrs):
+        longitude = attrs['longitude']
+        latitude = attrs['latitude']
+        attrs['province'], attrs['city'], attrs['address'] = self.get_location_info(longitude, latitude)
+        return attrs
 
     @transaction.atomic
     def save(self, **kwargs):
         instance = super().save(**kwargs)
         redis_client.record_object_location(instance, instance.longitude, instance.latitude)
         return instance
+
+    @staticmethod
+    def get_location_info(longitude, latitude):
+        """
+        http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad 百度api文档说明
+        response data:
+        {
+            "status":0,
+            "result":{
+                "location":{
+                    "lng":116.32899999999994,
+                    "lat":39.93400007551505},
+                "formatted_address":"北京市海淀区增光路35-6号",
+                "addressComponent":{
+                    "country":"中国",
+                    "province":"北京市",
+                    "city":"北京市",
+                    "district":"海淀区",,
+                    "street":"增光路",,
+                    "distance":"13"}}
+        }
+        """
+        url = settings.BAIDU_MAP_URL
+        params = {'location': f'{latitude},{longitude}',
+                  'ak': settings.BAIDU_MAP_AK,
+                  'output': 'json'
+                  }
+        res = requests.get(url=url, params=params)
+        json_res = res.json()
+        result = json_res.get('result')
+        address = result.get('formatted_address')
+        location_detail = result.get('addressComponent')
+        province = location_detail.get('province')
+        city = location_detail.get('city')
+        return province, city, address
 
     class Meta:
         model = BoxingClub
