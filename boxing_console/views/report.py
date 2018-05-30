@@ -20,7 +20,7 @@ class ReportViewSet(ModelViewSet):
 
     def get_queryset(self):
         return models.Report.objects.all().prefetch_related('user', 'content_object',
-                                                            'content_object__user')
+                                                            'content_object__user__user_profile', 'operator__user_profile')
 
 
 def _get_object(pk):
