@@ -266,17 +266,17 @@ class ReportSerializer(serializers.ModelSerializer):
     operator = serializers.SerializerMethodField()
     result = serializers.SerializerMethodField()
 
-    def get_operator(self, ins):
-        return ins.operator.user_profile.nick_name if ins.operator and ins.operator.user_profile else None
+    def get_operator(self, instance):
+        return instance.operator.user_profile.nick_name if instance.operator and instance.operator.user_profile else None
 
-    def get_status(self, ins):
-        if ins.status == 1:
+    def get_status(self, instance):
+        if instance.status == 1:
             return '未处理'
         return '已处理'
 
-    def get_result(self, ins):
-        if ins.status > 1:
-            return ins.get_status_display()
+    def get_result(self, instance):
+        if instance.status > 1:
+            return instance.get_status_display()
 
     def get_content(self, instance):
         obj = instance.content_object
