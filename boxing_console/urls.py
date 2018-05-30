@@ -97,7 +97,7 @@ user_management_urls = [
     path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
     path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
     path("users", UserManagementViewSet.as_view({"get": "list"})),
-    path("money_change_logs", MoneyBalanceChangeLogViewSet.as_view({"get": "list"}))
+    path("money_change_logs/<int:pk>", MoneyBalanceChangeLogViewSet.as_view({"get": "list"}))
 ]
 
 urlpatterns = router.urls
