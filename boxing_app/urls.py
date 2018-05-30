@@ -74,7 +74,7 @@ boxer_url = [
 
 club_url = [
     path('clubs', BoxingClubVewSet.as_view({'get': 'list'}), name='club-list'),
-    path('club/<int:pk>', BoxingClubVewSet.as_view({'get': 'retrieve'}), name='club-detail')
+    path('clubs/<int:pk>', BoxingClubVewSet.as_view({'get': 'retrieve'}), name='club-detail')
 ]
 
 course_url = [
