@@ -42,6 +42,7 @@ class CityTestCase(APITestCase):
             "longitude": 111.123456,
             "latitude": 11.123456,
             "city": "北京市",
+            "city_first_letter": 'B',
             "phone": "11111111111",
             "opening_hours": "10:00--20:00",
             "images": ["www.baidu.com", "www.sina.com.cn"],
@@ -71,12 +72,15 @@ class CityTestCase(APITestCase):
         club1 = BoxingClub.objects.create(**self.club_data)
         self.club_data['name'] = 'club2'
         self.club_data['city'] = '广州市'
+        self.club_data['city_first_letter'] = 'G'
         club2 = BoxingClub.objects.create(**self.club_data)
         self.club_data['name'] = 'club3'
         self.club_data['city'] = '长春市'
+        self.club_data['city_first_letter'] = 'C'
         club3 = BoxingClub.objects.create(**self.club_data)
         self.club_data['name'] = 'club4'
         self.club_data['city'] = '重庆市'
+        self.club_data['city_first_letter'] = 'C'
         club4 = BoxingClub.objects.create(**self.club_data)
 
         self.course_data['boxer'] = boxer1
@@ -94,5 +98,7 @@ class CityTestCase(APITestCase):
 
         res = self.client1.get('/boxer_cities')
         self.assertEqual(len(res.data), 4)
-        self.assertTrue('北京市' in res.data)
-        self.assertTrue('广州市' in res.data)
+        self.assertEqual(res.data[0], ('B', '北京市'))
+        self.assertEqual(res.data[1][0], 'C')
+        self.assertEqual(res.data[2][0], 'C')
+        self.assertEqual(res.data[3], ('G', '广州市'))

@@ -5,6 +5,7 @@ import requests
 from django.conf import settings
 from django.db import transaction
 from django.core.validators import URLValidator
+from pypinyin import pinyin, Style
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -163,6 +164,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
         longitude = attrs['longitude']
         latitude = attrs['latitude']
         attrs['province'], attrs['city'], attrs['address'] = self.get_location_info(longitude, latitude)
+        attrs['city_first_letter'] = self.hans_to_initial(attrs['city'])
         return attrs
 
     @transaction.atomic
@@ -205,6 +207,13 @@ class BoxingClubSerializer(serializers.ModelSerializer):
         province = location_detail.get('province')
         city = location_detail.get('city')
         return province, city, address
+
+    @staticmethod
+    def hans_to_initial(hans):
+        """返回中文词组第一个汉字的首字母"""
+        first_hans = hans[0]
+        first_letter = pinyin(first_hans, style=Style.FIRST_LETTER)
+        return first_letter[0][0].upper()
 
     class Meta:
         model = BoxingClub
