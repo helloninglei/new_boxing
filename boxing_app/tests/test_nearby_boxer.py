@@ -213,11 +213,10 @@ class NearbyBoxerTestCase(APITestCase):
         res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&course_name="unknow_course"')
         self.assertEqual(len(res.data['results']), 0)
 
-        # 通过城市筛选
-        # res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&city="北京市"')
-        # self.assertEqual(len(res.data['results']), 5)
-        # res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&city="上海市"')
-        # self.assertEqual(len(res.data['results']), 0)
-
+        # 通过城市筛选(已知经纬度116.39737,40.024919为北京奥林匹克森林公园位置)
+        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&city=北京市')
+        self.assertEqual(len(res.data['results']), 5)
+        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&city=上海市')
+        self.assertEqual(len(res.data['results']), 0)
 
 

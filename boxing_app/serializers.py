@@ -50,12 +50,16 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
     allowed_course = serializers.ListField(read_only=True)
+    city = serializers.SerializerMethodField()
 
     def get_longitude(self, instance):
         return instance.course.first().club.longitude
 
     def get_latitude(self, instance):
         return instance.course.first().club.latitude
+
+    def get_city(self, instance):
+        return instance.course.first().club.city
 
     @staticmethod
     def get_boxer_loacation(obj):
@@ -64,9 +68,9 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
-                  'allowed_course']
+                  'allowed_course', 'city']
         read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
-                            'real_name','allowed_course']
+                            'real_name', 'allowed_course', 'city']
 
 
 class DiscoverUserField(serializers.RelatedField):
