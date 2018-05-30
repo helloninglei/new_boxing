@@ -9,10 +9,12 @@ from rest_framework.exceptions import ValidationError
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
     Message, Comment
 from biz import models, constants, redis_client
+from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, get_video_cover_url
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
-from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE
+from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
+    WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK
 
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -343,6 +345,35 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CourseSettleOrder
         exclude = ('order', 'course', 'created_time')
+
+
+class WithdrawLogSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(source="user.id", read_only=True)
+    user_nickname = serializers.CharField(source="user.user_profile.nick_name", read_only=True)
+    user_mobile = serializers.CharField(source="user.mobile", read_only=True)
+    status = serializers.CharField(source="get_status_display", read_only=True)
+
+    def validate(self, attrs):
+        if self.instance.status != WITHDRAW_STATUS_WAITING:
+            raise ValidationError("该条记录已经审核过了，不能重复审核！")
+        if self.context['operate_type'] == "approved":
+            attrs['status'] = WITHDRAW_STATUS_APPROVED
+        if self.context['operate_type'] == "rejected":
+            attrs['status'] = WITHDRAW_STATUS_REJECTED
+        return attrs
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        if instance.status == WITHDRAW_STATUS_REJECTED:
+            change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK)
+        return instance
+
+    class Meta:
+        model = models.WithdrawLog
+        fields = ["id", "order_number", "user_id", "user_nickname", "user_mobile", "created_time", "amount",
+                  "withdraw_account", "status"]
+        read_only_fields = ("order_number", "created_time", "amount", "withdraw_account")
 
 
 class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):
