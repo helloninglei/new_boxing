@@ -36,7 +36,7 @@ class WithdrawLogTestCase(APITestCase):
         response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(WithdrawLog.objects.get(id=withdraw.id).status, WITHDRAW_STATUS_APPROVED)
-        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 4000)
+        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 0)
 
         response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -50,7 +50,7 @@ class WithdrawLogTestCase(APITestCase):
         response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/rejected")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(WithdrawLog.objects.get(id=withdraw.id).status, WITHDRAW_STATUS_REJECTED)
-        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 0)
+        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 4000)
 
         response = self.client.put(path=f"/withdraw_logs/{withdraw.id}/approved")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

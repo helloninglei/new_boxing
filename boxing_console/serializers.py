@@ -364,7 +364,7 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
-        if instance.status == WITHDRAW_STATUS_APPROVED:
+        if instance.status == WITHDRAW_STATUS_REJECTED:
             change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK)
         return instance
 
