@@ -20,10 +20,7 @@ def upload_file(request):
         for f in request.FILES.getlist('file'):
             url = file_service.save_upload_file(f)
             urls.append(url)
-        data = {'urls': urls}
-        if len(urls) == 1:
-            data['url'] = url
-        return JsonResponse(data)
+        return JsonResponse({'urls': urls})
     return JsonResponse({'message': form.errors})
 
 
