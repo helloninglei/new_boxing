@@ -37,6 +37,7 @@ class CourseTestCase(APITestCase):
                     "address": "丰台区角门东洋桥",
                     "longitude": 111.123456,
                     "latitude": 11.123456,
+                    "city": "北京市",
                     "phone": "11111111111",
                     "opening_hours": "10:00--20:00",
                     "images": ["www.baidu.com", "www.sina.com.cn"],
