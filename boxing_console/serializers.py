@@ -173,9 +173,9 @@ class BoxingClubSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_location_info(longitude, latitude):
-        url = settings.BAIDU_API['base_url']
+        url = settings.BAIDU_MAP_URL
         params = {'location': f'{latitude},{longitude}',
-                  'ak': settings.BAIDU_API['ak'],
+                  'ak': settings.BAIDU_MAP_AK,
                   'output': 'json'
                   }
         res = requests.get(url=url, params=params)
