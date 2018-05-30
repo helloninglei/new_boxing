@@ -159,10 +159,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         longitude = attrs['longitude']
         latitude = attrs['latitude']
-        province, city, address = self.get_location_info(longitude, latitude)
-        attrs['province'] = province
-        attrs['city'] = city
-        attrs['address'] = address
+        attrs['province'], attrs['city'], attrs['address'] = self.get_location_info(longitude, latitude)
         return attrs
 
     @transaction.atomic
@@ -173,6 +170,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_location_info(longitude, latitude):
+        # http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding-abroad 百度api文档说明
         url = settings.BAIDU_MAP_URL
         params = {'location': f'{latitude},{longitude}',
                   'ak': settings.BAIDU_MAP_AK,
