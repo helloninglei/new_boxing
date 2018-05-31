@@ -52,6 +52,7 @@ class ReplyViewSet(CommentViewSet):
 
 
 class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
+    """与拳手相关的课程订单评论"""
     serializer_class = OrderCommentSerializer
 
     def get_queryset(self):

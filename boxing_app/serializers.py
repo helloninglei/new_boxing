@@ -522,6 +522,7 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
 
 class OrderCommentSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = models.OrderComment
