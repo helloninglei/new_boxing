@@ -397,7 +397,7 @@ class Report(BaseAuditModel):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     reason = models.SmallIntegerField(choices=constants.REPORT_REASON_CHOICES)
-    remark = models.CharField(max_length=20, null=True)
+    remark = models.CharField(max_length=20, null=True, blank=True)
     status = models.SmallIntegerField(choices=constants.REPORT_STATUS_CHOICES,
                                       default=constants.REPORT_STATUS_NOT_PROCESSED)
 
