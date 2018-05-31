@@ -9,7 +9,6 @@ from boxing_app.filters import MoneyChangeLogFilter
 from biz.services.pay_service import PayService
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT
 from biz.utils import get_client_ip, get_device_platform
-from biz import constants
 
 
 @api_view(['GET'])
