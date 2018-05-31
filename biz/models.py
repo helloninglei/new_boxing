@@ -450,3 +450,15 @@ class CourseSettleOrder(models.Model):
         self.settled_amount = self.course.price
         self.save()
         # TODO 更新钱包记录
+
+
+class OfficialAccountChangeLog(models.Model):
+    change_amount = models.IntegerField(default=0)  # unit:分, 有正负
+    related_user = models.ForeignKey(User, related_name="+", db_index=False, on_delete=models.PROTECT)
+    created_time = models.DateTimeField(auto_now_add=True)
+    change_type = models.SmallIntegerField(choices=constants.OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE)
+    remarks = models.CharField(max_length=64)
+
+    class Meta:
+        db_table = "official_account_change_log"
+        ordering = ("-created_time",)

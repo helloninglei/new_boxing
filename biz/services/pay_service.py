@@ -5,10 +5,10 @@ from django.db.transaction import atomic
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
-from biz.models import PayOrder, User
+from biz.models import PayOrder, User, HotVideo, Course
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
-    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID
-from biz.services import money_balance_service
+    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE
+from biz.services import money_balance_service, official_account_service
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -113,10 +113,19 @@ class PayService:
     @atomic
     def success_callback(cls, data):
         pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
-        if pay_order.status == PAYMENT_STATUS_UNPAID and isinstance(pay_order.content_object, User):
-            money_balance_service.change_money(user=pay_order.content_object, amount=pay_order.amount,
-                                               change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
-                                               remarks=pay_order.out_trade_no)
+        if pay_order.status == PAYMENT_STATUS_UNPAID:
+            if isinstance(pay_order.content_object, User):
+                change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[0][0]
+                money_balance_service.change_money(user=pay_order.content_object, amount=pay_order.amount,
+                                                   change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
+                                                   remarks=pay_order.out_trade_no)
+            elif isinstance(pay_order.content_object, Course):
+                change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[2][0]
+            else:
+                change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[3][0]
+
+            official_account_service.change_official_account(
+                pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)
 
         pay_order.status = PAYMENT_STATUS_WAIT_USE
         pay_order.save()

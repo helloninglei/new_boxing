@@ -221,3 +221,10 @@ WITHDRAW_STATUS_CHOICE = (
 )
 
 WITHDRAW_MIN_CONFINE = 200  # unit:元
+
+OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE = (
+    (1, "充值"),
+    (2, "提现"),
+    (3, "约单"),
+    (4, "热门视频")
+)

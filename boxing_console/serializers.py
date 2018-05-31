@@ -16,7 +16,9 @@ from biz.utils import get_model_class_by_name, get_video_cover_url
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
-    WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK
+    WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
+    OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE
+from biz.services.official_account_service import change_official_account
 
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -414,6 +416,11 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         if instance.status == WITHDRAW_STATUS_REJECTED:
             change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK)
+        if instance.status == WITHDRAW_STATUS_APPROVED:
+            change_official_account(
+                -instance.amount, self.context['request'].user,
+                change_type=OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[1][0], remarks=instance.order_number
+            )
         return instance
 
     class Meta:
@@ -445,3 +452,11 @@ class PayOrdersReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PayOrder
         exclude = ['finish_time', "object_id", "pay_time", "content_type"]
+
+
+class OfficialAccountChangeLogsSerializer(serializers.ModelSerializer):
+    change_type = serializers.CharField(source="get_change_type_display")
+
+    class Meta:
+        model = models.OfficialAccountChangeLog
+        fields = ["id", "change_amount", "created_time", "remarks", "change_type"]
