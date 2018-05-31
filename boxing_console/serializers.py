@@ -12,7 +12,7 @@ from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Cours
     Message, Comment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
-from biz.utils import get_model_class_by_name, get_video_cover_url
+from biz.utils import get_model_class_by_name
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
@@ -329,22 +329,23 @@ class ReportSerializer(serializers.ModelSerializer):
         obj = instance.content_object
         user = obj.user
         created_time = obj.created_time
+        video = None
+        pictures = []
         if isinstance(obj, Message):
             content = obj.content
-            pictures = obj.images[:]
-            if obj.video:
-                pictures.append(get_video_cover_url(obj.video))
+            pictures = obj.images
+            video = obj.video
         elif isinstance(obj, Comment):
             content = obj.content
-            pictures = []
         else:
             content = obj.name
-            pictures = [get_video_cover_url(obj.try_url)]
+            video = obj.url
         return {
             'nick_name': user.user_profile.nick_name if hasattr(user, 'user_profile') else None,
             'created_time': created_time.strftime(datetime_format),
             'content': content,
             'pictures': pictures,
+            'video': video,
         }
 
     class Meta:

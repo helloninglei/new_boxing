@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -16,7 +17,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     @property
     def content_object(self):
         object_class = get_model_class_by_name(self.kwargs['object_type'])
-        return object_class.objects.get(pk=self.kwargs['object_id'])
+        return get_object_or_404(object_class, pk=self.kwargs['object_id'])
 
     def get_queryset(self):
         return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')

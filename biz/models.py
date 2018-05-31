@@ -180,7 +180,7 @@ class SoftDeleteModel(models.Model):
 # 动态
 class Message(SoftDeleteModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
-    content = models.CharField(max_length=140)
+    content = models.CharField(max_length=140, null=True, blank=True)
     images = StringListField(null=True)
     video = models.CharField(max_length=200, null=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
