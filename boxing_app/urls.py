@@ -150,6 +150,7 @@ payment_urls = [
             name='create-unpaid-order'),
     path('callback/alipay', pay.alipay_calback),
     path('callback/wechat', pay.wechat_calback),
+    path('pay_status', pay.pay_status),
 ]
 
 news_urls = [

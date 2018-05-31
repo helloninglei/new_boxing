@@ -10,7 +10,8 @@ from biz.models import PayOrder, OrderComment, BoxingClub
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
-from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
+from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
+    MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
 from biz.redis_client import is_following, get_object_location
 from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email

@@ -3,6 +3,8 @@ from biz import constants
 from rest_framework import status
 from rest_framework.test import APITestCase
 from biz.models import User, HotVideo, PayOrder
+from biz.services.pay_service import PayService
+from biz.constants import DEVICE_PLATFORM_IOS, PAYMENT_TYPE_ALIPAY
 from django.contrib.contenttypes.fields import ContentType
 
 
@@ -34,9 +36,27 @@ class PaymentTestCase(APITestCase):
         res = self.client1.post('/hot_videos/create_order', payment_data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertTrue(res.data['pay_info'])
+        self.assertTrue(res.data['order_id'])
 
         video_type = ContentType.objects.get_for_model(video)
         order = PayOrder.objects.get(content_type__pk=video_type.id, object_id=video.id)
         self.assertEqual(order.amount, self.data['price'] * 100)
         self.assertEqual(order.payment_type, constants.PAYMENT_TYPE_ALIPAY)
         self.assertEqual(order.device, constants.DEVICE_PLATFORM_IOS)
+
+    def test_pay_status_info(self):
+        video = HotVideo.objects.create(**self.data)
+
+        order = PayService.perform_create_order(
+            user=self.test_user,
+            obj=video,
+            device=DEVICE_PLATFORM_IOS,
+            payment_type=PAYMENT_TYPE_ALIPAY,
+        )
+
+        res = self.client1.get('/pay_status', {'order_id': order.out_trade_no})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        result = res.data['result']
+        self.assertEqual(result['status'], 'unpaid')
+        self.assertEqual(result['amount'], self.data['price'])
+        self.assertEqual(result['name'], f'视频（{self.data["name"]}）')
