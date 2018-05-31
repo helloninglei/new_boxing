@@ -49,7 +49,7 @@ def recharge(request, payment_type):
         get_client_ip(request),
         amount=serializer.validated_data['amount'],
     )
-    return Response({"result": pay_info}, status=status.HTTP_200_OK)
+    return Response(pay_info, status=status.HTTP_200_OK)
 
 
 class RechargeLogViewSet(mixins.ListModelMixin,

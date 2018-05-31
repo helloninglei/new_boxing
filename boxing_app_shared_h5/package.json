@@ -1,7 +1,7 @@
 {
-  "name": "anyang_management",
+  "name": "quanmin_shared_h5",
   "version": "1.0.0",
-  "description": "anyang_management",
+  "description": "quanmin_shared_h5",
   "author": "zz",
   "private": true,
   "scripts": {
@@ -12,14 +12,14 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cropper": "^4.0.0",
-    "element-ui": "^2.2.2",
     "jquery": "^2.2.4",
     "js": "^0.1.0",
     "stylus": "^0.54.5",
     "vue-cropper": "^0.2.9",
+    "vue-dplayer": "0.0.9",
     "vue-router": "^2.2.0",
-    "vuex": "^3.0.1",
-    "vue-dplayer": "^0.0.9"
+    "vue-video-player": "^5.0.2",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

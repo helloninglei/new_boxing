@@ -14,6 +14,7 @@ from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
 from boxing_app.views.comment import CourseCommentsAboutBoxer
+from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
@@ -69,6 +70,11 @@ boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
     path('nearby/boxers', NearbyBoxerListViewSet.as_view({'get': 'list'}), name='nearby-boxer')
 
+]
+
+club_url = [
+    path('clubs', BoxingClubVewSet.as_view({'get': 'list'}), name='club-list'),
+    path('clubs/<int:pk>', BoxingClubVewSet.as_view({'get': 'retrieve'}), name='club-detail')
 ]
 
 course_url = [
@@ -146,6 +152,7 @@ payment_urls = [
             name='create-unpaid-order'),
     path('callback/alipay', pay.alipay_calback),
     path('callback/wechat', pay.wechat_calback),
+    path('pay_status', pay.pay_status),
 ]
 
 news_urls = [
@@ -192,6 +199,7 @@ urlpatterns += order_comment_url
 urlpatterns += banner_urls
 urlpatterns += wallet_urls
 urlpatterns += share_urls
+urlpatterns += club_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
