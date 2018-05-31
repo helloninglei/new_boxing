@@ -1,0 +1,31 @@
+body{
+    font-family: 'PingFangSC-Regular', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
+    background: #1D1D27;
+    font-size: .7rem;
+}
+.dplayer-controller .dplayer-icons .dplayer-setting, .dplayer-controller .dplayer-icons .dplayer-subtitle-btn {
+    display: none!important;
+}
+
+.dplayer-controller .dplayer-icons .dplayer-full .dplayer-full-in-icon {
+    display: none!important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
