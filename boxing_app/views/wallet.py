@@ -3,8 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from biz.models import MoneyChangeLog
-from biz.models import WithdrawLog
-from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, RechargeSerializer, WithdrawSerializer
+from biz.models import WithdrawLog, PayOrder
+from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, RechargeSerializer, WithdrawSerializer, RechargeLogReadOnlySerializer
 from boxing_app.filters import MoneyChangeLogFilter
 from biz.services.pay_service import PayService
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT
@@ -54,8 +54,7 @@ def recharge(request, payment_type):
 
 class RechargeLogViewSet(mixins.ListModelMixin,
                          viewsets.GenericViewSet):
-    serializer_class = MoneyChangeLogReadOnlySerializer
+    serializer_class = RechargeLogReadOnlySerializer
 
     def get_queryset(self):
-        return MoneyChangeLog.objects.filter(
-            user=self.request.user, change_type=constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE).order_by('-created_time')
+        return PayOrder.objects.filter(user=self.request.user, content_type__model="user").order_by("-order_time")
