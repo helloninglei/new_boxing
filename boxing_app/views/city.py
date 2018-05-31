@@ -1,5 +1,3 @@
-import locale
-
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response

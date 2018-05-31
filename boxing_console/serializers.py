@@ -11,9 +11,8 @@ from rest_framework.exceptions import ValidationError
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
     Message, Comment
 from biz import models, constants, redis_client
-from biz.services.hans_to_pinyin import hans_to_initial
 from biz.services.money_balance_service import change_money
-from biz.utils import get_model_class_by_name, get_video_cover_url
+from biz.utils import get_model_class_by_name, get_video_cover_url, hans_to_initial
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
