@@ -8,7 +8,6 @@ from biz.services.pay_service import PayService
 
 
 @api_view(['POST'])
-@permission_classes((permissions.IsAuthenticated,))
 def create_order(request, object_type):
     serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
@@ -22,7 +21,6 @@ def create_order(request, object_type):
 
 
 @api_view(['POST'])
-@permission_classes((permissions.IsAuthenticated,))
 def create_unpaid_order(request, object_type):
     serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': object_type})
     serializer.is_valid(raise_exception=True)
@@ -47,7 +45,6 @@ def wechat_calback(request):
 
 
 @api_view(['GET'])
-@permission_classes((permissions.IsAuthenticated,))
 def pay_status(request):
     order_id = request.query_params.get('order_id')
     info = PayService.get_payment_status_info(order_id, request.user)
