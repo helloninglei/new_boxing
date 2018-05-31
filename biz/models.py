@@ -299,6 +299,7 @@ class Course(models.Model):
 
     class Meta:
         db_table = "course"
+        verbose_name = '约单'
 
 
 class SmsLog(models.Model):

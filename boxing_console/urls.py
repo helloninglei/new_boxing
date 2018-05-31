@@ -15,8 +15,8 @@ from boxing_console.views.hot_video import HotVideoViewSet
 from boxing_console.views.game_news import NewsViewSet
 from boxing_console.views.banner import BannerViewSet
 from biz.views import upload_file, captcha_image
+from boxing_console.views.financial_management import WithdrawLogViewSet, PayOrdersViewSet
 from boxing_console.views import admin, report
-from boxing_console.views.withdraw import WithdrawLogViewSet
 from rest_framework.routers import SimpleRouter
 from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet
 
@@ -86,9 +86,10 @@ banner_urls = [
          name='banner-detail'),
 ]
 
-withdraw_urls = [
+financial_management_urls = [
     path("withdraw_logs", WithdrawLogViewSet.as_view({"get": "list"})),
-    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$", WithdrawLogViewSet.as_view({"put": "update"}))
+    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$", WithdrawLogViewSet.as_view({"put": "update"})),
+    path("pay_orders", PayOrdersViewSet.as_view({"get": "list"}))
 ]
 
 user_management_urls = [
@@ -111,7 +112,7 @@ urlpatterns += captcha_urls
 urlpatterns += news_urls
 urlpatterns += report_urls
 urlpatterns += banner_urls
-urlpatterns += withdraw_urls
+urlpatterns += financial_management_urls
 urlpatterns += user_management_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:

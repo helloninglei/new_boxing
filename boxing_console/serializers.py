@@ -430,3 +430,19 @@ class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MoneyChangeLog
         fields = ["change_amount", "created_time", "remarks", "change_type"]
+
+
+class PayOrdersReadOnlySerializer(serializers.ModelSerializer):
+    user_nickname = serializers.CharField(source="user.user_profile.nick_name")
+    user_mobile = serializers.CharField(source="user.mobile")
+    device = serializers.CharField(source="get_device_display")
+    payment_type = serializers.CharField(source="get_payment_type_display")
+    status = serializers.CharField(source="get_status_display")
+    remarks = serializers.SerializerMethodField()
+
+    def get_remarks(self, instance):
+        return f"【{instance.content_object.__class__._meta.verbose_name}】id:{instance.content_object.id}"
+
+    class Meta:
+        model = models.PayOrder
+        exclude = ['finish_time', "object_id", "pay_time", "content_type"]
