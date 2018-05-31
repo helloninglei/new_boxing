@@ -13,6 +13,7 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.course import BoxerMyCourseViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
@@ -84,6 +85,7 @@ order_url = [
 order_comment_url = [
     path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
+    path('boxer-course-order-comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
 ]
 
 follow_url = [

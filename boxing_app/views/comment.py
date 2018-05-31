@@ -4,9 +4,10 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
+from biz.models import OrderComment
 from biz.utils import get_model_class_by_name
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
-from boxing_app.serializers import CommentSerializer
+from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -48,3 +49,11 @@ class ReplyViewSet(CommentViewSet):
             'ancestor_id': obj.ancestor_id or obj.id,
         }
         serializer.save(**kwargs)
+
+
+class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
+    serializer_class = OrderCommentSerializer
+
+    def get_queryset(self):
+        boxer = models.BoxerIdentification.objects.filter(user=self.request.user).only('id').first()
+        return OrderComment.objects.filter(order__course__boxer=boxer)

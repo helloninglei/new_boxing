@@ -519,3 +519,11 @@ class WithdrawSerializer(serializers.ModelSerializer):
         model = models.WithdrawLog
         fields = ['amount', "order_number", "created_time", "status"]
         read_only_fields = ["order_number", "created_time"]
+
+
+class OrderCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.OrderComment
+        fields = "__all__"
+
