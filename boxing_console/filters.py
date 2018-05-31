@@ -91,19 +91,12 @@ class ReportFilter(django_filters.FilterSet):
 
     def filter_status(self, qs, name, value):
         if value == 'unprocessed':
-            condition = {
-                'status': REPORT_STATUS_NOT_PROCESSED
-            }
-        else:
-            condition = {
-                'status__gt': REPORT_STATUS_NOT_PROCESSED
-            }
-
-        return qs.filter(**condition)
+            return qs.filter(status=REPORT_STATUS_NOT_PROCESSED)
+        return qs.filter(status__gt=REPORT_STATUS_NOT_PROCESSED)
 
     class Meta:
         model = models.Report
-        fields = ['status']
+        fields = ('status',)
 
 
 class CourseSettleOrderFilter(django_filters.FilterSet):

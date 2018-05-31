@@ -16,6 +16,6 @@ class MoneyChangeLogTestCase(APITestCase):
         MoneyChangeLog.objects.create(user=self.user, change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
                                       last_amount=100000, change_amount=100000, remain_amount=200000, operator=self.user)
 
-        response = self.client.get(path="/money_change_logs")
+        response = self.client.get(path=f"/money_change_logs/{self.user.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)

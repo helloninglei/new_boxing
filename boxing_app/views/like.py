@@ -2,6 +2,7 @@
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz.models import Like
 from biz.models import Message
 from boxing_app.serializers import LikeSerializer
@@ -9,6 +10,7 @@ from boxing_app.serializers import LikeSerializer
 
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def _get_message_instance(self):
         message_id = self.kwargs['message_id']

@@ -232,6 +232,7 @@ class Comment(SoftDeleteModel):
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
+    reports = GenericRelation('Report')
 
     class Meta:
         db_table = 'comment'
@@ -330,6 +331,7 @@ class HotVideo(BaseAuditModel):
     is_show = models.BooleanField(default=True, db_index=True)
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
+    reports = GenericRelation('Report')
 
     class Meta:
         db_table = 'hot_video'
@@ -396,7 +398,7 @@ class Report(BaseAuditModel):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     reason = models.SmallIntegerField(choices=constants.REPORT_REASON_CHOICES)
-    remark = models.CharField(max_length=20, null=True)
+    remark = models.CharField(max_length=20, null=True, blank=True)
     status = models.SmallIntegerField(choices=constants.REPORT_STATUS_CHOICES,
                                       default=constants.REPORT_STATUS_NOT_PROCESSED)
 

@@ -48,5 +48,5 @@ class MessageViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def mine(self, request, *args, **kwargs):
-        self.queryset = self._get_query_set().filter(user=request.user)
+        self.queryset = self._get_query_set().filter(user_id=request.user.id)
         return super().list(request, *args, **kwargs)
