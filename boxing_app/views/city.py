@@ -15,6 +15,6 @@ def get_boxer_list(request):
     拳手城市列表
     """
     city_list = list(BoxingClub.objects.filter(course__is_open=True)
-                     .values_list('city_first_letter', 'city')
-                     .order_by('city_first_letter'))
+                     .values_list('city_index_letter', 'city')
+                     .order_by('city_index_letter'))
     return Response(city_list)

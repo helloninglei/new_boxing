@@ -5,13 +5,13 @@ import requests
 from django.conf import settings
 from django.db import transaction
 from django.core.validators import URLValidator
-from pypinyin import pinyin, Style
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
     Message, Comment
 from biz import models, constants, redis_client
+from biz.services.hans_to_pinyin import hans_to_initial
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, get_video_cover_url
 from biz.validator import validate_mobile
@@ -164,7 +164,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
         longitude = attrs['longitude']
         latitude = attrs['latitude']
         attrs['province'], attrs['city'], attrs['address'] = self.get_location_info(longitude, latitude)
-        attrs['city_first_letter'] = self.hans_to_initial(attrs['city'])
+        attrs['city_index_letter'] = hans_to_initial(attrs['city'])
         return attrs
 
     @transaction.atomic
@@ -207,13 +207,6 @@ class BoxingClubSerializer(serializers.ModelSerializer):
         province = location_detail.get('province')
         city = location_detail.get('city')
         return province, city, address
-
-    @staticmethod
-    def hans_to_initial(hans):
-        """返回中文词组第一个汉字的首字母"""
-        first_hans = hans[0]
-        first_letter = pinyin(first_hans, style=Style.FIRST_LETTER)
-        return first_letter[0][0].upper()
 
     class Meta:
         model = BoxingClub

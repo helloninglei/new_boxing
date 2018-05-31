@@ -42,7 +42,7 @@ class CityTestCase(APITestCase):
             "longitude": 111.123456,
             "latitude": 11.123456,
             "city": "北京市",
-            "city_first_letter": 'B',
+            "city_index_letter": 'B',
             "phone": "11111111111",
             "opening_hours": "10:00--20:00",
             "images": ["www.baidu.com", "www.sina.com.cn"],
@@ -72,15 +72,15 @@ class CityTestCase(APITestCase):
         club1 = BoxingClub.objects.create(**self.club_data)
         self.club_data['name'] = 'club2'
         self.club_data['city'] = '广州市'
-        self.club_data['city_first_letter'] = 'G'
+        self.club_data['city_index_letter'] = 'G'
         club2 = BoxingClub.objects.create(**self.club_data)
         self.club_data['name'] = 'club3'
         self.club_data['city'] = '长春市'
-        self.club_data['city_first_letter'] = 'C'
+        self.club_data['city_index_letter'] = 'C'
         club3 = BoxingClub.objects.create(**self.club_data)
         self.club_data['name'] = 'club4'
         self.club_data['city'] = '重庆市'
-        self.club_data['city_first_letter'] = 'C'
+        self.club_data['city_index_letter'] = 'C'
         club4 = BoxingClub.objects.create(**self.club_data)
 
         self.course_data['boxer'] = boxer1
