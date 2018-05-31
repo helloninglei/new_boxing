@@ -170,6 +170,7 @@
                 url: '',
             }
         },
+
         created() {
             this.id = this.$route.params.id;
             if (this.id) {
@@ -185,6 +186,7 @@
         },
 
         methods: {
+
             getData() {
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
