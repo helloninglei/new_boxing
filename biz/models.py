@@ -232,6 +232,7 @@ class Comment(SoftDeleteModel):
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
+    reports = GenericRelation('Report')
 
     class Meta:
         db_table = 'comment'
@@ -270,6 +271,9 @@ class OperationLog(models.Model):
 
 class BoxingClub(BaseModel):
     name = models.CharField(max_length=20, unique=True)
+    avatar = models.CharField(max_length=128, default='club_avatar')
+    province = models.CharField(max_length=10, null=True)
+    city = models.CharField(max_length=10, null=True)
     address = models.CharField(max_length=30)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度,整数位3位-180~180
     latitude = models.DecimalField(max_digits=8, decimal_places=6)  # 纬度,整数位2位-90~90
@@ -327,6 +331,7 @@ class HotVideo(BaseAuditModel):
     is_show = models.BooleanField(default=True, db_index=True)
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
+    reports = GenericRelation('Report')
 
     class Meta:
         db_table = 'hot_video'
