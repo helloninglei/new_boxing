@@ -31,9 +31,9 @@ class ClubTestCase(APITestCase):
         self.assertEqual(len(res.data['results']), 1)
 
         # 通过城市名筛选拳馆列表
-        res = self.client1.get('/clubs', data={'city': self.club_data["city"]})
+        res = self.client1.get('/clubs', data={"city": self.club_data["city"]})
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/clubs', data={'city': 'unknown_city'})
+        res = self.client1.get('/clubs', data={"city": "unknown_city"})
         self.assertEqual(len(res.data['results']), 0)
 
         # 获取拳馆详情
