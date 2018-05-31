@@ -58,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         fields = [
             "id", "mobile", "following_count", "follower_count", "share_count", "money_balance", "is_boxer",
-            "user_basic_info", "date_joined", "boxer_id"
+            "user_basic_info", "date_joined", "boxer_id", "coin_balance"
         ]
 
 
