@@ -18,7 +18,7 @@ def create_order(request, object_type):
         payment_type=serializer.validated_data['payment_type'],
         device=serializer.data['device'],
         ip=serializer.data['ip'])
-    return Response({'pay_info': pay_info})
+    return Response(pay_info)
 
 
 @api_view(['POST'])
@@ -44,3 +44,13 @@ def alipay_calback(request):
 @permission_classes((permissions.AllowAny,))
 def wechat_calback(request):
     return HttpResponse(PayService.on_wechat_callback(request.data))
+
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated,))
+def pay_status(request):
+    order_id = request.query_params.get('order_id')
+    info = PayService.get_payment_status_info(order_id, request.user)
+    if info:
+        return Response({'result': info})
+    return Response({'message': '订单不存在'}, status=status.HTTP_404_NOT_FOUND)
