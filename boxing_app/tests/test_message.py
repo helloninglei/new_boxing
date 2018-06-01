@@ -30,9 +30,14 @@ class MessageTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data['video'][0], '视频和图片不可同时上传')
 
+        msg1 = {'content': '', 'images': [], 'video': ''}
+        res = self.client1.post('/messages', msg1)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['message'][0], '文字、图片、视频需要至少提供一个')
+
     def test_create(self):
         msg1 = {'content': 'hello1'}
-        msg2 = {'content': 'hello2', 'images': ['http://img1.com', 'http://img2.com']}
+        msg2 = {'images': ['http://img1.com', 'http://img2.com']}
         self.client1.post('/messages', msg1)
         self.client1.post('/messages', msg2)
 
@@ -40,9 +45,8 @@ class MessageTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)
         results = response.data['results']
-        self.assertEqual(msg2['content'], results[0]['content'])
-        self.assertEqual(msg2['images'], results[0]['images'])
         self.assertEqual(msg1['content'], results[1]['content'])
+        self.assertEqual(msg2['images'], results[0]['images'])
 
     def test_msg_type(self):
         msg1 = {'content': 'hello1'}

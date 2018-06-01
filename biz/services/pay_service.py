@@ -6,6 +6,7 @@ from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
 from biz.models import PayOrder, User, HotVideo, Course
+from biz.redis_client import get_order_no_serial
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE
 from biz.services import money_balance_service, official_account_service
@@ -17,9 +18,11 @@ logger = logging.getLogger()
 
 
 class PayService:
+
+    # 订单号规则：xxxx年xx月xx日xxxxx，案例：2018020500001。获取下单日期和当天的订单排序，从1开始，自然数
     @classmethod
     def generate_out_trade_no(cls):
-        return datetime.now().strftime('%y%m%d%H%M%S%f')
+        return  f"{datetime.now().strftime('%Y%m%d')}{get_order_no_serial()}"
 
     @classmethod
     def generate_name(cls, obj):

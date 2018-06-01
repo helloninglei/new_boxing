@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, OrderComment
+from biz.models import PayOrder, OrderComment, BoxingClub
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -109,6 +109,9 @@ class MessageSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data.get('video') and data.get('images'):
             raise ValidationError({'video': ['视频和图片不可同时上传']})
+        if not data.get('content') and not data.get('images') and not data.get('video'):
+
+            raise ValidationError({'message': ['文字、图片、视频需要至少提供一个']})
         return data
 
     class Meta:
@@ -168,6 +171,7 @@ class FollowUserSerializer(serializers.Serializer):
     address = serializers.CharField(source='user_profile.address')
     bio = serializers.CharField(source='user_profile.bio')
     gender = serializers.BooleanField(source='user_profile.gender')
+    identity = serializers.CharField()
     is_following = serializers.SerializerMethodField()
 
     def get_is_following(self, user):
@@ -347,10 +351,12 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
+    honor_certificate_images = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = models.BoxerIdentification
         fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
-                  "is_professional_boxer", "real_name", "weight", "club", "mobile"]
+                  "is_professional_boxer", "real_name", "weight", "club", "mobile", "competition_video"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -520,3 +526,21 @@ class WithdrawSerializer(serializers.ModelSerializer):
         model = models.WithdrawLog
         fields = ['amount', "order_number", "created_time", "status"]
         read_only_fields = ["order_number", "created_time"]
+
+
+class BoxingClubSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField(), read_only=True)
+    longitude = serializers.FloatField(read_only=True)
+    latitude = serializers.FloatField(read_only=True)
+
+    class Meta:
+        model = BoxingClub
+        fields = '__all__'
+
+
+class RechargeLogReadOnlySerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="get_status_display")
+
+    class Meta:
+        model = models.PayOrder
+        fields = ["out_trade_no", "amount", "id", "order_time", "status"]

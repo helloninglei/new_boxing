@@ -1,6 +1,7 @@
 # coding: utf-8
 import redis
 from time import time
+from datetime import datetime
 from django.conf import settings
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
@@ -79,8 +80,10 @@ def get_near_object(obj_or_cls, longitude, latitude, radius=10000, unit='km'):
                                   unit=unit,
                                   sort='ASC')
 
+
 # 加入黑名单
 def block_user(current_user_id, black_user_id):
+    unfollow_user(current_user_id, black_user_id)
     return redis_client.sadd(f"user_{current_user_id}_black_list", black_user_id)
 
 
@@ -106,3 +109,11 @@ def incr_number_of_share(user_id):
 
 def get_number_of_share(user_id):
     return int(redis_client.hget('sns_share', user_id) or 0)
+
+
+def get_order_no_serial():
+    key = f'order_incr_{datetime.now().strftime("%Y%m%d")}'
+    order_incr = redis_client.incr(key)
+    if order_incr == 1:
+        redis_client.expire(key, 3600 * 24)
+    return str(order_incr).rjust(5, '0')

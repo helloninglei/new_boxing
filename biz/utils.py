@@ -1,5 +1,7 @@
 # coding=utf-8
 from django.conf import settings
+from pypinyin import pinyin, Style
+
 from biz import models
 from biz.constants import DEVICE_PLATFORM_IOS, DEVICE_PLATFORM_ANDROID
 
@@ -35,3 +37,10 @@ def get_share_img_url(url, is_video=False):
 def get_video_cover_url(url):
     if url:
         return f'{url}?x-oss-process=video/snapshot,t_10000,f_jpg,w_800,m_fast'
+
+
+def hans_to_initial(hans):
+    """返回中文词组第一个汉字的首字母"""
+    first_hans = hans[0]
+    first_letter = pinyin(first_hans, style=Style.FIRST_LETTER)
+    return first_letter[0][0].upper()
