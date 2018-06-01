@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
@@ -120,6 +121,7 @@ class CommentsAboutBoxerTestCase(APITestCase):
 
         # 获取拳手评论列表
         res = self.client3.get('/boxer-course-order-comments')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
         self.assertEqual(res.data['count'], 2)
         self.assertEqual(res.data['avg_score'], (6+5)/2)
