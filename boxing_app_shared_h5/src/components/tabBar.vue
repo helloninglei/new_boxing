@@ -123,6 +123,9 @@
             },
             ifShowPraise: {
                 type: Boolean
+            },
+            commentType: {
+                type: String
             }
         },
         components: {
@@ -142,7 +145,7 @@
             },
 
             getComments() {
-                this.ajax(`/messages/${this.id}/comments`,'get').then((res) => {
+                this.ajax(`/${this.commentType}/${this.id}/comments`,'get').then((res) => {
                     if (res && res.data) {
                         this.comments = res.data.results;
                     }
@@ -150,7 +153,7 @@
                     if(err&&err.response){
                         let errors=err.response.data;
                         for(var key in errors){
-                            console.log(errors[key][0]);
+                            this.$layer.msg(errors[key][0]);
                         }
                     }
                 })
