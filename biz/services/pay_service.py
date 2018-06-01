@@ -131,7 +131,7 @@ class PayService:
             else:
                 change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[3][0]
 
-            official_account_service.change_official_account(
+            official_account_service.create_official_account_change_log(
                 pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)
 
         pay_order.status = PAYMENT_STATUS_WAIT_USE
