@@ -294,6 +294,7 @@ class BaseCourseOrderSerializer(serializers.ModelSerializer):
     course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
     course_validity = serializers.DateField(source='content_object.validity', read_only=True)
     course_price = serializers.IntegerField(source='content_object.price', read_only=True)
+    club_id = serializers.IntegerField(source='content_object.club.id', read_only=True)
     club_name = serializers.CharField(source='content_object.club.name', read_only=True)
     club_address = serializers.CharField(source='content_object.club.address', read_only=True)
     club_longitude = serializers.CharField(source='content_object.club.longitude', read_only=True)
