@@ -11,6 +11,8 @@
                         start-placeholder="起始日期"
                         end-placeholder="结束日期"
                         @change="getDateTime"
+                        :clearable=false
+                        :editable=false
                         value-format="yyyy-MM-dd hh:mm:ss">
                 </el-date-picker>
                 <el-input v-model="search"  class='myInput_40 margin_rt20' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
@@ -64,7 +66,7 @@
                 </el-table>
             </template>
             <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+                <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
     </div>
@@ -83,7 +85,7 @@
             return {
                 isShowTop: true,
                 search: '',
-                total: 1,
+                total: 1000,
                 page: 1,
                 dateArr: [],
                 start_date: '',
@@ -107,7 +109,7 @@
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
                         this.tableData = res.data.results;
-                        this.total = res.data.count;
+//                        this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
                 })
@@ -142,8 +144,15 @@
                 this.getData(true);
             },
             getDateTime() {
-                this.start_date = this.dateArr[0];
-                this.end_date = this.dateArr[1];
+                console.log(this.dateArr)
+                if (this.dateArr) {
+                    this.start_date = this.dateArr[0];
+                    this.end_date = this.dateArr[1];
+                }
+                else {
+                    this.start_date = '';
+                    this.end_date = '';
+                }
             },
             showErrorTip(text) {
                 this.$message({

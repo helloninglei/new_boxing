@@ -41,7 +41,7 @@
             return {
                 user_name: 'admin',
                 currentPage: 1,
-                
+
             }
         },
         props: {
@@ -50,7 +50,7 @@
             },
         },
         watch: {
-        
+            
         },
         components: {
         },
