@@ -11,6 +11,8 @@ oss_base_url = settings.OSS_CONFIG['url']
 class ShareTestCase(APITestCase):
     def setUp(self):
         self.test_user = models.User.objects.create_superuser(mobile='11111111111', password='password')
+        self.nick_name = 'lerry'
+        models.UserProfile.objects.create(user=self.test_user, nick_name=self.nick_name)
         self.client = self.client_class()
         self.client.login(username=self.test_user, password='password')
 
@@ -31,6 +33,9 @@ class ShareTestCase(APITestCase):
 
         msg_data = {'content': 'message', 'images': ['/uploads/xxxxxxxx.jpg'], 'user': self.test_user}
         self.msg = models.Message.objects.create(**msg_data)
+
+        msg_data = {'images': ['/uploads/xxxxxxxx.jpg'], 'user': self.test_user}
+        self.msg2 = models.Message.objects.create(**msg_data)
 
         video_data = {
             'user_id': self.test_user.id,
@@ -62,12 +67,14 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.assertEqual(data['title'], self.msg.content)
-        self.assertEqual(data['sub_title'], '')
-        self.assertEqual(data['picture'], '')
+        self.assertEqual(data['sub_title'], f'来自{self.nick_name}的拳民出击')
+        self.assertIsNone(data['picture'])
+
         self.assertEqual(data['url'], f'{h5_base_url}messages/{self.msg.id}')
 
         avatar = '/uploads/xxx.jpg'
-        models.UserProfile.objects.create(user=self.test_user, avatar=avatar, nick_name='lerry')
+        self.test_user.user_profile.avatar = avatar
+        self.test_user.user_profile.save()
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.test_user.refresh_from_db()
         self.assertEqual(data['sub_title'], '来自lerry的拳民出击')
@@ -85,6 +92,9 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/game_news/{news.id}/share').data
         self.assertEqual(data['title'], self.news_data['title'][:11] + '...')
+
+        data = self.client.get(f'/messages/{self.msg2.id}/share').data
+        self.assertEqual(data['title'], f'分享{self.nick_name}动态')
 
     def test_share_count(self):
         count = get_number_of_share(self.test_user.id)
