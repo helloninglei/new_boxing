@@ -222,9 +222,12 @@ class OrderTestCase(APITestCase):
         self.assertEqual(len(res.data['results']), 3)
         # 通过状态过滤
         res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_UNPAID})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
         res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_WAIT_USE})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_FINISHED})
         self.assertEqual(len(res.data['results']), 1)
 
