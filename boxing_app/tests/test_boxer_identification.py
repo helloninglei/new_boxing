@@ -206,3 +206,47 @@ class BoxerIdentificationTestCase(APITestCase):
 
             else:
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), update_data[key])
+
+    def test_get_boxer_status(self):
+        boxer_data = {
+            "user": self.fake_user,
+            "real_name": "张三",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "113134",
+            "is_professional_boxer": True,
+            "club": "131ef2f3",
+            "job": 'hhh',
+            "introduction": "beautiful",
+            "experience": '',
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": '',
+            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_WAITING
+        }
+
+        # 普通用户请求
+        res = self.client.get('/get-boxer-status')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['boxer_status'], 'not a boxer')
+
+        # 待审核拳手请求
+        boxer = BoxerIdentification.objects.create(**boxer_data)
+        res = self.client.get('/get-boxer-status')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['boxer_status'], boxer_data['authentication_state'])
+
+        # 审核通过的拳手请求
+        BoxerIdentification.objects.filter(id=boxer.id).update(
+            authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
+        res = self.client.get('/get-boxer-status')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['boxer_status'], constants.BOXER_AUTHENTICATION_STATE_APPROVED)
+
+        # 已驳回的拳手请求
+        BoxerIdentification.objects.filter(id=boxer.id).update(
+            authentication_state=constants.BOXER_AUTHENTICATION_STATE_REFUSE)
+        res = self.client.get('/get-boxer-status')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['boxer_status'], constants.BOXER_AUTHENTICATION_STATE_REFUSE)
