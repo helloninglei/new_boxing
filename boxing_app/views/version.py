@@ -3,6 +3,7 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from django.conf import settings
 from biz.utils import get_device_platform
+from biz.constants import DEVICE_PLATFORM
 
 version_mapping = {
     'ANDROID': settings.ANDROID_VERSION,
@@ -14,7 +15,7 @@ version_mapping = {
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def version(request):
-    device = get_device_platform(request)
+    device = dict(DEVICE_PLATFORM).get(get_device_platform(request))
     if device is None:
         return Response(status=status.HTTP_400_BAD_REQUEST)
     version_response = version_mapping.get(device.upper())
