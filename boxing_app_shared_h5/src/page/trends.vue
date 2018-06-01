@@ -217,6 +217,13 @@
 
             closeEv(val) {
                 this.ifClose = val;
+            },
+
+            getWxConfig() {
+                if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
+                    this.wechat = require('../common/wechat');
+                    this.wx = require('weixin-js-sdk')
+                }
             }
 
         },
