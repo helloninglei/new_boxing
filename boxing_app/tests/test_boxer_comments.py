@@ -114,16 +114,21 @@ class CommentsAboutBoxerTestCase(APITestCase):
         # 对拳手test_user_3的订单order1、order2创建2条评论
         self.conmment_data['order'] = order1
         OrderComment.objects.create(**self.conmment_data)
+        self.conmment_data['score'] = 5
         self.conmment_data['order'] = order2
         OrderComment.objects.create(**self.conmment_data)
 
         # 获取拳手评论列表
         res = self.client3.get('/boxer-course-order-comments')
         self.assertEqual(len(res.data['results']), 2)
+        self.assertEqual(res.data['count'], 2)
+        self.assertEqual(res.data['avg_score'], (6+5)/2)
         for key in self.conmment_data:
             # user为购买者
             if key == 'user':
-                self.assertEqual(res.data['results'][0][key], self.test_user_1.id)
+                self.assertEqual(res.data['results'][0][key]['id'], self.test_user_1.id)
+                self.assertEqual(res.data['results'][0][key]['nick_name'], self.user_profile_data['nick_name'])
+                self.assertEqual(res.data['results'][0][key]['avatar'], self.user_profile_data['avatar'])
             elif key == 'order':
                 self.assertEqual(res.data['results'][0][key], order2.id)
             else:

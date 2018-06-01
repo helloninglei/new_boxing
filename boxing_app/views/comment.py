@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Count, Avg
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -58,3 +59,9 @@ class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         boxer = models.BoxerIdentification.objects.filter(user=self.request.user).only('id').first()
         return OrderComment.objects.filter(order__course__boxer=boxer)
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        count_and_avg_score = self.get_queryset().aggregate(count=Count('*'), avg_score=Avg("score"))
+        response.data.update(count_and_avg_score)
+        return response

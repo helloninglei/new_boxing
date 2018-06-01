@@ -524,10 +524,11 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
 class OrderCommentSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField())
+    user = DiscoverUserField(read_only=True)
 
     class Meta:
         model = models.OrderComment
-        fields = "__all__"
+        exclude = ('is_deleted',)
 
 
 class BoxingClubSerializer(serializers.ModelSerializer):
