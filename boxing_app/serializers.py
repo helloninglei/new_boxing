@@ -539,3 +539,11 @@ class BoxingClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxingClub
         fields = '__all__'
+
+
+class RechargeLogReadOnlySerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="get_status_display")
+
+    class Meta:
+        model = models.PayOrder
+        fields = ["out_trade_no", "amount", "id", "order_time", "status"]
