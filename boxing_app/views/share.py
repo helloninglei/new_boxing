@@ -53,6 +53,8 @@ def share_view(request, object_type, object_id):
         title = obj.content
         if hasattr(user, 'user_profile'):
             profile = user.user_profile
+            if not title:
+                title = f'分享{profile.nick_name}动态'
             sub_title = f'来自{profile.nick_name}的拳民出击'
             picture = get_share_img_url(profile.avatar)
     elif isinstance(obj, HotVideo):

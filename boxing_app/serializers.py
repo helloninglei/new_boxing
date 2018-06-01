@@ -109,6 +109,9 @@ class MessageSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data.get('video') and data.get('images'):
             raise ValidationError({'video': ['视频和图片不可同时上传']})
+        if not data.get('content') and not data.get('images') and not data.get('video'):
+
+            raise ValidationError({'message': ['文字、图片、视频需要至少提供一个']})
         return data
 
     class Meta:
@@ -168,6 +171,7 @@ class FollowUserSerializer(serializers.Serializer):
     address = serializers.CharField(source='user_profile.address')
     bio = serializers.CharField(source='user_profile.bio')
     gender = serializers.BooleanField(source='user_profile.gender')
+    identity = serializers.CharField()
     is_following = serializers.SerializerMethodField()
 
     def get_is_following(self, user):

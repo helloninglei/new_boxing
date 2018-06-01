@@ -23,8 +23,8 @@ from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJEC
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
+from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect
 from boxing_app.views.user_profile import UserProfileViewSet, BlackListViewSet, UserProfileNoLoginViewSet
-from boxing_app.views.hot_video import HotVideoViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
 from boxing_app.views.banner import BannerViewSet
@@ -145,6 +145,7 @@ hot_video_url = [
     path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'}), name='hot-video'),
     path('users/<int:user_id>/hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve'}),
          name='hot-video-detail'),
+    path('hot_videos', hot_video_redirect)
 ]
 
 payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
