@@ -127,6 +127,7 @@
                     contentId: '',
                 },
                 picture: '',
+                pictureUrl: '',
                 rules: {
                     name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
                     order_number: [
@@ -211,7 +212,7 @@
         methods: {
 
             handleAvatarSuccess(res, file) {
-                let picUrl = `${config.baseUrl}/${res.url}`;
+                let picUrl = `${config.baseUrl}/${res.urls[0]}`;
                 let image = new Image();
                 image.src = picUrl;
                 image.onload = () => {
@@ -220,6 +221,7 @@
                     }
                     else {
                         this.picture = picUrl
+                        this.pictureUrl = res.urls[0];
                         this.showError = false;
                     }
                 };
@@ -238,7 +240,7 @@
             },
 
             removeImageEv() {
-                this.picture = '';
+                this.picture = this.pictureUrl = '';
             },
 
             changeType() {
@@ -253,7 +255,7 @@
             },
 
             bannerEv() {
-                let obj = Object.assign(this.form,{picture: this.picture});
+                let obj = Object.assign(this.form,{picture: this.pictureUrl});
                 if (obj.link_type == 3) {
                     let linkObj = {
                         'voteId': 'game_votes',
@@ -271,16 +273,17 @@
             },
 
             createBannerEv(obj) {
-                this.ajax('/banners','post',obj).then((res) => {
-                    res && res.data && this.$router.push({path: '/bannermanage'});
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data;
-                        for(var key in errors){
-                            this.showErrorTip(errors[key][0]);
-                        }
-                    }
-                })
+                console.log(obj)
+//                this.ajax('/banners','post',obj).then((res) => {
+//                    res && res.data && this.$router.push({path: '/bannermanage'});
+//                },(err) => {
+//                    if(err&&err.response){
+//                        let errors=err.response.data;
+//                        for(var key in errors){
+//                            this.showErrorTip(errors[key][0]);
+//                        }
+//                    }
+//                })
             },
 
             modifyBannerEv(obj) {
