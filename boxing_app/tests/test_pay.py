@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from biz import constants
+from datetime import datetime
 from rest_framework import status
 from rest_framework.test import APITestCase
+from biz import constants
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
 from biz.constants import DEVICE_PLATFORM_IOS, PAYMENT_TYPE_ALIPAY
 from django.contrib.contenttypes.fields import ContentType
+from biz.redis_client import redis_client
 
 
 class PaymentTestCase(APITestCase):
@@ -43,6 +45,10 @@ class PaymentTestCase(APITestCase):
         self.assertEqual(order.amount, self.data['price'] * 100)
         self.assertEqual(order.payment_type, constants.PAYMENT_TYPE_ALIPAY)
         self.assertEqual(order.device, constants.DEVICE_PLATFORM_IOS)
+
+        # test order no
+        key = f'order_incr_{datetime.now().strftime("%Y%m%d")}'
+        self.assertLessEqual(redis_client.ttl(key), 24 * 3600)
 
     def test_pay_status_info(self):
         video = HotVideo.objects.create(**self.data)

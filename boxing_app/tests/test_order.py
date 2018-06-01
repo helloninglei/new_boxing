@@ -117,6 +117,7 @@ class OrderTestCase(APITestCase):
         self.course_order_data['content_object'] = course
         PayOrder.objects.create(**self.course_order_data)
         PayOrder.objects.create(**self.course_order_data)
+        self.course_order_data['status'] = constants.PAYMENT_STATUS_FINISHED
         PayOrder.objects.create(**self.course_order_data)
 
         res = self.client2.get('/boxer/orders')
@@ -124,6 +125,17 @@ class OrderTestCase(APITestCase):
 
         res = self.client3.get('/boxer/orders')
         self.assertEqual(len(res.data['results']), 3)
+
+        # 通过状态过滤
+        res = self.client3.get('/boxer/orders', {'status': constants.PAYMENT_STATUS_UNPAID})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 0)
+        res = self.client3.get('/boxer/orders', {'status': constants.PAYMENT_STATUS_WAIT_USE})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 2)
+        res = self.client3.get('/boxer/orders', {'status': constants.PAYMENT_STATUS_FINISHED})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 1)
 
     def test_get_boxer_order_detail(self):
         # 为普通用户test_user_1创建用户信息，用于购买课程
@@ -160,6 +172,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
         self.assertEqual(res.data['course_validity'], self.course_data['validity'])
+        self.assertEqual(res.data['club_id'], club.id)
         self.assertEqual(res.data['club_name'], self.club_data['name'])
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
@@ -198,6 +211,7 @@ class OrderTestCase(APITestCase):
         self.course_order_data['user'] = self.test_user_3
         PayOrder.objects.create(**self.course_order_data)
         PayOrder.objects.create(**self.course_order_data)
+        self.course_order_data['status'] = constants.PAYMENT_STATUS_FINISHED
         PayOrder.objects.create(**self.course_order_data)
 
         # 用户test_user_2获取订单列表,结果应为2条
@@ -209,6 +223,16 @@ class OrderTestCase(APITestCase):
         res = self.client3.get('/user/orders')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 3)
+        # 通过状态过滤
+        res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_UNPAID})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 0)
+        res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_WAIT_USE})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 2)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_FINISHED})
+        self.assertEqual(len(res.data['results']), 1)
 
         # 用户test_user_4获取订单列表，结果应为0条
         res = self.client4.get('/user/orders')
@@ -249,6 +273,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
         self.assertEqual(res.data['course_validity'], self.course_data['validity'])
+        self.assertEqual(res.data['club_id'], club.id)
         self.assertEqual(res.data['club_name'], self.club_data['name'])
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))

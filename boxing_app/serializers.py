@@ -109,6 +109,9 @@ class MessageSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data.get('video') and data.get('images'):
             raise ValidationError({'video': ['视频和图片不可同时上传']})
+        if not data.get('content') and not data.get('images') and not data.get('video'):
+
+            raise ValidationError({'message': ['文字、图片、视频需要至少提供一个']})
         return data
 
     class Meta:
@@ -168,6 +171,7 @@ class FollowUserSerializer(serializers.Serializer):
     address = serializers.CharField(source='user_profile.address')
     bio = serializers.CharField(source='user_profile.bio')
     gender = serializers.BooleanField(source='user_profile.gender')
+    identity = serializers.CharField()
     is_following = serializers.SerializerMethodField()
 
     def get_is_following(self, user):
@@ -294,6 +298,7 @@ class BaseCourseOrderSerializer(serializers.ModelSerializer):
     course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
     course_validity = serializers.DateField(source='content_object.validity', read_only=True)
     course_price = serializers.IntegerField(source='content_object.price', read_only=True)
+    club_id = serializers.IntegerField(source='content_object.club.id', read_only=True)
     club_name = serializers.CharField(source='content_object.club.name', read_only=True)
     club_address = serializers.CharField(source='content_object.club.address', read_only=True)
     club_longitude = serializers.CharField(source='content_object.club.longitude', read_only=True)
@@ -347,10 +352,12 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
+    honor_certificate_images = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = models.BoxerIdentification
         fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
-                  "is_professional_boxer", "real_name", "weight", "club", "mobile"]
+                  "is_professional_boxer", "real_name", "weight", "club", "mobile", "competition_video"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
