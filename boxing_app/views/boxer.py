@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Case, When, Count, Min
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status, mixins, filters
+from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
