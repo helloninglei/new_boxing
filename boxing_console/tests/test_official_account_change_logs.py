@@ -13,7 +13,7 @@ class OfficialAccountChangeLogsTestCase(APITestCase):
 
     def test_official_account_change_logs(self):
         data = dict(
-            change_amount=10000, related_user=self.user, change_type=constants.OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[0][0]
+            change_amount=10000, related_user=self.user, change_type=constants.OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE
         )
 
         [OfficialAccountChangeLog.objects.create(**data) for _ in range(4)]

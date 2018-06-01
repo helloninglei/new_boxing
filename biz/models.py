@@ -457,7 +457,7 @@ class OfficialAccountChangeLog(models.Model):
     change_amount = models.IntegerField(default=0)  # unit:分, 有正负
     related_user = models.ForeignKey(User, related_name="+", db_index=False, on_delete=models.PROTECT)
     created_time = models.DateTimeField(auto_now_add=True)
-    change_type = models.SmallIntegerField(choices=constants.OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE)
+    change_type = models.SmallIntegerField(choices=constants.OFFICIAL_ACCOUNT_CHANGE_TYPE_CHOICE)
     remarks = models.CharField(max_length=64)
 
     class Meta:

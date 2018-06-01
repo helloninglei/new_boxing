@@ -8,7 +8,8 @@ from alipay import AliPay, AliPayException
 from biz.models import PayOrder, User, HotVideo, Course
 from biz.redis_client import get_order_no_serial
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
-    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE
+    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
 from biz.services import money_balance_service, official_account_service
 
 alipay = AliPay(**settings.ALIPAY)
@@ -18,11 +19,10 @@ logger = logging.getLogger()
 
 
 class PayService:
-
     # 订单号规则：xxxx年xx月xx日xxxxx，案例：2018020500001。获取下单日期和当天的订单排序，从1开始，自然数
     @classmethod
     def generate_out_trade_no(cls):
-        return  f"{datetime.now().strftime('%Y%m%d')}{get_order_no_serial()}"
+        return f"{datetime.now().strftime('%Y%m%d')}{get_order_no_serial()}"
 
     @classmethod
     def generate_name(cls, obj):
@@ -122,14 +122,14 @@ class PayService:
         pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
         if pay_order.status == PAYMENT_STATUS_UNPAID:
             if isinstance(pay_order.content_object, User):
-                change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[0][0]
+                change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE
                 money_balance_service.change_money(user=pay_order.content_object, amount=pay_order.amount,
                                                    change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
                                                    remarks=pay_order.out_trade_no)
             elif isinstance(pay_order.content_object, Course):
-                change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[2][0]
+                change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
             else:
-                change_type = OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[3][0]
+                change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
 
             official_account_service.create_official_account_change_log(
                 pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)

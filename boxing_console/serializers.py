@@ -17,7 +17,7 @@ from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
-    OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -421,7 +421,7 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
         if instance.status == WITHDRAW_STATUS_APPROVED:
             create_official_account_change_log(
                 -instance.amount, self.context['request'].user,
-                change_type=OFFICE_ACCOUNT_CHANGE_TYPE_CHOICE[1][0], remarks=instance.order_number
+                change_type=OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, remarks=instance.order_number
             )
         return instance
 
