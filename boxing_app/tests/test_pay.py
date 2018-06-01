@@ -66,3 +66,18 @@ class PaymentTestCase(APITestCase):
         self.assertEqual(result['status'], 'unpaid')
         self.assertEqual(result['amount'], self.data['price'])
         self.assertEqual(result['name'], f'视频（{self.data["name"]}）')
+
+    def test_wallet_pay(self):
+        video = HotVideo.objects.create(**self.data)
+        payment_data = {
+            'id': video.id,
+            'payment_type': constants.PAYMENT_TYPE_WALLET,
+        }
+        res = self.client1.post('/hot_videos/create_order', payment_data)
+        self.assertEqual(res.data['status'], 'failed')
+        self.assertEqual(res.data['message'], '余额不足')
+
+        self.test_user.money_balance = self.data['price'] * 100
+        self.test_user.save()
+        res = self.client1.post('/hot_videos/create_order', payment_data)
+        self.assertEqual(res.data['status'], 'success')

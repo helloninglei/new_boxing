@@ -7,9 +7,10 @@ from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
 from biz.models import PayOrder, User, HotVideo
 from biz.redis_client import get_order_no_serial
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
-    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID
-from biz.services import money_balance_service
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
+    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, PAYMENT_TYPE_WALLET, MONEY_CHANGE_TYPE_REDUCE_ORDER, \
+    MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+from biz.services.money_balance_service import change_money, ChangeMoneyException
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -22,7 +23,7 @@ class PayService:
     # 订单号规则：xxxx年xx月xx日xxxxx，案例：2018020500001。获取下单日期和当天的订单排序，从1开始，自然数
     @classmethod
     def generate_out_trade_no(cls):
-        return  f"{datetime.now().strftime('%Y%m%d')}{get_order_no_serial()}"
+        return f"{datetime.now().strftime('%Y%m%d')}{get_order_no_serial()}"
 
     @classmethod
     def generate_name(cls, obj):
@@ -41,10 +42,12 @@ class PayService:
             amount if amount else obj.price,
             name
         )
-        return {
-            'order_id': order.out_trade_no,
-            'pay_info': cls.get_payment_info(payment_type, data, ip),
-        }
+        if payment_type != PAYMENT_TYPE_WALLET:
+            return {
+                'order_id': order.out_trade_no,
+                'pay_info': cls.get_payment_info(payment_type, data, ip),
+            }
+        return cls.do_wallet_payment(user, order)
 
     @classmethod
     def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):
@@ -61,10 +64,8 @@ class PayService:
     def get_payment_info(cls, payment_type, data, ip):
         if payment_type == PAYMENT_TYPE_ALIPAY:
             return cls.get_alipay_payment_info(**data)
-        elif payment_type == PAYMENT_TYPE_WECHAT:
-            return cls.get_wechat_payment_info(ip=ip, **data)
         else:
-            cls.do_wallet_payment()
+            return cls.get_wechat_payment_info(ip=ip, **data)
 
     @classmethod
     def get_alipay_payment_info(cls, out_trade_no, amount, name):
@@ -86,8 +87,25 @@ class PayService:
         )
 
     @classmethod
-    def do_wallet_payment(cls):  # TODO 钱包支付
-        pass
+    def do_wallet_payment(cls, user, order):
+        if isinstance(order.content_object, HotVideo):
+            change_type = MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+        else:
+            change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
+        try:
+            change_money(user=user, amount=-order.amount, change_type=change_type, remarks=order.out_trade_no)
+            order.status = PAYMENT_STATUS_WAIT_USE
+            order.pay_time = datetime.now()
+            order.save()
+            return {
+                'status': 'success',
+            }
+        except ChangeMoneyException:
+            return {
+                'status': 'failed',
+                'message': '余额不足',
+            }
+
 
     @classmethod
     def on_wechat_callback(cls, data):
@@ -121,9 +139,9 @@ class PayService:
     def success_callback(cls, data):
         pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
         if pay_order.status == PAYMENT_STATUS_UNPAID and isinstance(pay_order.content_object, User):
-            money_balance_service.change_money(user=pay_order.content_object, amount=pay_order.amount,
-                                               change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
-                                               remarks=pay_order.out_trade_no)
+            change_money(user=pay_order.content_object, amount=pay_order.amount,
+                         change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
+                         remarks=pay_order.out_trade_no)
 
         pay_order.status = PAYMENT_STATUS_WAIT_USE
         pay_order.save()
