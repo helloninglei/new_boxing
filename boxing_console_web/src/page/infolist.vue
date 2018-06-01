@@ -85,7 +85,7 @@
             return {
                 isShowTop: true,
                 search: '',
-                total: 1000,
+                total: 1,
                 page: 1,
                 dateArr: [],
                 start_date: '',
