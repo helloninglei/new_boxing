@@ -16,9 +16,7 @@ version_mapping = {
 @authentication_classes([])
 def version(request):
     device = dict(DEVICE_PLATFORM).get(get_device_platform(request))
-    if device is None:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    version_response = version_mapping.get(device.upper())
-    if version_response:
+    if device:
+        version_response = version_mapping.get(device.upper())
         return Response(version_response, status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)
