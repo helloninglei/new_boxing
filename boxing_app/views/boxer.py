@@ -13,9 +13,8 @@ from boxing_app.serializers import BoxerIdentificationSerializer, NearbyBoxerIde
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
 def get_boxer_status(request):
-    data = {'boxer_status': "not a boxer"}
+    data = {'boxer_status': None}
     is_boxer = BoxerIdentification.objects.filter(user=request.user).exists()
     if is_boxer:
         boxer = BoxerIdentification.objects.filter(user=request.user).only('authentication_state').first()
