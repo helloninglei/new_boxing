@@ -3,21 +3,33 @@
 		<div class="baiduTop" style="padding:10px 0;">
 		  	<label >地点：</label>
 		  	<input id="where" name="where" type="text" placeholder="请输入搜索的地址" v-model='address' @blur="onblur()"  @focus="onfocus()">
-			<button type="button" @click="sear();">查找</button>
-		  	<label style="margin-left:180px">经纬度：</label>
+			<!-- <button type="button" @click="sear();">查找</button> -->
+			<el-button type="danger" class='myColor_red myButton_20' style='width:40px' @click="sear();">查找</el-button>
+		  	<label style="margin-left:118px">经纬度：</label>
 		  	<input id="lonlat" name="lonlat" type="text" readonly="readonly" placeholder="点击地图地点获取经纬度">
-		  	<button class="mapSure">确定</button>
+		  	<!-- <button class="mapSure">确定</button> -->
 		 </div>
-		 <div style="width:750px;height:600px;border:1px solid gray" id="container" margin-top="20px"></div>
+		 <div style="width:650px;height:400px;border:1px solid gray" id="container" margin-top="20px"></div>
 	</div>
 </template>
-<style type="text/css">  
+<style type="text/css" scope>  
     html{height:100%}  
     body{height:100%;margin:0px;padding:0px}  
-    #container{height:100%}  
+    #container{height:100%} 
+    input{
+    	border:1px solid #cccccc;
+    	height:30px;
+    	border-radius: 5px;
+    	padding-left:5px;
+    } 
+    #lonlat{width:200px;}
+    label{
+    	font-family:"PingFangSC-Regular";
+    	font-size: 16px;
+    	color:#000;
+    }
 </style>
 <script>
-	// import BMap from 'BMap';
     export default {
         data() {
             return {
@@ -36,7 +48,6 @@
         methods: {
         	map(){  
 		        var mapArr = {};
-	            console.log($('#container'))
 				//在指定的容器内创建地图实例
 				var map = new BMap.Map("container");
 				let $this=this;
@@ -76,7 +87,7 @@
 				    	});  
 				});
 				map.addEventListener("click", function(e){//地图单击事件
-					console.log(e);
+					// console.log(e);
 					document.getElementById("lonlat").value = e.point.lng + ", " + e.point.lat;
 					mapArr.lng = e.point.lng;
 					mapArr.lat = e.point.lat;
@@ -84,6 +95,7 @@
 					var lat = e.point.lat;
 					// $this.addressInfo(lng,lat)
 					$this.addressInfo(lng, lat,mapArr)
+					$this.$emit('address',lng, lat)
 				});
 				var myCity = new BMap.LocalCity();
 					myCity.get(this.iploac);
@@ -115,7 +127,7 @@
 					   $("#matchTakeAddress").val(address);
 					   console.log("1111111111111111111111111111111=====================");
 					   $("#where").val('');
-				    $("#lonlat").val('');
+				    	$("#lonlat").val('');
 				   }
 				})  
 		     },

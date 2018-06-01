@@ -36,8 +36,8 @@
                         </el-form-item>
                         <el-form-item label="是否置顶" prop="stay_top">
                             <el-radio-group v-model="form.stay_top">
-                                <el-radio :label="true">是</el-radio>
-                                <el-radio :label="false">否</el-radio>
+                                <el-radio label="true">是</el-radio>
+                                <el-radio label="false">否</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-checkbox-group v-model="form.push_news" style='margin-bottom:22px'>
@@ -55,15 +55,36 @@
                                     value-format="yyyy-MM-dd hh:mm:ss">
                             </el-date-picker>
                         </el-form-item>
-                        <p>App内正文（必填），如未填写App外分享正文，App内和App外都显示App内正文。</p>
-                        <el-form-item class="handle_btn">
-                            <el-button class="cancel" @click="cancelEv">取消</el-button>
-                            <el-button type="danger" @click="submitForm('ruleForm')">发布</el-button>
-                        </el-form-item>
+                        <p class='udeitor_title'>App内正文（<span style='color:#F95862'>必填</span>），如未填写App外分享正文，App内和App外都显示App内正文。</p>
+                        <div class='udeitor_content' id='ueditor1'>
+                            <Ueditor @changeEditor="onEditorChange" myQuillEditor='myQuillEditor' imgInput='imgInput1' :appContent='form.app_content'></Ueditor>
+                            <div class='text_rt margin_tp10'>
+                                <el-button class="myButton_40 myBtnHover_red btn_width_95" @click='preview(1)' v-if='(form.title&&form.sub_title&&form.initial_views_count>0&&form.start_time&&form.end_time&&form.app_content)&&(form.picture||picture)'>预览</el-button>
+                                <el-button class="myButton_40 btn_width_95" disabled v-else>预览</el-button>
+                            </div>
+                        </div>
+                        <p class='udeitor_title'>App内正文（必填），如未填写App外分享正文，App内和App外都显示App内正文。</p>
+                        <div class='udeitor_content' id='ueditor2'>
+                            <Ueditor @changeEditor="onEditorChangeSub" myQuillEditor='myQuillEditorSub' imgInput='imgInput2' :appContent='form.share_content'></Ueditor>
+                            <div class='text_rt margin_tp10'>
+                                <el-button class="myButton_40 myBtnHover_red btn_width_95" @click='preview(2)' v-if='(form.title&&form.sub_title&&form.initial_views_count>0&&form.start_time&&form.end_time&&form.share_content)&&(form.picture||picture)'>预览</el-button>
+                                <el-button class="myButton_40 btn_width_95" disabled v-else>预览</el-button>
+                            </div>
+                        </div>
+                        <div style='text-align: center'>
+                            <el-button class="myButton_40 myBtnHover_red btn_width_200" @click="cancelEv">取消</el-button>
+                            <el-button type="danger" class='btn_width_200 myColor_red' @click="submitForm('ruleForm')">发布</el-button>
+                        </div>
                     </el-form>
                 </el-col>
             </el-row>
         </div>
+        <el-dialog title="预览" :visible.sync="dialogVisible">
+            <div>这是一个弹框</div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">关闭</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -101,18 +122,32 @@
         bottom 0
         color #909399
     }
+    .info{
+        border-radius: 10px;
+        line-height: 20px;
+        padding: 10px;
+        margin: 10px;
+        background-color: #ffffff;
+    }
+    .udeitor_content,.udeitor_title{width:105%;margin-left:30px}
+    .udeitor_title{
+        margin-bottom:20px;
+    }
+    .udeitor_content{
+        margin-bottom:60px
+    }
 </style>
 <style>
-    #info_detail .el-checkbox__label,#info_detail .el-radio__label,#info_detail .el-form-item__label{
+    #info_detail .el-checkbox__label,#info_detail .el-radio__label,#info_detail .el-form-item__label,.udeitor_title{
         font-family: PingFangSC-Regular;
         font-size: 16px;
         color: #000000;
     }
 </style>
 <script>
-    import TopBar from 'components/topBar';
-    import config from 'common/my_config'
-
+    import TopBar   from 'components/topBar';
+    import config   from 'common/my_config'
+    import Ueditor  from 'components/ueditor'
     export default {
         data() {
             return {
@@ -122,13 +157,15 @@
                 action: `${config.baseUrl}/upload`,
                 checkType: 'voteId',
                 dateArr: [],
+                type:'',//1正文 2 外文
+                dialogVisible:false,//是否显示预览
                 form: {
                     title: '',
-                    sub_title: '',
+                    sub_title: ' ',
                     initial_views_count: 1,
                     picture: '',
                     picture_change: '',
-                    stay_top: '',
+                    stay_top: 'false',
                     push_news: '',
                     start_time: '',
                     end_time: '',
@@ -137,8 +174,8 @@
                 },
                 picture: '',
                 rules: {
-                    title    : [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                    sub_title: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+                    title    : [{ required: true, message: '请输入主标题', trigger: 'blur' }],
+                    sub_title: [{ required: true, message: '请输入副标题', trigger: 'blur' }],
                     picture_change: [
                         { validator: (rule, value, callback) => {
                             if (this.picture === ''&&value==='') {
@@ -148,12 +185,11 @@
                             }
                         }, trigger: 'blur', required: true}
                     ],
-                    stay_top: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                    push_news: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                    start_time: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                    end_time: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                    app_content: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                    share_content: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+                    stay_top: [{ required: true, message: '请选择是否置顶', trigger: 'blur' }],
+                    start_time: [{ required: true, message: '请输入发送时间', trigger: 'blur' }],
+                    end_time: [{ required: true, message: '请输入发送时间', trigger: 'blur' }],
+                    // app_content: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+                    // share_content: [{ required: true, message: '请输入名称', trigger: 'blur' }],
                     initial_views_count: [
                         { validator: (rule, value, callback) => {
                             if (value === '') callback(new Error('请输入初始阅读量'))
@@ -165,46 +201,61 @@
                                 callback();
                             }
                         }, trigger: 'blur',required: true }
-                    ],
-                    
-                }
+                    ],  
+                },
             }
         },
 
         components: {
-            TopBar
+            TopBar,
+            Ueditor,
         },
 
         created() {
             this.query = this.$route.query;
-            console.log(this.query)
+            if(this.query.id){
+                //编辑
+                this.form=this.query;
+                this.dateArr=[this.query.start_time,this.query.end_time]
+                this.form.push_news = this.form.push_news== 'true'?true:false
+                this.picture = this.config.baseUrl+this.form.picture ;
+                console.log(this.form)
+            }
+        },
+
+        computed: {
+           
         },
 
         methods: {
 
             handleAvatarSuccess(res, file) {
-                let picUrl = `${config.baseUrl}/${res.url}`;
+                let picUrl = `${config.baseUrl}/${res.urls[res.urls.length-1]}`;
                 let image = new Image();
                 image.src = picUrl;
                 image.onload = () => {
-                    if (image.width !== 750 || image.height != 340) {
-                        this.showErrorTip('请上传符合尺寸的商品详情图');
-                    }
-                    else {
-                        this.picture = picUrl
-                        this.showError = false;
-                    }
+                    this.picture = picUrl
+                    this.showError = false;
+                    // if (image.width !== 750 || image.height != 340) {
+                    //     this.showErrorTip('请上传符合尺寸的商品详情图');
+                    // }
+                    // else {
+                    //     this.picture = picUrl
+                    //     this.showError = false;
+                    // }
                 };
             },
 
             submitForm(formName) {
+                console.log(this.form)
+                console.log(this.picture)
                 this.$refs[formName].validate((valid) => {
                     if (!this.picture) {
                         this.showError = true;
                         return false;
                     }
                     if (valid) {
-                        this.bannerEv();
+                        
                     }
                 });
             },
@@ -228,6 +279,23 @@
             cancelEv() {
                 this.$router.push({path: '/infolist'});
             },
+
+            preview(type){
+                console.log(this.form)
+                this.type = type
+                this.dialogVisible = true
+            },
+
+            onEditorChange(value) {
+                // console.log('editor change!', editor, html, text)
+                 // console.log(value)
+                 this.form.app_content = value ;
+            },
+            onEditorChangeSub(value) {
+                // console.log('editor change!', editor, html, text)
+                 // console.log(value)
+                 this.form.share_content = value ;
+            }
 
         }
     }

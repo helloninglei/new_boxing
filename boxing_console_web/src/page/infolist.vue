@@ -177,7 +177,7 @@
                 this.$router.push({path: '/infodetail'});
             },
             handleEdit(index, row) {
-                this.$router.push({path: '/infodetail', query:{id: row.id}});
+                this.$router.push({path: '/infodetail', query:row});
             },
             handleDelete(index, row) {
                 let id = row.id;

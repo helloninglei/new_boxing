@@ -16,6 +16,7 @@ import Userdetail       from 'page/user_detail';
 import Orderdetail      from 'page/order_detail';
 import Boxerindentdetail from 'page/boxer_indent_detail';
 import Walletlist       from 'page/walletlist';
+import Boxbeanlist      from 'page/boxbeanlist';
 import UseDialog        from 'components/useDialog';
 import BannerManage     from 'page/bannermanage';
 import BannerContent    from 'page/BannerContent';
@@ -28,6 +29,7 @@ import Hotvideodetail   from 'page/hot_video_detail';
 import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infoList';
 import InfoDetail       from 'page/info_detail';
+import BoxBean          from 'page/boxBean';
 
 export default [
     {
@@ -119,6 +121,10 @@ export default [
                 component: Walletlist,
             },
             {
+                path: '/boxbeanlist',
+                component: Boxbeanlist,
+            },
+            {
                 path: '/useDialog',
                 component: UseDialog,
             },
@@ -165,6 +171,10 @@ export default [
             {
                 path: '/infodetail',
                 component: InfoDetail,
+            },
+            {
+                path: '/boxBean',
+                component: BoxBean,
             },
         ]
     },

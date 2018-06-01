@@ -9,10 +9,10 @@
                             <el-input v-model="ruleForm.user_id"></el-input>
                         </el-form-item>
                         <el-form-item label="视频名称" prop="name">
-                            <el-input v-model="ruleForm.name" :rows="6" :maxlength="40"></el-input>
+                            <el-input v-model="ruleForm.name"  :maxlength="40"></el-input>
                         </el-form-item>
                         <el-form-item label="视频介绍" prop="description">
-                            <el-input type="textarea" v-model="ruleForm.description"></el-input>
+                            <el-input type="textarea" v-model="ruleForm.description" :rows="6"></el-input>
                         </el-form-item>
                         <el-form-item label="付费金额" prop="price">
                             <el-input v-model="ruleForm.price" :span="5"></el-input>
@@ -178,6 +178,7 @@
                 var file=event.target.files;
                 var $this=this
                 this.upload(file[0],function(url){
+                    console.log(url)
                     $this.tsurl = url
                 });
             },
@@ -195,7 +196,7 @@
                 formData.append('file', file) 
                 this.ajax('/upload','post',formData).then(function(res){
                     if(res&&res.data){
-                        fun(res.data.url)
+                        fun(res.data.urls[res.data.urls.length-1])
                     }
 
                 },function(err){

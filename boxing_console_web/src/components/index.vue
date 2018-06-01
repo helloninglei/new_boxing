@@ -15,9 +15,9 @@
                     <el-menu-item index="/precentlist" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>用户提现记录</div>
                     </el-menu-item>
-                    <!-- <el-menu-item index="/" :disabled="disabled">
+                    <el-menu-item index="/boxBean" :disabled="disabled">
                         <div class='menu-item-inner'>公司拳豆记录</div>
-                    </el-menu-item> -->
+                    </el-menu-item>
                     <el-menu-item index="/accound_record" :disabled="disabled">
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
