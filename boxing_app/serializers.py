@@ -529,6 +529,15 @@ class WithdrawSerializer(serializers.ModelSerializer):
         read_only_fields = ["order_number", "created_time"]
 
 
+class OrderCommentSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField())
+    user = DiscoverUserField(read_only=True)
+
+    class Meta:
+        model = models.OrderComment
+        exclude = ('is_deleted',)
+
+
 class BoxingClubSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(), read_only=True)
     longitude = serializers.FloatField(read_only=True)

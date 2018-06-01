@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Count, Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
+from biz.models import OrderComment
 from biz.utils import get_model_class_by_name
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
-from boxing_app.serializers import CommentSerializer
+from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -49,3 +51,18 @@ class ReplyViewSet(CommentViewSet):
             'ancestor_id': obj.ancestor_id or obj.id,
         }
         serializer.save(**kwargs)
+
+
+class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
+    """与拳手相关的课程订单评论"""
+    serializer_class = OrderCommentSerializer
+
+    def get_queryset(self):
+        boxer = models.BoxerIdentification.objects.filter(user=self.request.user).only('id').first()
+        return OrderComment.objects.filter(order__course__boxer=boxer)
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        count_and_avg_score = self.get_queryset().aggregate(count=Count('*'), avg_score=Avg("score"))
+        response.data.update(count_and_avg_score)
+        return response
