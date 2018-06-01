@@ -4,6 +4,7 @@ body{
 }
 /*距离*/
 .margin_tp30 {margin-top: 30px;}
+.margin_tp10 {margin-top: 10px;}
 .margin_bt20 {margin-bottom: 20px;}
 .margin_rt25{margin-right:25px;}
 .margin_rt60{margin-right:60px;}
@@ -14,7 +15,7 @@ body{
     background: #F95862;
 }
 .el-button.myBtnHover_red:focus{background:#fff;color:#606266;border-color:#dcdfe6;}
-.myButton_40.btn_width_95:hover,.el-button.myBtnHover_red:hover{background:#F95862;color:#fff;border-color:#F95862;}
+.myButton_40.btn_width_95:not(.is-disabled):hover,.el-button.myBtnHover_red:hover{background:#F95862;color:#fff;border-color:#F95862;}
 .el-button.myButton_40,.myInput_40 .el-input__inner{
   height:40px!important;
 }

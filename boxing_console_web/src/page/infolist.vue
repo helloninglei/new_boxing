@@ -74,7 +74,7 @@
 
 </style>
 
-<script type="text/ecmascript-6">
+<script >
     import TopBar from 'components/topBar';
     import Pagination  from 'components/pagination';
 
@@ -89,7 +89,56 @@
                 start_date: '',
                 end_date: '',
                 hasSearch: false,
-                tableData: []
+                tableData: [
+                    {
+                        "id": 1,
+                        "author": "lerry",
+                        "comment_count": 0,
+                        "title": "111",
+                        "sub_title": "22",
+                        "views_count": 0,
+                        "initial_views_count": 22,
+                        "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
+                        "stay_top": true,
+                        "push_news": true,
+                        "start_time": "2018-12-31 12:59:00",
+                        "end_time": "2018-12-31 23:59:00",
+                        "app_content": "222",
+                        "share_content": null
+                    },
+                    {
+                        "id": 2,
+                        "author": "lerry",
+                        "comment_count": 0,
+                        "title": "111",
+                        "sub_title": "22",
+                        "views_count": 0,
+                        "initial_views_count": 22,
+                        "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
+                        "stay_top": true,
+                        "push_news": true,
+                        "start_time": "2018-12-31 12:59:00",
+                        "end_time": "2018-12-31 23:59:00",
+                        "app_content": "222",
+                        "share_content": null
+                    },
+                    {
+                        "id": 3,
+                        "author": "lerry",
+                        "comment_count": 0,
+                        "title": "111",
+                        "sub_title": "22",
+                        "views_count": 0,
+                        "initial_views_count": 22,
+                        "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
+                        "stay_top": true,
+                        "push_news": true,
+                        "start_time": "2018-12-31 12:59:00",
+                        "end_time": "2018-12-31 23:59:00",
+                        "app_content": "222",
+                        "share_content": null
+                    },
+                ]
             }
         },
         components: {
@@ -106,8 +155,8 @@
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
-                        this.tableData = res.data.results;
-                        this.total = res.data.count;
+                        // this.tableData = res.data.results;
+                        // this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
                 })
@@ -125,10 +174,10 @@
                 })
             },
             addMatchEv() {
-                this.$router.push({path: '/bannercontent'});
+                this.$router.push({path: '/infodetail'});
             },
             handleEdit(index, row) {
-                this.$router.push({path: '/bannercontent', query:{id: row.id}});
+                this.$router.push({path: '/infodetail', query:row});
             },
             handleDelete(index, row) {
                 let id = row.id;

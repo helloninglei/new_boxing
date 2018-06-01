@@ -57,8 +57,8 @@
                     </el-table>
                 </template>
             </nav>
-            <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+            <footer v-show="total>10">
+                <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
             </footer>
         </div>
         <Confirm :isshow="confirmData.isshow" @confirm="deleteClick" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id'></Confirm>
@@ -82,6 +82,7 @@
             return {
                 isShowTop : true,
                 issearch  :false,
+                page      :1,
                 sendData  : {
                     start_time : '',
                     end_time   : '',
@@ -162,15 +163,14 @@
             getTableData(page) {
                 //获取data数据
                 let $this   = this
+                let sendData={}
                 if(this.issearch){
-                    let sendData=this.sendData
-                }else{
-                    let sendData={}
+                   sendData=this.sendData
                 }
                 if(page){
                     sendData.page=page
                 }
-                this.ajax('/hot_videos','get',{},this.sendData).then(function(res){
+                this.ajax('/hot_videos','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
@@ -193,11 +193,13 @@
             },
             changePage(val){
                 // 要看第几页
+                this.page=val
                 this.getTableData(val) 
             },
             filter(){
                 this.issearch=true;
                 //搜索是先看第一页
+                this.page=1
                 this.getTableData(1) 
             },
             toDetail(row){

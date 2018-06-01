@@ -63,15 +63,15 @@
         	isshow(newval,oldval){
         		this.showDialog=newval;
         	},
-          	showDialog(val){
-            	console.log(val)
-	            if(!val){
-	              this.$emit('cancel',val)
-	            }
-          	},
-          	'form.class_name'(val){
-          		console.log(val)
-          	}
+        	showDialog(val){
+          	console.log(val)
+            if(!val){
+              this.$emit('cancel',val)
+            }
+        	},
+        	'form.class_name'(val){
+        		console.log(val)
+        	}
 
         },
         components: {
