@@ -87,6 +87,7 @@ class PayService:
         )
 
     @classmethod
+    @atomic
     def do_wallet_payment(cls, user, order):
         if isinstance(order.content_object, HotVideo):
             change_type = MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
