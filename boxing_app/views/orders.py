@@ -1,5 +1,6 @@
 
 from django.contrib.contenttypes.models import ContentType
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 
 from biz import constants
@@ -7,7 +8,12 @@ from biz.models import BoxerIdentification, PayOrder, Course, OrderComment
 from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
-class BoxerCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):
+class BaseCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ("status",)
+
+
+class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = BoxerCourseOrderSerializer
 
     def get_queryset(self):
@@ -15,7 +21,7 @@ class BoxerCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):
         return PayOrder.objects.filter(course__boxer=boxer)
 
 
-class UserCourseOrderViewSet(viewsets.ReadOnlyModelViewSet):
+class UserCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = UserCourseOrderSerializer
 
     def get_queryset(self):
