@@ -348,10 +348,12 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
+    honor_certificate_images = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = models.BoxerIdentification
         fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
-                  "is_professional_boxer", "real_name", "weight", "club", "mobile"]
+                  "is_professional_boxer", "real_name", "weight", "club", "mobile", "competition_video"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
