@@ -26,7 +26,7 @@
                 </div>
             </template>
         </div>
-        <TabBar :id="id" :ifShowPraise=true></TabBar>
+        <TabBar :id="id" :ifShowPraise=true :commentType="message"></TabBar>
         <div class="bottom_bar" :class="{hasClose: ifClose}">
             <div class="bar_container">
                 <div class="comment_btn">
@@ -199,7 +199,7 @@
                     if(err&&err.response){
                         let errors=err.response.data;
                         for(var key in errors){
-                            console.log(errors[key][0]);
+                            this.$layer.msg(errors[key][0]);
                         }
                     }
                 })
