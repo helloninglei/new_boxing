@@ -274,16 +274,16 @@
 
             createBannerEv(obj) {
                 console.log(obj)
-//                this.ajax('/banners','post',obj).then((res) => {
-//                    res && res.data && this.$router.push({path: '/bannermanage'});
-//                },(err) => {
-//                    if(err&&err.response){
-//                        let errors=err.response.data;
-//                        for(var key in errors){
-//                            this.showErrorTip(errors[key][0]);
-//                        }
-//                    }
-//                })
+                this.ajax('/banners','post',obj).then((res) => {
+                    res && res.data && this.$router.push({path: '/bannermanage'});
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0]);
+                        }
+                    }
+                })
             },
 
             modifyBannerEv(obj) {
