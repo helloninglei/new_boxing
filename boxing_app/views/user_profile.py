@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework import viewsets, mixins, status, permissions
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
+from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes, authentication_classes
 from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer, BlockedUserSerializer
 from biz.models import UserProfile, User
@@ -33,9 +34,7 @@ class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
     queryset = UserProfile.objects.all()
 
     def get_object(self):
-        if "pk" in self.kwargs:
-            return UserProfile.objects.filter(user=self.kwargs['pk']).first()
-        return UserProfile.objects.get(user=self.request.user)
+        return get_object_or_404(self.queryset, user=self.request.user)
 
 
 class BlackListViewSet(viewsets.GenericViewSet):
@@ -54,3 +53,13 @@ class BlackListViewSet(viewsets.GenericViewSet):
     def create(self, request, pk):
         redis_client.block_user(request.user.id, pk)
         return Response(status=status.HTTP_201_CREATED)
+
+
+class UserProfileNoLoginViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+    serializer_class = UserProfileSerializer
+    queryset = UserProfile.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = ()
+
+    def get_object(self):
+        return get_object_or_404(self.queryset, user=self.kwargs['pk'])
