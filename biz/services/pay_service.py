@@ -5,13 +5,14 @@ from django.db.transaction import atomic
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
-from biz.models import PayOrder, User, HotVideo
+from biz.models import PayOrder, User, HotVideo, Course
 from biz.redis_client import get_order_no_serial
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
-    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, PAYMENT_TYPE_WALLET, MONEY_CHANGE_TYPE_REDUCE_ORDER, \
+    MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, MONEY_CHANGE_TYPE_REDUCE_ORDER, \
     MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+from biz.services import official_account_service
 from biz.services.money_balance_service import change_money, ChangeMoneyException
-
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -19,7 +20,6 @@ logger = logging.getLogger()
 
 
 class PayService:
-
     # 订单号规则：xxxx年xx月xx日xxxxx，案例：2018020500001。获取下单日期和当天的订单排序，从1开始，自然数
     @classmethod
     def generate_out_trade_no(cls):
@@ -138,10 +138,19 @@ class PayService:
     @atomic
     def success_callback(cls, data):
         pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
-        if pay_order.status == PAYMENT_STATUS_UNPAID and isinstance(pay_order.content_object, User):
-            change_money(user=pay_order.content_object, amount=pay_order.amount,
-                         change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
-                         remarks=pay_order.out_trade_no)
+        if pay_order.status == PAYMENT_STATUS_UNPAID:
+            if isinstance(pay_order.content_object, User):
+                change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE
+                change_money(user=pay_order.content_object, amount=pay_order.amount,
+                                                   change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
+                                                   remarks=pay_order.out_trade_no)
+            elif isinstance(pay_order.content_object, Course):
+                change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
+            else:
+                change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
+
+            official_account_service.create_official_account_change_log(
+                pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)
 
         pay_order.status = PAYMENT_STATUS_WAIT_USE
         pay_order.save()

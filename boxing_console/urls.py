@@ -19,6 +19,7 @@ from boxing_console.views.financial_management import WithdrawLogViewSet, PayOrd
 from boxing_console.views import admin, report
 from rest_framework.routers import SimpleRouter
 from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet
+from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
 
 router = SimpleRouter()
 
@@ -100,6 +101,10 @@ user_management_urls = [
     path("money_change_logs/<int:pk>", MoneyBalanceChangeLogViewSet.as_view({"get": "list"}))
 ]
 
+official_account_change_logs_urls = [
+    path("official_account_change_logs", OfficialAccountChangeLogsViewSet.as_view({"get": "list"}))
+]
+
 urlpatterns = router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
@@ -114,6 +119,7 @@ urlpatterns += report_urls
 urlpatterns += banner_urls
 urlpatterns += financial_management_urls
 urlpatterns += user_management_urls
+urlpatterns += official_account_change_logs_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
