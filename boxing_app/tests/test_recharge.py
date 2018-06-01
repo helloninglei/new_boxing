@@ -1,7 +1,8 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
-from biz.models import User, MoneyChangeLog
+from biz.models import User, PayOrder
 from biz import constants
+from biz.services.pay_service import PayService
 
 
 class RechargeTestCase(APITestCase):
@@ -11,11 +12,17 @@ class RechargeTestCase(APITestCase):
         self.client.login(username=self.user.mobile, password="password")
 
     def test_money_detail(self):
-        money_change_log_income_data = dict(
-            user=self.user, change_type=constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
-            last_amount=0, change_amount=+20000, remain_amount=20000, operator=self.user
+        pay_order_data = dict(
+            user=self.user,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
+            content_object=self.user,
+            amount=1000,
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
         )
-        MoneyChangeLog.objects.create(**money_change_log_income_data)
+
+        PayOrder.objects.create(**pay_order_data)
 
         response = self.client.get(path="/recharge_log")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
