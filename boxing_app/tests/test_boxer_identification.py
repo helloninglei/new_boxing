@@ -13,8 +13,11 @@ from biz.models import User, BoxerIdentification
 class BoxerIdentificationTestCase(APITestCase):
     def setUp(self):
         self.fake_user = User.objects.create_user(mobile='mobile', password='test_password')
+        self.fake_user2 = User.objects.create_user(mobile='11111111111', password='test_password')
         self.client = self.client_class()
+        self.client2 = self.client_class()
         self.client.login(username=self.fake_user, password='test_password')
+        self.client2.login(username=self.fake_user2, password='test_password')
 
     def test_create_identification_success(self):
 
@@ -229,7 +232,7 @@ class BoxerIdentificationTestCase(APITestCase):
         # 普通用户请求
         res = self.client.get('/get-boxer-status')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['boxer_status'], 'not a boxer')
+        self.assertEqual(res.data['boxer_status'], None)
 
         # 待审核拳手请求
         boxer = BoxerIdentification.objects.create(**boxer_data)

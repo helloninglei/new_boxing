@@ -15,9 +15,8 @@ from boxing_app.serializers import BoxerIdentificationSerializer, NearbyBoxerIde
 @api_view(['GET'])
 def get_boxer_status(request):
     data = {'boxer_status': None}
-    is_boxer = BoxerIdentification.objects.filter(user=request.user).exists()
-    if is_boxer:
-        boxer = BoxerIdentification.objects.filter(user=request.user).only('authentication_state').first()
+    boxer = BoxerIdentification.objects.filter(user=request.user).only('authentication_state').first()
+    if boxer:
         data.update(boxer_status=boxer.authentication_state)
     return Response(data=data, status=status.HTTP_200_OK)
 
