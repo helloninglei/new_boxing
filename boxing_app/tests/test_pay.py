@@ -81,3 +81,4 @@ class PaymentTestCase(APITestCase):
         self.test_user.save()
         res = self.client1.post('/hot_videos/create_order', payment_data)
         self.assertEqual(res.data['status'], 'success')
+        self.assertTrue(res.data['order_id'])

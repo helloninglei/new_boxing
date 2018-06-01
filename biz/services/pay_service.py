@@ -99,6 +99,7 @@ class PayService:
             order.save()
             return {
                 'status': 'success',
+                'order_id': order.out_trade_no,
             }
         except ChangeMoneyException:
             return {
