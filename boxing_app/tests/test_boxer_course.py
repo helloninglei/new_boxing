@@ -99,6 +99,10 @@ class CourseTestCase(APITestCase):
 
         # 比较修改后的课程数据与修改数据是否一致
         course_list_res = self.client1.get('/boxer/course')
+        # 没有评论时，comments_count为0，avg_score为None
+        self.assertEqual(course_list_res.data['comments_count'], 0)
+        self.assertIsNone(course_list_res.data['avg_score'])
+        # 比较课程数据
         course_result = course_list_res.data['results']
         self.assertEqual(len(course_list_res.data['results']), len(self.boxer_data['allowed_course']))
         self.assertTrue(course_result[2]['is_open'])
