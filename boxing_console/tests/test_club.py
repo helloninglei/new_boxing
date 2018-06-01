@@ -42,6 +42,7 @@ class BoxingClubTestCase(TestCase):
         self.assertEqual(res.data['province'], '北京市')
         self.assertEqual(res.data['city'], '北京市')
         self.assertEqual(res.data['address'], '北京市东城区东长安街')
+        self.assertEqual(res.data['city_index_letter'], 'B')
 
     def test_get_club_detail(self):
         create_res = self.client.post('/club', self.data)
