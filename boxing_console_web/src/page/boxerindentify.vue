@@ -39,8 +39,8 @@
             <nav>
                <Table :tableColumn="tableColumn" :tableData="tableData" @toDetail="toDetail" @btnLeftClick="changeLockType" :showBtnLeft="true"></Table> 
             </nav>
-            <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+            <footer v-show="total>10">
+                <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
             </footer>
         </div>
     </div>
@@ -60,12 +60,13 @@ nav{min-height: 528px}
         data() {
             return {
                 isShowTop : true,
+                issearch  : false,
+                page      : 1,
                 sendData  : {
-                    price_min  : '',
-                    price_max  : '',
                     search     : '',
                     ident_type : '',
                     lock_type  : '',
+                    courseName : '',
                 },
                 total     : 1000,
                 tableData : [
@@ -163,10 +164,17 @@ nav{min-height: 528px}
             this.getTableData();
         },
         methods: {
-            getTableData() {
+            getTableData(page) {
                 //获取data数据
                 let $this   = this
-                this.ajax('/boxer/identification','get',{},{}).then(function(res){
+                let sendData={}
+                if(this.issearch){
+                   sendData=this.sendData
+                }
+                if(page){
+                    sendData.page=page
+                }
+                this.ajax('/boxer/identification','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         $this.tableData=res.data.results;
                         for(var i=0;i<$this.tableData.length;i++){
@@ -195,7 +203,8 @@ nav{min-height: 528px}
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
+                this.page=val
+                this.getTableData(val) 
             },
             toDetail(row){
                 // 参数 ID 审核状态ident_type
@@ -220,7 +229,10 @@ nav{min-height: 528px}
                 })
             },
             filter(){
-                console.log(this.sendData)
+                this.issearch=true;
+                //搜索是先看第一页
+                this.page=1
+                this.getTableData(1) 
             }
         },
     }

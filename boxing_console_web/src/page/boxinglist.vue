@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxingmanage" secondTitle_name="拳馆列表" secondTitle_path="/boxinglist"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" secondTitle_name="拳馆列表" secondTitle_path="/boxinglist"></TopBar>
         <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <nav style='margin-top:60px'>
             <template>

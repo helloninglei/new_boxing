@@ -378,7 +378,6 @@
       
     },
     create(){
-      
     },
     watch:{
       changeUrl(isshow){
@@ -412,8 +411,9 @@
               $(image).cropper('getCroppedCanvas')  
           }
         }); 
+        console.log(this.width,this.height,this.width/this.height)
         this.cropper2 = new Cropper(image, {  
-          aspectRatio: 160/90,  
+          aspectRatio: this.width/this.height,  
           // viewMode: 1, 
           movable:true, 
           background:false,  

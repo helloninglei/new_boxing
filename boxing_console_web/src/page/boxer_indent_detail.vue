@@ -1,8 +1,8 @@
 <template>
     <div class="classDetail">
         <div class='detail_header' v-if="authentication_state=='APPROVED'">审核通过 
-            <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_lessons">{{item}} &nbsp;&nbsp;</span>
-                <el-button type="danger" class='myColor_red myButton_40' style='width:95px;margin-top:-13px'>修改</el-button>
+            <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_course">{{item}} &nbsp;&nbsp;</span>
+                <el-button type="danger" class='myColor_red myButton_40' style='width:95px;margin-top:-13px' @click="openApprove()">修改</el-button>
             </span>
         </div>
         <div class='detail_header' v-else-if="authentication_state=='REFUSE'">已驳回</div>
@@ -103,7 +103,7 @@
             <el-row class='detail_item_sub'>
                 <div class='detail_content_p detail_content'>
                     <div class='addImage' v-for="item in result.honor_certificate_images">
-                        <img :src="item" alt="" width='100%' height='100%'>
+                        <img :src="config.baseUrl+item" alt="" width='100%' height='100%'>
                     </div>
                     <!-- <div class='addImage'>图片</div> -->
                 </div>
@@ -117,20 +117,22 @@
                 <div class='detail_content_p detail_content'>
                     <div style='width:193px;height:132px;border:1px solid #ccc'>
                         <!-- {{result.competition_video}} -->
-                        <video :src="result.competition_video" controls="controls" width="100%" height="100%">
+                        <video :src="config.baseUrl+result.competition_video" controls="controls" width="100%" height="100%">
                             您的浏览器不支持该视频。
                         </video>
                     </div>
                 </div>
             </el-row>
         </div>
-        <div style='text-align:center' v-if="authentication_state=='WAITING'">
+        <!-- <div style='text-align:center' v-if="authentication_state=='WAITING'"> -->
+        <div style='text-align:center'>
             <el-button  class='myButton_40 myBtnHover_red btn_width_200 margin_rt60' @click="refuseData.isshow1=true">驳回</el-button>
-            <el-button type="danger" class='myColor_red myButton_40 btn_width_200 ' @click="refuseData.isshow2=true">审核通过</el-button>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_200 ' @click="openApprove()">审核通过</el-button>
         </div>
 
         <Dialog :isshow="refuseData.isshow1" @confirm="refuse()" @cancel="cancel()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="1"></Dialog> 
-        <Dialog :isshow="refuseData.isshow2" @confirm="approve()" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2"></Dialog> 
+        <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2"></Dialog> 
+        <!-- <Dialog :isshow="refuseData.isshow2" @confirm="conform2()" @cancel="cancel2()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="2"></Dialog>  -->
     </div>
 </template>
 <style scoped>
@@ -139,7 +141,7 @@
     .detail_item_sub{margin-bottom:22px;}
     .detail_item{margin-bottom:30px;}
     .detail_title{width:80px;}
-    .detail_content.margin_lf{margin-left:30px;}
+    .detail_content.margin_lf{margin-left:39px;}
     .detail_content.detail_content_p{margin-left:16px;line-height:25px;}
     .width_160{width:145px!important;}
     .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
@@ -162,7 +164,7 @@
                     "honor_certificate_images": [], // 拳手荣誉证书
                     "competition_video": null, // 拳手参赛视频
                     "nick_name": "赵柳", // 拳手昵称
-                    "allowed_lessons": ["泰拳","MMA","拳击"], // 可开课程
+                    "allowed_course": ["泰拳","MMA","拳击"], // 可开课程
                     "created_time": "2018-05-18 00:27:43",
                     "updated_time": "2018-05-18 00:27:47",
                     "real_name": "张三", // 拳手真实姓名
@@ -200,7 +202,9 @@
         },
         created() {
             let query = this.$route.query
-            this.authentication_state = query.authentication_state;
+            if(query.authentication_state){
+                this.authentication_state = query.authentication_state;
+            }
             this.getDetailData(query.id);
         },
         methods: {
@@ -211,6 +215,7 @@
                     if(res&&res.data){
                         console.log(res.data)
                         $this.result=res.data
+                        $this.authentication_state = res.data.authentication_state
                     }
 
                 },function(err){
@@ -223,23 +228,31 @@
                     } 
                 })
             },
-            approve(){
-                this.refuseData.isshow2=false;
+            openApprove(){
+                this.refuseData.isshow2=true
+            },
+            approve(val){
+                console.log(val.class_name)
+                // this.refuseData.isshow2=false;
+                let sendData = {
+                        "authentication_state": this.result.authentication_state,    //认证状态
+                        "allowed_course": val.class_name  //可开通课程，选项为THAI_BOXING/BOXING/MMA
+                    }
                 //通过
-                // this.ajax(''+row.id+'/'+lock_type,'get').then(function(res){
-                //     if(res&&res.data){
-                //         console.log(res.data)
-                //     }
+                this.ajax('boxer/identification/'+this.result.id+'/approve','post',sendData).then(function(res){
+                    if(res&&res.data){
+                        console.log(res.data)
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             refuse(){
                 //驳回
