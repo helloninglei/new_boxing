@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from time import time
 from datetime import datetime
 from django.db.transaction import atomic
 from django.conf import settings
@@ -14,6 +15,34 @@ from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
 from biz.services import official_account_service
 from biz.services.money_balance_service import change_money, ChangeMoneyException
+
+
+def app_order(self, out_trade_no, amount, name, ip):
+    result = self.unified_order(
+        trade_type='APP',
+        out_trade_no=out_trade_no,
+        body=name,
+        total_fee=amount,
+        spbill_create_ip=ip,
+    )
+
+    timestamp = str(int(time()))
+    raw = dict(
+        appId=self.app_id,
+        partnerId=self.mch_id,
+        prepayId=result['prepay_id'],
+        nonceStr=self.nonce_str,
+        timeStamp=timestamp,
+        package='Sign=WXPay',
+        signType="MD5"
+    )
+    sign = self.sign(raw)
+    del raw['signType']
+    raw['sign'] = sign
+    return raw
+
+
+WeixinPay.app_order = app_order
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -35,14 +64,17 @@ class PayService:
     def create_order(cls, user, obj, payment_type, device, ip, amount=None):
         order = cls.perform_create_order(user, obj, device, amount, payment_type)
         name = cls.generate_name(obj)
-        data = dict(out_trade_no=order.out_trade_no, amount=amount, name=name)
+        data = dict(out_trade_no=order.out_trade_no, amount=order.amount, name=name)
 
-        if payment_type != PAYMENT_TYPE_WALLET:
-            return {
-                'order_id': order.out_trade_no,
-                'pay_info': cls.get_payment_info(payment_type, data, ip),
-            }
-        return cls.do_wallet_payment(user, order)
+        if payment_type == PAYMENT_TYPE_WALLET:
+            return cls.do_wallet_payment(user, order)
+        pay_info = cls.get_payment_info(payment_type, data, ip)
+        result = {'order_id': order.out_trade_no}
+        if payment_type == PAYMENT_TYPE_ALIPAY:
+            result['pay_info_str'] = pay_info
+        else:
+            result['pay_info'] = pay_info
+        return result
 
     @classmethod
     def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):
@@ -68,17 +100,16 @@ class PayService:
             out_trade_no=out_trade_no,
             total_amount=amount / 100,
             subject=name,
-            notify_url=settings.ALIPAY_NOTIFY_URL
+            notify_url=settings.ALIPAY['app_notify_url']
         )
 
     @classmethod
     def get_wechat_payment_info(cls, out_trade_no, amount, name, ip):
-        return wechat_pay.unified_order(
-            trade_type='APP',
+        return wechat_pay.app_order(
             out_trade_no=out_trade_no,
-            body=name,
-            total_fee=amount,
-            spbill_create_ip=ip,
+            name=name,
+            amount=amount,
+            ip=ip,
         )
 
     @classmethod

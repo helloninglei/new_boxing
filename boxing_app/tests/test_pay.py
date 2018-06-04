@@ -14,7 +14,7 @@ class PaymentTestCase(APITestCase):
     def setUp(self):
         self.test_user = User.objects.create_user(mobile='11111111111', password='password')
         self.test_superuser = User.objects.create_superuser(mobile='11111111112', password='password')
-        self.client1 = self.client_class(source='iOS')
+        self.client1 = self.client_class(HTTP_SOURCE='iOS')
         self.client2 = self.client_class()
         self.client1.login(username=self.test_user, password='password')
         self.client2.login(username=self.test_superuser, password='password')
@@ -33,7 +33,7 @@ class PaymentTestCase(APITestCase):
         video = HotVideo.objects.create(**self.data)
         payment_data = {
             'id': video.id,
-            'payment_type': constants.PAYMENT_TYPE_ALIPAY,
+            'payment_type': constants.PAYMENT_TYPE_WECHAT,
         }
         res = self.client1.post('/hot_videos/create_order', payment_data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
