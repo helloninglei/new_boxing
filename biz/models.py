@@ -9,7 +9,6 @@ from django.core.validators import MinValueValidator
 from django.db.transaction import atomic
 
 from biz import validator, constants
-from biz.services.money_balance_service import change_money
 from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
@@ -450,6 +449,7 @@ class CourseSettleOrder(models.Model):
 
     @atomic
     def settle_order(self):
+        from biz.services.money_balance_service import change_money
         price = self.course.price
         self.settled = True
         self.settled_date = datetime.now()

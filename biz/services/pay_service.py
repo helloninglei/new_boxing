@@ -162,9 +162,15 @@ class PayService:
         pay_order = PayOrder.objects.filter(out_trade_no=out_trade_no, user=request_user).first()
         if pay_order:
             content = pay_order.content_object
+            if isinstance(content, HotVideo):
+                name = f'视频（{content.name}）'
+            elif isinstance(content, User):
+                name = '充值',
+            else:
+                name = content.get_course_name_display()
             return {
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
-                'name': f'视频（{content.name}）' if isinstance(content, HotVideo) else content.get_course_name_display(),
+                'name': name,
                 'amount': pay_order.amount / 100,
                 'pay_time': pay_order.pay_time.strftime(datetime_format) if pay_order.pay_time else None,
             }
