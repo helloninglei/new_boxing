@@ -73,7 +73,7 @@ class PayService:
             out_trade_no=out_trade_no,
             total_amount=amount,
             subject=name,
-            notify_url=''
+            notify_url=settings.ALIPAY_NOTIFY_URL
         )
 
     @classmethod
