@@ -2,7 +2,7 @@
     <div class="usermanage">
         <TopBar v-if="isShowTop" firstTitle_name="公司账户金额记录"  disNone="disNone"></TopBar>
         <div class='container'>
-            <p class="showTotal">公司账户金额汇总:{{moneyTotal}}</p>
+            <p class="showTotal">公司账户金额汇总:{{total_count}}</p>
             <nav class='myTable'>
                 <template>
                     <el-table
@@ -18,23 +18,25 @@
                         label="收入/支出"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.derection=='in'?'+':'-'}} {{scope.row.account}}</span>                 
+                                <span>{{scope.row.change_amount>0?'+':''}} {{scope.row.change_amount}}</span>                 
                             </template>
                         </el-table-column>
                         <el-table-column
-                        prop="time"
+                        prop="created_time"
                         label="时间"
                         >
                         </el-table-column>
                         <el-table-column
-                        prop="description"
                         label="备注"
                         >
+                            <template slot-scope="scope">
+                                <span>[{{scope.row.change_type}}] 订单号：{{scope.row.remarks}}</span>                 
+                            </template>
                         </el-table-column>
                     </el-table>
                 </template>
             </nav>
-            <footer>
+            <footer v-show="total>10">
                 <Pagination :total="total" @changePage="changePage"></Pagination>
             </footer>
         </div>
@@ -56,37 +58,30 @@
         data() {
             return {
                 isShowTop : true,
-                moneyTotal : 1000000,//付费金额
+                total_count : 1000000,//付费金额
                 total     : 1000,//数据的总条数
                 tableData : [
                     {
-                        "id": 1,
-                        "account": 100,
-                        "time": "2017-11-03 19:00:00",
-                        "description": "test",
-                        "derection":'in'
+                        "id": 1,   // id
+                        "change_amount": -10000,   // 收入，支出
+                        "created_time": "2018-02-23 18:00:00",  // 时间
+                        "remarks": "23232323232",  // 订单号
+                        "change_type": "提现"
                     },
                     {
-                        "id": 2,
-                        "account": 100,
-                        "time": "2017-11-03 19:00:00",
-                        "description": "test",
-                        "derection":'in'
+                        "id": 2,   // id
+                        "change_amount": 10000,   // 收入，支出
+                        "created_time": "2018-02-23 18:00:00",  // 时间
+                        "remarks": "23232323232",  // 订单号
+                        "change_type": "提现"
                     },
                     {
-                        "id": 3,
-                        "account": 100,
-                        "time": "2017-11-03 19:00:00",
-                        "description": "test",
-                        "derection":'in'
+                        "id": 3,   // id
+                        "change_amount": -10000,   // 收入，支出
+                        "created_time": "2018-02-23 18:00:00",  // 时间
+                        "remarks": "23232323232",  // 订单号
+                        "change_type": "提现"
                     },
-                    {
-                        "id": 4,
-                        "account": 100,
-                        "time": "2017-11-03 19:00:00",
-                        "description": "test",
-                        "derection":'out'
-                    }
                 ],
             }
         },
@@ -99,17 +94,22 @@
             this.getTableData();
         },
         methods: {
-            getTableData() {
+            getTableData(page) {
                 //获取data数据
-                let $this   = this
-                this.ajax('/hot_videos','get',{},this.sendData).then(function(res){
+                let $this    = this
+                let sendData = {};
+                if(page){
+                    sendData.page = page;
+                }
+                this.ajax('/official_account_change_logs','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                         }
-                        // $this.tableData=res.data.results;
+                        $this.tableData=res.data.results;
+                        $this.total_count = res.data.total_count ? res.data.total_count : 0;
                         $this.total = res.data.count;
                     }
 

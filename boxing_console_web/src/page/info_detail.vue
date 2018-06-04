@@ -15,21 +15,33 @@
                             <el-input v-model="form.initial_views_count" placeholder="请输入"></el-input>
                         </el-form-item>
                         <el-form-item label="资讯主题图">
-                            <el-upload
+                            <!-- <el-upload
                                     class="avatar-uploader"
                                     :action=action
                                     :show-file-list="false"
                                     :on-success="handleAvatarSuccess"
-                                    style="position: relative;width: 375px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
+                                    style="position: relative;width: 244px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
                                 <template v-if="picture">
                                     <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
                                     <img  :src="picture" class="avatar">
                                 </template>
                                 <template v-else>
-                                    <i class="el-icon-plus avatar-uploader-icon"></i>
-                                    <div class="upload_tip_text">尺寸大小：750*340</div>
+                                    
                                 </template>
-                            </el-upload>
+                            </el-upload> -->
+                            <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='244' :height='144'></Cropper>
+                            <div class='show' @click="addImg('inputId2','img2')">  
+                               <img :src="config.baseUrl+imgUrl" alt="" width='100%' id='img2' v-if='imgUrl'> 
+                               <div>  
+                                   <input type="file" id="inputId2" style='display:none' accept="image" @change="change">  
+                                   <label for="inputId2"></label>  
+                                </div> 
+                            </div>
+                            
+                            <div style='width:244px;height:144px;border:1px solid #ccc' @click="addImg('inputId2','img2')">
+                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                <div class="upload_tip_text">尺寸大小：244*144</div>
+                            </div>
                             <div class="el-form-item__error" v-if="showError">
                                 请上传资讯主题图
                             </div>
@@ -59,7 +71,7 @@
                         <div class='udeitor_content' id='ueditor1'>
                             <Ueditor @changeEditor="onEditorChange" myQuillEditor='myQuillEditor' imgInput='imgInput1' :appContent='form.app_content'></Ueditor>
                             <div class='text_rt margin_tp10'>
-                                <el-button class="myButton_40 myBtnHover_red btn_width_95" @click='preview(1)' v-if='(form.title&&form.sub_title&&form.initial_views_count>0&&form.start_time&&form.end_time&&form.app_content)&&(form.picture||picture)'>预览</el-button>
+                                <el-button class="myButton_40 myBtnHover_red btn_width_95" @click='preview(1)' v-if='(form.title&&form.initial_views_count>0&&form.start_time&&form.end_time&&form.app_content)&&(form.picture||picture)'>预览</el-button>
                                 <el-button class="myButton_40 btn_width_95" disabled v-else>预览</el-button>
                             </div>
                         </div>
@@ -67,7 +79,7 @@
                         <div class='udeitor_content' id='ueditor2'>
                             <Ueditor @changeEditor="onEditorChangeSub" myQuillEditor='myQuillEditorSub' imgInput='imgInput2' :appContent='form.share_content'></Ueditor>
                             <div class='text_rt margin_tp10'>
-                                <el-button class="myButton_40 myBtnHover_red btn_width_95" @click='preview(2)' v-if='(form.title&&form.sub_title&&form.initial_views_count>0&&form.start_time&&form.end_time&&form.share_content)&&(form.picture||picture)'>预览</el-button>
+                                <el-button class="myButton_40 myBtnHover_red btn_width_95" @click='preview(2)' v-if='(form.title&&form.initial_views_count>0&&form.start_time&&form.end_time&&form.share_content)&&(form.picture||picture)'>预览</el-button>
                                 <el-button class="myButton_40 btn_width_95" disabled v-else>预览</el-button>
                             </div>
                         </div>
@@ -80,7 +92,11 @@
             </el-row>
         </div>
         <el-dialog title="预览" :visible.sync="dialogVisible">
-            <div>这是一个弹框</div>
+            <div>
+                <h4 class="prev_title">{{form.title}}</h4>
+                <p class="prev_time">{{form.start_time}}</p>
+                <div id='priv_content'></div>
+            </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">关闭</el-button>
             </div>
@@ -99,15 +115,19 @@
     .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
-        width: 375px;
-        height: 170px;
-        line-height: 170px;
+        position:absolute;
+        left:0;
+        width: 244px;
+        height: 144px;
+        line-height: 144px;
         text-align: center;
+        z-index:2;
     }
     .avatar {
         display: block;
-        width: 375px;
-        height 170px
+        width: 244px;
+        height 144px;
+        z-index:2;
     }
     .handle_btn {
         margin-top 60px
@@ -116,7 +136,7 @@
         }
     }
     .upload_tip_text {
-        width 100%
+        width 244px
         text-align center
         position absolute
         bottom 0
@@ -136,6 +156,8 @@
     .udeitor_content{
         margin-bottom:60px
     }
+    .prev_title{font-size:20px}
+    .prev_time{font-size:14px}
 </style>
 <style>
     #info_detail .el-checkbox__label,#info_detail .el-radio__label,#info_detail .el-form-item__label,.udeitor_title{
@@ -143,16 +165,44 @@
         font-size: 16px;
         color: #000000;
     }
+    #info_detail .show{
+        width: 244px;  
+        height: 144px;  
+        overflow: hidden;  
+        position: relative;  
+        float:left;
+        z-index:20;
+        border: 1px solid #d5d5d5; 
+    }
+    #info_detail .el-dialog{
+        width:400px;height:500px;top:50%;margin-top:-250px!important;border-radius:10px;
+    }
+    #info_detail .el-dialog__body{
+        height:calc(100% - 140px);
+        padding:20px;
+        background:#000;
+        color:#fff;
+        border:1px solid #ccc;
+    }
 </style>
 <script>
     import TopBar   from 'components/topBar';
     import config   from 'common/my_config'
     import Ueditor  from 'components/ueditor'
+    import Cropper from 'components/cropper';
     export default {
         data() {
             return {
                 id: '',
                 isShowTop: true,
+                inputId:'',
+                url_f:'',
+                changeUrl:false,
+                imgId :'',
+                imgUrl:'',
+                cropper_width:0,
+                cropper_height:0,
+
                 showError: false,
                 action: `${config.baseUrl}/upload`,
                 checkType: 'voteId',
@@ -209,6 +259,7 @@
         components: {
             TopBar,
             Ueditor,
+            Cropper
         },
 
         created() {
@@ -218,7 +269,7 @@
                 this.form=this.query;
                 this.dateArr=[this.query.start_time,this.query.end_time]
                 this.form.push_news = this.form.push_news== 'true'?true:false
-                this.picture = this.config.baseUrl+this.form.picture ;
+                this.imgUrl = this.form.picture ;
                 console.log(this.form)
             }
         },
@@ -228,29 +279,59 @@
         },
 
         methods: {
+            getUrl(url,imgId){
+                this.changeUrl=false
+                this.imgUrl = url;
+                console.log(url,imgId)
 
-            handleAvatarSuccess(res, file) {
-                let picUrl = `${config.baseUrl}/${res.urls[res.urls.length-1]}`;
-                let image = new Image();
-                image.src = picUrl;
-                image.onload = () => {
-                    this.picture = picUrl
-                    this.showError = false;
-                    // if (image.width !== 750 || image.height != 340) {
-                    //     this.showErrorTip('请上传符合尺寸的商品详情图');
-                    // }
-                    // else {
-                    //     this.picture = picUrl
-                    //     this.showError = false;
-                    // }
-                };
             },
+            addImg(ele,imgId){
+                // alert(1)
+                this.imgId=imgId;
+                console.log($("#inputId2"))
+                $("#inputId2").click();
+            },
+            change(e){
+                let files = e.target.files || e.dataTransfer.files;  
+                if (!files.length) return;  
+                let picValue = files[0];  
+                this.url_f = this.getObjectURL(picValue); 
+                this.changeUrl=true
+                console.log(this.url_f)
+            },
+            getObjectURL (file) {  
+                var url = null ;   
+                if (window.createObjectURL!=undefined) { // basic  
+                  url = window.createObjectURL(file) ;  
+                } else if (window.URL!=undefined) { // mozilla(firefox)  
+                  url = window.URL.createObjectURL(file) ;  
+                } else if (window.webkitURL!=undefined) { // webkit or chrome  
+                  url = window.webkitURL.createObjectURL(file) ;  
+                }  
+                return url ;  
+            }, 
+            // handleAvatarSuccess(res, file) {
+            //     let picUrl = `${config.baseUrl}/${res.urls[res.urls.length-1]}`;
+            //     let image = new Image();
+            //     image.src = picUrl;
+            //     image.onload = () => {
+            //         this.picture = picUrl
+            //         this.showError = false;
+            //         // if (image.width !== 750 || image.height != 340) {
+            //         //     this.showErrorTip('请上传符合尺寸的商品详情图');
+            //         // }
+            //         // else {
+            //         //     this.picture = picUrl
+            //         //     this.showError = false;
+            //         // }
+            //     };
+            // },
 
             submitForm(formName) {
                 console.log(this.form)
-                console.log(this.picture)
+                console.log(this.imgUrl)
                 this.$refs[formName].validate((valid) => {
-                    if (!this.picture) {
+                    if (!this.imgUrl) {
                         this.showError = true;
                         return false;
                     }
@@ -283,7 +364,14 @@
             preview(type){
                 console.log(this.form)
                 this.type = type
+
+                console.log(this.form.app_content)
+                console.log(this.form.app_content+'')
+                console.log($('#priv_content').html())
+                $('#priv_content').html(""+this.form.app_content+"")
+                console.log($('#priv_content').html())
                 this.dialogVisible = true
+                
             },
 
             onEditorChange(value) {

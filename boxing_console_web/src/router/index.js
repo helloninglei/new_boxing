@@ -1,7 +1,6 @@
 import Index            from 'components/index';
 import Login            from 'components/login';
 import UserManage       from 'page/usermanage';
-import BoxingManage     from 'page/boxingmanage';
 import BoxingList       from 'page/boxinglist';
 import AddBoxing        from 'page/addboxing';
 import Financemanage    from 'page/financemanage';
@@ -51,14 +50,6 @@ export default [
             {
                 path: '/usermanage',
                 component: UserManage,
-            },
-            // {
-            //     path: '/boxingmanage',
-            //     component: BoxingList,
-            // },
-            {
-                path: '/boxingmanage',
-                component: BoxingManage,
             },
             {
                 path: '/boxinglist',

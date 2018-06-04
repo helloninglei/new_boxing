@@ -38,8 +38,8 @@
             <nav>
                <Table :tableColumn="tableColumn" :tableData="tableData" @toDetail="toDetail" :showBtn1="true"></Table> 
             </nav>
-            <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+            <footer v-show='total>10'>
+                <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
             </footer>
         </div>
     </div>
@@ -58,6 +58,8 @@ nav{min-height: 528px}
         data() {
             return {
                 isShowTop : true,
+                page      : 1,
+                issearch  : false,
                 sendData  : {
                     price_min  : '',
                     price_max  : '',
@@ -154,13 +156,17 @@ nav{min-height: 528px}
             this.getTableData();
         },
         methods: {
-            getTableData(data,page) {
+            getTableData(page) {
                 //获取data数据
-                let $this   = this
-                if(page&&page>1){
-                    data.page=page
+                let $this    = this
+                let sendData={}
+                if(this.issearch){
+                   sendData=this.sendData
                 }
-                this.ajax('/courses','get',{},{data}).then(function(res){
+                if(page){
+                    sendData.page=page
+                }
+                this.ajax('/courses','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
@@ -168,7 +174,7 @@ nav{min-height: 528px}
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
                         }
                         $this.tableData=res.data.results;
-                        // $this.total = res.data.count;
+                        $this.total = res.data.count;
                     }
 
                 },function(err){
@@ -183,16 +189,18 @@ nav{min-height: 528px}
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
-                this.getTableData(this.sendData,val) 
+                this.page=val
+                this.getTableData(val) 
             },
             toDetail(row){
-                // console.log(row)
                 this.$router.push({path: '/classdetail', query:{id:row.id}});
 
             },
             filter(){
-                this.getTableData(this.sendData) 
+                this.issearch=true;
+                //搜索是先看第一页
+                this.page=1
+                this.getTableData(1) 
             },
             refresh(){
                 this.sendData={};
