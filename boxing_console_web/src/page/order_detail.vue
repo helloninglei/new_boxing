@@ -218,7 +218,7 @@
     .detail_item_sub{margin-bottom:22px;}
     .detail_item{margin-bottom:50px;}
     .detail_title{width:80px;}
-    .detail_content.margin_lf{margin-left:30px;}
+    .detail_content.margin_lf{margin-left:40px;}
     .width_160{width:145px!important;}
     .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
     .classDetail .el-rate__icon{color:#F95862!important}

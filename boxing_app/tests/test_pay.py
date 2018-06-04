@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from biz import constants
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
-from biz.constants import DEVICE_PLATFORM_IOS, PAYMENT_TYPE_ALIPAY
+from biz.constants import DEVICE_PLATFORM_IOS, PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_UNPAID
 from django.contrib.contenttypes.fields import ContentType
 from biz.redis_client import redis_client
 
@@ -66,3 +66,21 @@ class PaymentTestCase(APITestCase):
         self.assertEqual(result['status'], 'unpaid')
         self.assertEqual(result['amount'], self.data['price'])
         self.assertEqual(result['name'], f'视频（{self.data["name"]}）')
+
+    def test_wallet_pay(self):
+        video = HotVideo.objects.create(**self.data)
+        payment_data = {
+            'id': video.id,
+            'payment_type': constants.PAYMENT_TYPE_WALLET,
+        }
+        res = self.client1.post('/hot_videos/create_order', payment_data)
+        self.assertEqual(res.data['status'], 'failed')
+        self.assertEqual(res.data['message'], '余额不足')
+
+        self.test_user.money_balance = self.data['price'] * 100
+        self.test_user.save()
+        res = self.client1.post('/hot_videos/create_order', payment_data)
+        order_id = res.data['order_id']
+        self.assertEqual(res.data['status'], 'success')
+        order = PayOrder.objects.get(out_trade_no=order_id)
+        self.assertGreater(order.status, PAYMENT_STATUS_UNPAID)

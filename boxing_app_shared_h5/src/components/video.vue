@@ -1,13 +1,12 @@
 <template>
     <d-player :options="options"
               ref="player"
-                class="player">
+                class="player" :style="{height: height}">
     </d-player>
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
-    .player
-        height 10rem
+
 </style>
 
 <script type="text/ecmascript-6">
@@ -26,18 +25,16 @@
                         url: `${config.baseUrl}` + this.url,
                     },
                     autoplay: false,
-                    contextmenu: [
-                        {
-                            text: 'GitHub',
-                            link: 'https://github.com/MoePlayer/vue-dplayer'
-                        }
-                    ]
                 },
             }
         },
         props: {
             url: {
                 type: String
+            },
+            height: {
+                type: String,
+                default: '10rem'
             }
         },
         components: {

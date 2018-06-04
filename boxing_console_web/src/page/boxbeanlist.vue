@@ -1,23 +1,21 @@
 <template>
     <div class="">
-        <TopBar v-if="isShowTop" firstTitle_name="用户管理" firstTitle_path="/usermanage" secondTitle_name="钱包余额记录" secondTitle_path="/walletlist"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="用户管理" firstTitle_path="/usermanage" secondTitle_name="拳豆余额记录" ></TopBar>
         <div class="wallerlist">
             <header>
                 <el-date-picker
-                v-model="sendData.start_time"
+                v-model="sendData.startTime"
                 type="datetime"
-                value-format="yyyy-MM-dd hh:mm:ss"
                 :default-value= "new Date()"
                 placeholder="开始时间" style='width:200px' class="margin_rt25">
                 </el-date-picker>
                 <el-date-picker
-                v-model="sendData.end_time"
+                v-model="sendData.endTime"
                 type="datetime"
-                value-format="yyyy-MM-dd hh:mm:ss"
                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                 placeholder="结束时间" style='width:200px' class="margin_rt25">
                 </el-date-picker>
-                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click='filter()'>查询</el-button>
+                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25'>查询</el-button>
             </header>
             <nav>
                 <template>
@@ -26,18 +24,22 @@
                       style="width: 100%"
                       :highlight-current-row="true">
                         <el-table-column
-                        label="余额"
-                        prop="change_amount">
+                        label="收入/支出拳豆">
+                            <template slot-scope="scope">
+                                <span class='' >{{scope.row.derection=="add"?'+':'-'}}{{scope.row.balance}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                        label="收入/支出方式"
+                        prop="time">
                         </el-table-column>
                          <el-table-column
                         label="时间"
-                        prop="created_time">
+                        prop="time">
                         </el-table-column>
-                        <el-table-column
-                        label="备注">
-                            <template slot-scope="scope">
-                                <span class='' >{{scope.row.change_type}} ID: {{scope.row.remarks}}</span>
-                            </template>
+                         <el-table-column
+                        label="备注"
+                        prop="content">
                         </el-table-column>
                     </el-table>
                 </template>
@@ -60,8 +62,8 @@
             return {
                 isShowTop : true,
                 issearch  : false,
-                page      :1,
                 id        :'',
+                page :1,
                 sendData  :{
                     start_time : '',
                     end_time   : '',
@@ -98,7 +100,7 @@
                     sendData.page=page
                 }
                 console.log(sendData)
-                this.ajax('/money_change_logs/'+this.id,'get',{},sendData).then(function(res){
+                this.ajax('/coin/change/log/'+this.id,'get',{},{sendData}).then(function(res){
                     if(res&&res.data){
                         $this.tableData=res.data.results;//后台没数据先不用
                         $this.total = res.data.count;

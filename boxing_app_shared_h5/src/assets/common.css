@@ -11,6 +11,13 @@ body{
     display: none!important;
 }
 
+.ql-video {
+    margin-top: .5rem;
+    width: 100%!important;
+    height: 10rem;
+    background: #000;
+}
+
 
 
 

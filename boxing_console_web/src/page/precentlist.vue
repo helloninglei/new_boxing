@@ -8,14 +8,23 @@
             </div>
             <div style='margin:10px 0 40px 0'>
                 <template>
-                    <el-radio-group v-model="sendData.status">
-                        <el-radio-button label="unprocessed">未审核</el-radio-button>
-                        <el-radio-button label="processed">已审核</el-radio-button>
+                    <el-radio-group v-model="sendData.statusTab">
+                        <el-radio-button label="waiting">未审核</el-radio-button>
+                        <el-radio-button label="finished">已审核</el-radio-button>
                     </el-radio-group>
                 </template>
             </div>
+            <el-row v-show="sendData.statusTab=='finished'">
+                <el-col :span="5" style='width:314px;margin-bottom:30px'>
+                    <el-select v-model="sendData.statusSel" class="margin_rt25">
+                        <el-option value="" label="全部"></el-option>
+                        <el-option value="approved" label="审核通过">审核通过</el-option>
+                        <el-option value="rejected" label="审核未通过">审核未通过</el-option>
+                    </el-select>
+                </el-col> 
+            </el-row>  
         </header>
-        <nav v-show="sendData.status=='unprocessed'">
+        <nav v-show="sendData.statusTab=='waiting'">
             <template>
                 <el-table
                   :data="tableData"
@@ -26,29 +35,6 @@
                     :label="value.name"
                     :width="value.width"
                     v-for="value in tableColumn">
-                    </el-table-column>
-                    <el-table-column
-                    label="举报内容"
-                    width="90">
-                        <template slot-scope="scope">
-                            <span class='colorFont' @click='openContent(scope.row.content)'>查看</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                    label="内容类型"
-                    prop="content_type"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="举报时间"
-                    prop="created_time"
-                    width="200"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="状态"
-                    prop="status"
-                    >
                     </el-table-column>
                     <el-table-column
                       fixed="right"
@@ -62,7 +48,7 @@
                 </el-table>
             </template>
         </nav>
-        <nav v-show="sendData.status=='processed'">
+        <nav v-show="sendData.statusTab=='finished'">
             <template>
                 <el-table
                   :data="tableData"
@@ -75,41 +61,8 @@
                     v-for="value in tableColumn">
                     </el-table-column>
                     <el-table-column
-                    label="举报内容"
-                    width="90">
-                        <template slot-scope="scope">
-                            <span class='colorFont' @click='openContent(scope.row.content)'>查看</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                    label="内容类型"
-                    prop="content_type"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="举报时间"
-                    prop="created_time"
-                    width="200"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="状态"
+                    label="审核状态"
                     prop="status"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="处理结果"
-                    prop="status"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="处理人"
-                    prop="status"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="处理时间"
-                    prop="created_time"
                     width="200"
                     >
                     </el-table-column>
@@ -117,7 +70,7 @@
             </template>
         </nav>
         <footer v-show="total>10">
-            <Pagination :total="total" @changePage="changePage"></Pagination>
+            <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
         </footer>
         <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id'></Confirm>
     </div>
@@ -159,9 +112,12 @@
             return {
                 isShowTop : true,
                 total     : 1000,
+                issearch  :false,
+                page      :1,
                 sendData  :{
                     search:'',
-                    status:'unprocessed',
+                    statusTab:'waiting',
+                    statusSel:'',
                 },
                 detailData:{
                     allData:{},
@@ -175,49 +131,36 @@
                 },
                 tableData : [
                     {
-                        "id": 1,
-                        "reason": "淫秽色情",
-                        "reported_user": 1000008,
-                        "content_type": "动态",
-                        "status": "未处理",
-                        "content": {
-                            "id": 1,
-                            "user": 1000001,
-                            "content": "动态1234",
-                            "images": [],
-                            "video": null,
-                            "is_deleted": true
-                        },
-                        "created_time": "2018-05-21 15:18:21",
-                        "object_id": 1,
-                        "remark": null,
-                        "user": 1000001
+                        "id": 30,
+                        "order_number": "2018052800021",
+                        "user_id": "7",
+                        "user_nickname": "nick_name",
+                        "user_mobile": "19900000000",
+                        "created_time": "2018-05-28 17:23:59",
+                        "amount": 200,
+                        "withdraw_account": "aaaaaa",
+                        "status": "审核中"
                     },
                     {
-                        "id": 2,
-                        "reason": "淫秽色情",
-                        "reported_user": 1000009,
-                        "content_type": "动态",
-                        "status": "未处理",
-                        "content": {
-                            "id": 1,
-                            "user": 1000001,
-                            "content": "动态1234",
-                            "images": [],
-                            "video": null,
-                            "is_deleted": true
-                        },
-                        "created_time": "2018-05-21 15:18:21",
-                        "object_id": 1,
-                        "remark": null,
-                        "user": 1000001
-                    },
+                        "id": 29,
+                        "order_number": "2018052800020",
+                        "user_id": "7",
+                        "user_nickname": "nick_name",
+                        "user_mobile": "19900000000",
+                        "created_time": "2018-05-28 16:19:44",
+                        "amount": 10000,
+                        "withdraw_account": "aaaaaa",
+                        "status": "审核中"
+                    }
                 ],
                 tableColumn:[
                     {title:'id',       name :'ID',  width:''},
-                    {title:'user',     name :'举报用户ID',    width:''},
-                    {title:'reported_user',  name :'被举报用户',   width:''},
-                    {title:'reason',   name :'举报理由', width:''},
+                    {title:'order_number',     name :'提现单号',    width:''},
+                    {title:'user_id',  name :'用户ID',   width:'120'},
+                    {title:'user_mobile',   name :'用户手机号', width:''},
+                    {title:'created_time',   name :'提现时间', width:'200'},
+                    {title:'amount',   name :'提现金额（元）', width:'120'},
+                    {title:'withdraw_account',   name :'到账支付宝账户', width:''},
                 ],
             }
         },
@@ -227,20 +170,41 @@
             Confirm
         },
         watch:{
-           'sendData.status'(val){
-                this.getData({status:val});
+           'sendData.statusTab'(val){
+                if(this.issearch){
+                    let data ={ 
+                        status:val,
+                        search:this.sendData.search,
+                    }
+                    this.getData(data);  
+                }else{
+                    this.getData({status:val});
+                }
+           } ,
+           'sendData.statusSel'(val){
+                if(this.issearch){
+                    let data ={ 
+                        status:val,
+                        search:this.sendData.search,
+                    }
+                    this.getData(data);  
+                }else{
+                    this.getData({status:val});
+                }
            } 
         },
         created() {
-            this.getData({status:this.sendData.status});
+            this.getData({status:this.sendData.statusTab});
         },
         methods: {
             getData(data){
                 let $this=this
-                this.ajax('/report','get',{},data).then(function(res){
+                this.ajax('/withdraw_logs','get',{},data).then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
                         $this.tableData = res.data.results
+                        for (var i=0;i<$this.tableData.length;i++){
+                            $this.tableData[i].amount = $this.tableData[i].amount /100;
+                        }
                         $this.total = res.data.count;
                     }
 
@@ -258,7 +222,6 @@
             openContent(val){
                 this.detailData.allData = val;
                 this.detailData.isshow  = true
-                console.log(val)
             },
             openConfirm(id,isDel){
                 this.confirmData.id    = id
@@ -275,11 +238,24 @@
             changePage(val){
                 // 要看第几页
                 // console.log(val)
-                this.sendData.page=val;
-                this.getData(this.sendData);
+                let data = {
+                    status : this.sendData.statusTab == 'waiting' ? 'waiting' :(this.sendData.statusSel?this.sendData.statusSel:this.sendData.statusTab)
+                }
+                if(this.issearch){
+                    data.search=this.sendData.search
+                }
+                data.page=val
+                this.getData(data);
             },
             filter(){
-                this.getData(this.sendData);
+                let data = {
+                    search : this.sendData.search,
+                    status : this.sendData.statusTab == 'waiting' ? 'waiting' :(this.sendData.statusSel?this.sendData.statusSel:this.sendData.statusTab)
+                }
+                this.page = 1;
+                data.page = 1;
+                this.issearch=true;
+                this.getData(data);
             },
             cancel(val){
                 this.detailData.isshow  = val ;
@@ -289,22 +265,19 @@
             },
             update(id){
                 this.confirmData.isshow=false;
-                console.log(this.tableData)
                 for(var i=0;i<this.tableData.length;i++){
-                    console.log(this.tableData[i].id)
                     if(this.tableData[i].id==id){
                         this.tableData.splice(i,1)
                     }
                 } 
             },
             conform1(id){
-                console.log(id,this.confirmData.isDel)
                 let $this=this;
                 if(this.confirmData.isDel){
                     //通过
-                    this.ajax(''+id+'/do_delete','post').then(function(res){
+                    this.ajax('withdraw_logs/'+id+'/approved','put').then(function(res){
                         if(res&&res.status==200){
-                            // alert('删除成功')
+                            // alert('审核通过')
                             $this.update(id);
                         }else{
                           console.log(res)  
@@ -322,9 +295,9 @@
                     })
                 }else{
                     //不通过
-                    this.ajax(''+id+'/proved_false','post').then(function(res){
+                    this.ajax('withdraw_logs/'+id+'/rejected','put').then(function(res){
                         if(res&&res.status==200){
-                            // alert('核实为假')
+                            // alert('审核驳回')
                             $this.update(id);
                         }else{
                           console.log(res)  

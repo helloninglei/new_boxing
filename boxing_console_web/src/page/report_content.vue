@@ -4,8 +4,8 @@
         <h3 style='color:#909399'>用户昵称：{{getData.nick_name}}</h3>
         <p class="detail_title text_lf">发布时间：{{getData.created_time}}</p>
         <p style='font-size:14px'>{{getData.content}}</p>
-        <div class='imgs'>
-          <img :src="value" alt="" v-for='value in getData.pictures'>
+        <div class='imgs' v-if='getData.pictures'>
+          <img :src="value" alt="" v-for='value in getData.pictures' width='100%'>
         </div>
       <div slot="footer" class="dialog-footer" style='text-align:center'>
         <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">关闭</el-button>
@@ -15,13 +15,13 @@
 </template>
 <style scope>
   h3,p{margin-bottom:5px;}
-  .imgs{width:135px;height:83px;border: 1px solid #C6CBD4;}
+  .imgs{width:100%;}
 </style>
 <style>
   #report_content .el-dialog{width:385px; height:274px; margin-top:20vh;}
   #report_content .el-dialog__header{padding-top:20px;}
   .border_raduis_100{border-radius: 100px!important}
-  #report_content .el-dialog__body{height:156px; font-family: "PingFang SC";padding:0px 30px 30px 30px;font-size: 16px;color: #000000;}
+  #report_content .el-dialog__body{height:156px; font-family: "PingFang SC";padding:0px 30px 30px 30px;font-size: 16px;color: #000000;overflow: auto}
   #report_content .dialog_content{margin:20px 0;}
   #report_content .el-dialog__footer{padding-bottom:38px;}
   .content_foot{font-size:14px!important;color:#212121;}
