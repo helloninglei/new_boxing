@@ -1,6 +1,6 @@
 <template>
     <div class="banner_manage" style="calc(100vw - 230px)">
-        <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/bannermanage" disNone="disNone"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infoList" disNone="disNone"></TopBar>
         <div class="container">
             <header>
                 <el-date-picker
@@ -156,7 +156,7 @@
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
                         // this.tableData = res.data.results;
-                        // this.total = res.data.count;
+                        this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
                 })

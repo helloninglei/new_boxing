@@ -80,7 +80,7 @@
         },
         methods: {
             confirm(){
-            	this.$emit('confirm')
+            	this.$emit('confirm',this.form)
             },
             close(){
               this.$emit('cancel',false)

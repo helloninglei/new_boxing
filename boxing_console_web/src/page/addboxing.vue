@@ -1,6 +1,6 @@
 <template>
     <div id="addBoxing">
-        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxingmanage" :secondTitle_name="secondTitle_name"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" :secondTitle_name="secondTitle_name"></TopBar>
         <div class='container'>
             <el-row> 
                 <el-col :span="9">
@@ -10,7 +10,7 @@
                         </el-form-item>
                         <el-form-item label="宣传图" prop="avatar">
                             <el-row>
-                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='cropper_width' :height='cropper_height'></Cropper>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='160' :height='90'></Cropper>
                                 <div>  
                                     <div class='show' >  
                                       <img :src="src_avatar" alt="" width='100%' id='img1'> 
@@ -83,7 +83,7 @@
                             <div style='width:200%'>
                                 <el-row>
                                     <el-col :span="6">
-                                       <div class='show1' @click="addImg('inputId2','img2',160,90)">  
+                                       <div class='show1' @click="addImg('inputId2','img2')">  
                                           <img :src="images['img2']" alt="" width='100%' id='img2' > 
                                         </div>
                                         <div>  
@@ -92,7 +92,7 @@
                                         </div> 
                                     </el-col>
                                     <el-col :span="6">
-                                        <div class='show1' @click="addImg('inputId3','img3',160,90)">  
+                                        <div class='show1' @click="addImg('inputId3','img3')">  
                                           <img :src="images['img3']" alt="" width='100%' id='img3' > 
                                         </div>
                                         <div>  
@@ -101,7 +101,7 @@
                                         </div> 
                                     </el-col>
                                     <el-col :span="6">
-                                        <div class='show1' @click="addImg('inputId4','img4',160,90)">  
+                                        <div class='show1' @click="addImg('inputId4','img4')">  
                                           <img :src="images['img4']" alt="" width='100%' id='img4' > 
                                         </div>
                                         <div>  
@@ -110,7 +110,7 @@
                                         </div> 
                                     </el-col>
                                     <el-col :span="6">
-                                        <div class='show1' @click="addImg('inputId5','img5',160,90)">  
+                                        <div class='show1' @click="addImg('inputId5','img5')">  
                                           <img :src="images['img5']" alt="" width='100%' id='img5' > 
                                         </div>
                                         <div>  
@@ -288,10 +288,8 @@
                 }
 
             },
-            addImg(ele,imgId,width,height){
+            addImg(ele,imgId){
                 this.imgId=imgId;
-                this.cropper_width=width
-                this.cropper_height=height
                 $("#"+ele).click();
             },
             change(e){
