@@ -36,7 +36,6 @@ def app_order(self, out_trade_no, amount, name, ip):
         package='Sign=WXPay',
     )
     sign = self.sign(raw)
-    del raw['signType']
     raw['sign'] = sign
     return raw
 

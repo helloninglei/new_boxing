@@ -43,7 +43,7 @@ class PaymentTestCase(APITestCase):
         video_type = ContentType.objects.get_for_model(video)
         order = PayOrder.objects.get(content_type__pk=video_type.id, object_id=video.id)
         self.assertEqual(order.amount, self.data['price'] * 100)
-        self.assertEqual(order.payment_type, constants.PAYMENT_TYPE_ALIPAY)
+        self.assertEqual(order.payment_type, constants.PAYMENT_TYPE_WECHAT)
         self.assertEqual(order.device, constants.DEVICE_PLATFORM_IOS)
 
         # test order no
