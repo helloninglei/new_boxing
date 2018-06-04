@@ -28,13 +28,12 @@ def app_order(self, out_trade_no, amount, name, ip):
 
     timestamp = str(int(time()))
     raw = dict(
-        appId=self.app_id,
-        partnerId=self.mch_id,
-        prepayId=result['prepay_id'],
-        nonceStr=self.nonce_str,
-        timeStamp=timestamp,
+        appid=self.app_id,
+        partnerid=self.mch_id,
+        prepayid=result['prepay_id'],
+        noncestr=self.nonce_str,
+        timestamp=timestamp,
         package='Sign=WXPay',
-        signType="MD5"
     )
     sign = self.sign(raw)
     del raw['signType']
