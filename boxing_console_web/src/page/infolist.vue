@@ -11,6 +11,8 @@
                         start-placeholder="起始日期"
                         end-placeholder="结束日期"
                         @change="getDateTime"
+                        :clearable=false
+                        :editable=false
                         value-format="yyyy-MM-dd hh:mm:ss">
                 </el-date-picker>
                 <el-input v-model="search"  class='myInput_40 margin_rt20' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
@@ -64,7 +66,7 @@
                 </el-table>
             </template>
             <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+                <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
     </div>
@@ -89,56 +91,7 @@
                 start_date: '',
                 end_date: '',
                 hasSearch: false,
-                tableData: [
-                    {
-                        "id": 1,
-                        "author": "lerry",
-                        "comment_count": 0,
-                        "title": "111",
-                        "sub_title": "22",
-                        "views_count": 0,
-                        "initial_views_count": 22,
-                        "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
-                        "stay_top": true,
-                        "push_news": true,
-                        "start_time": "2018-12-31 12:59:00",
-                        "end_time": "2018-12-31 23:59:00",
-                        "app_content": "222",
-                        "share_content": null
-                    },
-                    {
-                        "id": 2,
-                        "author": "lerry",
-                        "comment_count": 0,
-                        "title": "111",
-                        "sub_title": "22",
-                        "views_count": 0,
-                        "initial_views_count": 22,
-                        "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
-                        "stay_top": true,
-                        "push_news": true,
-                        "start_time": "2018-12-31 12:59:00",
-                        "end_time": "2018-12-31 23:59:00",
-                        "app_content": "222",
-                        "share_content": null
-                    },
-                    {
-                        "id": 3,
-                        "author": "lerry",
-                        "comment_count": 0,
-                        "title": "111",
-                        "sub_title": "22",
-                        "views_count": 0,
-                        "initial_views_count": 22,
-                        "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
-                        "stay_top": true,
-                        "push_news": true,
-                        "start_time": "2018-12-31 12:59:00",
-                        "end_time": "2018-12-31 23:59:00",
-                        "app_content": "222",
-                        "share_content": null
-                    },
-                ]
+                tableData: []
             }
         },
         components: {
@@ -155,8 +108,8 @@
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
-                        // this.tableData = res.data.results;
-                        // this.total = res.data.count;
+                        this.tableData = res.data.results;
+                        this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
                 })
@@ -191,8 +144,15 @@
                 this.getData(true);
             },
             getDateTime() {
-                this.start_date = this.dateArr[0];
-                this.end_date = this.dateArr[1];
+                console.log(this.dateArr)
+                if (this.dateArr) {
+                    this.start_date = this.dateArr[0];
+                    this.end_date = this.dateArr[1];
+                }
+                else {
+                    this.start_date = '';
+                    this.end_date = '';
+                }
             },
             showErrorTip(text) {
                 this.$message({

@@ -39,7 +39,7 @@
                 </el-table>
             </template>
             <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+                <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
     </div>
