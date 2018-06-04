@@ -366,8 +366,9 @@
                 this.type = type
 
                 console.log(this.form.app_content)
+                console.log(this.form.app_content+'')
                 console.log($('#priv_content').html())
-                $('#priv_content').html(this.form.app_content)
+                $('#priv_content').html(""+this.form.app_content+"")
                 console.log($('#priv_content').html())
                 this.dialogVisible = true
                 

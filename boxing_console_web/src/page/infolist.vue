@@ -155,7 +155,7 @@
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
-                        // this.tableData = res.data.results;
+                        this.tableData = res.data.results;
                         this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
