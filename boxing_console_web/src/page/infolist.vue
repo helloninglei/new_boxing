@@ -76,7 +76,7 @@
 
 </style>
 
-<script type="text/ecmascript-6">
+<script >
     import TopBar from 'components/topBar';
     import Pagination  from 'components/pagination';
 
@@ -109,7 +109,7 @@
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
                         this.tableData = res.data.results;
-//                        this.total = res.data.count;
+                        this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
                 })
@@ -127,10 +127,10 @@
                 })
             },
             addMatchEv() {
-                this.$router.push({path: '/bannercontent'});
+                this.$router.push({path: '/infodetail'});
             },
             handleEdit(index, row) {
-                this.$router.push({path: '/bannercontent', query:{id: row.id}});
+                this.$router.push({path: '/infodetail', query:row});
             },
             handleDelete(index, row) {
                 let id = row.id;
