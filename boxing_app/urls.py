@@ -86,7 +86,7 @@ order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve'}), name='user-order-detail')
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}), name='user-order-detail')
 ]
 
 order_comment_url = [

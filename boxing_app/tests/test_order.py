@@ -305,3 +305,35 @@ class OrderTestCase(APITestCase):
         self.assertIsNone(course_order.payment_type)
         self.assertIsNone(course_order.pay_time)
         self.assertEqual(course_order.content_object, course)
+
+    def test_delete_order(self):
+        # 为拳手用户test_user_1创建1个课程
+        self.user_profile_data['user'] = self.test_user_1
+        UserProfile.objects.create(**self.user_profile_data)
+        self.boxer_data['user'] = self.test_user_1
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+
+        # test_user_2创建未支付订单
+        order = PayOrder.objects.create(
+                user=self.test_user_2,
+                content_object=course,
+                status=constants.PAYMENT_STATUS_WAIT_USE,
+                out_trade_no=111111,
+                payment_type=1,
+                amount=1000,
+                device=1,
+                order_time=datetime.now(),
+            )
+
+        # 不能删除不是未支付状态的支付订单
+        res = self.client2.delete(f'/user/order/{order.id}')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['message'], '订单不是未支付状态，不能删除')
+        PayOrder.objects.filter(id=order.id).update(status=constants.PAYMENT_STATUS_UNPAID)
+        # 可以删除未支付状态的支付订单
+        res = self.client2.delete(f'/user/order/{order.id}')
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
