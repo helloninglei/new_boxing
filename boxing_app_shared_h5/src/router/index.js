@@ -8,7 +8,7 @@ export default [
         path: '/trends/:id',
         component: Trends,
         meta: {
-            title: '首页入口'
+            title: '动态详情'
         }
     },
     {
@@ -18,12 +18,16 @@ export default [
     {
         path: '/infoDetail/:id',
         component: InfoDetail,
+        meta: {
+            title: '资讯详情'
+        }
     },
     {
         path: '/hotVideo/:userId/:id',
         component: HotVideo,
         meta: {
-            title: '热门视频'
+            title: '热门视频',
+            desc: '1111'
         }
     },
 ]

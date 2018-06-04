@@ -31,6 +31,16 @@ let router = new VueRouter({
   linkActiveClass
 });
 
+router.beforeEach((to, from, next) => {
+    if (to.meta.title) {
+        document.title = to.meta.title;
+    }
+    if (to.meta.desc) {
+        document.getElementsByTagName('meta')['description'].content = to.meta.desc;
+    }
+    next();
+})
+
 new Vue({
   el: '#app',
   router,

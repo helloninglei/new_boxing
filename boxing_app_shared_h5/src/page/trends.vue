@@ -2,7 +2,7 @@
     <div>
         <div class="trends_container_head">
             <template v-if="info.user">
-                <img class="portrait" :src="info.user.avatar ? `${config.baseUrl}/` + info.user.avatar : avatar_default" />
+                <img class="portrait" :src="info.user.avatar ? `${config.baseUrl}` + info.user.avatar : avatar_default" />
                 <span class="userName">{{info.user.nick_name}}</span>
                 <span class="is_following" @click="followEv">
                     <template v-if="info.user.is_following">
@@ -18,23 +18,23 @@
             <GetTime :createTime="info.created_time"></GetTime>
             <div class="content">那些沉浸在海底的人，终于付出了水面.新世纪最新拳王出炉，快看看采访火爆现场吧。 </div>
             <template v-if="info.video">
-                <Video :url="url"></Video>
+                <Video :url="info.video"></Video>
             </template>
             <template v-else>
                 <div class="pic_wrapper" :class="getClass">
-                    <img :src="item" v-for="(item, index) in images" :key="index" class="pic"/>
+                    <img :src="`${config.baseUrl}` + item" v-for="(item, index) in info.images" :key="index" class="pic"/>
                 </div>
             </template>
         </div>
-        <TabBar :id="id" :ifShowPraise=true :commentType="message"></TabBar>
+        <TabBar :id="id" :ifShowPraise=true commentType="message"></TabBar>
         <div class="bottom_bar" :class="{hasClose: ifClose}">
             <div class="bar_container">
-                <div class="comment_btn">
+                <div class="comment_btn" @click="openApp">
                     <div class="comment_icon"></div>
                     评论
                 </div>
                 <div class="line"></div>
-                <div class="praise_btn">
+                <div class="praise_btn"  @click="openApp">
                     <div class="praise_icon"></div>
                     点赞
                 </div>
@@ -153,21 +153,16 @@
     import DownloadTip from 'components/downloadTip';
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
+    import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
             return {
-                images: [
-                    require('../assets/images/video_default.png'),
-                    require('../assets/images/video_default.png'),
-                    require('../assets/images/video_default.png'),
-                    require('../assets/images/video_default.png'),
-                    require('../assets/images/video_default.png'),
-                ],
                 ifClose: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
                 info: {},
-                url: '',
+                dataObj: {},
+                wx: ''
             }
         },
 
@@ -175,6 +170,7 @@
             this.id = this.$route.params.id;
             if (this.id) {
                 this.getData();
+//                this.sharePage();
             }
         },
 
@@ -191,14 +187,11 @@
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
-                        if (this.info.video) {
-                            this.url = this.info.video;
-                        }
                     }
                 },(err) => {
                     if(err&&err.response){
                         let errors=err.response.data;
-                        for(var key in errors){
+                        for(let key in errors){
                             this.$layer.msg(errors[key][0]);
                         }
                     }
@@ -219,26 +212,78 @@
                 this.ifClose = val;
             },
 
-            getWxConfig() {
+            sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
-                    this.wechat = require('../common/wechat');
-                    this.wx = require('weixin-js-sdk')
-                }
-            }
+                    let wechat = require('../common/wechat');
+                    this.wx = require('weixin-js-sdk');
+                    wechat.wxConfig();
+                    this.inWxShare();
+                    this.ajax(`/messages/${this.id}/share`,'get').then((res) => {
+                        if (res && res.data) {
+                            this.initShare(res.data);
+                        }
+                    },(err) => {
+                        if(err&&err.response){
+                            let errors=err.response.data;
+                            for(let key in errors){
+                                this.$layer.msg(errors[key][0]);
+                            }
+                        }
+                    })
 
+                }
+            },
+            inWxShare () {
+                let Timer = '';
+                this.dataObj = '';
+                this.wx.ready(() => {
+                    Timer = setInterval(function () {
+                        if (this.dataObj) {
+                            clearInterval(Timer);
+                            let obj = this.dataObj;
+                            this.wx.onMenuShareAppMessage({
+                                title: obj.title,
+                                desc: obj.desc,
+                                link: obj.url,
+                                imgUrl: obj.imgUrl,
+                            });
+                            this.wx.onMenuShareTimeline({
+                                title: obj.title,
+                                link: obj.url,
+                                imgUrl: obj.imgUrl,
+                            });
+                        }
+                        else {
+                            clearInterval(Timer);
+                        }
+                    },300)
+                })
+
+            },
+            initShare(data) {
+                let title = data.title;
+                let desc = data.sub_title;
+                let imgUrl = data.picture;
+                let url = data.url;
+                this.dataObj = {title, desc, url, imgUrl};
+            },
         },
         computed: {
             getClass() {
-                let len = this.images.length;
-                if (len) {
-                    if (len === 1) return 'pic_wrapper1';
-                    else if (len <= 4 && len > 1) return 'pic_wrapper2';
+                if (this.info.images) {
+                    let len = this.info.images.length;
+                    if (len) {
+                        if (len === 1) return 'pic_wrapper1';
+                        else if (len <= 4 && len > 1) return 'pic_wrapper2';
+                        else {
+                            return 'pic_wrapper3'
+                        };
+                    }
                     else {
-                        return 'pic_wrapper3'
-                    };
+                        return '';
+                    }
                 }
             }
         }
-
     }
 </script>

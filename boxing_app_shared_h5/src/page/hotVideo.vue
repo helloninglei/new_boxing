@@ -72,6 +72,7 @@
     import DownloadTip from 'components/downloadTip';
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
+    import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
@@ -118,7 +119,7 @@
             },
             openApp() {
                 this.$router.push({path: '/download'})
-            },
+            }
         }
     }
 </script>

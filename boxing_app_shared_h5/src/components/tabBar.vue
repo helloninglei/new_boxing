@@ -153,7 +153,7 @@
                     if(err&&err.response){
                         let errors=err.response.data;
                         for(var key in errors){
-                            this.$layer.msg(errors[key][0]);
+                            console.log(errors[key][0]);
                         }
                     }
                 })

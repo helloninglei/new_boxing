@@ -40,13 +40,8 @@
             width 100%
             height 10rem
             margin 0 auto
-    iframe
-        margin-top .5rem
-        width 100%
-        height 10rem
-        background #000
-        video
-            width 100%!important
+    video
+        margin-bottom .5rem
 
 </style>
 
@@ -54,6 +49,7 @@
     import config from 'common/my_config';
     import TabBar from 'components/tabBar';
     import DownloadTip from 'components/downloadTip';
+    import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
@@ -71,7 +67,7 @@
             this.id = this.$route.params.id;
             this.str = this.getSrc(this.str);
             if (this.id) {
-                this.getData();
+//                this.getData();
             }
         },
         methods: {
@@ -83,7 +79,6 @@
                     var src = arr[i].match(srcReg);
                     str = str.replace(arr[i],'<video class="ql-video" playsinline  controls="controls" src="' + src[1] + '"></video>')
                 }
-
                 return str
             },
             getData() {

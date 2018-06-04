@@ -1,5 +1,5 @@
 import wx from 'weixin-js-sdk';
-import {config} from 'my_config';
+import {config} from 'common/my_config';
 
 let signature, noncestr, timestamp, encodeUrl;
 let check = false;
