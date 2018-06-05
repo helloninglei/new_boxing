@@ -337,3 +337,4 @@ class OrderTestCase(APITestCase):
         # 可以删除未支付状态的支付订单
         res = self.client2.delete(f'/user/order/{order.id}')
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(PayOrder.objects.filter(id=order.id).exists())
