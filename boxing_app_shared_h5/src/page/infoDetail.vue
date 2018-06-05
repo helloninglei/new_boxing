@@ -6,8 +6,9 @@
             <img v-if="info.picture" class="picture" :src="`${config.baseUrl}` + info.picture"/>
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
-        <TabBar :id="id" :ifShowPraise=false commentType="game_news"></TabBar>
+        <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp"></TabBar>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
 
@@ -48,6 +49,7 @@
 <script>
     import config from 'common/my_config';
     import TabBar from 'components/tabBar';
+    import Modal from 'components/modal';
     import DownloadTip from 'components/downloadTip';
     import {wxConfig} from 'common/wechat';
 
@@ -55,19 +57,21 @@
         data() {
             return {
                 id: '',
+                showModal: false,
                 info: {},
                 str: '<p><img src="http://39.105.73.10:8000/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png"></p><iframe class="ql-video" playsinline controls="controls" src="http://39.105.73.10:8000/uploads/b9/a2/8434d87433ef41280821942a1c70783df2a6.mp4" autoplay="false"></iframe><p><br></p><p><br></p><p><br></p><p style="color: red">按揭房拉丝机发发龙卷风拉上解放啦否</p><p>快圣诞节疯狂了世界国家</p>'
             }
         },
         components: {
             TabBar,
-            DownloadTip
+            DownloadTip,
+            Modal
         },
         created() {
             this.id = this.$route.params.id;
             this.str = this.getSrc(this.str);
             if (this.id) {
-//                this.getData();
+                this.getData();
             }
         },
         methods: {
@@ -94,6 +98,12 @@
                         }
                     }
                 })
+            },
+            openApp() {
+                this.showModal = true;
+            },
+            modalEv(ifShow) {
+                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
             },
             closeEv(val) {
                 this.ifClose = val;

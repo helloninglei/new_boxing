@@ -174,7 +174,7 @@
                 })
             },
             openApp() {
-                this.$router.push({path: '/download'})
+                this.$emit('openApp', true);
             },
         }
 

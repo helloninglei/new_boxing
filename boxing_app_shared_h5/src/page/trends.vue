@@ -26,7 +26,7 @@
                 </div>
             </template>
         </div>
-        <TabBar :id="id" :ifShowPraise=true commentType="message"></TabBar>
+        <TabBar :id="id" :ifShowPraise=true commentType="message" @openApp="openApp"></TabBar>
         <div class="bottom_bar" :class="{hasClose: ifClose}">
             <div class="bar_container">
                 <div class="comment_btn" @click="openApp">
@@ -41,6 +41,7 @@
             </div>
         </div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 
 </template>
@@ -153,12 +154,14 @@
     import DownloadTip from 'components/downloadTip';
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
+    import Modal from 'components/modal';
     import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
             return {
                 ifClose: false,
+                showModal: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
                 info: {},
                 dataObj: {},
@@ -178,7 +181,8 @@
             GetTime,
             DownloadTip,
             Video,
-            TabBar
+            TabBar,
+            Modal
         },
 
         methods: {
@@ -199,12 +203,16 @@
             },
 
             openApp() {
-                this.$router.push({path: '/download'})
+                this.showModal = true;
+            },
+
+            modalEv(ifShow) {
+                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
             },
 
             followEv() {
                 if (!this.info.user.is_following) {
-                    this.$router.push({path: '/download'});
+                    this.showModal = true;
                 }
             },
 
