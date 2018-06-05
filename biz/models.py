@@ -6,9 +6,10 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
 from django.core.validators import MinValueValidator
+from django.db.transaction import atomic
 
 from biz import validator, constants
-from biz.constants import USER_IDENTITY_DICT
+from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -433,6 +434,7 @@ class WithdrawLog(BaseAuditModel):
         ordering = ("-created_time",)
 
 
+# TODO 订单状态变为 PAYMENT_STATUS_WAIT_COMMENT 时创建结算单
 class CourseSettleOrder(models.Model):
     order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, db_index=False, related_name='+')
     course = models.ForeignKey(Course, on_delete=models.PROTECT, db_index=False, related_name='+')
@@ -445,12 +447,20 @@ class CourseSettleOrder(models.Model):
         db_table = 'course_settle_order'
         ordering = ('-created_time',)
 
+    @atomic
     def settle_order(self):
+        from biz.services.money_balance_service import change_money
+        price = self.course.price
         self.settled = True
         self.settled_date = datetime.now()
-        self.settled_amount = self.course.price
+        self.settled_amount = price
         self.save()
-        # TODO 更新钱包记录
+
+        # TODO 获取保险金额
+        if 'has_insurance':
+            insurance_amount = 0
+            price -= insurance_amount
+        change_money(self.course.boxer.user, price * 100, MONEY_CHANGE_TYPE_INCREASE_ORDER, self.order.out_trade_no)
 
 
 class OfficialAccountChangeLog(models.Model):

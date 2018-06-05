@@ -498,7 +498,7 @@ class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
 
 
 class RechargeSerializer(serializers.Serializer):
-    amount = serializers.CharField()
+    amount = serializers.IntegerField()
 
 
 class WithdrawSerializer(serializers.ModelSerializer):
