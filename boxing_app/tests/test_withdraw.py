@@ -40,6 +40,7 @@ class WithdrawTestCase(APITestCase):
         self.assertEqual(response.data['amount'], 30000)
         self.assertTrue(WithdrawLog.objects.filter(user=self.user).exists())
         self.assertTrue(MoneyChangeLog.objects.filter(user=self.user).exists())
+        self.assertEqual(User.objects.get(id=self.user.id).money_balance, 20000)
 
         response = self.client.get(path="/withdraw")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

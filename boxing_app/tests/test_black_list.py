@@ -15,6 +15,11 @@ class BlackListTestCase(APILoginTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(redis_client.is_blocked(self.user.id, self.user2.id))
 
+        # 重复加入黑名单
+        response = self.client.post(path=f"/black_list/{self.user2.id}")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "不能重复添加黑名单！")
+
         # 在不在黑名单中
         response = self.client.get(path=f"/black_list/{self.user2.id}")
         self.assertTrue(response.data['result'])

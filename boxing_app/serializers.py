@@ -520,7 +520,7 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         instance = super().create(validated_data)
-        change_money(instance.user, instance.amount, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW, remarks=f"{instance.id}")
+        change_money(instance.user, -instance.amount, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW, remarks=f"{instance.id}")
         return instance
 
     class Meta:
