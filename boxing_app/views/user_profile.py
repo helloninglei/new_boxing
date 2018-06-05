@@ -51,6 +51,8 @@ class BlackListViewSet(viewsets.GenericViewSet):
         return Response(status=status.HTTP_200_OK)
 
     def create(self, request, pk):
+        if redis_client.is_blocked(request.user.id, pk):
+            return Response({"message": ["不能重复添加黑名单！"]}, status=status.HTTP_400_BAD_REQUEST)
         redis_client.block_user(request.user.id, pk)
         return Response(status=status.HTTP_201_CREATED)
 

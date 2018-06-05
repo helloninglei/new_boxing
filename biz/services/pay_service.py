@@ -9,10 +9,12 @@ from biz.models import PayOrder, User, HotVideo, Course
 from biz.redis_client import get_order_no_serial
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
-    OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, MONEY_CHANGE_TYPE_REDUCE_ORDER, \
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, \
+    MONEY_CHANGE_TYPE_REDUCE_ORDER, \
     MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
 from biz.services import official_account_service
 from biz.services.money_balance_service import change_money, ChangeMoneyException
+
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -30,18 +32,11 @@ class PayService:
         return f'{obj.__class__._meta.verbose_name} {obj.id}'
 
     @classmethod
-    def generate_data(cls, out_trade_no, amount, name):
-        return dict(out_trade_no=out_trade_no, amount=amount, name=name)
-
-    @classmethod
     def create_order(cls, user, obj, payment_type, device, ip, amount=None):
         order = cls.perform_create_order(user, obj, device, amount, payment_type)
         name = cls.generate_name(obj)
-        data = cls.generate_data(
-            order.out_trade_no,
-            amount if amount else obj.price,
-            name
-        )
+        data = dict(out_trade_no=order.out_trade_no, amount=amount, name=name)
+
         if payment_type != PAYMENT_TYPE_WALLET:
             return {
                 'order_id': order.out_trade_no,
@@ -71,7 +66,7 @@ class PayService:
     def get_alipay_payment_info(cls, out_trade_no, amount, name):
         return alipay.api_alipay_trade_app_pay(
             out_trade_no=out_trade_no,
-            total_amount=amount,
+            total_amount=amount / 100,
             subject=name,
             notify_url=settings.ALIPAY_NOTIFY_URL
         )
@@ -82,7 +77,7 @@ class PayService:
             trade_type='APP',
             out_trade_no=out_trade_no,
             body=name,
-            total_fee=amount * 100,
+            total_fee=amount,
             spbill_create_ip=ip,
         )
 
@@ -107,7 +102,6 @@ class PayService:
                 'status': 'failed',
                 'message': '余额不足',
             }
-
 
     @classmethod
     def on_wechat_callback(cls, data):
@@ -144,8 +138,8 @@ class PayService:
             if isinstance(pay_order.content_object, User):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE
                 change_money(user=pay_order.content_object, amount=pay_order.amount,
-                                                   change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
-                                                   remarks=pay_order.out_trade_no)
+                             change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
+                             remarks=pay_order.out_trade_no)
             elif isinstance(pay_order.content_object, Course):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
             else:
@@ -162,9 +156,15 @@ class PayService:
         pay_order = PayOrder.objects.filter(out_trade_no=out_trade_no, user=request_user).first()
         if pay_order:
             content = pay_order.content_object
+            if isinstance(content, HotVideo):
+                name = f'视频（{content.name}）'
+            elif isinstance(content, User):
+                name = '充值',
+            else:
+                name = content.get_course_name_display()
             return {
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
-                'name': f'视频（{content.name}）' if isinstance(content, HotVideo) else content.get_course_name_display(),
+                'name': name,
                 'amount': pay_order.amount / 100,
                 'pay_time': pay_order.pay_time.strftime(datetime_format) if pay_order.pay_time else None,
             }

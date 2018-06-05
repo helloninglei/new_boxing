@@ -7,7 +7,7 @@ from django.db.models import Q
 from biz import models
 from biz.models import Course
 from biz import constants
-from biz.constants import REPORT_STATUS_NOT_PROCESSED
+from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID
 
 
 class CommonFilter(django_filters.FilterSet):
@@ -156,3 +156,22 @@ class MoneyChangeLogFilter(django_filters.FilterSet):
     class Meta:
         model = models.MoneyChangeLog
         fields = ("start_time", "end_time")
+
+
+class PayOrderFilter(django_filters.FilterSet):
+    device = django_filters.CharFilter(name="device")
+    payment_type = django_filters.CharFilter(name="payment_type")
+    status = django_filters.CharFilter(method="status_filter")
+
+    def status_filter(self, qs, name, value):
+        if not value:
+            return qs
+        if value == "1":
+            return qs.filter(status=PAYMENT_STATUS_UNPAID)
+        if value == "2":
+            return qs.filter(~Q(status=PAYMENT_STATUS_UNPAID))
+        return self.Meta.model.objects.none()
+
+    class Meta:
+        model = models.PayOrder
+        fields = ["device", "payment_type", "status"]
