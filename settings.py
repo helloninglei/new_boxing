@@ -120,6 +120,8 @@ IOS_VERSION = {
     'force': True
 }
 
+ALIPAY_NOTIFY_URL = ""
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *

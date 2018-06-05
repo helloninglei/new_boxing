@@ -17,7 +17,7 @@ from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
-    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -31,7 +31,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H-%M-%S')
+    date_joined = serializers.DateTimeField()
     user_basic_info = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
     follower_count = serializers.SerializerMethodField()
@@ -445,8 +445,13 @@ class PayOrdersReadOnlySerializer(serializers.ModelSerializer):
     user_mobile = serializers.CharField(source="user.mobile")
     device = serializers.CharField(source="get_device_display")
     payment_type = serializers.CharField(source="get_payment_type_display")
-    status = serializers.CharField(source="get_status_display")
     remarks = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, instance):
+        if instance.status == PAYMENT_STATUS_UNPAID:
+            return "支付未完成"
+        return "支付成功"
 
     def get_remarks(self, instance):
         return f"【{instance.content_object.__class__._meta.verbose_name}】id:{instance.content_object.id}"

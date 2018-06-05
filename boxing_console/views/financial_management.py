@@ -3,7 +3,7 @@ from rest_framework import viewsets, mixins, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from biz.models import WithdrawLog, PayOrder
 from boxing_console.serializers import WithdrawLogSerializer, PayOrdersReadOnlySerializer
-from boxing_console.filters import WithdrawLogFilter
+from boxing_console.filters import WithdrawLogFilter, PayOrderFilter
 
 
 class WithdrawLogViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.UpdateModelMixin):
@@ -25,4 +25,4 @@ class PayOrdersViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = PayOrdersReadOnlySerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ['user__id', "user__mobile", "user__user_profile__nick_name", "out_trade_no"]
-    filter_fields = ["device", "payment_type", "status"]
+    filter_class = PayOrderFilter
