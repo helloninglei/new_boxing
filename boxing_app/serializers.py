@@ -446,10 +446,6 @@ class BlockedUserSerializer(serializers.BaseSerializer):
 
 
 class CourseAllowNullDataSerializer(serializers.ModelSerializer):
-    club_name = serializers.CharField(source='club.name', read_only=True)
-    club_address = serializers.CharField(source='club.address', read_only=True)
-    club_longitude = serializers.CharField(source='club.longitude', read_only=True)
-    club_latitude = serializers.CharField(source='club.latitude', read_only=True)
 
     class Meta:
         model = models.Course
