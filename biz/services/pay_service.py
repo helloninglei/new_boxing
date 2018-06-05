@@ -146,6 +146,7 @@ class PayService:
 
     @classmethod
     def on_alipay_callback(cls, data):
+        data = data.dict()
         logger.info(
             "[alipay:] calback:{}".format('&'.join('{}={}'.format(key, val) for key, val in sorted(data.items())))
         )
