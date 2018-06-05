@@ -2,6 +2,8 @@
 import logging
 from time import time
 from datetime import datetime
+from django.utils.formats import date_format
+from django.utils import timezone
 from django.db.transaction import atomic
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
@@ -196,5 +198,5 @@ class PayService:
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
                 'name': name,
                 'amount': pay_order.amount / 100,
-                'pay_time': pay_order.pay_time.strftime(datetime_format) if pay_order.pay_time else None,
+                'pay_time': timezone.localtime(pay_order.pay_time).strftime(datetime_format) if pay_order.pay_time else None,
             }
