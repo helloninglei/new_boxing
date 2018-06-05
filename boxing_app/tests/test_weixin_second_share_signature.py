@@ -15,4 +15,4 @@ class WeiXinSecondShareSignatureTestCase(APITestCase):
         response = self.client.get(path="/second_share_signature")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['jsapi_ticket'], ticket)
-        self.assertEqual(response.data['url'], "second_share_signature")
+        self.assertEqual(response.data['url'], "/second_share_signature")
