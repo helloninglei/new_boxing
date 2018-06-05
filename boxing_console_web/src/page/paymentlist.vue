@@ -5,7 +5,7 @@
             <header>
                  <el-row>
                     <el-col :span="5" style='width:314px;margin-bottom:30px'>
-                        <el-input v-model="sendData.keywards"  class='myInput_40 margin_rt25' placeholder='用户ID/用户账号/手机号/昵称/订单号' style='width:284px'></el-input>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/用户账号/手机号/昵称/订单号' style='width:284px'></el-input>
                     </el-col> 
                     <el-col :span="7" style='width:480px'>
                         <el-date-picker
@@ -27,35 +27,38 @@
                 </el-row>  
                 <el-row>
                     <el-col :span="5" style='width:314px;margin-bottom:30px'>
-                        <el-select v-model="sendData.userType" class="margin_rt25">
-                            <el-option value="0" label="交易终端"></el-option>
-                            <el-option value="1" label="普通用户">普通用户</el-option>
-                            <el-option value="2" label="认证拳手">认证拳手</el-option>
+                        <el-select v-model="sendData.device" class="margin_rt25">
+                            <el-option value="" label="交易终端"></el-option>
+                            <el-option value="1" label="ios">ios</el-option>
+                            <el-option value="2" label="android">android</el-option>
                         </el-select>
                     </el-col> 
                     <el-col :span="5" >
-                        <el-select v-model="sendData.userType" class="margin_rt25">
-                            <el-option value="0" label="交易渠道">全部</el-option>
-                            <el-option value="1" label="普通用户">普通用户</el-option>
-                            <el-option value="2" label="认证拳手">认证拳手</el-option>
+                        <el-select v-model="sendData.payment_type" class="margin_rt25">
+                            <el-option value="" label="交易渠道">全部</el-option>
+                            <el-option value="1" label="支付宝">支付宝</el-option>
+                            <el-option value="2" label="微信">微信</el-option>
+                            <el-option value="3" label="余额">余额</el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="5" >
-                        <el-select v-model="sendData.userType" class="margin_rt25">
-                            <el-option value="0" label="交易状态">全部</el-option>
-                            <el-option value="1" label="普通用户">普通用户</el-option>
-                            <el-option value="2" label="认证拳手">认证拳手</el-option>
+                        <el-select v-model="sendData.status" class="margin_rt25">
+                            <el-option value="" label="交易状态">全部</el-option>
+                            <el-option value="1" label="未支付">未支付</el-option>
+                            <el-option value="2" label="待使用">待使用</el-option>
+                            <el-option value="3" label="待评论">待评论</el-option>
+                            <el-option value="4" label="已完成">已完成</el-option>
+                            <el-option value="5" label="已过期">已过期</el-option>
                         </el-select>
                     </el-col>  
                 </el-row>     
                 <el-row>     
                     <el-col :span='6'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red'>重置</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click="reset()">重置</el-button>
                     </el-col>   
                 </el-row>
             </header>
-            <p class="showTotal">付费人数:{{userTotal}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付费金额(元)：{{moneyTotal}}</p>
             <nav class='myTable'>
                 <template>
                     <el-table
@@ -71,11 +74,10 @@
                     </el-table>
                 </template>
             </nav>
-            <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+            <footer v-show="total>10">
+                <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
             </footer>
         </div>
-        <Confirm :isshow="confirmData.isshow" @confirm="deleteClick" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id'></Confirm>
     </div>
 </template>
 <style scoped>
@@ -90,21 +92,19 @@
     import TopBar from 'components/topBar';
     import Table  from 'components/table';
     import Pagination  from 'components/pagination';
-    import Confirm     from "components/confirm"
     export default {
         data() {
             return {
                 isShowTop : true,
+                issearch  :false,
+                page      :1,
                 sendData  : {
                     start_time : '',
                     end_time   : '',
-                    keywards  : '',
-                },
-                confirmData:{
-                    isshow: false,
-                    id    :'',
-                    content:'确定删除这条记录？',
-                    isDel :true,
+                    search     : '',
+                    device     :'',
+                    payment_type :'',
+                    status     :'',
                 },
                 userTotal : 1000000,//付费人数
                 moneyTotal : 1000000,//付费金额
@@ -112,53 +112,43 @@
                 tableData : [
                     {
                         "id": 1,
-                        "user_id": 1,
-                        "name": "test",
-                        "description": "test",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "1111",
-                        "try_url": "11111222",
-                        "price": 111,
-                        "is_show": true,
-                        "created_time": "2018-05-10 18:51:03"
+                        "user_nickname": "nick_name",   // 用户昵称
+                        "user_mobile": "18800000000",   // 用户手机号
+                        "device": "iOS",  // 交易终端
+                        "payment_type": "支付宝",  // 交易渠道
+                        "status": "未支付",  // 交易状态
+                        "remarks": "【user】id:1",  // 备注
+                        "out_trade_no": 1323234234234,  // 订单号
+                        "amount": 10000,  // 金额（分）
+                        "order_time": "2018-05-25 18:35:05",  // 交易时间
+                        "user": 1   // 用户ID
                     },
                     {
                         "id": 2,
-                        "user_id": 1,
-                        "name": "2",
-                        "description": "9992",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "http://127.0.0.1:8000/hot_videos",
-                        "try_url": "http://127.0.0.1:8000/hot_videos1",
-                        "price": 22222,
-                        "is_show": true,
-                        "created_time": "2018-05-10 18:34:43"
+                        "user_nickname": "nick_name",   // 用户昵称
+                        "user_mobile": "18800000000",   // 用户手机号
+                        "device": "iOS",  // 交易终端
+                        "payment_type": "支付宝",  // 交易渠道
+                        "status": "未支付",  // 交易状态
+                        "remarks": "【user】id:1",  // 备注
+                        "out_trade_no": 1323234234234,  // 订单号
+                        "amount": 10000,  // 金额（分）
+                        "order_time": "2018-05-25 18:35:05",  // 交易时间
+                        "user": 1   // 用户ID
                     },
-                    {
-                        "id": 3,
-                        "user_id": 1,
-                        "name": "2",
-                        "description": "999",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "http://127.0.0.1:8000/hot_videos",
-                        "try_url": "http://127.0.0.1:8000/hot_videos1",
-                        "price": 22222,
-                        "is_show": false,
-                        "created_time": "2018-05-10 18:23:49"
-                    }
                 ],
                 tableColumn:[
-                    {title:'id',    name :'ID',   width: '80'},
-                    {title:'name',  name :'视频名称',width: ''},
-                    {title:'user_id',name :'用户ID' ,width: '80'},
-                    {title:'price',name :'价格（元）',width: '100'},
-                    {title:'sales_count', name :'付费人数'   ,width: ''},
-                    {title:'price_amount',name :'付费金额（元）',width: '90'},
-                    {title:'created_time',name :'发布时间' ,width: '200'},
-                    {title:'is_show_name',name :'显示状态' ,width: '90'},
+                    {title:'id',    name :'ID',   width: ''},
+                    {title:'out_trade_no',  name :'订单号',width: '100'},
+                    {title:'amount',name :'金额（元）' ,width: '120'},
+                    {title:'user',name :'用户ID',width: ''},
+                    {title:'user_nickname', name :'用户昵称'   ,width: ''},
+                    {title:'user_mobile',name :'用户手机号',width: '120'},
+                    {title:'device',name :'交易终端' ,width: ''},
+                    {title:'payment_type',name :'交易渠道' ,width: ''},
+                    {title:'status',name :'交易状态' ,width: ''},
+                    {title:'order_time',name :'交易时间' ,width: '200'},
+                    {title:'remarks',name :'备注' ,width: '120'},
                 ],
             }
         },
@@ -166,23 +156,28 @@
             TopBar,
             Table,
             Pagination,
-            Confirm
         },
         created() {
             this.getTableData();
         },
         methods: {
-            getTableData() {
+            getTableData(page) {
                 //获取data数据
                 let $this   = this
-                this.ajax('/hot_videos','get',{},this.sendData).then(function(res){
+                let sendData={}
+                if(this.issearch){
+                   sendData=this.sendData
+                }
+                if(page){
+                    sendData.page=page
+                }
+                this.ajax('/pay_orders','get',{},sendData).then(function(res){
                     if(res&&res.data){
-                        // console.log(res.data)
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
-                            res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
+                        
+                        $this.tableData=res.data.results;
+                        for (var i=0;i<$this.tableData.length;i++){
+                            $this.tableData[i].amount = $this.tableData[i].amount /100;
                         }
-                        // $this.tableData=res.data.results;
                         $this.total = res.data.count;
                     }
 
@@ -201,69 +196,14 @@
                 console.log(val)
             },
             filter(){
-                console.log(this.sendData)
+                this.issearch=true;
+                //搜索是先看第一页
+                this.page=1
+                this.getTableData(1) 
             },
-            toDetail(row){
-                //修改详情页
-                this.$router.push({path: '/hotvideodetail', query:row});
+            reset(){
+                this.sendData={};
             },
-            changeShow(id){
-                // 显示隐藏
-                console.log(id)
-                let $this = this;
-                this.ajax('/','get',{},this.sendData).then(function(res){
-                    if(res&&res.data){
-                        // console.log(res.data)
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
-                            res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
-                        }
-                        $this.tableData=res.data.results;
-                        $this.total = res.data.count;
-                    }
-
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
-            },
-            openConfirm(id){
-                this.confirmData.id    = id
-                this.confirmData.isshow= true
-            },
-            deleteClick(id){
-                // 删除
-                console.log(id)
-                this.ajax('/hot_videos/'+id,'delete').then(function(res){
-                    if(res&&res.status==204){
-                        for(var i=0;i<$this.tableData.length;i++){
-                            if($this.tableData[i].id==id){
-                                $this.tableData.splice(i,1)
-                                $this.confirmData.isshow=false;
-                            }
-                        } 
-                    }else{
-                      console.log(res)  
-                    }
-
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
-            },
-            cancel(val){
-                this.confirmData.isshow= val
-            }
         },
     }
 </script>

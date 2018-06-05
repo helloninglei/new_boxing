@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxingmanage" secondTitle_name="拳馆列表" secondTitle_path="/boxinglist"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" secondTitle_name="拳馆列表" secondTitle_path="/boxinglist"></TopBar>
         <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <nav style='margin-top:60px'>
             <template>
@@ -18,15 +18,15 @@
                     label="宣传图"
                     width="90">
                         <template slot-scope="scope">
-                            <span class='colorFont' @click='clickImg(scope.row.images[0])'>查看</span>
+                            <span class='colorFont' @click='clickImg(scope.row.avatar)'>查看</span>
                         </template>
                     </el-table-column>
                     <el-table-column
                       fixed="right"
                       label="操作">
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click=''>删除</el-button>
-                            <el-button class='myColor_red myButton_20' style='margin-right:20px' @click=''>修改</el-button>                         
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='deleteClub(scope.row)'>删除</el-button>
+                            <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='goTodetail(scope.row)'>修改</el-button>                         
                         </template>
                     </el-table-column>
                 </el-table>
@@ -90,7 +90,7 @@
                 ],
                 tableColumn:[
                     {title:'id',       name :'ID',  width:''},
-                    {title:'club_name',name :'拳馆名称',    width:''},
+                    {title:'name',name :'拳馆名称',    width:''},
                     {title:'address',  name :'地址',   width:''},
                     {title:'opening_hours',name :'营业时间', width:''},
                 ],
@@ -102,24 +102,69 @@
             BigImg
         },
         created() {
-            
+            this.getTableData();
         },
         methods: {
+            getTableData(page) {
+                //获取data数据
+                let $this   = this
+                let sendData={}
+                // if(this.issearch){
+                //    sendData=this.sendData
+                // }
+                if(page){
+                    sendData.page=page
+                }
+                this.ajax('/club','get',{},sendData).then(function(res){
+                    if(res&&res.data){
+                        $this.tableData=res.data.results;
+                        $this.total = res.data.count;
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
+            },
             changePage(val){
                 // 要看第几页
-                // console.log(val)
                 this.getTableData(this.sendData,val);
             },
             clickImg(img) {
                 // 获取当前图片地址
-                console.log(img)
-                // this.imgSrc ='http://'+ img;
-                this.imgSrc ="http://img.zcool.cn/community/010f87596f13e6a8012193a363df45.jpg@1280w_1l_2o_100sh.jpg";
+                this.imgSrc =this.config.baseUrl+ img;
+                // this.imgSrc ="http://img.zcool.cn/community/010f87596f13e6a8012193a363df45.jpg@1280w_1l_2o_100sh.jpg";
                 this.showImg=true;
             },
             viewImg(){
                 this.showImg = false;
             },
+            goTodetail(row){
+                this.$router.push({path: '/addboxing', query:row});
+
+            },
+            deleteClub(row){
+                this.ajax('/club','get',{},sendData).then(function(res){
+                    if(res&&res.data){
+                        $this.tableData=res.data.results;
+                        $this.total = res.data.count;
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
+            }
         },
     }
 </script>

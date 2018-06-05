@@ -1,8 +1,18 @@
 <template>
     <div class="usermanage">
-        <TopBar v-if="isShowTop" firstTitle_name="公司账户金额记录"  disNone="disNone"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="公司拳豆记录"  disNone="disNone"></TopBar>
         <div class='container'>
-            <p class="showTotal">公司账户金额汇总:{{total_count}}</p>
+            <p class="showTotal">公司账户拳豆汇总:{{moneyTotal}}</p>
+            <header>
+                 <el-row>
+                    <el-col :span="5" style='width:314px'>
+                        <el-input v-model="keywards"  class='myInput_40 margin_rt25' placeholder='用户ID/视频名称' style='width:284px'></el-input>
+                    </el-col> 
+                    <el-col :span='6'>
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
+                    </el-col>    
+                </el-row>
+            </header>
             <nav class='myTable'>
                 <template>
                     <el-table
@@ -18,25 +28,23 @@
                         label="收入/支出"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.change_amount>0?'+':''}} {{scope.row.change_amount}}</span>                 
+                                <span>{{scope.row.derection=='in'?'+':'-'}} {{scope.row.account}}</span>                 
                             </template>
                         </el-table-column>
                         <el-table-column
-                        prop="created_time"
+                        prop="time"
                         label="时间"
                         >
                         </el-table-column>
                         <el-table-column
+                        prop="description"
                         label="备注"
                         >
-                            <template slot-scope="scope">
-                                <span>[{{scope.row.change_type}}] 订单号：{{scope.row.remarks}}</span>                 
-                            </template>
                         </el-table-column>
                     </el-table>
                 </template>
             </nav>
-            <footer v-show="total>10">
+            <footer>
                 <Pagination :total="total" @changePage="changePage"></Pagination>
             </footer>
         </div>
@@ -58,30 +66,38 @@
         data() {
             return {
                 isShowTop : true,
-                total_count : 1000000,//付费金额
+                moneyTotal : 1000000,//付费金额
                 total     : 1000,//数据的总条数
+                keywards  :'',
                 tableData : [
                     {
-                        "id": 1,   // id
-                        "change_amount": -10000,   // 收入，支出
-                        "created_time": "2018-02-23 18:00:00",  // 时间
-                        "remarks": "23232323232",  // 订单号
-                        "change_type": "提现"
+                        "id": 1,
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'in'
                     },
                     {
-                        "id": 2,   // id
-                        "change_amount": 10000,   // 收入，支出
-                        "created_time": "2018-02-23 18:00:00",  // 时间
-                        "remarks": "23232323232",  // 订单号
-                        "change_type": "提现"
+                        "id": 2,
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'in'
                     },
                     {
-                        "id": 3,   // id
-                        "change_amount": -10000,   // 收入，支出
-                        "created_time": "2018-02-23 18:00:00",  // 时间
-                        "remarks": "23232323232",  // 订单号
-                        "change_type": "提现"
+                        "id": 3,
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'in'
                     },
+                    {
+                        "id": 4,
+                        "account": 100,
+                        "time": "2017-11-03 19:00:00",
+                        "description": "test",
+                        "derection":'out'
+                    }
                 ],
             }
         },
@@ -94,22 +110,17 @@
             this.getTableData();
         },
         methods: {
-            getTableData(page) {
+            getTableData() {
                 //获取data数据
-                let $this    = this
-                let sendData = {};
-                if(page){
-                    sendData.page = page;
-                }
-                this.ajax('/official_account_change_logs','get',{},sendData).then(function(res){
+                let $this   = this
+                this.ajax('/hot_videos','get',{},this.sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                         }
-                        $this.tableData=res.data.results;
-                        $this.total_count = res.data.total_count ? res.data.total_count : 0;
+                        // $this.tableData=res.data.results;
                         $this.total = res.data.count;
                     }
 

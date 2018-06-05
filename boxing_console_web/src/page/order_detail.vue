@@ -79,7 +79,7 @@
                     <div class='detail_title'>支付金额</div>
                 </el-col>
                 <el-col :span="23">
-                    <div class='detail_content margin_lf'>单价元/次</div>
+                    <div class='detail_content margin_lf'> aaaaaaaaaa缺数据aaaaaaaaaaaaaa单价元/次</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
@@ -160,7 +160,7 @@
                     <div class='detail_title width_160'>拳手确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>aaaaa</div>
+                    <div class='detail_content margin_lf'>aaaaaaaaaa缺数据aaaaaaa</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub' v-if="result.status>2">
@@ -168,7 +168,7 @@
                     <div class='detail_title width_160'>用户确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>aaaaa</div>
+                    <div class='detail_content margin_lf'>aaaaaaaaaa缺数据aaaaaaa</div>
                 </el-col>
             </el-row>
         </div>
@@ -218,7 +218,7 @@
     .detail_item_sub{margin-bottom:22px;}
     .detail_item{margin-bottom:50px;}
     .detail_title{width:80px;}
-    .detail_content.margin_lf{margin-left:30px;}
+    .detail_content.margin_lf{margin-left:40px;}
     .width_160{width:145px!important;}
     .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
     .classDetail .el-rate__icon{color:#F95862!important}
@@ -232,24 +232,24 @@
             return {
                 starValue:4,
                 result:{
-                    "id": 1, //订单id
-                    "status_name":'待付款',
-                    "status": 1, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
-                    "out_trade_no": 11111111, //订单号
-                    "payment_type": 1,//支付方式（1:支付宝；2:微信；3:余额）
-                    "amount": 120, //金额
-                    "order_time": "2018-05-16 08:29:56",//下单时间
-                    "pay_time": null, //支付时间
-                    "course_name": "THAI_BOXING",//课程名
-                    "course_duration": 120, //课程时长
-                    "course_validity": "2018-08-25", //课程有效期
-                    "user_mobile": "10000000000", //用户手机号
-                    "user_id": 5, //用户id
-                    "user_nickname": "赵柳", //用户昵称
-                    "boxer_name": "张三", //拳手姓名
-                    "boxer_mobile": "111111111", //拳手手机号
-                    "object_id": 1, //课程id
-                    "club_name": "club01" //拳手所在拳馆
+                    // "id": 1, //订单id
+                    // "status_name":'待付款',
+                    // "status": 1, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
+                    // "out_trade_no": 11111111, //订单号
+                    // "payment_type": 1,//支付方式（1:支付宝；2:微信；3:余额）
+                    // "amount": 120, //金额
+                    // "order_time": "2018-05-16 08:29:56",//下单时间
+                    // "pay_time": null, //支付时间
+                    // "course_name": "THAI_BOXING",//课程名
+                    // "course_duration": 120, //课程时长
+                    // "course_validity": "2018-08-25", //课程有效期
+                    // "user_mobile": "10000000000", //用户手机号
+                    // "user_id": 5, //用户id
+                    // "user_nickname": "赵柳", //用户昵称
+                    // "boxer_name": "张三", //拳手姓名
+                    // "boxer_mobile": "111111111", //拳手手机号
+                    // "object_id": 1, //课程id
+                    // "club_name": "club01" //拳手所在拳馆
                 }
             }
         },
@@ -297,7 +297,8 @@
                 })
             },
             checkIdent(id){
-                console.log('查看认证信息'+id)
+                // 参数 ID 审核状态ident_type
+                this.$router.push({path: '/Boxerindentdetail', query:{id:id}});
             }
         },
     }

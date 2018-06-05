@@ -6,16 +6,16 @@
                     <el-menu-item index="/usermanage" :disabled="disabled">
                         <div class='menu-item-inner' >用户管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/financemanage" :disabled="disabled">
-                        <div class='menu-item-inner'>财务管理</div>
-                    </el-menu-item>
-                    <el-menu-item index="/paymentlist" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>用户支付流水</div>
-                    </el-menu-item>
-                    <el-menu-item index="/precentlist" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>用户提现记录</div>
-                    </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
+                    <el-submenu index='1'>
+                        <template slot="title"><div class='mySubMenu'>财务管理</div></template>
+                        <el-menu-item index="/paymentlist" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>用户支付流水</div>
+                        </el-menu-item>
+                        <el-menu-item index="/precentlist" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>用户提现记录</div>
+                        </el-menu-item>
+                    </el-submenu>
+                    <el-menu-item index="/boxBean" :disabled="disabled">
                         <div class='menu-item-inner'>公司拳豆记录</div>
                     </el-menu-item>
                     <el-menu-item index="/accound_record" :disabled="disabled">
@@ -24,45 +24,45 @@
                     <el-menu-item index="/hotvideo" :disabled="disabled">
                         <div class='menu-item-inner'>热门视频</div>
                     </el-menu-item>
-                    <el-menu-item index="/classall" :disabled="disabled">
-                        <div class='menu-item-inner'>约单管理</div>
-                    </el-menu-item>
-                    <el-menu-item index="/classmanage" :disabled="disabled">
-                        <div class='menu-item-inner'><div class='_hr'></div>课程管理</div>
-                    </el-menu-item>
-                    <el-menu-item index="/ordermanage" :disabled="disabled">
-                        <div class='menu-item-inner'><div class='_hr'></div>订单管理</div>
-                    </el-menu-item>
-                    <el-menu-item index="/settlemanage" :disabled="disabled">
-                        <div class='menu-item-inner'><div class='_hr'></div>结算管理</div>
-                    </el-menu-item>
+                    <el-submenu index='2'>
+                        <template slot="title" ><div class='mySubMenu'>约单管理</div></template>
+                        <el-menu-item index="/classmanage" :disabled="disabled">
+                            <div class='menu-item-inner'><div class='_hr'></div>课程管理</div>
+                        </el-menu-item>
+                        <el-menu-item index="/ordermanage" :disabled="disabled">
+                            <div class='menu-item-inner'><div class='_hr'></div>订单管理</div>
+                        </el-menu-item>
+                        <el-menu-item index="/settlemanage" :disabled="disabled">
+                            <div class='menu-item-inner'><div class='_hr'></div>结算管理</div>
+                        </el-menu-item>
+                    </el-submenu>
                     <el-menu-item index="/boxerindentify" :disabled="disabled">
                         <div class='menu-item-inner'>拳手认证审核管理</div>
                     </el-menu-item>
                     <el-menu-item index="/bannermanage" :disabled="disabled">
                         <div class='menu-item-inner'>Banner管理</div>
                     </el-menu-item>
-                    <el-menu-item index="/boxingmanage" :disabled="disabled">
-                        <div class='menu-item-inner'>拳馆管理</div>
-                    </el-menu-item>
-                    <el-menu-item index="/boxinglist" :disabled="disabled">
+                    <el-submenu index='3'>
+                        <template slot="title"><div class='mySubMenu'>拳馆管理</div></template>
+                        <el-menu-item index="/boxinglist" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>拳馆列表</div>
-                    </el-menu-item>
-                    <el-menu-item index="/addBoxing" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>添加拳馆</div>
-                    </el-menu-item>
-                    <el-menu-item index="/infoList" :disabled="disabled">
-                        <div class='menu-item-inner'>赛事管理</div>
-                    </el-menu-item>
-                    <el-menu-item index="/infoList" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>资讯</div>
-                    </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>添加报名</div>
-                    </el-menu-item>
-                    <el-menu-item index="/" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>查看报名</div>
-                    </el-menu-item>
+                        </el-menu-item>
+                        <el-menu-item index="/addBoxing" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>添加拳馆</div>
+                        </el-menu-item>
+                    </el-submenu>
+                    <el-submenu index='4'>
+                        <template slot="title" ><div class='mySubMenu'>赛事管理</div></template>
+                        <el-menu-item index="/infoList" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>资讯</div>
+                        </el-menu-item>
+                        <!-- <el-menu-item index="/" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>添加报名</div>
+                        </el-menu-item> -->
+                        <!-- <el-menu-item index="/" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>查看报名</div>
+                        </el-menu-item> -->
+                    </el-submenu>
                     <el-menu-item index="/report" :disabled="disabled">
                         <div class='menu-item-inner'>举报处理</div>
                     </el-menu-item>
@@ -86,12 +86,17 @@
     .index{height:100%;}
     ._hr{height:40px;float:left;width:20px;}
     .el-menu{background:#1d1d27;font-size: 14px;color: #FBFBFB;height:100%;margin-top:100px;}
-    .el-menu .el-menu-item, .el-menu .el-submenu__title{font-size: 14px;background-color: #1D1D27;padding-left:0!important;height:40px;line-height:40px;}
+    .el-menu .el-menu-item, .el-menu .el-submenu .el-submenu__title{font-size: 14px;background-color: #1D1D27;padding-left:0!important;height:40px;line-height:40px;}
     .el-menu .el-menu-item .menu-item-inner, .el-menu .el-submenu__title .menu-item-inner{color: #FBFBFB;opacity: 0.3;}
     .el-menu .el-menu-item.is-active .menu-item-inner, .el-menu .el-submenu__title.is-active .menu-item-inner,.el-menu .el-menu-item:hover .menu-item-inner, .el-menu .el-submenu__title:hover .menu-item-inner{background: #32323C;opacity: 1}
-    .menu-item-inner{width:200px;margin-left:8px;padding-left:42px;box-sizing: border-box;}
+    .index .menu-item-inner{width:200px;margin-left:8px;padding-left:42px;box-sizing: border-box;}
+    
 </style>
-
+<style>
+    .index .el-submenu .el-submenu__title:focus{}
+    .index .el-submenu  .el-submenu__title:hover {background: #32323C!important;opacity: 1;}
+    .index .el-submenu .el-submenu__title .mySubMenu{opacity: 1;padding-left:30px;}
+</style>
 <script type="text/ecmascript-6">
     import TopBar from 'components/topBar';
     import router from '../router';

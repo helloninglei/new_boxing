@@ -55,7 +55,7 @@
 <style>
 nav{min-height: 528px}
 </style>
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     export default {
         data() {
@@ -73,6 +73,7 @@ nav{min-height: 528px}
             //刷新后对象里面都变成字符串
             let query   = this.$route.query
             this.result.user_basic_info = query;
+            console.log(query)
         },
         mounted(){
         },

@@ -11,10 +11,20 @@ import routes     from './router/index.js';
 // import $          from 'jquery'
 import Cropper    from "cropper"
 // import VueCropper from "vue-cropper"
+// 富文本框所用的引入
+import VueQuillEditor from 'vue-quill-editor'
+
+
+// 富文本框所用的引入
+    import 'quill/dist/quill.core.css'
+    import 'quill/dist/quill.snow.css'
+    import 'quill/dist/quill.bubble.css'
 
 Vue.use(VueRouter);
 Vue.use(VueResoure);
 Vue.use(ElementUI);
+Vue.use(VueQuillEditor)
+
 
 let linkActiveClass = 'active';
 

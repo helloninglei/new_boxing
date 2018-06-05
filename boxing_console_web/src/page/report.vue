@@ -103,12 +103,12 @@
                     </el-table-column>
                     <el-table-column
                     label="处理结果"
-                    prop="status"
+                    prop="result"
                     >
                     </el-table-column>
                     <el-table-column
                     label="处理人"
-                    prop="status"
+                    prop="operator"
                     >
                     </el-table-column>
                     <el-table-column
@@ -165,6 +165,7 @@
             return {
                 isShowTop : true,
                 total     : 1000,
+                issearch  :false,
                 sendData  :{
                     search:'',
                     status:'unprocessed',
@@ -235,7 +236,11 @@
         },
         watch:{
            'sendData.status'(val){
-                this.getData({status:val});
+                if(this.issearch){
+                    this.getData(this.sendData);  
+                }else{
+                    this.getData({status:val});
+                }
            } 
         },
         created() {
@@ -246,7 +251,7 @@
                 let $this=this
                 this.ajax('/report','get',{},data).then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
+                        // console.log(res.data)
                         $this.tableData = res.data.results
                         $this.total = res.data.count;
                     }
@@ -263,9 +268,15 @@
                 })
             },
             openContent(val){
+                console.log(val)
+                if(val.pictures&&val.pictures.length>0){
+                    for (var i=0;i<val.pictures.length;i++){
+                        val.pictures[i] = this.config.baseUrl + val.pictures[i]
+                    }
+                }
                 this.detailData.allData = val;
                 this.detailData.isshow  = true
-                console.log(this.detailData.allData)
+                // console.log(this.detailData.allData)
             },
             openConfirm(id,isDel){
                 this.confirmData.id    = id
@@ -281,9 +292,17 @@
                 // 要看第几页
                 // console.log(val)
                 this.sendData.page=val;
-                this.getData(this.sendData);
+                if(this.issearch){
+                   this.getData(this.sendData); 
+               }else{
+                    this.getData();
+               }
+                
             },
             filter(){
+                this.issearch=true;
+                this.page = 1;
+                this.sendData.page = 1;
                 this.getData(this.sendData);
             },
             cancel(val){
