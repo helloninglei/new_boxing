@@ -177,6 +177,7 @@ class PayService:
                 pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)
 
         pay_order.status = PAYMENT_STATUS_WAIT_USE
+        pay_order.pay_time = datetime.now()
         pay_order.save()
 
     @classmethod
@@ -187,7 +188,7 @@ class PayService:
             if isinstance(content, HotVideo):
                 name = f'视频（{content.name}）'
             elif isinstance(content, User):
-                name = '充值',
+                name = '充值'
             else:
                 name = content.get_course_name_display()
             return {
