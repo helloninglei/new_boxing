@@ -411,6 +411,7 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
             attrs['status'] = WITHDRAW_STATUS_APPROVED
         if self.context['operate_type'] == "rejected":
             attrs['status'] = WITHDRAW_STATUS_REJECTED
+        attrs['operator'] = self.context['request'].user
         return attrs
 
     @transaction.atomic
