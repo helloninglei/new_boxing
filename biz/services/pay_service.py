@@ -7,11 +7,12 @@ from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
 from biz.models import PayOrder, User, HotVideo, Course
 from biz.redis_client import get_order_no_serial
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_WAIT_USE, \
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
-    OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
-from biz.services import money_balance_service, official_account_service
-
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, MONEY_CHANGE_TYPE_REDUCE_ORDER, \
+    MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+from biz.services import official_account_service
+from biz.services.money_balance_service import change_money, ChangeMoneyException
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -41,10 +42,12 @@ class PayService:
             amount if amount else obj.price,
             name
         )
-        return {
-            'order_id': order.out_trade_no,
-            'pay_info': cls.get_payment_info(payment_type, data, ip),
-        }
+        if payment_type != PAYMENT_TYPE_WALLET:
+            return {
+                'order_id': order.out_trade_no,
+                'pay_info': cls.get_payment_info(payment_type, data, ip),
+            }
+        return cls.do_wallet_payment(user, order)
 
     @classmethod
     def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):
@@ -61,10 +64,8 @@ class PayService:
     def get_payment_info(cls, payment_type, data, ip):
         if payment_type == PAYMENT_TYPE_ALIPAY:
             return cls.get_alipay_payment_info(**data)
-        elif payment_type == PAYMENT_TYPE_WECHAT:
-            return cls.get_wechat_payment_info(ip=ip, **data)
         else:
-            cls.do_wallet_payment()
+            return cls.get_wechat_payment_info(ip=ip, **data)
 
     @classmethod
     def get_alipay_payment_info(cls, out_trade_no, amount, name):
@@ -72,7 +73,7 @@ class PayService:
             out_trade_no=out_trade_no,
             total_amount=amount,
             subject=name,
-            notify_url=''
+            notify_url=settings.ALIPAY_NOTIFY_URL
         )
 
     @classmethod
@@ -86,8 +87,27 @@ class PayService:
         )
 
     @classmethod
-    def do_wallet_payment(cls):  # TODO 钱包支付
-        pass
+    @atomic
+    def do_wallet_payment(cls, user, order):
+        if isinstance(order.content_object, HotVideo):
+            change_type = MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+        else:
+            change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
+        try:
+            change_money(user=user, amount=-order.amount, change_type=change_type, remarks=order.out_trade_no)
+            order.status = PAYMENT_STATUS_WAIT_USE
+            order.pay_time = datetime.now()
+            order.save()
+            return {
+                'status': 'success',
+                'order_id': order.out_trade_no,
+            }
+        except ChangeMoneyException:
+            return {
+                'status': 'failed',
+                'message': '余额不足',
+            }
+
 
     @classmethod
     def on_wechat_callback(cls, data):
@@ -123,7 +143,7 @@ class PayService:
         if pay_order.status == PAYMENT_STATUS_UNPAID:
             if isinstance(pay_order.content_object, User):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE
-                money_balance_service.change_money(user=pay_order.content_object, amount=pay_order.amount,
+                change_money(user=pay_order.content_object, amount=pay_order.amount,
                                                    change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
                                                    remarks=pay_order.out_trade_no)
             elif isinstance(pay_order.content_object, Course):

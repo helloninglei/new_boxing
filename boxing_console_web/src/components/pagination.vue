@@ -41,16 +41,21 @@
             return {
                 user_name: 'admin',
                 currentPage: 1,
-                
+
             }
         },
         props: {
             total: {
                 type: [String, Number],
             },
+            page : {
+                type: [String, Number],
+            }
         },
         watch: {
-        
+            page(value){
+                this.currentPage = value
+            }
         },
         components: {
         },

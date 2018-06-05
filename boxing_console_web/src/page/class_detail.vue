@@ -1,6 +1,6 @@
 <template>
     <div class="classDetail">
-        <div class='detail_content detail_header'>已通过的课程类型 ： <span v-for="item in results.allowed_lessons">{{item}} &nbsp;&nbsp;</span></div>
+        <div class='detail_content detail_header'>已通过的课程类型 ： <span v-for="item in results.allowed_course">{{item}} &nbsp;&nbsp;</span></div>
         <el-row class='detail_item'>
             <el-col :span="1">
                 <div class='detail_title'>姓名</div>
@@ -15,7 +15,7 @@
                 <div class='detail_content margin_lf'>{{results.mobile}}</div>
             </el-col>
             <el-col :span="16">
-                <el-button type="danger" class='myColor_red myButton_40' style='width:200px;margin-top:-13px' @click="checkIdent(results.id)">查看拳手认证信息</el-button>
+                <el-button type="danger" class='myColor_red myButton_40' style='width:200px;margin-top:-13px' @click="checkIdent(results)">查看拳手认证信息</el-button>
             </el-col>
         </el-row>
         <el-row class='detail_item'>
@@ -59,7 +59,7 @@
     .detail_header{margin-bottom:40px;padding-left:10px;}
     .detail_item{margin-bottom:40px;}
     .detail_title{width:80px;}
-    .detail_content.margin_lf{margin-left:30px;}
+    .detail_content.margin_lf{margin-left:39px;}
 </style>
 <style>
 nav{min-height: 528px}
@@ -115,8 +115,9 @@ nav{min-height: 528px}
                     } 
                 })
             },
-            checkIdent(id){
-                console.log('查看认证信息'+id)
+            checkIdent(row){
+               // 参数 ID 审核状态ident_type
+                this.$router.push({path: '/Boxerindentdetail', query:{id:row.id}});
             }
         },
     }

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
+from django.db.models import Count, Avg
 from django.shortcuts import redirect, get_object_or_404
 from rest_framework import viewsets
 
@@ -34,3 +35,10 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
             serializer.save(boxer=boxer)
         redis_client.record_object_location(boxer, club.longitude, club.latitude)
         return redirect('/boxer/course')
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("orders__comment"),
+                                                                avg_score=Avg("orders__comment__score"))
+        response.data.update(com_count_and_avg_score)
+        return response

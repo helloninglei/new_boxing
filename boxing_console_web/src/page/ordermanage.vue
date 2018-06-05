@@ -28,12 +28,14 @@
                                 v-model="form.pay_time_start"
                                 type="datetime"
                                 :default-value= "new Date()"
+                                value-format="yyyy-MM-dd hh:mm:ss"
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
                                 v-model="form.pay_time_end"
                                 type="datetime"
+                                value-format="yyyy-MM-dd hh:mm:ss"
                                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                                 placeholder="请选择"  class="margin_rt25">
                                 </el-date-picker>
@@ -43,7 +45,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="购买课程">
-                                <el-select v-model="form.course_name">
+                                <el-select v-model="form.course__course_name">
                                     <el-option value="0" label="全部">全部</el-option>
                                     <el-option value="拳馆" label="拳馆">拳馆</el-option>
                                     <el-option value="泰拳" label="泰拳">泰拳</el-option>
@@ -73,8 +75,8 @@
             <nav>
                <Table :tableColumn="tableColumn" :tableData="tableData" @toDetail="toDetail"></Table> 
             </nav>
-            <footer>
-                <Pagination :total="total" @changePage="changePage"></Pagination>
+            <footer v-show='total>10'>
+                <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
             </footer>
         </div>
     </div>
@@ -93,10 +95,12 @@ nav{min-height: 528px}
         data() {
             return {
                 isShowTop : true,
+                page      :1,
+                issearch  :false,
                 form : {
                     search     : '',
                     payment_type    : '',
-                    course_name : '',
+                    course__course_name : '',
                     pay_time_start : '',
                     pay_time_end   : '',
                     courseStatus : '',
@@ -164,15 +168,19 @@ nav{min-height: 528px}
             this.getTableData();
         },
         methods: {
-            getTableData(senddata,page) {
+            getTableData(page) {
                 //获取data数据
                 let $this = this ;
-                let data  =senddata?senddata:{};
-                let url   = '/course/orders';
-                if(page&&page>1){
-                    data.page=page
+                let sendData={} ;
+                if(this.issearch){
+                   sendData=this.form
                 }
-                this.ajax(url,'get',{},data).then(function(res){
+                if(page){
+                    console.log(page)
+                    console.log(sendData)
+                    sendData.page=page
+                }
+                this.ajax('/course/orders','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
@@ -203,7 +211,7 @@ nav{min-height: 528px}
                         }
 
                         $this.tableData=res.data.results;
-                        // $this.total = res.data.count;
+                        $this.total = res.data.count;
                     }
 
                 },function(err){
@@ -218,8 +226,8 @@ nav{min-height: 528px}
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
-                this.getTableData(this.sendData,val);
+                this.page=val
+                this.getTableData(val) ;
             },
             toDetail(row){
                 // console.log(row)
@@ -227,17 +235,10 @@ nav{min-height: 528px}
 
             },
             filter(){
-                // var phoneReg = /^((13[0-9])|(15[^4,\\D])|(18[0,0-9]))\\d{8}$/;
-                // if(this.form.search){
-                //     console.log(/^\d$/.test(this.form.search))
-                //     console.log(!/^\d$/.test(this.form.search))
-                //     if(/^\d$/.test(this.form.search)&&phoneReg.test(this.form.search)){
-                //         alert('用户名 、手机号输入不合法')
-                //         return;
-                //     }
-                // }
-                console.log(this.form)
-                this.getTableData(this.sendData);
+                this.issearch=true;
+                //搜索是先看第一页
+                this.page=1
+                this.getTableData(1);
             },
         },
     }

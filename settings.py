@@ -4,6 +4,7 @@
 import os
 import sys
 from base64 import b64decode
+from corsheaders.defaults import default_headers, default_methods
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -138,9 +139,11 @@ INSTALLED_APPS = [
     'boxing_console',
     'captcha',
     'django_filters',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -252,3 +255,7 @@ CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_arcs',)
 # project property
 PROJECT_API = 'api'
 PROJECT_CONSOLE = 'console'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = default_methods
+CORS_ALLOW_HEADERS = default_headers

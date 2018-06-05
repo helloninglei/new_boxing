@@ -7,12 +7,13 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.urls import include, path, re_path
 from django.conf import settings
 from biz.views import upload_file
-from boxing_app.views.boxer import BoxerIdentificationViewSet, NearbyBoxerListViewSet
+from boxing_app.views.boxer import BoxerIdentificationViewSet, NearbyBoxerListViewSet, get_boxer_status
 from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet
@@ -69,7 +70,8 @@ report_urls = [
 
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
-    path('nearby/boxers', NearbyBoxerListViewSet.as_view({'get': 'list'}), name='nearby-boxer')
+    path('nearby/boxers', NearbyBoxerListViewSet.as_view({'get': 'list'}), name='nearby-boxer'),
+    path('get-boxer-status', get_boxer_status)
 
 ]
 
@@ -92,6 +94,7 @@ order_url = [
 order_comment_url = [
     path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
+    path('boxer-course-order-comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
 ]
 
 city_url = [

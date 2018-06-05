@@ -364,11 +364,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField()
     boxer_info = serializers.SerializerMethodField()
     mobile = serializers.SerializerMethodField()
-    height = serializers.CharField(max_length=10)
+    height = serializers.IntegerField(max_value=999)
     name = serializers.CharField(max_length=30)
     nation = serializers.CharField(max_length=30)
     profession = serializers.CharField(max_length=20)
-    weight = serializers.CharField(max_length=10)
+    weight = serializers.IntegerField(max_value=999)
     nick_name = serializers.CharField(max_length=10, required=False)
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
@@ -527,6 +527,15 @@ class WithdrawSerializer(serializers.ModelSerializer):
         model = models.WithdrawLog
         fields = ['amount', "order_number", "created_time", "status"]
         read_only_fields = ["order_number", "created_time"]
+
+
+class OrderCommentSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField())
+    user = DiscoverUserField(read_only=True)
+
+    class Meta:
+        model = models.OrderComment
+        exclude = ('is_deleted',)
 
 
 class BoxingClubSerializer(serializers.ModelSerializer):

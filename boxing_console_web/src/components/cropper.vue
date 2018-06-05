@@ -7,18 +7,7 @@
       </div>
       <button type="button" id="button" @click="crop">确定</button>
     </div>  
-    <div style="padding:20px;">  
-        <div :class='classname'>  
-          <div class="picture" :style="'backgroundImage:url('+headerImage+')'">  
-          </div>  
-        </div>
-        <div style="margin-top:20px;">  
-          <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('change')">上传</el-button>
-          <input type="file" id="change" style='display:none' accept="image" @change="change">  
-          <label for="change"></label>  
-        </div>  
-
-    </div>  
+    
   </div> 
 </template>
 <style scope>
@@ -36,14 +25,7 @@
       border-radius: 5px;  
       background:white;  
     }  
-    #demo .show {  
-      width: 100px;  
-      height: 100px;  
-      overflow: hidden;  
-      position: relative;  
-      /*border-radius: 50%;  */
-      border: 1px solid #d5d5d5;  
-    }  
+     
     #demo .shows {  
       width: 96px;  
       height: 54px;  
@@ -119,6 +101,9 @@
       right: 0;  
       bottom: 0;  
       left: 0;  
+    }
+    .cropper-canvas{
+      transform:translateY(0px);
     }
     .cropper-crop-box{
       height:100px;
@@ -361,26 +346,53 @@
         cropper:'',  
         croppable:false,  
         panel:false,  
-        url:''  
+        url:'' ,
+        src:'' 
       }  
     },  
     props: {
-        index: {
-            type: Number,
-            default: 0,
+        url_f:{
+          type: String,
+          default: '',
         },
-        classname: {
-            type: String,
-            default: 0,
+        changeUrl:{
+          type: Boolean,
+          default: false,
         },
+        imgId:{
+          type: String,
+          default: '',
+        },
+        width:{
+          type: Number,
+          default: 100,
+        },
+        height:{
+          type: Number,
+          default: 100,
+        }
     },
     mounted () {  
       //初始化这个裁剪框  
-      var self = this;  
-      var image = document.getElementById('image');  
-      let minWidth = 140; 
-      let minHeight = 140; 
-      if(this.classname=='show'){
+      this.startMounted()
+      
+    },
+    create(){
+    },
+    watch:{
+      changeUrl(isshow){
+        // console.log(isshow)
+        if(isshow){
+          this.change (this.url_f)
+        }
+      }
+    },
+    methods: {  
+      startMounted(){
+        var self = this;  
+        var image = document.getElementById('image');  
+        let minWidth = 160; 
+        let minHeight = 90; 
         this.cropper = new Cropper(image, {  
           aspectRatio: 1,  
           // viewMode: 1,  
@@ -388,7 +400,26 @@
           zoomable:false, 
           minCanvasWidth:144,
           minCanvasHeight:144,
-          // minContainerWidth:144, 
+          cropBoxResizable:true,//裁剪框能放大缩小
+          scalable:true,
+          // rotatable:false,
+          ready:function(){
+            self.croppable = true;
+            $(image).cropper('crop');
+          }, 
+          built: function () {  
+              $(image).cropper('getCroppedCanvas')  
+          }
+        }); 
+        console.log(this.width,this.height,this.width/this.height)
+        this.cropper2 = new Cropper(image, {  
+          aspectRatio: this.width/this.height,  
+          // viewMode: 1, 
+          movable:true, 
+          background:false,  
+          zoomable:false, 
+          minCanvasWidth:160,
+          minCanvasHeight:90,
           cropBoxResizable:true,//裁剪框能放大缩小
           // ready: function () {  
           //   self.croppable = true;  
@@ -396,79 +427,29 @@
           // aspectRatio:picScale.width/picScale.height,
           // autoCrop:false,
           // zoomable:false,
-          // scalable:false,
+          scalable:true,
           // rotatable:false,
           ready:function(){
             self.croppable = true;
             $(image).cropper('crop');
-            $(image).cropper('setData',{
-                width:minWidth,
-                height:minHeight
-            });
           }, 
           built: function () {  
               $(image).cropper('getCroppedCanvas')  
-              $(image).cropper('getCroppedCanvas',{
-                width: 160,  
-                height: 90 
-              })  
           }
         }); 
-        // $(image).on('cropmove',function(e){
-        //     var data=$(image).cropper('getData');
-        // });
-        // $(image).on('cropend',function(e){
-        //     var data=$(image).cropper('getData');
-        //     if(data.width<picScale.width||data.height<picScale.height){
-        //         $(image).cropper('setData',{ width:picScale.width,
-        //             height:picScale.height});
-        //     }
-        // }); 
-      }
-      // else{
-      //   this.cropper = new Cropper(image, {  
-      //     aspectRatio: 96/54,  
-      //     viewMode: 1,  
-      //     background:false,  
-      //     zoomable:false, 
-      //     // minContainerWidth:144, 
-      //     cropBoxResizable:true,//裁剪框能放大缩小
-      //     ready: function () {  
-      //       self.croppable = true;  
-      //     }  
-      //   });  
-      // }
-      
-    },  
-    methods: {  
-      getObjectURL (file) {  
-        var url = null ;   
-        if (window.createObjectURL!=undefined) { // basic  
-          url = window.createObjectURL(file) ;  
-        } else if (window.URL!=undefined) { // mozilla(firefox)  
-          url = window.URL.createObjectURL(file) ;  
-        } else if (window.webkitURL!=undefined) { // webkit or chrome  
-          url = window.webkitURL.createObjectURL(file) ;  
-        }  
-        return url ;  
-      },  
-      change (e) {  
-        let files = e.target.files || e.dataTransfer.files;  
-        if (!files.length) return;  
-        this.panel = true;  
-        this.picValue = files[0];  
-
-        this.url = this.getObjectURL(this.picValue);  
+        // console.log(this.cropper)
+      },
+      change (url) {  
+        this.url = url
         //每次替换图片要重新得到新的url  
-        if(this.cropper){  
+        if(this.imgId=='img1'&&this.cropper){  
           this.cropper.replace(this.url);  
+        } 
+        if(this.imgId!=='img1'&&this.cropper2){  
+          this.cropper2.replace(this.url);  
         }  
         this.panel = true;  
 
-      }, 
-      addImg(ele){
-        console.log($(ele))
-        $("#"+ele).click();
       }, 
       crop () {  
           this.panel = false;  
@@ -479,13 +460,18 @@
             return;  
           }  
           // Crop  
-          croppedCanvas = this.cropper.getCroppedCanvas();  
-          console.log(this.cropper)  
-          // Round  
-          roundedCanvas = this.getRoundedCanvas(croppedCanvas);  
+          if(this.imgId=='img1'){
+            croppedCanvas = this.cropper.getCroppedCanvas(); 
+          }else{
+            croppedCanvas = this.cropper2.getCroppedCanvas(); 
+          }
+            
+          // 改成圆形图片Round  
+          // roundedCanvas = this.getRoundedCanvas(croppedCanvas);  
 
-          this.headerImage = roundedCanvas.toDataURL();  
-          this.postImg()  
+          this.headerImage = croppedCanvas.toDataURL(); 
+          let file=this.dataURLtoFile (this.headerImage, 'file') 
+          this.postImg(file)  
 
       },  
       getRoundedCanvas (sourceCanvas) {  
@@ -507,8 +493,42 @@
 
         return canvas;  
       },  
-      postImg () {  
+
+      dataURLtoFile (dataurl, filename = 'file') {
+        let arr = dataurl.split(',')
+        let mime = arr[0].match(/:(.*?);/)[1]
+        let suffix = mime.split('/')[1]
+        let bstr = atob(arr[1])
+        let n = bstr.length
+        let u8arr = new Uint8Array(n)
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n)
+        }
+        return new File([u8arr], `${filename}.${suffix}`, {type: mime})
+      } ,
+      postImg (file) { 
+        // console.log(file) 
+        // console.log(file.size) 
         //这边写图片的上传  
+        let $this = this;
+        let formData = new FormData() 
+        formData.append('file', file) 
+        this.ajax('/upload','post',formData).then(function(res){
+            if(res&&res.data){
+              $this.src=res.data.urls[res.data.urls.length-1]
+                // console.log($this.src)
+                $this.$emit('getUrl',$this.src,$this.imgId)
+            }
+
+        },function(err){
+            if(err&&err.response){
+                let errors=err.response.data
+                for(var key in errors){
+                    console.log(errors[key])
+                    // return
+                } 
+            } 
+        })
       }  
     }  
   }  

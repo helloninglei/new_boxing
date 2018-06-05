@@ -2,6 +2,7 @@
 from django.db.models import Case, When, Count, Min
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -9,6 +10,15 @@ from biz import constants, redis_client
 from biz.models import BoxerIdentification
 from boxing_app.filters import NearbyBoxerFilter
 from boxing_app.serializers import BoxerIdentificationSerializer, NearbyBoxerIdentificationSerializer
+
+
+@api_view(['GET'])
+def get_boxer_status(request):
+    data = {'boxer_status': None}
+    boxer = BoxerIdentification.objects.filter(user=request.user).only('authentication_state').first()
+    if boxer:
+        data.update(boxer_status=boxer.authentication_state)
+    return Response(data=data, status=status.HTTP_200_OK)
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
