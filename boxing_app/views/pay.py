@@ -1,10 +1,11 @@
 # coding:utf-8
 from django.http import HttpResponse
 from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from boxing_app.serializers import PaySerializer
 from biz.services.pay_service import PayService
+from biz.parser import XMLParser
 
 
 @api_view(['POST'])
@@ -40,6 +41,7 @@ def alipay_calback(request):
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
+@parser_classes((XMLParser,))
 def wechat_calback(request):
     return HttpResponse(PayService.on_wechat_callback(request.data))
 

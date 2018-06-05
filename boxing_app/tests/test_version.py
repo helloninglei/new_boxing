@@ -12,13 +12,13 @@ class VersionTestCase(APITestCase):
 
     def test_version(self):
         # ios
-        self.client.credentials(source="ios")
+        self.client.credentials(HTTP_SOURCE="ios")
         response = self.client.get(path="/version")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(response.data, settings.IOS_VERSION)
 
         # android
-        self.client.credentials(source="android")
+        self.client.credentials(HTTP_SOURCE="android")
         response = self.client.get(path="/version")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertDictEqual(response.data, settings.ANDROID_VERSION)
