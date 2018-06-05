@@ -35,8 +35,7 @@ def app_order(self, out_trade_no, amount, name, ip):
         timestamp=timestamp,
         package='Sign=WXPay',
     )
-    sign = self.sign(raw)
-    raw['sign'] = sign
+    raw['sign'] = self.sign(raw)
     return raw
 
 
@@ -59,7 +58,7 @@ class PayService:
         return f'{obj.__class__._meta.verbose_name} {obj.id}'
 
     @classmethod
-    def create_order(cls, user, obj, payment_type, device, ip, amount=None):
+    def create_order(cls, user, obj, payment_type, device, ip, amount=None):  # amount 单位分
         order = cls.perform_create_order(user, obj, device, amount, payment_type)
         name = cls.generate_name(obj)
         data = dict(out_trade_no=order.out_trade_no, amount=order.amount, name=name)
@@ -75,12 +74,12 @@ class PayService:
         return result
 
     @classmethod
-    def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):
+    def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):  # amount 单位分
         return PayOrder.objects.create(
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=amount * 100 if amount else obj.price * 100,
+            amount=amount if amount else obj.price * 100,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
