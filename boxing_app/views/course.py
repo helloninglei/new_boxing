@@ -13,7 +13,9 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
 
     def get_queryset(self):
-        return Course.objects.filter(boxer__user=self.request.user).select_related('club', 'boxer')
+        return Course.objects.filter(boxer__user=self.request.user)\
+            .annotate(order_count=Count('orders'),score=Avg('orders__comment__score'))\
+            .select_related('club', 'boxer')
 
     @transaction.atomic
     def update(self, request, *args, **kwargs):
