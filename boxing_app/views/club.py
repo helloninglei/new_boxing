@@ -1,6 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
-from rest_framework.viewsets import GenericViewSet
 
 from biz.models import BoxingClub
 from boxing_app.serializers import BoxingClubSerializer
