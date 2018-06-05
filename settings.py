@@ -105,12 +105,26 @@ BROKER_REDIS_DB = "0"
 BAIDU_MAP_URL = 'http://api.map.baidu.com/geocoder/v2/'
 BAIDU_MAP_AK = 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
 
+# version conf
+ANDROID_VERSION = {
+    'version': '3.0',
+    'version_code': '1.1',
+    'url': '',
+    'message': '',
+    'force': True
+}
+
+IOS_VERSION = {
+    'version': '1.1',
+    'message': '',
+    'force': True
+}
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
