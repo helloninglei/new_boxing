@@ -10,7 +10,6 @@ from django.conf import settings
 from requests.exceptions import RequestException
 from biz.redis_client import redis_client
 from biz.redis_const import WEIXIN_PUBLIC_ACCESS_TOKEN, WEIXIN_PUBLIC_JSAPI_TICKET_KEY
-from weixin.mp import WeixinMP
 
 logger = logging.getLogger()
 
@@ -37,7 +36,7 @@ class WeiXinPublicPlatformClient:
                 logger.error(f"fetch weixin public access token failed, response: {result}")
             token = result.get("access_token")
             expires_in = result.get("expires_in")
-            # redis_client.setex(WEIXIN_PUBLIC_ACCESS_TOKEN, int(expires_in) - 60, token)
+            redis_client.setex(WEIXIN_PUBLIC_ACCESS_TOKEN, int(expires_in) - 60, token)
             return token
 
     @classmethod
@@ -54,7 +53,7 @@ class WeiXinPublicPlatformClient:
             result = response.json()
             ticket = result.get("ticket")
             expires_in = result.get("expires_in")
-            # redis_client.setex(WEIXIN_PUBLIC_JSAPI_TICKET_KEY, int(expires_in) - 60, ticket)
+            redis_client.setex(WEIXIN_PUBLIC_JSAPI_TICKET_KEY, int(expires_in) - 60, ticket)
             return ticket
 
 
