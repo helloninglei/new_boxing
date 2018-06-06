@@ -3,6 +3,7 @@ from django.db import transaction
 from django.db.models import Count, Avg
 from django.shortcuts import redirect, get_object_or_404
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from biz import redis_client
 from biz.models import Course, BoxerIdentification, BoxingClub
@@ -42,3 +43,8 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
                                                                 avg_score=Avg("orders__comment__score"))
         response.data.update(com_count_and_avg_score)
         return response
+
+    def opened_courses(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(is_open=True)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
