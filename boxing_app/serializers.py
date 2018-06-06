@@ -555,3 +555,17 @@ class RechargeLogReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PayOrder
         fields = ["out_trade_no", "amount", "id", "order_time", "status"]
+
+
+class SocialLoginSerializer(serializers.Serializer):
+    wechat_openid = serializers.CharField(required=False)
+    weibo_openid = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        wechat_openid = attrs.get("wechat_openid")
+        weibo_openid = attrs.get("weibo_openid")
+        if not wechat_openid and not weibo_openid:
+            raise ValidationError("wechat_openid、weibo_openid至少有一个不能为空！")
+        if wechat_openid and weibo_openid:
+            raise ValidationError("wechat_openid、weibo_openid只能传一个！")
+        return attrs

@@ -34,6 +34,7 @@ from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
 from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
+from boxing_app.views.social_login import social_login
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -190,6 +191,10 @@ version_urls = [
     path("version", version)
 ]
 
+social_login_urls = [
+    path("social_login", social_login),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -214,6 +219,7 @@ urlpatterns += share_urls
 urlpatterns += club_url
 urlpatterns += city_url
 urlpatterns += version_urls
+urlpatterns += social_login_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
