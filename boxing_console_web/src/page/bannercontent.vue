@@ -4,7 +4,7 @@
         <div class="container">
             <el-form :model="form" label-width="100px" :rules="rules" ref="ruleForm">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="form.name" placeholder="限制20字" maxlength="20"></el-input>
+                    <el-input v-model="form.name" placeholder="限制20字" :maxlength="20"></el-input>
                 </el-form-item>
                 <el-form-item label="序号" prop="order_number" required>
                     <el-input v-model="form.order_number" placeholder="请输入正整数，数字越大，排序越靠前"></el-input>

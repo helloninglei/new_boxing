@@ -3,7 +3,7 @@
         <TopBar v-if="isShowTop" firstTitle_name="财务管理" firstTitle_path="/boxingmanage" secondTitle_name="用户提现记录" secondTitle_path="/addBoxing"></TopBar>
         <header style='padding:30px'>
             <div class="inline_item">
-                <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='提现单号、用户ID、用户账号、用户昵称、用户手机号' style='width:26rem'></el-input>
+                <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='提现单号、用户ID、用户手机号' style='width:26rem'></el-input>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
             </div>
             <div style='margin:10px 0 40px 0'>

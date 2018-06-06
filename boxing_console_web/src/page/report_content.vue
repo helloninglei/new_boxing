@@ -7,6 +7,12 @@
         <div class='imgs' v-if='getData.pictures'>
           <img :src="value" alt="" v-for='value in getData.pictures' width='100%'>
         </div>
+        <div class='imgs' v-if='getData.video'>
+          <video :src="config.baseUrl+getData.video" controls="controls" width='100%'>
+                您的浏览器不支持 video 标签。
+          </video>
+          <!-- <img :src="value" alt="" v-for='value in getData.pictures' width='100%'> -->
+        </div>
       <div slot="footer" class="dialog-footer" style='text-align:center'>
         <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">关闭</el-button>
       </div>

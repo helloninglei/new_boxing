@@ -411,7 +411,7 @@
               $(image).cropper('getCroppedCanvas')  
           }
         }); 
-        console.log(this.width,this.height,this.width/this.height)
+        // console.log(this.width,this.height,this.width/this.height)
         this.cropper2 = new Cropper(image, {  
           aspectRatio: this.width/this.height,  
           // viewMode: 1, 

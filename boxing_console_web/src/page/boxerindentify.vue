@@ -8,32 +8,32 @@
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">选手类型</span>
-                    <el-select v-model="sendData.courseName" class="margin_rt25" style='width:11rem'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option value="职业" label="职业">职业</el-option>
-                        <el-option value="非职业" label="非职业">非职业</el-option>
+                    <el-select v-model="sendData.is_professional_boxer" class="margin_rt25" style='width:11rem'>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option :value="true" label="职业">职业</el-option>
+                        <el-option :value="false" label="非职业">非职业</el-option>
                     </el-select>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">审核状态</span>
-                    <el-select v-model="sendData.ident_type" class="margin_rt25" style='width:11rem'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option value="已通过" label="已通过">已通过</el-option>
-                        <el-option value="已驳回" label="已驳回">已驳回</el-option>
-                        <el-option value="待审核" label="待审核">待审核</el-option>
+                    <el-select v-model="sendData.authentication_state" class="margin_rt25" style='width:11rem'>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option value="APPROVED" label="已通过">已通过</el-option>
+                        <el-option value="REFUSE" label="已驳回">已驳回</el-option>
+                        <el-option value="WAITING" label="待审核">待审核</el-option>
                     </el-select>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">接单状态</span>
-                    <el-select v-model="sendData.lock_type" style='width:11rem;margin-right:80px'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option value="已锁定" label="已锁定">已锁定</el-option>
-                        <el-option value="已解锁" label="已解锁">已解锁</el-option>
+                    <el-select v-model="sendData.is_locked" style='width:11rem;margin-right:80px'>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option :value="true" label="已锁定">已锁定</el-option>
+                        <el-option :value="false" label="已解锁">已解锁</el-option>
                     </el-select>
                 </div>
                 <div class="inline_item">
                     <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                    <el-button  class='myButton_40 btn_width_95'>重置</el-button>
+                    <el-button  class='myButton_40 btn_width_95' @click='refuse()'>重置</el-button>
                 </div>
             </header>
             <nav>
@@ -64,9 +64,9 @@ nav{min-height: 528px}
                 page      : 1,
                 sendData  : {
                     search     : '',
-                    ident_type : '',
-                    lock_type  : '',
-                    courseName : '',
+                    authentication_state : '',
+                    is_locked  : '',
+                    is_professional_boxer : '',
                 },
                 total     : 1000,
                 tableData : [
@@ -94,54 +94,7 @@ nav{min-height: 528px}
                         "refuse_reason": null, // 驳回原因
                         "user": 5 // 用户ID
                     },
-                    {
-                        "id": 2, // 拳手ID
-                        "honor_certificate_images": [], // 拳手荣誉证书
-                        "competition_video": null, // 拳手参赛视频
-                        "nick_name": "赵柳", // 拳手昵称
-                        "allowed_lessons": [], // 可开课程
-                        "created_time": "2018-05-18 00:27:43",
-                        "updated_time": "2018-05-18 00:27:47",
-                        "real_name": "张三", // 拳手真实姓名
-                        "height": 170, // 身高
-                        "weight": 65, // 体重
-                        "birthday": "2018-05-17", // 出生日期
-                        "identity_number": "111111111111111111", //身份证
-                        "mobile": "11111111111", //手机
-                        "is_professional_boxer": true, //是否是专业拳手
-                        "club": "20", // 所属拳馆
-                        "job": "teacher", // 职业
-                        "introduction": "哈哈", //个人介绍
-                        "is_locked": false, // 接单状态 true锁定，false解锁
-                        "experience": null, // 个人经历
-                        "authentication_state": "REFUSE", // 认证状态（APPROVED：已通过| WAITING：待审核 | REFUSE：已驳回）
-                        "refuse_reason": null, // 驳回原因
-                        "user": 5 // 用户ID
-                    },
-                    {
-                        "id": 3, // 拳手ID
-                        "honor_certificate_images": [], // 拳手荣誉证书
-                        "competition_video": null, // 拳手参赛视频
-                        "nick_name": "赵柳", // 拳手昵称
-                        "allowed_lessons": [], // 可开课程
-                        "created_time": "2018-05-18 00:27:43",
-                        "updated_time": "2018-05-18 00:27:47",
-                        "real_name": "张三", // 拳手真实姓名
-                        "height": 170, // 身高
-                        "weight": 65, // 体重
-                        "birthday": "2018-05-17", // 出生日期
-                        "identity_number": "111111111111111111", //身份证
-                        "mobile": "11111111111", //手机
-                        "is_professional_boxer": true, //是否是专业拳手
-                        "club": "20", // 所属拳馆
-                        "job": "teacher", // 职业
-                        "introduction": "哈哈", //个人介绍
-                        "is_locked": false, // 接单状态 true锁定，false解锁
-                        "experience": null, // 个人经历
-                        "authentication_state": "WAITING", // 认证状态（APPROVED：已通过| WAITING：待审核 | REFUSE：已驳回）
-                        "refuse_reason": null, // 驳回原因
-                        "user": 5 // 用户ID
-                    },
+                    
                 ],
                 tableColumn:[
                     {title:'id',              name :'申请编号',   width:''},
@@ -207,16 +160,21 @@ nav{min-height: 528px}
                 this.getTableData(val) 
             },
             toDetail(row){
-                // 参数 ID 审核状态ident_type
+                // 参数 ID 审核状态 authentication_state
                 this.$router.push({path: '/Boxerindentdetail', query:{id:row.id,authentication_state:row.authentication_state}});
 
             },
-            changeLockType(row){
-                let lock_type=row.is_locked? "UNLOCK":"LOCK" 
-                this.ajax('/boxer/identification/'+row.id+'/'+lock_type,'get').then(function(res){
-                    if(res&&res.data){
-                        console.log(res.data)
+            changeLockType(row,$index){
+                let $this    = this; 
+                let is_locked=row.is_locked? "UNLOCK":"LOCK" 
+                this.ajax('/boxer/identification/'+row.id+'/'+is_locked,'post').then(function(res){
+                    // console.log(res.status)
+                    if(res.status==204){
+                        // $this.getTableData($this.page)
+                        row.is_locked = !row.is_locked
+                        row.lock_name = row.is_locked? "已锁定":"已解锁" 
                     }
+                    
 
                 },function(err){
                     if(err&&err.response){
@@ -233,6 +191,10 @@ nav{min-height: 528px}
                 //搜索是先看第一页
                 this.page=1
                 this.getTableData(1) 
+            },
+            refuse(){
+                this.sendData={};
+                this.getTableData();
             }
         },
     }
