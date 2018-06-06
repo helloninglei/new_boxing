@@ -97,7 +97,7 @@ order_url = [
 order_comment_url = [
     path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
-    path('boxer-course-order-comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
+    path('boxer/<int:boxer_id>/comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
 ]
 
 city_url = [
