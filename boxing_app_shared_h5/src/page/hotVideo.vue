@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hot_video_container" :class="{hasClose: ifClose}">
         <div>
             <div class="payTip" v-if="showPayTip">
                 可免费观看15S,看完整视频需付费99元
@@ -14,15 +14,19 @@
                     <div class="desc">{{videoObj.description}}</div>
                 </div>
             </div>
-            <div class="seeVideo" @click="openApp">99元观看完整视频</div>
+            <div class="seeVideo" v-if="videoObj.try_url" @click="openApp">99元观看完整视频</div>
         </div>
-        <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
+        <TabBar :id="id" :ifShowPraise=false commentType="message" @openApp="openApp"></TabBar>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
+.hot_video_container
+    margin-bottom 3.5rem
+    &.hasClose
+        margin-bottom 0
 .payTip
     width 100%
     height 1.2rem
@@ -80,6 +84,7 @@
         data() {
             return {
                 id: '',
+                ifClose: false,
                 userId: 1000000,
                 showPayTip: true,
                 showModal: false,
@@ -109,9 +114,7 @@
                 },(err) => {
                     if(err&&err.response){
                         let errors=err.response.data;
-                        for(var key in errors){
-                            this.$layer.msg(errors[key][0]);
-                        }
+                        console.log(errors);
                     }
                 })
             },

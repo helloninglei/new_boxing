@@ -22,7 +22,7 @@
             </template>
             <template v-else>
                 <div class="pic_wrapper" :class="getClass">
-                    <img :src="`${config.baseUrl}` + item" v-for="(item, index) in info.images" :key="index" class="pic"/>
+                    <img :src="`${config.baseUrl}` + item" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>
                 </div>
             </template>
         </div>
@@ -42,6 +42,7 @@
         </div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
+        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="info.images" :slideIndex="slideIndex"></ZoomImage>
     </div>
 
 </template>
@@ -116,7 +117,7 @@
     &.hasClose
         margin-bottom 0
     .bar_container
-        display: -webkit-flex;
+        display -webkit-flex
         display flex
         .line
             display inline-block
@@ -155,15 +156,36 @@
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
     import Modal from 'components/modal';
+    import ZoomImage from 'components/zoomImage';
     import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
             return {
+                slideIndex: 1,
                 ifClose: false,
                 showModal: false,
+                showSwiper: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
-                info: {},
+                info: {
+                    "id":29,
+                    "content":"hello world",
+                    "images":[
+                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
+                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
+                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
+                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
+
+                    ],
+                    "msg_type": "has_image",
+                    "created_time":"2018-04-27T10:57:37.172427+08:00",
+                    "user":{
+                        "nick_name":"lerry",
+                        "id":1,
+                        "avatar":"http://i.lerry.me/sss.jpg"
+                    },
+                    video:null
+                },
                 dataObj: {},
                 wx: ''
             }
@@ -172,7 +194,7 @@
         created() {
             this.id = this.$route.params.id;
             if (this.id) {
-                this.getData();
+//                this.getData();
 //                this.sharePage();
             }
         },
@@ -182,7 +204,8 @@
             DownloadTip,
             Video,
             TabBar,
-            Modal
+            Modal,
+            ZoomImage
         },
 
         methods: {
@@ -195,9 +218,7 @@
                 },(err) => {
                     if(err&&err.response){
                         let errors=err.response.data;
-                        for(let key in errors){
-                            this.$layer.msg(errors[key][0]);
-                        }
+                        console.log(errors);
                     }
                 })
             },
@@ -233,12 +254,9 @@
                     },(err) => {
                         if(err&&err.response){
                             let errors=err.response.data;
-                            for(let key in errors){
-                                this.$layer.msg(errors[key][0]);
-                            }
+                            console.log(errors);
                         }
                     })
-
                 }
             },
             inWxShare () {
@@ -275,6 +293,13 @@
                 let url = data.url;
                 this.dataObj = {title, desc, url, imgUrl};
             },
+            showZoomImage(index) {
+                this.slideIndex = index;
+                this.showSwiper = true;
+            },
+            hideSwiper() {
+                this.showSwiper = false;
+            }
         },
         computed: {
             getClass() {

@@ -56,7 +56,7 @@
         vertical-align middle
         color #fff
     .tab_bar
-        margin .5rem auto 1.3rem auto
+        margin .5rem auto auto auto
         width 100%
         height 2.4rem
         line-height 2.4rem
@@ -79,6 +79,7 @@
                     height .15rem
                     background #F95862
     .tab_content
+        margin-top 1.3rem
         padding 0 1rem
         font-size .65rem
         .comments_container
