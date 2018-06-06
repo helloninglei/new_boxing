@@ -21,6 +21,13 @@ def get_boxer_status(request):
     return Response(data=data, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def change_boxer_accept_order_status(request, **kwargs):
+    is_accept = kwargs.get('is_accept')
+    BoxerIdentification.objects.filter(user=request.user).update(is_accept_order=is_accept)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
 
@@ -40,6 +47,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = NearbyBoxerIdentificationSerializer
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
+                                                  is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                                                   is_locked=False).annotate(order_count=Count('course__orders'),
                                                                             course_min_price=Min('course__price')).prefetch_related('course__club')

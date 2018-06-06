@@ -37,7 +37,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
         redis_client.record_object_location(boxer, club.longitude, club.latitude)
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
