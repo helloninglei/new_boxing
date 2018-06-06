@@ -234,7 +234,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
         return obj.price * 100
 
     def get_url(self, obj):
-        if obj.is_paid:
+        if obj.is_paid or obj.price == 0:
             return obj.url
 
     class Meta:

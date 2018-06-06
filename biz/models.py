@@ -329,7 +329,7 @@ class HotVideo(BaseAuditModel):
     description = models.CharField(max_length=140)
     url = models.CharField(max_length=200)
     try_url = models.CharField(max_length=200)
-    price = models.IntegerField(validators=[MinValueValidator(1)])  # 单位元
+    price = models.PositiveIntegerField()  # 单位元
     is_show = models.BooleanField(default=True, db_index=True)
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
