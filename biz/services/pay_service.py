@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from time import time
 from datetime import datetime
 from django.db.transaction import atomic
 from django.conf import settings
@@ -14,6 +15,31 @@ from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
 from biz.services import official_account_service
 from biz.services.money_balance_service import change_money, ChangeMoneyException
+
+
+def app_order(self, out_trade_no, amount, name, ip):
+    result = self.unified_order(
+        trade_type='APP',
+        out_trade_no=out_trade_no,
+        body=name,
+        total_fee=amount,
+        spbill_create_ip=ip,
+    )
+
+    timestamp = str(int(time()))
+    raw = dict(
+        appid=self.app_id,
+        partnerid=self.mch_id,
+        prepayid=result['prepay_id'],
+        noncestr=self.nonce_str,
+        timestamp=timestamp,
+        package='Sign=WXPay',
+    )
+    raw['sign'] = self.sign(raw)
+    return raw
+
+
+WeixinPay.app_order = app_order
 
 alipay = AliPay(**settings.ALIPAY)
 wechat_pay = WeixinPay(**settings.WECHAT_PAY)
@@ -32,25 +58,28 @@ class PayService:
         return f'{obj.__class__._meta.verbose_name} {obj.id}'
 
     @classmethod
-    def create_order(cls, user, obj, payment_type, device, ip, amount=None):
+    def create_order(cls, user, obj, payment_type, device, ip, amount=None):  # amount 单位分
         order = cls.perform_create_order(user, obj, device, amount, payment_type)
         name = cls.generate_name(obj)
-        data = dict(out_trade_no=order.out_trade_no, amount=amount, name=name)
+        data = dict(out_trade_no=order.out_trade_no, amount=order.amount, name=name)
 
-        if payment_type != PAYMENT_TYPE_WALLET:
-            return {
-                'order_id': order.out_trade_no,
-                'pay_info': cls.get_payment_info(payment_type, data, ip),
-            }
-        return cls.do_wallet_payment(user, order)
+        if payment_type == PAYMENT_TYPE_WALLET:
+            return cls.do_wallet_payment(user, order)
+        pay_info = cls.get_payment_info(payment_type, data, ip)
+        result = {'order_id': order.out_trade_no}
+        if payment_type == PAYMENT_TYPE_ALIPAY:
+            result['pay_info_str'] = pay_info
+        else:
+            result['pay_info'] = pay_info
+        return result
 
     @classmethod
-    def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):
+    def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):  # amount 单位分
         return PayOrder.objects.create(
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=amount * 100 if amount else obj.price * 100,
+            amount=amount if amount else obj.price * 100,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
@@ -68,17 +97,16 @@ class PayService:
             out_trade_no=out_trade_no,
             total_amount=amount / 100,
             subject=name,
-            notify_url=settings.ALIPAY_NOTIFY_URL
+            notify_url=settings.ALIPAY['app_notify_url']
         )
 
     @classmethod
     def get_wechat_payment_info(cls, out_trade_no, amount, name, ip):
-        return wechat_pay.unified_order(
-            trade_type='APP',
+        return wechat_pay.app_order(
             out_trade_no=out_trade_no,
-            body=name,
-            total_fee=amount,
-            spbill_create_ip=ip,
+            name=name,
+            amount=amount,
+            ip=ip,
         )
 
     @classmethod
@@ -118,6 +146,7 @@ class PayService:
 
     @classmethod
     def on_alipay_callback(cls, data):
+        data = data.dict()
         logger.info(
             "[alipay:] calback:{}".format('&'.join('{}={}'.format(key, val) for key, val in sorted(data.items())))
         )
@@ -149,6 +178,7 @@ class PayService:
                 pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)
 
         pay_order.status = PAYMENT_STATUS_WAIT_USE
+        pay_order.pay_time = datetime.now()
         pay_order.save()
 
     @classmethod
@@ -159,7 +189,7 @@ class PayService:
             if isinstance(content, HotVideo):
                 name = f'视频（{content.name}）'
             elif isinstance(content, User):
-                name = '充值',
+                name = '充值'
             else:
                 name = content.get_course_name_display()
             return {

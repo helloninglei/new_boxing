@@ -16,7 +16,7 @@ def get_client_ip(request):
 
 
 def get_device_platform(request):
-    value = request.META.get('source', '').lower()
+    value = request.META.get('HTTP_SOURCE', '').lower()
     if value == 'android':
         return DEVICE_PLATFORM_ANDROID
     if value == 'ios':
