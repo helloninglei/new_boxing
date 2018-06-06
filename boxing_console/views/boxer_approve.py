@@ -43,12 +43,10 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
             allowed_courses = [course_dict.get(key) for key in content]
             self.create_course(boxer=boxer, allowed_courses=content)
-            BoxerIdentification.objects.filter(id=boxer.id).update(authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
         else:
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
             content = request.data.get('refuse_reason')
-            BoxerIdentification.objects.filter(id=boxer.id).update(authentication_state=constants.BOXER_AUTHENTICATION_STATE_REFUSE)
             sms_client.send_boxer_refuse_message(boxer.mobile, refuse_reason=content)
         log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,
