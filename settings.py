@@ -119,7 +119,7 @@ IOS_VERSION = {
     'force': True
 }
 
-ALIPAY_NOTIFY_URL = ""
+OSS_BASE_URL = 'http://39.105.73.10'
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
