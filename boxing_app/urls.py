@@ -34,7 +34,7 @@ from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
 from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
-from boxing_app.views.social_login import social_login
+from boxing_app.views.social_login import social_login, mobile_is_bind_another_social_account
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -193,6 +193,7 @@ version_urls = [
 
 social_login_urls = [
     path("social_login", social_login),
+    path("mobile_is_bind_another_social_account", mobile_is_bind_another_social_account)
 ]
 
 urlpatterns = []

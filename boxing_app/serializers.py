@@ -569,3 +569,15 @@ class SocialLoginSerializer(serializers.Serializer):
         if wechat_openid and weibo_openid:
             raise ValidationError("wechat_openid、weibo_openid只能传一个！")
         return attrs
+
+
+class MobileIsBindAnotherSocialAccountSerializer(serializers.Serializer):
+    openid_type = serializers.CharField()
+    mobile = serializers.CharField(validators=[validate_mobile])
+
+    def validate(self, attrs):
+        openid_type = attrs.pop("openid_type")
+        if openid_type not in ['weibo_openid', "wechat_openid"]:
+            raise ValidationError("openid_type只能是weibo_openid或wechat_openid")
+        attrs[f'{openid_type}__isnull'] = False
+        return attrs
