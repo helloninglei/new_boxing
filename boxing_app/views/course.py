@@ -47,4 +47,4 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     def opened_courses(self, request, *args, **kwargs):
         queryset = self.get_queryset().filter(is_open=True)
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({'open_courses': serializer.data})
