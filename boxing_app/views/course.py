@@ -50,15 +50,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def get_course_comment_info(course):
-        comment_info = {
-            "club_id": None,
-            "club_name": None,
-            "club_address": None,
-            "club_longitude": None,
-            "club_latitude": None,
-            "validity": None,
-            "boxer_id": None
-        }
+        comment_info = {}
         if course:
             comment_info['validity'] = course.validity
             comment_info['boxer_id'] = course.boxer_id
