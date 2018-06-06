@@ -41,9 +41,9 @@ def _truncate_text(s, length):
     return f'{s[:length-3]}...'
 
 
+@api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
-@api_view(['GET'])
 def share_view(request, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
     obj = get_object_or_404(model_class, pk=object_id)
