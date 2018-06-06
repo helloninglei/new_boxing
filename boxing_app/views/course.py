@@ -12,10 +12,11 @@ from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullData
 
 class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
+    condition = {}
 
     def get_queryset(self):
-        return Course.objects.filter(boxer__user=self.request.user)\
-            .annotate(order_count=Count('orders'),score=Avg('orders__comment__score'))\
+        return Course.objects.filter(**self.condition) \
+            .annotate(order_count=Count('orders'), score=Avg('orders__comment__score')) \
             .select_related('club', 'boxer')
 
     @transaction.atomic
@@ -40,6 +41,14 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def list(self, request, *args, **kwargs):
+        BoxerMyCourseViewSet.condition = {"boxer__user": self.request.user}
+        return self.perform_list(request, *args, **kwargs)
+
+    def opened_courses(self, request, *args, **kwargs):
+        BoxerMyCourseViewSet.condition = {"boxer__user": self.request.user, "is_open": True}
+        return self.perform_list(request, *args, **kwargs)
+
+    def perform_list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("orders__comment"),
                                                                 avg_score=Avg("orders__comment__score"))
@@ -48,11 +57,6 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         response.data.update(common_info)
         response.data.update(com_count_and_avg_score)
         return response
-
-    def opened_courses(self, request, *args, **kwargs):
-        queryset = self.get_queryset().filter(is_open=True)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'open_courses': serializer.data})
 
     @staticmethod
     def get_course_comment_info(course):
