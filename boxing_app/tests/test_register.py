@@ -34,3 +34,61 @@ class RegisterTestCase(APITestCase):
         self.assertTrue(User.objects.filter(mobile=mobile))
         self.assertTrue(UserProfile.objects.filter(user__mobile=mobile).exists())
         self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+
+    def test_social_register(self):
+        mobile = "18800000011"
+        redis_client.redis_client.setex(redis_const.SEND_VERIFY_CODE.format(mobile=mobile), 300, "123456")
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456",
+                                          "wechat_openid": "111", "weibo_openid": "222"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "不能同时给微信和微博绑定手机号!")
+        user = User.objects.create_user(mobile=mobile, password="password")
+        UserProfile.objects.create(user=user)
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "手机号已存在！")
+        user.wechat_openid = "openid"
+        user.save()
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456",
+                                          "wechat_openid": "111"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "该微信已注册或该手机号已绑定微信！")
+        response = self.client.post(path="/register",
+                                    data={"mobile": "18800000000", "password": "password", "verify_code": "123456",
+                                          "wechat_openid": "openid"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "该微信已注册或该手机号已绑定微信！")
+        user.weibo_openid = "openid"
+        user.save()
+
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456",
+                                          "weibo_openid": "112"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "该微博已注册或该手机号已绑定微博！")
+        response = self.client.post(path="/register",
+                                    data={"mobile": "18800000000", "password": "password", "verify_code": "123456",
+                                          "weibo_openid": "openid"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "该微博已注册或该手机号已绑定微博！")
+        user.wechat_openid = None
+        user.weibo_openid = None
+        user.save()
+
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456",
+                                          "wechat_openid": "111"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+        self.assertEqual(response.data['result'], "ok")
+
+        response = self.client.post(path="/register_with_user_info", data={
+            "mobile": mobile, "gender": True, "avatar": "avatar", "nick_name": "nick_name"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['result'], "ok")
+        self.assertTrue(User.objects.filter(mobile=mobile))
+        self.assertEqual(User.objects.get(mobile=mobile).wechat_openid, "111")
+        self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))

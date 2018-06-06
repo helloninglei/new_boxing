@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, OrderComment, BoxingClub
+from biz.models import PayOrder, OrderComment, BoxingClub, User
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -111,7 +111,6 @@ class MessageSerializer(serializers.ModelSerializer):
         if data.get('video') and data.get('images'):
             raise ValidationError({'video': ['视频和图片不可同时上传']})
         if not data.get('content') and not data.get('images') and not data.get('video'):
-
             raise ValidationError({'message': ['文字、图片、视频需要至少提供一个']})
         return data
 
@@ -203,11 +202,24 @@ class RegisterSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
     password = serializers.CharField(validators=[validate_password])
     verify_code = serializers.CharField()
+    wechat_openid = serializers.CharField(required=False)
+    weibo_openid = serializers.CharField(required=False)
 
     def validate(self, attrs):
-        if models.User.objects.filter(mobile=attrs['mobile']).exists():
+        wechat_openid, weibo_openid, mobile = attrs.get('wechat_openid'), attrs.get('weibo_openid'), attrs['mobile']
+        if wechat_openid and weibo_openid:
+            raise ValidationError("不能同时给微信和微博绑定手机号!")
+        if User.objects.filter(mobile=attrs['mobile']).exists() and not wechat_openid and not weibo_openid:
             raise ValidationError({"message": "手机号已存在！"})
-        if not verify_code_service.check_verify_code(mobile=attrs['mobile'], verify_code=attrs['verify_code']):
+        if wechat_openid and (
+                    User.objects.filter(wechat_openid=wechat_openid).exists() or User.objects.filter(mobile=mobile,
+                                                                                                     wechat_openid__isnull=False).exists()):
+            raise ValidationError("该微信已注册或该手机号已绑定微信！")
+        if weibo_openid and (
+                    User.objects.filter(weibo_openid=weibo_openid).exists() or User.objects.filter(mobile=mobile,
+                                                                                                   weibo_openid__isnull=False).exists()):
+            raise ValidationError("该微博已注册或该手机号已绑定微博！")
+        if not verify_code_service.check_verify_code(mobile=mobile, verify_code=attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
 
@@ -437,7 +449,6 @@ class NewsSerializer(serializers.ModelSerializer):
 
 
 class BlockedUserSerializer(serializers.BaseSerializer):
-
     def to_representation(self, user):
         representation_dict = {"id": user.id}
         if hasattr(user, "user_profile"):

@@ -30,8 +30,12 @@ def register(request):
     serializer.is_valid(raise_exception=True)
     mobile = serializer.validated_data['mobile']
     password = serializer.validated_data['password']
+    wechat_openid = serializer.validated_data.get("wechat_openid")
+    weibo_openid = serializer.validated_data.get("weibo_openid")
+    register_data = {"mobile": mobile, "password": password, "wechat_openid": wechat_openid, "weibo_openid": weibo_openid}
+    register_data = {k: v for k, v in register_data.items() if v}
     redis_client.redis_client.hmset(
-        redis_const.REGISTER_INFO.format(mobile=mobile), {"mobile": mobile, "password": password})
+        redis_const.REGISTER_INFO.format(mobile=mobile), register_data)
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 
@@ -41,14 +45,22 @@ def register_with_user_info(request):
     serializer = RegisterWithInfoSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    mobile, password = redis_client.redis_client.hmget(
-        redis_const.REGISTER_INFO.format(mobile=(serializer.validated_data['mobile'])), ["mobile", "password"])
-    user = User.objects.create_user(mobile=mobile, password=password)
-    UserProfile.objects.create(user=user, gender=serializer.validated_data['gender'],
-                               avatar=serializer.validated_data['avatar'],
-                               nick_name=serializer.validated_data['nick_name'])
+    mobile, password, wechat_openid, weibo_openid = redis_client.redis_client.hmget(
+        redis_const.REGISTER_INFO.format(mobile=(serializer.validated_data['mobile'])),
+        ["mobile", "password", "wechat_openid", "weibo_openid"])
+    if User.objects.filter(mobile=mobile).exists() and wechat_openid or weibo_openid:
+        user = User.objects.filter(mobile=mobile).first()
+        user.weibo_openid = weibo_openid
+        user.wechat_openid = wechat_openid
+        user.save()
+    else:
+        user = User.objects.create_user(
+            mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
+        UserProfile.objects.create(user=user, gender=serializer.validated_data['gender'],
+                                   avatar=serializer.validated_data['avatar'],
+                                   nick_name=serializer.validated_data['nick_name'])
+        register_easemob_account.delay(user.id)
     redis_client.redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
-    register_easemob_account.delay(*[user.id])
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 
