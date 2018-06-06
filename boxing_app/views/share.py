@@ -32,7 +32,6 @@ https://ad.weixin.qq.com/learn/n6
 '''
 
 h5_base_url = settings.SHARE_H5_BASE_URL
-oss_base_url = settings.OSS_BASE_URL
 
 
 def _truncate_text(s, length):
