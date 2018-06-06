@@ -23,4 +23,4 @@ class HotVideoViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         self.serializer_class = HotVideoShowSerializer
-        super().partial_update(request, *args, **kwargs)
+        return super().partial_update(request, *args, **kwargs)
