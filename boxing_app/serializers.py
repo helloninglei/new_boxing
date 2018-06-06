@@ -480,6 +480,10 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     images = serializers.ListField(child=serializers.CharField(), required=False)
+    course_name = serializers.SerializerMethodField()
+
+    def get_course_name(self, instance):
+        return instance.order.course.last().course_name
 
     def validate(self, attrs):
         if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
