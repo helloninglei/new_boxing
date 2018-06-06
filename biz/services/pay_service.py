@@ -195,6 +195,6 @@ class PayService:
             return {
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
                 'name': name,
-                'amount': pay_order.amount / 100,
+                'amount': pay_order.amount,
                 'pay_time': pay_order.pay_time.strftime(datetime_format) if pay_order.pay_time else None,
             }

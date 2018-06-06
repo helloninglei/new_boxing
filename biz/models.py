@@ -5,7 +5,6 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
-from django.core.validators import MinValueValidator
 from django.db.transaction import atomic
 
 from biz import validator, constants
@@ -385,7 +384,7 @@ class GameNews(BaseAuditModel):
     start_time = models.DateTimeField(null=True)  # 推送开始时间
     end_time = models.DateTimeField(null=True)  # 推送结束时间
     app_content = models.TextField()
-    share_content = models.TextField(null=True)
+    share_content = models.TextField(null=True, blank=True)
     comments = GenericRelation('Comment')
 
     class Meta:
