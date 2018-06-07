@@ -260,12 +260,12 @@ class BoxerIdentificationTestCase(APITestCase):
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         self.assertTrue(boxer.is_accept_order)
         # 关闭接单
-        res = self.client.post('/boxer/accept-order/False')
+        res = self.client.post('/boxer/accept-order/close')
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         is_accept_order = BoxerIdentification.objects.filter(id=boxer.id).only('is_accept_order')
         self.assertFalse(is_accept_order)
         # 开通接单
-        res = self.client.post('/boxer/accept-order/True')
+        res = self.client.post('/boxer/accept-order/open')
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        is_accept_order = BoxerIdentification.objects.filter(id=boxer.id).only('is_accept_order')
+        is_accept_order = BoxerIdentification.objects.get(id=boxer.id).is_accept_order
         self.assertTrue(is_accept_order)

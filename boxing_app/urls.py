@@ -73,7 +73,7 @@ boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
     path('nearby/boxers', NearbyBoxerListViewSet.as_view({'get': 'list'}), name='nearby-boxer'),
     path('get-boxer-status', get_boxer_status),
-    re_path(r'^boxer/accept-order/(?P<is_accept>(True|False))', change_boxer_accept_order_status)
+    re_path(r'^boxer/accept-order/(?P<is_accept>(open|close))', change_boxer_accept_order_status)
 ]
 
 club_url = [

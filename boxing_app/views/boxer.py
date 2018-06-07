@@ -23,7 +23,7 @@ def get_boxer_status(request):
 
 @api_view(['POST'])
 def change_boxer_accept_order_status(request, **kwargs):
-    is_accept = kwargs.get('is_accept')
+    is_accept = True if kwargs.get('is_accept') == 'open' else False
     BoxerIdentification.objects.filter(user=request.user).update(is_accept_order=is_accept)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
