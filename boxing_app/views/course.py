@@ -45,7 +45,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         return self.perform_list(request, *args, **kwargs)
 
     def opened_courses_list(self, request, *args, **kwargs):
-        BoxerMyCourseViewSet.condition = {"boxer__user": self.request.user, "is_open": True}
+        BoxerMyCourseViewSet.condition = {"boxer__id": kwargs['boxer_id'], "is_open": True}
         return self.perform_list(request, *args, **kwargs)
 
     def perform_list(self, request, *args, **kwargs):
