@@ -5,31 +5,38 @@
             <header>
                  <el-row>
                     <el-col :span="5" style='width:314px'>
-                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='输入用户ID/用户账号/昵称/手机号' style='width:284px'></el-input>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='输入用户/昵称/手机号' style='width:284px'></el-input>
                     </el-col> 
-                    <el-col :span="7" style='width:460px'>
+                    <el-col :span="7" style='width:560px'>
                         <el-date-picker
                         v-model="sendData.start_time"
                         type="datetime"
                         value-format="yyyy-MM-dd hh:mm:ss"
                         :default-value= "new Date()"
-                        placeholder="注册开始时间" style='width:200px' class="margin_rt25">
+                        placeholder="注册开始时间" style='width:250px' class="margin_rt25">
                         </el-date-picker>
                         <el-date-picker
                         v-model="sendData.end_time"
                         type="datetime"
                         value-format="yyyy-MM-dd hh:mm:ss"
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
-                        placeholder="注册结束时间" style='width:200px' class="margin_rt25">
+                        placeholder="注册结束时间" style='width:250px' class="margin_rt25">
                         </el-date-picker>
-                    </el-col>  
-                    <el-col :span="3">
-                        <el-select v-model="sendData.is_boxer" class="margin_rt25">
+                    </el-col> 
+                </el-row> 
+                <el-row> 
+                    <el-col :span="2">
+                        <div class="inlimeLabel margin_tp30">用户类别</div>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-select v-model="sendData.is_boxer" class="margin_tp30">
                             <el-option value="" label="全部">全部</el-option>
                             <el-option :value="false" label="普通用户">普通用户</el-option>
                             <el-option :value="true" label="认证拳手">认证拳手</el-option>
                         </el-select>
-                    </el-col>     
+                    </el-col>
+                </el-row>
+                <el-row>     
                     <el-col :md="24" :xl='5'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70 margin_top_30' @click="filter()">查询</el-button>
                         <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='reset()'>重置</el-button>
@@ -67,7 +74,7 @@
                         label="用户类别"
                         width="150">
                             <template slot-scope="scope">
-                                <span class='colorFont' v-if="scope.row.user_basic_info.is_boxer" @click='checkIdent(scope.row.id)'>认证拳手</span>
+                                <span class='colorFont' v-if="scope.row.is_boxer" @click='checkIdent(scope.row.boxer_id)'>认证拳手</span>
                                 <span class='colorFont' v-else @click='goUserDetail(scope.row)'>普通用户</span>
                             </template>
                         </el-table-column>
@@ -79,7 +86,7 @@
                         <el-table-column
                           fixed="right"
                           label="操作"
-                          width='100'>
+                          width='120'>
                             <template slot-scope="scope">
                                 <div style='margin-bottom:9px'> 
                                     <el-button  class='myBtnHover_red myButton_20 ' @click="addCount(scope.row.id,'addCount',scope.$index)">增加用户余额</el-button>
@@ -101,6 +108,7 @@
 </template>
 <style scoped>
     .myTable{font-size:14px!important;}
+    .inlimeLabel{font-family: PingFangSC-Regular;font-size: 16px;color: #000000;padding-right:15px;height:40px;line-height:40px;}
     @media screen and (max-width:1919px){
        .margin_top_30{margin-top:30px;margin-left:0!important;} 
     } 
@@ -177,7 +185,7 @@
                 ],
                 tableColumn:[
                     {title:'id',    name :'用户ID',   width: '80'},
-                    {title:'mobile',name :'用户手机号',width: ''},
+                    {title:'mobile',name :'用户手机号',width: '120'},
                     {title:'user_basic_info.gender',   name :'性别'    ,width: '80'},
                     {title:'user_basic_info.nick_name',name :'用户昵称' ,width: '100'},
                     {title:'user_basic_info.address',  name :'居住地'   ,width: ''},
@@ -270,10 +278,12 @@
                 this.$router.push({path: '/userdetail', query:row.user_basic_info});
             },
             checkIdent(id){
-                console.log('查看认证信息'+id)
+                // console.log('查看认证信息'+id)
+                this.$router.push({path: '/Boxerindentdetail', query:{id:id}});
             },
             reset(){
                 this.sendData={};
+                this.getTableData();
             },
             cancel3(val){
                 this.dialog_label_data.isshow=val;

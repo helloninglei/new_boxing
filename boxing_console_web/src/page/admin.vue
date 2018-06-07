@@ -16,17 +16,17 @@
                       fixed="right"
                       label="操作">
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20'  @click="openConfirm(scope.row.id)">删除</el-button>                        
+                            <el-button class='myBtnHover_red myButton_20'  @click="openConfirm(scope.row.id,scope.$index)">删除</el-button>                        
                         </template>
                     </el-table-column>
                 </el-table>
             </template>
         </nav>
-        <footer>
+        <footer v-show='total>10'>
             <Pagination :total="total" @changePage="changePage"></Pagination>
         </footer>
         <DialogLabel :isshow="dialog_label_data.isshow" @confirm="confirm" @cancel="cancel"  :type="'phone'"></DialogLabel> 
-        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id'></Confirm>
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
     </div>
 </template>
 
@@ -57,22 +57,6 @@
                     content:'确认删除管理员？'
                 },
                 tableData : [
-                    {
-                        "id": 5,
-                        "mobile": "16600000000"
-                    },
-                    {
-                        "id": 3,
-                        "mobile": "19900000002"
-                    },
-                    {
-                        "id": 2,
-                        "mobile": "19900000001"
-                    },
-                    {
-                        "id": 1,
-                        "mobile": "19990000000"
-                    }
                 ],
             }
         },
@@ -89,9 +73,8 @@
             cancel1(val){
                 this.confirmData.isshow=val;
             },
-            conform1(id){
-                console.log(id)
-                this.deleteAdmin(id)
+            conform1(id,index){
+                this.deleteAdmin(id,index)
             },
             getData(){
                 var $this=this;
@@ -99,6 +82,7 @@
                     if(res&&res.data){
                         console.log(res.data)
                         $this.tableData = res.data.results
+                        $this.total = res.data.total
                     }
 
                 },function(err){
@@ -122,8 +106,9 @@
                 var $this = this;
                 this.ajax('/admins/','post',{mobile:val},{}).then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
+                        // console.log(res.data)
                         $this.tableData.push(res.data);
+                        $this.dialog_label_data.isshow=false;
                     }
 
                 },function(err){
@@ -131,27 +116,27 @@
                     if(err&&err.response){
                         let errors=err.response.data
                         for(var key in errors){
-                            console.log(errors[key])
-                            // return
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
                         } 
                     } 
                 })
-                this.dialog_label_data.isshow=false;
+                
             },
-            openConfirm(id){
+            openConfirm(id,index){
                 this.confirmData.id=id
+                this.confirmData.index=index
                 this.confirmData.isshow=true
             },
-            deleteAdmin(id){
+            deleteAdmin(id,index){
                 let $this=this;
+                // console.log(index)
                 this.ajax('/admins/'+id+'/','delete').then(function(res){
                     if(res&&res.status==204){
-                        for(var i=0;i<$this.tableData.length;i++){
-                            if($this.tableData[i].id==id){
-                                $this.tableData.splice(i,1)
-                                $this.confirmData.isshow=false;
-                            }
-                        } 
+                        $this.tableData.splice(index,1)
+                        $this.confirmData.isshow=false;
                     }else{
                       console.log(res)  
                     }
@@ -159,9 +144,6 @@
                 },function(err){
                     if(err&&err.response){
                         console.log(err.response)
-                        if(err.response.status==204){
-                            alert('已删除')
-                        }
                         let errors=err.response.data
                         for(var key in errors){
                             console.log(errors[key])

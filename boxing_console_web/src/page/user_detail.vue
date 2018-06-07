@@ -7,19 +7,19 @@
                     <div class='detail_title'>姓名</div>
                 </el-col>
                 <el-col :span="3">
-                    <div class='detail_content margin_lf'>{{result.user_basic_info.name}}</div>
+                    <div class='detail_content margin_lf'>{{result.user_basic_info.name?result.user_basic_info.name:'&nbsp;&nbsp;'}}</div>
                 </el-col>
                 <el-col :span="1">
                     <div class='detail_title'>民族</div>
                 </el-col>
                 <el-col :span="3">
-                    <div class='detail_content margin_lf'>{{result.user_basic_info.nation?result.user_basic_info.nation:'汉'}}</div>
+                    <div class='detail_content margin_lf'>{{result.user_basic_info.nation?result.user_basic_info.nation:'&nbsp;&nbsp;'}}</div>
                 </el-col>
                 <el-col :span="1">
                     <div class='detail_title'>身高</div>
                 </el-col>
                 <el-col :span="3">
-                    <div class='detail_content margin_lf'>{{result.user_basic_info.height}}</div>
+                    <div class='detail_content margin_lf'>{{result.user_basic_info.height?result.user_basic_info.height:'&nbsp;&nbsp;'}}</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item'>
@@ -27,13 +27,13 @@
                     <div class='detail_title'>体重</div>
                 </el-col>
                 <el-col :span="3">
-                    <div class='detail_content margin_lf'>{{result.user_basic_info.weight}}</div>
+                    <div class='detail_content margin_lf'>{{result.user_basic_info.weight?result.user_basic_info.weight:'&nbsp;&nbsp;'}}</div>
                 </el-col>
                 <el-col :span="1">
                     <div class='detail_title'>出生日期</div>
                 </el-col>
                 <el-col :span="3">
-                    <div class='detail_content margin_lf'>{{result.user_basic_info.birthday}}</div>
+                    <div class='detail_content margin_lf'>{{result.user_basic_info.birthday?result.user_basic_info.birthday:'&nbsp;&nbsp;'}}</div>
                 </el-col>
                 <el-col :span="1">
                     <div class='detail_title'>职业</div>
@@ -50,7 +50,7 @@
     .detail_header{margin-bottom:40px;padding-left:10px;}
     .detail_item{margin-bottom:20px;}
     .detail_title{width:80px;}
-    .detail_content.margin_lf{margin-left:30px;}
+    .detail_content.margin_lf{margin-left:39px;}
 </style>
 <style>
 nav{min-height: 528px}

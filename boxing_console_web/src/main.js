@@ -32,6 +32,7 @@ let linkActiveClass = 'active';
 Vue.prototype.ajax    = axios
 Vue.prototype.config  = config
 Vue.prototype.token   = ''
+Vue.prototype.phoneReg = /^[1][3,4,5,7,8][0-9]{9}$/
 
 let router = new VueRouter({
   routes,

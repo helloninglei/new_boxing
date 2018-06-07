@@ -34,6 +34,8 @@
         data() {
             return {
                 address : '',
+                lng:'',
+                lat:'',
             }
         },
         components: {
@@ -41,6 +43,11 @@
         },
         created() {
             
+        },
+        watch:{
+        	address(val){
+        		this.$emit('address_str',val)
+        	}
         },
         mounted(){
         	this.map();
@@ -95,6 +102,8 @@
 					var lat = e.point.lat;
 					// $this.addressInfo(lng,lat)
 					$this.addressInfo(lng, lat,mapArr)
+					this.lng = lng;
+					this.lat = lat;
 					$this.$emit('address',lng, lat)
 				});
 				var myCity = new BMap.LocalCity();
