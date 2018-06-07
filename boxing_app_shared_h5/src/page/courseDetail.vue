@@ -1,43 +1,42 @@
 <template>
     <div>
-        <div class="trends_container_head">
+        <div class="boxer_container">
             <template v-if="info.user">
-                <img class="portrait" :src="info.user.avatar ? `${config.baseUrl}` + info.user.avatar : avatar_default" />
-                <span class="userName">{{info.user.nick_name}}</span>
-                <span class="is_following" @click="followEv">
-                    <template v-if="info.user.is_following">
-                        <span class="follow"></span>
-                        已关注
-                    </template>
-                    <template v-else>
-                        <span class="no_follow"></span>
-                        关注
-                    </template>
-                </span>
-            </template>
-            <GetTime :createTime="info.created_time"></GetTime>
-            <div class="content">{{info.content}}</div>
-            <template v-if="info.video">
-                <Video :url="info.video"></Video>
-            </template>
-            <template v-else>
-                <div class="pic_wrapper" :class="getClass">
-                    <img :src="`${config.baseUrl}` + item" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>
+                <img class="portrait" :src="boxer.avatar ? `${config.baseUrl}` + boxer.avatar : avatar_default" />
+                <div class="boxer_info">
+                    <div class="boxerName">{{boxer.real_name}}</div>
+                    <div class="allowed_course">
+                        <span v-for="(item, index) in boxer.allowed_course" :key="index">{{item}}<span v-if="index < boxer.allowed_course.length - 1"> / </span></span>
+                    </div>
                 </div>
+                <div class="order_count">约单：{{boxer.order_count}}次</div>
             </template>
+            <!--<template v-if="info.video">-->
+                <!--<Video :url="info.video"></Video>-->
+            <!--</template>-->
+            <!--<template v-else>-->
+                <!--<div class="pic_wrapper" :class="getClass">-->
+                    <!--<img :src="`${config.baseUrl}` + item" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>-->
+                <!--</div>-->
+            <!--</template>-->
         </div>
-        <TabBar :id="id" :ifShowPraise=true commentType="message" @openApp="openApp"></TabBar>
-        <div class="bottom_bar" :class="{hasClose: ifClose}">
-            <div class="bar_container">
-                <div class="comment_btn" @click="openApp">
-                    <div class="comment_icon"></div>
-                    评论
-                </div>
-                <div class="line"></div>
-                <div class="praise_btn"  @click="openApp">
-                    <div class="praise_icon"></div>
-                    点赞
-                </div>
+        <div class="separate_line"></div>
+        <div class="order_info">
+            <div class="order_time">
+                <span class="time_icon"></span>
+                <span class="text">约单有效期至：2018-05-20</span>
+            </div>
+            <div class="order_place">
+                <span class="place_icon"></span>
+                <span class="text">约单拳馆：拓天必图拳馆（马家堡天路蓝图金源...</span>
+                <span class="go_in"></span>
+            </div>
+        </div>
+        <div class="separate_line"></div>
+        <div class="course_info">
+            <div class="title">课程</div>
+            <div class="course_item">
+
             </div>
         </div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
@@ -48,110 +47,90 @@
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
-.portrait
-    width 1.1rem
-    height 1.1rem
-    border-radius 50%
-    vertical-align middle
-.userName
-    vertical-align middle
-    color #fff
-.trends_container_head
-    margin-top 1.3rem
-    padding 0 1rem
-    line-height 1.3rem
-    .is_following
-        float right
+    .portrait
+        margin-right .6rem
+        width 2.5rem
+        height 2.5rem
+        border-radius 50%
+        vertical-align top
+    .boxer_info
         display inline-block
-        width 3.3rem
-        height 1.3rem
-        line-height 1.3rem
-        text-align center
-        font-size .5rem
-        color #8989A1
-        border 1px solid #8989A1
-        border-radius 1rem
         vertical-align middle
-        .follow, .no_follow
-            display inline-block
-            width .7rem
-            height .7rem
-            vertical-align middle
-        .follow
-            background url("../assets/images/follow.png") no-repeat
-            background-size contain
-        .no_follow
-            background url("../assets/images/no_follow.png") no-repeat
-            background-size contain
-    .content
-        margin-bottom .5rem
-        font-size .7rem
         color #fff
-    .video_container
-        width 100%
-        height 10rem
-    .pic_wrapper1
-        .pic
-            width 100%
-            height 10rem
-    .pic_wrapper2
-        margin auto auto -.4rem -.75rem
-        .pic
-            margin auto auto .4rem .75rem
-            width 8rem
-            height 8rem
-    .pic_wrapper3
-        margin auto auto -.5rem -.835rem
-        .pic
-            margin auto auto .5rem .835rem
-            width 5rem
-            height 5rem
-.bottom_bar
-    margin-bottom 3.5rem
-    width 100%
-    height 2.4rem
-    line-height 2.4rem
-    font-size .7rem
-    color #fff
-    background: #31313B;
-    &.hasClose
-        margin-bottom 0
-    .bar_container
-        display -webkit-flex
-        display flex
-        .line
+        .boxerName
+            font-size .75rem
+        .allowed_course
+            font-size .6rem
+            color #cccce3
+    .order_count
+        float right
+        font-size .6rem
+        color #8989A1
+    .separate_line
+        margin 0 auto
+        width 16.4rem
+        height 1px
+        background rgba(72, 72, 85, .5)
+    .order_info
+        font-size .65rem
+        color #DDDDEC
+        .text
             display inline-block
-            margin-top .7rem
-            width 1px
-            height 1rem
-            background #484855
-        .comment_btn
-            flex 1
-            -webkit-flex 1
-            text-align center
-            .comment_icon
+            line-height .75rem
+            font-size .65rem
+            color #DDDDEC
+            vertical-align middle
+        .order_time
+            margin 1.1rem auto .45rem 1.2rem
+            .time_icon
                 display inline-block
-                width .7rem
-                height .7rem
-                background url("../assets/images/comment_icon.png")
+                width .6rem
+                height .6rem
+                background url("../assets/images/time.png") no-repeat
                 background-size contain
                 vertical-align middle
-        .praise_btn
-            flex 1
-            -webkit-flex 1
-            text-align center
-            .praise_icon
+        .order_place
+            margin 0 auto 1.1rem 1.2rem
+            .place_icon
                 display inline-block
-                width .7rem
-                height .7rem
-                background url("../assets/images/praise_icon.png")
+                width .5rem
+                height .6rem
+                background url("../assets/images/place.png") no-repeat
                 background-size contain
                 vertical-align middle
+            .go_in
+                display inline-block
+                width .4rem
+                height .65rem
+                background url("../assets/images/go_in.png") no-repeat
+                background-size contain
+                vertical-align middle
+
+    .boxer_container
+        margin-bottom .6rem
+        padding .9rem 1rem 0 1rem
+        line-height 1.3rem
+        box-sizing border-box
+        .pic_wrapper1
+            .pic
+                width 100%
+                height 10rem
+        .pic_wrapper2
+            margin auto auto -.4rem -.75rem
+            .pic
+                margin auto auto .4rem .75rem
+                width 8rem
+                height 8rem
+        .pic_wrapper3
+            margin auto auto -.5rem -.835rem
+            .pic
+                margin auto auto .5rem .835rem
+                width 5rem
+                height 5rem
 </style>
 
 <script type="text/ecmascript-6">
     import config from 'common/my_config';
-    import GetTime from 'components/getTime';
     import DownloadTip from 'components/downloadTip';
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
@@ -169,11 +148,33 @@
                 avatar_default: require('../assets/images/portrait_default.png'),
                 info: {},
                 dataObj: {},
-                wx: ''
+                wx: '',
+                boxer: {
+                    "id": 3,
+                    "longitude": 120.385763,
+                    "latitude": 30.308592,
+                    "course_min_price": 150,
+                    "order_count": 11,
+                    "gender": true,
+                    "avatar": "/uploads/31/9e/838678d0449140e5262832eb6361b0b5edaf.jpg",
+                    "real_name": "李四",
+                    "allowed_course": [
+                        "拳击",
+                        "泰拳",
+                        "MMA"
+                    ],
+                    "city": "杭州市",
+                    "user_id": 1000010
+                },
+
             }
         },
 
         created() {
+            const Qs = require('qs');
+            let url = 'method=query_sql_dataset_data&projectId=85&appToken=7d22e38e-5717-11e7-907b-a6006ad3dba0';
+            let b = Qs.parse(url);
+            console.log(Qs.stringify({...b, a: '1'}))
             this.id = this.$route.params.id;
             if (this.id) {
                 this.getData();
@@ -182,7 +183,6 @@
         },
 
         components: {
-            GetTime,
             DownloadTip,
             Video,
             TabBar,
@@ -211,12 +211,6 @@
 
             modalEv(ifShow) {
                 ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
-            },
-
-            followEv() {
-                if (!this.info.user.is_following) {
-                    this.showModal = true;
-                }
             },
 
             closeEv(val) {
