@@ -294,7 +294,7 @@ class Course(models.Model):
     price = models.PositiveIntegerField(null=True)  # 单位：元
     duration = models.PositiveSmallIntegerField(null=True)  # 时长，单位：min
     validity = models.DateField(null=True)  # 有效期
-    orders = GenericRelation('PayOrder', related_query_name='course')
+    pay_orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
     is_open = models.BooleanField(default=False)
 
@@ -360,13 +360,37 @@ class PayOrder(models.Model):
         db_table = 'pay_order'
 
 
+class CourseOrder(models.Model):
+    pay_order = models.OneToOneField(PayOrder, on_delete=models.PROTECT, related_name='business_order')
+    boxer = models.ForeignKey(BoxerIdentification, on_delete=models.PROTECT, related_name='boxer_course_order')
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user_course_order')
+    club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False)
+    course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name='course_orders')
+    course_name = models.CharField(max_length=10)
+    course_price = models.PositiveIntegerField()  # 单位分
+    course_duration = models.IntegerField()  # 课程时长，单位分钟
+    course_validity = models.DateField()  # 课程有效期
+    order_number = models.BigIntegerField()  # 订单号
+    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
+                                      db_index=True)
+    order_time = models.DateTimeField(auto_now_add=True)
+    pay_time = models.DateTimeField(null=True)
+    confirm_status = models.SmallIntegerField(choices=constants.ORDER_CONFIRM_STATUS,
+                                              default=constants.ORDER_STATUS_NOT_CONFIRMED)
+    boxer_confirm_time = models.DateTimeField(null=True)
+    user_confirm_time = models.DateTimeField(null=True)
+    finish_time = models.DateTimeField(null=True)  # 订单完成时间
+    settle_time = models.DateTimeField(null=True)  # 结算时间
+    amount = models.PositiveIntegerField(null=True)  # 订单金额，单位分
+
+
 class OrderComment(SoftDeleteModel):
     score = models.PositiveSmallIntegerField()
     content = models.TextField(max_length=300)
     images = StringListField(null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
-    order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, related_name='comment')
+    order = models.ForeignKey(CourseOrder, on_delete=models.PROTECT, related_name='comment')
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='order_comments')
 
     class Meta:

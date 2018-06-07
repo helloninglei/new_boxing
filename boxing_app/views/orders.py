@@ -1,5 +1,6 @@
 
 from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import permission_classes
@@ -7,15 +8,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from biz import constants
-from biz.models import BoxerIdentification, PayOrder, Course, OrderComment
+from biz.models import BoxerIdentification, PayOrder, Course, OrderComment, CourseOrder
+from biz.services.pay_service import PayService
 from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission
-from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
+from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer, \
+    PaySerializer
 
 
-class BaseCourseOrderViewSet(mixins.RetrieveModelMixin,
-                             mixins.ListModelMixin,
-                             mixins.DestroyModelMixin,
-                             GenericViewSet):
+class BaseCourseOrderViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ("status",)
 
@@ -25,7 +25,7 @@ class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
 
     def get_queryset(self):
         boxer = BoxerIdentification.objects.get(user=self.request.user)
-        return PayOrder.objects.filter(course__boxer=boxer)
+        return CourseOrder.objects.filter(boxer=boxer)
 
     @permission_classes([OnlyBoxerSelfCanConfirmOrderPermission])
     def confirm_order(self, pk):
@@ -42,8 +42,18 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = UserCourseOrderSerializer
 
     def get_queryset(self):
-        content_type = ContentType.objects.get_for_model(Course)
-        return PayOrder.objects.filter(content_type=content_type, user=self.request.user)
+        return CourseOrder.objects.filter(user=self.request.user)
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': 'course'})
+        serializer.is_valid(raise_exception=True)
+        course = serializer.data['content_object']
+        if request.user == course.boxer.user:
+            return Response({"message": "拳手不能购买自己的课程"}, status=status.HTTP_400_BAD_REQUEST)
+        pay_order = self.create_pay_order(request, serializer)
+        self.create_course_order(request, course, pay_order)
+        return Response(status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -51,6 +61,29 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             return Response({"message":'订单不是未支付状态，不能删除'}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
+    def create_pay_order(request, serializer):
+        return PayService.perform_create_order(
+            user=request.user,
+            obj=serializer.data['content_object'],
+            payment_type=serializer.validated_data.get('payment_type'),
+            device=serializer.data['device'])
+
+    @staticmethod
+    def create_course_order(request, course, pay_order):
+        return CourseOrder.objects.create(
+            pay_order=pay_order,
+            boxer=course.boxer,
+            user=request.user,
+            club=course.club,
+            course=course,
+            course_name=course.course_name,
+            course_price=course.price,
+            course_duration=course.duration,
+            course_validity=course.validity,
+            order_number=pay_order.out_trade_no,
+        )
 
 
 class CourseOrderCommentViewSet(viewsets.ModelViewSet):

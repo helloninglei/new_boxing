@@ -14,7 +14,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Course.objects.filter(boxer__user=self.request.user)\
-            .annotate(order_count=Count('orders'),score=Avg('orders__comment__score'))\
+            .annotate(order_count=Count('course_orders'),score=Avg('course_orders__comment__score'))\
             .select_related('club', 'boxer')
 
     @transaction.atomic
@@ -40,8 +40,8 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("orders__comment"),
-                                                                avg_score=Avg("orders__comment__score"))
+        com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("course_orders__comment"),
+                                                                avg_score=Avg("course_orders__comment__score"))
         course = self.get_queryset().last()
         common_info = self.get_course_comment_info(course)
         response.data.update(common_info)

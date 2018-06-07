@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, PayOrder, OrderComment
+from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, PayOrder, OrderComment, CourseOrder
 
 
 class CommentsAboutBoxerTestCase(APITestCase):
@@ -94,8 +94,8 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
+        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/user/orders', data={'id': course.id})
 
         # 为拳手用户test_user_3创建3条订单数据
         self.user_profile_data['user'] = self.test_user_3
@@ -108,15 +108,17 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-        order1 = PayOrder.objects.create(**self.course_order_data)
-        order2 = PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
+        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/user/orders', data={'id': course.id})
+        course_order1 = CourseOrder.objects.filter(boxer=boxer)[0]
+        course_order2 = CourseOrder.objects.filter(boxer=boxer)[1]
 
         # 对拳手test_user_3的订单order1、order2创建2条评论
-        self.conmment_data['order'] = order1
+        self.conmment_data['order'] = course_order1
         OrderComment.objects.create(**self.conmment_data)
         self.conmment_data['score'] = 5
-        self.conmment_data['order'] = order2
+        self.conmment_data['order'] = course_order2
         OrderComment.objects.create(**self.conmment_data)
 
         # 获取拳手评论列表
@@ -132,6 +134,6 @@ class CommentsAboutBoxerTestCase(APITestCase):
                 self.assertEqual(res.data['results'][0][key]['nick_name'], self.user_profile_data['nick_name'])
                 self.assertEqual(res.data['results'][0][key]['avatar'], self.user_profile_data['avatar'])
             elif key == 'order':
-                self.assertEqual(res.data['results'][0][key], order2.id)
+                self.assertEqual(res.data['results'][0][key], course_order2.id)
             else:
                 self.assertEqual(res.data['results'][0][key], self.conmment_data[key])

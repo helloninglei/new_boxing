@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder, OrderComment
+from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder, OrderComment, CourseOrder
 
 
 class OrderTestCase(APITestCase):
@@ -66,19 +66,7 @@ class OrderTestCase(APITestCase):
             "validity": "2018-08-25",
             "club": None
         }
-        self.course_order_data = {
-            "user": self.test_user_1,
-            "content_object": None,
-            "status": constants.PAYMENT_STATUS_WAIT_USE,
-            "out_trade_no": 111111111,
-            "payment_type": constants.PAYMENT_TYPE_WALLET,
-            "amount": 100000,
-            "device": 1,
-            "order_time": datetime.now(),
-            "pay_time": datetime.now(),
-            "finish_time": (datetime.now() + timedelta(days=1))
-        }
-        self.conmment_data = {
+        self.comment_data = {
             "score": 6,
             "content": "i have comment",
             "images": ["img1.png", "img2.png", "img3.png"],
@@ -87,7 +75,6 @@ class OrderTestCase(APITestCase):
         }
 
     def test_get_boxer_order_list(self):
-
         # 为普通用户test_user_1创建用户信息，用于购买课程
         UserProfile.objects.create(**self.user_profile_data)
 
@@ -100,9 +87,8 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
+        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/user/orders', data={'id': course.id})
 
         # 为拳手用户test_user_3创建3条订单数据
         self.user_profile_data['user'] = self.test_user_3
@@ -114,25 +100,25 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
-        self.course_order_data['status'] = constants.PAYMENT_STATUS_FINISHED
-        PayOrder.objects.create(**self.course_order_data)
+        self.client1.post('/user/orders', data={'id': course.id})
+        CourseOrder.objects.filter(course=course).update(status=constants.PAYMENT_STATUS_FINISHED)
+        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/user/orders', data={'id': course.id})
 
+        # 拳手2获取2条订单数据
         res = self.client2.get('/boxer/orders')
         self.assertEqual(len(res.data['results']), 2)
-
+        # 拳手3获取3条订单数据
         res = self.client3.get('/boxer/orders')
         self.assertEqual(len(res.data['results']), 3)
 
         # 通过状态过滤
         res = self.client3.get('/boxer/orders', {'status': constants.PAYMENT_STATUS_UNPAID})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data['results']), 0)
+        self.assertEqual(len(res.data['results']), 2)
         res = self.client3.get('/boxer/orders', {'status': constants.PAYMENT_STATUS_WAIT_USE})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data['results']), 2)
+        self.assertEqual(len(res.data['results']), 0)
         res = self.client3.get('/boxer/orders', {'status': constants.PAYMENT_STATUS_FINISHED})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
@@ -150,21 +136,19 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
-        courser_order = PayOrder.objects.create(**self.course_order_data)
+        # 不能购买自己的课程
+        res = self.client4.post('/user/orders', data={'id': course.id})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+        self.client1.post('/user/orders', data={'id': course.id})
         # 为订单创建评论
-        self.conmment_data['order'] = courser_order
-        OrderComment.objects.create(**self.conmment_data)
+        course_order = CourseOrder.objects.get(course=course)
+        self.comment_data['order'] = course_order
+        OrderComment.objects.create(**self.comment_data)
 
-        res = self.client4.get(f'/boxer/order/{courser_order.pk}')
-        self.assertEqual(res.data['status'], self.course_order_data['status'])
-        self.assertEqual(res.data['out_trade_no'], self.course_order_data['out_trade_no'])
-        self.assertEqual(res.data['payment_type'], self.course_order_data['payment_type'])
-        self.assertEqual(res.data['amount'], self.course_order_data['amount'])
-        self.assertEqual(res.data['order_time'][:-1], self.course_order_data['order_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
-        self.assertEqual(res.data['pay_time'][:-1], self.course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
-        self.assertEqual(res.data['finish_time'][:-1], self.course_order_data['finish_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
+        res = self.client4.get(f'/boxer/order/{course_order.pk}')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
         self.assertEqual(res.data['user_id'], self.test_user_1.id)
         self.assertEqual(res.data['user_nickname'],  self.user_profile_data['nick_name'])
         self.assertEqual(res.data['user_gender'],  self.user_profile_data['gender'])
@@ -177,9 +161,9 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['club_address'], self.club_data['address'])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
-        self.assertEqual(res.data['comment_score'], self.conmment_data['score'])
-        self.assertEqual(res.data['comment_images'], self.conmment_data['images'])
-        self.assertEqual(res.data['comment_score'], self.conmment_data['score'])
+        self.assertEqual(res.data['comment_score'], self.comment_data['score'])
+        self.assertEqual(res.data['comment_images'], self.comment_data['images'])
+        self.assertEqual(res.data['comment_score'], self.comment_data['score'])
         self.assertIsNotNone(res.data['comment_time'])
 
     def test_get_user_order_list(self):
@@ -200,19 +184,16 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
 
         # 用户test_user_2购买课程2个课程
-        self.course_order_data['user'] = self.test_user_2
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
+        self.client2.post('/user/orders', data={'id': course.id})
+        self.client2.post('/user/orders', data={'id': course.id})
 
         # 用户test_user_3购买课程3个课程
-        self.course_order_data['user'] = self.test_user_3
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
-        self.course_order_data['status'] = constants.PAYMENT_STATUS_FINISHED
-        PayOrder.objects.create(**self.course_order_data)
+        self.client3.post('/user/orders', data={'id': course.id})
+        CourseOrder.objects.filter(course=course).update(status=constants.PAYMENT_STATUS_FINISHED)
+        self.client3.post('/user/orders', data={'id': course.id})
+        self.client3.post('/user/orders', data={'id': course.id})
 
         # 用户test_user_2获取订单列表,结果应为2条
         res = self.client2.get('/user/orders')
@@ -226,10 +207,10 @@ class OrderTestCase(APITestCase):
         # 通过状态过滤
         res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_UNPAID})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data['results']), 0)
+        self.assertEqual(len(res.data['results']), 2)
         res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_WAIT_USE})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data['results']), 2)
+        self.assertEqual(len(res.data['results']), 0)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         res = self.client3.get('/user/orders', {'status': constants.PAYMENT_STATUS_FINISHED})
         self.assertEqual(len(res.data['results']), 1)
@@ -252,20 +233,12 @@ class OrderTestCase(APITestCase):
 
         # 为普通用户test_user_2创建用户信息，并购买课程
         self.user_profile_data['user'] = self.test_user_2
-        self.course_order_data['content_object'] = course
-        self.course_order_data['user'] = self.test_user_2
-        course_order = PayOrder.objects.create(**self.course_order_data)
-
+        self.client2.post('/user/orders', data={'id': course.id})
+        course_order = CourseOrder.objects.get(course=course)
         # 用户test_user_2获取所购买课程的详情
-        res = self.client2.get(f'/user/order/{course_order.pk}')
+        res = self.client2.get(f'/user/order/{course_order.id}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['status'], self.course_order_data['status'])
-        self.assertEqual(res.data['out_trade_no'], self.course_order_data['out_trade_no'])
-        self.assertEqual(res.data['payment_type'], self.course_order_data['payment_type'])
-        self.assertEqual(res.data['amount'], self.course_order_data['amount'])
-        self.assertEqual(res.data['order_time'], self.course_order_data['order_time'].strftime('%Y-%m-%d %H:%M:%S'))
-        self.assertEqual(res.data['pay_time'], self.course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S'))
-        self.assertEqual(res.data['finish_time'], self.course_order_data['finish_time'].strftime('%Y-%m-%d %H:%M:%S'))
+        self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['boxer_name'], boxer.real_name)
         self.assertEqual(res.data['boxer_gender'], boxer.user.user_profile.gender)
@@ -279,7 +252,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
 
-    def test_create_unpaid_order(self):
+    def test_create_course_order(self):
         # 为拳手用户test_user_1创建1个课程
         self.user_profile_data['user'] = self.test_user_1
         UserProfile.objects.create(**self.user_profile_data)
@@ -291,20 +264,24 @@ class OrderTestCase(APITestCase):
         course = Course.objects.create(**self.course_data)
 
         # test_user_2成功创建了未支付订单
-        order_data = {'id': course.id}
-        res = self.client2.post(reverse('create-unpaid-order', kwargs={'object_type': 'course'}), data=order_data)
+        res = self.client2.post('/user/orders', data={'id': course.id})
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-        # 查询课程的订单，核对订单数据
-        self.assertEqual(course.orders.count(), 1)
-        course_order = PayOrder.objects.get(course=course)
-        self.assertEqual(course_order.amount, course.price*100)
-        self.assertEqual(course_order.device, constants.DEVICE_PLATFORM_IOS)
-        self.assertEqual(course_order.status, constants.PAYMENT_STATUS_UNPAID)
-        self.assertEqual(course_order.user, self.test_user_2)
-        self.assertIsNone(course_order.payment_type)
-        self.assertIsNone(course_order.pay_time)
-        self.assertEqual(course_order.content_object, course)
+        # 查询课程的订单，核对支付订单数据
+        self.assertEqual(course.course_orders.count(), 1)
+        pay_order = PayOrder.objects.get(course=course)
+        self.assertEqual(pay_order.amount, course.price*100)
+        self.assertEqual(pay_order.device, constants.DEVICE_PLATFORM_IOS)
+        self.assertEqual(pay_order.status, constants.PAYMENT_STATUS_UNPAID)
+        self.assertEqual(pay_order.user, self.test_user_2)
+        self.assertIsNone(pay_order.payment_type)
+        self.assertIsNone(pay_order.pay_time)
+        self.assertEqual(pay_order.content_object, course)
+        # 核对课程订单数据
+        course_order = CourseOrder.objects.get(course=course)
+        self.assertEqual(course_order.pay_order, pay_order)
+        self.assertEqual(course_order.boxer, boxer)
+        self.assertEqual(course_order.course, course)
 
     def test_delete_order(self):
         # 为拳手用户test_user_1创建1个课程
@@ -318,23 +295,15 @@ class OrderTestCase(APITestCase):
         course = Course.objects.create(**self.course_data)
 
         # test_user_2创建未支付订单
-        order = PayOrder.objects.create(
-                user=self.test_user_2,
-                content_object=course,
-                status=constants.PAYMENT_STATUS_WAIT_USE,
-                out_trade_no=111111,
-                payment_type=1,
-                amount=1000,
-                device=1,
-                order_time=datetime.now(),
-            )
-
+        self.client2.post('/user/orders', data={'id': course.id})
+        course_order = CourseOrder.objects.get(course=course)
         # 不能删除不是未支付状态的支付订单
-        res = self.client2.delete(f'/user/order/{order.id}')
+        CourseOrder.objects.filter(user=self.test_user_2).update(status=constants.PAYMENT_STATUS_WAIT_COMMENT)
+        res = self.client2.delete(f'/user/order/{course_order.id}')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data['message'], '订单不是未支付状态，不能删除')
-        PayOrder.objects.filter(id=order.id).update(status=constants.PAYMENT_STATUS_UNPAID)
         # 可以删除未支付状态的支付订单
-        res = self.client2.delete(f'/user/order/{order.id}')
+        CourseOrder.objects.filter(user=self.test_user_2).update(status=constants.PAYMENT_STATUS_UNPAID)
+        res = self.client2.delete(f'/user/order/{course_order.id}')
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(PayOrder.objects.filter(id=order.id).exists())
+        self.assertFalse(CourseOrder.objects.filter(id=course_order.id).exists())

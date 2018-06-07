@@ -89,7 +89,7 @@ order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('boxer/order/<int:pk>/confirm', BoxerCourseOrderViewSet.as_view({'post': 'perform_create'}), name='boxer-confirm-order'),
-    path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
+    path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-orders'),
     path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}), name='user-order-detail')
 ]
 
@@ -158,8 +158,6 @@ payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
 payment_urls = [
     re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order,
             name='create-order'),
-    re_path(r'^(?P<object_type>({0}))s/create_unpaid_order'.format(payment_object_string), pay.create_unpaid_order,
-            name='create-unpaid-order'),
     path('callback/alipay', pay.alipay_calback),
     path('callback/wechat', pay.wechat_calback),
     path('pay_status', pay.pay_status),
