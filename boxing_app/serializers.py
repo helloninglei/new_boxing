@@ -202,8 +202,8 @@ class RegisterSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
     password = serializers.CharField(validators=[validate_password])
     verify_code = serializers.CharField()
-    wechat_openid = serializers.CharField(required=False)
-    weibo_openid = serializers.CharField(required=False)
+    wechat_openid = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    weibo_openid = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     def validate(self, attrs):
         wechat_openid, weibo_openid, mobile = attrs.get('wechat_openid'), attrs.get('weibo_openid'), attrs['mobile']
