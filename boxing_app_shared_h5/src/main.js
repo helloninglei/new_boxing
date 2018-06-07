@@ -32,7 +32,7 @@ Vue.prototype.token   = ''
 
 let router = new VueRouter({
   routes,
-  mode:"history",
+  // mode:"history",
   linkActiveClass
 });
 

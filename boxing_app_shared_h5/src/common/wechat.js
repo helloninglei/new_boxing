@@ -14,7 +14,7 @@ function wxConfig(obj) {
         dataType: "json",
         success : function(msg) {
             debug = msg.debug;
-            appId = msg.app_id;
+            appId = msg.app_id
             signature = msg.signature;
             noncestr = msg.nonceStr;
             timestamp = msg.timestamp;

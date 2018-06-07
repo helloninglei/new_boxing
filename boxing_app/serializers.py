@@ -228,9 +228,13 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+
+    def get_price(self, obj):  # 返回给前端的单位是分
+        return obj.price * 100
 
     def get_url(self, obj):
-        if obj.is_paid:
+        if obj.is_paid or obj.price == 0:
             return obj.url
 
     class Meta:

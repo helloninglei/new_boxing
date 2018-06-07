@@ -23,7 +23,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        _filter = Q(orders__status=PAYMENT_STATUS_WAIT_USE, user_id=self.request.user.id)
+        _filter = Q(orders__status=PAYMENT_STATUS_WAIT_USE, orders__user_id=self.request.user.id)
         pk = self.kwargs['user_id']
         return models.HotVideo.objects.filter(
             user=models.User.objects.get(pk=pk),

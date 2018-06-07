@@ -5,7 +5,6 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
-from django.core.validators import MinValueValidator
 from django.db.transaction import atomic
 
 from biz import validator, constants
@@ -329,7 +328,7 @@ class HotVideo(BaseAuditModel):
     description = models.CharField(max_length=140)
     url = models.CharField(max_length=200)
     try_url = models.CharField(max_length=200)
-    price = models.IntegerField(validators=[MinValueValidator(1)])  # 单位元
+    price = models.PositiveIntegerField()  # 单位分
     is_show = models.BooleanField(default=True, db_index=True)
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
@@ -385,7 +384,7 @@ class GameNews(BaseAuditModel):
     start_time = models.DateTimeField(null=True)  # 推送开始时间
     end_time = models.DateTimeField(null=True)  # 推送结束时间
     app_content = models.TextField()
-    share_content = models.TextField(null=True)
+    share_content = models.TextField(null=True, blank=True)
     comments = GenericRelation('Comment')
 
     class Meta:
@@ -441,7 +440,7 @@ class CourseSettleOrder(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     settled = models.BooleanField(default=False)
     settled_date = models.DateField(null=True)
-    settled_amount = models.PositiveIntegerField(null=True)  # 单位元
+    settled_amount = models.PositiveIntegerField(null=True)  # 单位分
 
     class Meta:
         db_table = 'course_settle_order'
