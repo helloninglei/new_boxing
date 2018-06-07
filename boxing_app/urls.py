@@ -35,6 +35,7 @@ from boxing_app.views.user_profile import bind_alipay_account, user_profile_redi
 from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
 from boxing_app.views.social_login import social_login, mobile_is_bind_another_social_account
+from boxing_app.views.share import second_share_signature
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -185,6 +186,7 @@ share_object_string = '|'.join(SHARE_OBJECT_DICT.keys())
 share_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view,
             name='share'),
+    path("second_share_signature", second_share_signature)
 ]
 
 version_urls = [

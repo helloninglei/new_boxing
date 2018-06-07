@@ -6,29 +6,30 @@
                 <el-col :span="12">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
                         <el-form-item label="用户ID" prop="user_id">
-                            <el-input v-model="ruleForm.user_id"></el-input>
+                            <el-input v-model="ruleForm.user_id" placeholder='必须为有效的用户ID'></el-input>
                         </el-form-item>
                         <el-form-item label="视频名称" prop="name">
-                            <el-input v-model="ruleForm.name"  :maxlength="40"></el-input>
+                            <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
                         <el-form-item label="视频介绍" prop="description">
-                            <el-input type="textarea" v-model="ruleForm.description" :rows="6"></el-input>
+                            <el-input type="textarea" v-model="ruleForm.description" :rows="6" placeholder='限制140字数'></el-input>
                         </el-form-item>
                         <el-form-item label="付费金额" prop="price">
-                            <el-input v-model="ruleForm.price" :span="5"></el-input>
+                            <el-input v-model="ruleForm.price" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <el-form-item label="完整视频" prop="tsurl" style='display: none'>
-                            <el-input v-model="ruleForm.tsurl" type='file' id='full_video' @change='getFullVideo'></el-input>
-                        </el-form-item>
-                        <el-form-item label="完整视频" prop="try_ts_url" style='display: none'>
-                            <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo'></el-input>
-                        </el-form-item>
-                        <el-form-item label="完整视频">
+                        <!-- <el-form-item label="完整视频" prop="tsurl" style='display: none'>
+                            
+                        </el-form-item> -->
+                        <!-- <el-form-item label="不完整视频" prop="try_ts_url" style='display: none'>
+                            
+                        </el-form-item> -->
+                        <el-form-item label="完整视频" prop="tsurl">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
                             <p v-if="(tsurl)">
                                 <span class='video_name'>{{tsurl}} </span>
                                 <span ><i class="el-icon-error" style='cursor:pointer' @click='deleteUrl(1)'></i></span>
                             </p>
+                            <el-input v-model="ruleForm.tsurl" type='file' id='full_video' @change='getFullVideo' style='display: none'></el-input>
                         </el-form-item>
                         <el-form-item label="不完整视频" prop="try_ts_url">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="addLittleVideo()" v-if="!(try_ts_url)">添加视频</el-button>
@@ -36,6 +37,7 @@
                                 <span class='video_name'>{{try_ts_url}}</span> 
                                 <span ><i class="el-icon-error" style='cursor:pointer' @click='deleteUrl(2)'></i></span>
                             </p>
+                            <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -78,7 +80,8 @@
     export default {
         data() {
             var validateUrl = (rule, value, callback) => {
-              if (this.tsurl === ''&&value==='') {
+                // console.log(this.tsurl,value)
+              if ((!this.tsurl )&&(!value)) {
                 callback(new Error('选择完整视频'));
               } else {
                 
@@ -86,7 +89,7 @@
               }
             };
             var validateTryUrl = (rule, value, callback) => {
-              if (this.try_ts_url === ''&&value==='') {
+              if ((!this.try_ts_url) &&(!value)) {
                 callback(new Error('选择不完整视频'));
               } else {
                 
@@ -116,21 +119,20 @@
                     ],
                     description:[
                         { validator: (rule, value, callback) => {
-                            let reg = /^[1-9]\d{1,}$/
-                                if(value===''){
+                                if(!value){
                                     callback(new Error('请输入视频介绍'));
-                                }else if (value.length>140) {
+                                }else if (value&&value.length>140) {
                                     callback(new Error('限制140字数'));
                                 } else {
                                 
                                     callback();
                                 }
-                        }, trigger: 'blur' }
+                        }, trigger: 'blur' ,required:true}
                     ],
                     price:[
                         { validator: (rule, value, callback) => {
-                              if (value <= 0 || !/^[0-9]*$/.test(value)) {
-                                callback(new Error('付费金额为自然整数，不可以为0'));
+                              if (!/^[0-9]*$/.test(value)) {
+                                callback(new Error('付费金额为自然整数'));
                               } else {
                                 
                                 callback();
@@ -138,10 +140,10 @@
                         }, trigger: 'blur',required:true }
                     ],
                     tsurl:[
-                        { validator: validateUrl, trigger: 'blur' }
+                        { validator: validateUrl, trigger: 'blur',required:true }
                     ],
                     try_ts_url:[
-                        { validator: validateTryUrl, trigger: 'blur' }
+                        { validator: validateTryUrl, trigger: 'blur',required:true }
                     ]
                 }
                 
@@ -167,7 +169,7 @@
                 this.secondTitle_name = '修改视频'
             }
             // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
-            console.log(query)
+            // console.log(query)
         },
         methods: {
             getData(){
@@ -210,6 +212,7 @@
                 })
             },
             submitForm(formName) {
+                let $this = this
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let sendData = this.ruleForm;
@@ -227,8 +230,10 @@
                                 if(err&&err.response){
                                     let errors=err.response.data
                                     for(var key in errors){
-                                        console.log(errors[key])
-                                        // return
+                                        $this.$message({
+                                            message: errors[key][0],
+                                            type: 'error'
+                                        });
                                     } 
                                 } 
                             })
@@ -243,8 +248,10 @@
                                 if(err&&err.response){
                                     let errors=err.response.data
                                     for(var key in errors){
-                                        console.log(errors[key])
-                                        // return
+                                        $this.$message({
+                                            message: errors[key][0],
+                                            type: 'error'
+                                        });
                                     } 
                                 } 
                             })

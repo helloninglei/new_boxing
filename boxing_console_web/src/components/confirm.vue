@@ -35,6 +35,10 @@
           id:{
             type : [String,Number],
             default:"",
+          },
+          index:{
+            type : [String,Number],
+            default:"",
           }
         },
         watch:{
@@ -54,7 +58,7 @@
         },
         methods: {
             confirm(){
-            	this.$emit('confirm',this.id)
+            	this.$emit('confirm',this.id,this.index)
             },
             close(){
               this.$emit('cancel',false)

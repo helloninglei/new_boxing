@@ -42,7 +42,10 @@
                     <el-menu-item index="/bannermanage" :disabled="disabled">
                         <div class='menu-item-inner'>Banner管理</div>
                     </el-menu-item>
-                    <el-submenu index='3'>
+                    <el-menu-item index="/boxinglist" :disabled="disabled">
+                        <div class='menu-item-inner'>拳馆管理</div>
+                    </el-menu-item>
+                    <!-- <el-submenu index='3'>
                         <template slot="title"><div class='mySubMenu'>拳馆管理</div></template>
                         <el-menu-item index="/boxinglist" :disabled="disabled">
                         <div class="menu-item-inner" ><div class='_hr'></div>拳馆列表</div>
@@ -50,7 +53,7 @@
                         <el-menu-item index="/addBoxing" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>添加拳馆</div>
                         </el-menu-item>
-                    </el-submenu>
+                    </el-submenu> -->
                     <el-submenu index='4'>
                         <template slot="title" ><div class='mySubMenu'>赛事管理</div></template>
                         <el-menu-item index="/infoList" :disabled="disabled">

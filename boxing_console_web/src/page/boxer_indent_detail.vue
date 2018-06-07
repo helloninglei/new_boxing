@@ -19,7 +19,7 @@
                     <div class='detail_title'>性别</div>
                 </el-col>
                 <el-col :span="4">
-                    <div class='detail_content margin_lf'>{{result.gender}}</div>
+                    <div class='detail_content margin_lf'>{{result.gender?'男':'女'}}</div>
                 </el-col>
                 <el-col :span="1">
                     <div class='detail_title'>身高</div>
@@ -124,15 +124,13 @@
                 </div>
             </el-row>
         </div>
-        <!-- <div style='text-align:center' v-if="authentication_state=='WAITING'"> -->
-        <div style='text-align:center'>
+        <div style='text-align:center' v-if="authentication_state=='WAITING'">
             <el-button  class='myButton_40 myBtnHover_red btn_width_200 margin_rt60' @click="refuseData.isshow1=true">驳回</el-button>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_200 ' @click="openApprove()">审核通过</el-button>
         </div>
 
-        <Dialog :isshow="refuseData.isshow1" @confirm="refuse()" @cancel="cancel()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="1"></Dialog> 
+        <Dialog :isshow="refuseData.isshow1" @confirm="refuse" @cancel="cancel()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="1"></Dialog> 
         <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2"></Dialog> 
-        <!-- <Dialog :isshow="refuseData.isshow2" @confirm="conform2()" @cancel="cancel2()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="2"></Dialog>  -->
     </div>
 </template>
 <style scoped>
@@ -188,7 +186,7 @@
                     isshow1: false,
                     isshow2: false,
                     content_title:"请输入驳回原因：",
-                    content_title2:"请选择此用户可开通的课程类型（选填）：",
+                    content_title2:"请选择可开通的课程类型（最少选一个）：",
                     content_foot:""
                 },
                 approveData:{
@@ -213,7 +211,7 @@
                 let $this   = this
                 this.ajax('/boxer/identification/'+id,'get').then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
+                        // console.log(res.data)
                         $this.result=res.data
                         $this.authentication_state = res.data.authentication_state
                     }
@@ -233,30 +231,57 @@
             },
             approve(val){
                 console.log(val.class_name)
-                // this.refuseData.isshow2=false;
+                let $this    = this;
                 let sendData = {
-                        "authentication_state": this.result.authentication_state,    //认证状态
+                        "authentication_state": 'APPROVED',    //认证状态
                         "allowed_course": val.class_name  //可开通课程，选项为THAI_BOXING/BOXING/MMA
                     }
                 //通过
                 this.ajax('boxer/identification/'+this.result.id+'/approve','post',sendData).then(function(res){
                     if(res&&res.data){
                         console.log(res.data)
+                        $this.refuseData.isshow2=false;
+                        $this.$router.push({path: '/boxerindentify'});
                     }
 
                 },function(err){
                     if(err&&err.response){
                         let errors=err.response.data
                         for(var key in errors){
-                            console.log(errors[key])
-                            // return
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
                         } 
                     } 
                 })
             },
-            refuse(){
+            refuse(val){
                 //驳回
-                this.refuseData.isshow1=false;
+                let $this    = this;
+                let sendData = {
+                        "authentication_state": 'REFUSE',    //认证状态
+                        "refuse_reason": val.textarea_val  //可开通课程，选项为THAI_BOXING/BOXING/MMA
+                    }
+                this.ajax('boxer/identification/'+this.result.id+'/refuse','post',sendData).then(function(res){
+                    console.log(res)
+                    if(res&&res.data){
+                        // console.log(res.data)
+                        $this.refuseData.isshow1=false;
+                        $this.$router.push({path: '/boxerindentify'});
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
             },
             cancel(val){
                 this.refuseData.isshow1=val;

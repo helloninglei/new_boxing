@@ -160,7 +160,7 @@
                     <div class='detail_title width_160'>拳手确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>aaaaaaaaaa缺数据aaaaaaa</div>
+                    <div class='detail_content margin_lf50'>aaaaaaaaaa缺数据aaaaaaa</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub' v-if="result.status>2">
@@ -168,7 +168,7 @@
                     <div class='detail_title width_160'>用户确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>aaaaaaaaaa缺数据aaaaaaa</div>
+                    <div class='detail_content margin_lf50'>aaaaaaaaaa缺数据aaaaaaa</div>
                 </el-col>
             </el-row>
         </div>
@@ -178,7 +178,7 @@
                     <div class='detail_title width_160'>用户评论</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>
+                    <div class='detail_content margin_lf50'>
                         <el-rate
                           v-model="starValue"
                           disabled
@@ -191,17 +191,17 @@
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="22" :offset="2">
-                    <div class='detail_content margin_lf'>2018-02-10 12:12:12</div>
+                    <div class='detail_content margin_lf50'>2018-02-10 12:12:12</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="22" :offset="2">
-                    <div class='detail_content margin_lf' style='line-height: 25px'>300字我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！300字我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！</div>
+                    <div class='detail_content margin_lf50' style='line-height: 25px'>300字我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！300字我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="22" :offset="2">
-                    <div class='detail_content margin_lf'>
+                    <div class='detail_content margin_lf50'>
                         <div class='addImage'></div>
                         <div class='addImage'></div>
                         <div class='addImage'></div>
@@ -219,6 +219,7 @@
     .detail_item{margin-bottom:50px;}
     .detail_title{width:80px;}
     .detail_content.margin_lf{margin-left:40px;}
+    .detail_content.margin_lf50{margin-left:60px;}
     .width_160{width:145px!important;}
     .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
     .classDetail .el-rate__icon{color:#F95862!important}
