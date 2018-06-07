@@ -1,7 +1,8 @@
 <template>
     <div class="classDetail">
+        <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <div class='detail_header' v-if="authentication_state=='APPROVED'">审核通过 
-            <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_course">{{item}} &nbsp;&nbsp;</span>
+            <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_course">{{item=='BOXING'?'拳击':item=='THAI_BOXING'?'泰拳':item}} &nbsp;&nbsp;</span>
                 <el-button type="danger" class='myColor_red myButton_40' style='width:95px;margin-top:-13px' @click="openApprove()">修改</el-button>
             </span>
         </div>
@@ -96,20 +97,20 @@
                 <div class='detail_content_p detail_content'>{{result.experience?result.experience:'无'}}</div>
             </el-row>
         </div>
-        <div class="detail_item">
+        <div class="detail_item" v-show='result.honor_certificate_images&&result.honor_certificate_images.length>0'>
             <el-row class='detail_item_sub'>
                 <div class='detail_title'>荣誉证明</div>
             </el-row>
             <el-row class='detail_item_sub'>
                 <div class='detail_content_p detail_content'>
                     <div class='addImage' v-for="item in result.honor_certificate_images">
-                        <img :src="config.baseUrl+item" alt="" width='100%' height='100%'>
+                        <img :src="config.baseUrl+item" alt="" width='100%' height='100%' @click='clickImg(item)'>
                     </div>
                     <!-- <div class='addImage'>图片</div> -->
                 </div>
             </el-row>
         </div>
-        <div class="detail_item">
+        <div class="detail_item" v-show='result.competition_video'>
             <el-row class='detail_item_sub'>
                 <div class='detail_title'>参赛视频</div>
             </el-row>
@@ -131,6 +132,7 @@
 
         <Dialog :isshow="refuseData.isshow1" @confirm="refuse" @cancel="cancel()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="1"></Dialog> 
         <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2"></Dialog> 
+        
     </div>
 </template>
 <style scoped>
@@ -142,7 +144,7 @@
     .detail_content.margin_lf{margin-left:39px;}
     .detail_content.detail_content_p{margin-left:16px;line-height:25px;}
     .width_160{width:145px!important;}
-    .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
+    .addImage{width:95px;height:65px;float:left;margin-right:14px;}
     .classDetail .el-rate__icon{color:#F95862!important}
 </style>
 <style>
@@ -151,36 +153,17 @@
 <script >
     import Dialog  from "components/dialog"
     import Confirm from "components/confirm"
+    import BigImg  from 'components/bigImg';
     export default {
         data() {
             return {
                 starValue   : 4,
                 indent_type : '',
                 authentication_state : '',
+                showImg   : false,
+                imgSrc    : '',
                 result:{
-                    "id": 1, // 拳手ID
-                    "honor_certificate_images": [], // 拳手荣誉证书
-                    "competition_video": null, // 拳手参赛视频
-                    "nick_name": "赵柳", // 拳手昵称
-                    "allowed_course": ["泰拳","MMA","拳击"], // 可开课程
-                    "created_time": "2018-05-18 00:27:43",
-                    "updated_time": "2018-05-18 00:27:47",
-                    "real_name": "张三", // 拳手真实姓名
-                    "height": 170, // 身高
-                    "weight": 65, // 体重
-                    "birthday": "2018-05-17", // 出生日期
-                    "identity_number": "111111111111111111", //身份证
-                    "mobile": "11111111111", //手机
-                    "is_professional_boxer": true, //是否是专业拳手
-                    "club": "20", // 所属拳馆
-                    "job": "teacher", // 职业
-                    "gender":"男",
-                    "introduction": "哈哈", //个人介绍
-                    "is_locked": true, // 接单状态 true锁定，false解锁
-                    "experience": '北京拓天比图拳馆拓天比图拳馆拓天比图拳馆，北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆。500字拓天比图拳馆。500字北京拓天比图拳馆拓天比图拳馆拓天比图拳馆，北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳馆拓天比图拳馆拓天比图拳馆北京拓天比图拳京拓天比图拳馆拓天比图拳馆拓天比图拳馆。500字拓天比图拳馆。500字', // 个人经历
-                    "authentication_state": "APPROVED", // 认证状态（APPROVED：已通过| WAITING：待审核 | REFUSE：已驳回）
-                    "refuse_reason": null, // 驳回原因
-                    "user": 5 // 用户ID
+                    
                 },
                 refuseData:{
                     isshow1: false,
@@ -196,14 +179,16 @@
         },
         components: {
            Dialog,
-           Confirm
+           Confirm,
+           BigImg
         },
         created() {
             let query = this.$route.query
             if(query.authentication_state){
                 this.authentication_state = query.authentication_state;
             }
-            this.getDetailData(query.id);
+            this.boxerId = query.id
+            this.getDetailData(this.boxerId);
         },
         methods: {
             getDetailData(id) {
@@ -241,7 +226,8 @@
                     if(res&&res.data){
                         console.log(res.data)
                         $this.refuseData.isshow2=false;
-                        $this.$router.push({path: '/boxerindentify'});
+                        
+                        $this.getDetailData($this.boxerId);
                     }
 
                 },function(err){
@@ -268,7 +254,7 @@
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.refuseData.isshow1=false;
-                        $this.$router.push({path: '/boxerindentify'});
+                        $this.getDetailData($this.boxerId);
                     }
 
                 },function(err){
@@ -287,7 +273,14 @@
                 this.refuseData.isshow1=val;
                 this.refuseData.isshow2=val;
             },
-            conform(){
+            clickImg(img) {
+                // 获取当前图片地址
+                this.imgSrc =this.config.baseUrl+ img;
+                // this.imgSrc ="http://img.zcool.cn/community/010f87596f13e6a8012193a363df45.jpg@1280w_1l_2o_100sh.jpg";
+                this.showImg=true;
+            },
+            viewImg(){
+                this.showImg = false;
             },
 
         },
