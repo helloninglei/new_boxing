@@ -83,7 +83,7 @@
             },
             imageArr: {
                 type: Array,
-                default: []
+                default: () => []
             },
             slideIndex: {
                 type: [Number, String],

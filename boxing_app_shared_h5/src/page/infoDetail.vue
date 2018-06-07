@@ -3,7 +3,7 @@
         <div class="infoDetail">
             <h1 class="title">{{info.title}}</h1>
             <div class="created_time">{{info.created_time}}</div>
-            <img v-if="info.picture" class="picture" :src="`${config.baseUrl}` + info.picture"/>
+            <!--<img v-if="info.picture" class="picture" :src="`${config.baseUrl}` + info.picture"/>-->
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp"></TabBar>

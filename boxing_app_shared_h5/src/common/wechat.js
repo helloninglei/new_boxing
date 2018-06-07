@@ -1,12 +1,17 @@
 import wx from 'weixin-js-sdk';
-import {config} from 'common/my_config';
+import config from 'common/my_config';
+import $ from 'jquery';
 
 let signature, noncestr, timestamp, encodeUrl;
 let check = false;
 
 function wxConfig(obj) {
-    this.ajax(`/token/jsSignature`,'post').then((res) => {
-        if (res && res.data) {
+    $.ajax({
+        type : "GET",
+        url : config.baseUrl  + "/second_share_signature",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success : function(msg) {
             signature = msg.signature;
             noncestr = msg.noncestr;
             timestamp = msg.timestamp;
@@ -24,14 +29,7 @@ function wxConfig(obj) {
                 obj();
             }
         }
-    },(err) => {
-        if(err&&err.response){
-            let errors=err.response.data;
-            for(var key in errors){
-                this.$layer.msg(errors[key][0]);
-            }
-        }
-    })
+    });
 }
 
 export { wxConfig }
