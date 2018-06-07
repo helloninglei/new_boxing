@@ -67,7 +67,7 @@
                     <el-row>
                         <el-col :span="6" style="margin-left:100px">
                                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                                <el-button  class='myButton_40 btn_width_95'>重置</el-button>
+                                <el-button  class='myButton_40 btn_width_95'  @click="reset()">重置</el-button>
                         </el-col>
                     </el-row>
                 </el-form>
@@ -176,8 +176,6 @@ nav{min-height: 528px}
                    sendData=this.form
                 }
                 if(page){
-                    console.log(page)
-                    console.log(sendData)
                     sendData.page=page
                 }
                 this.ajax('/course/orders','get',{},sendData).then(function(res){
@@ -240,6 +238,10 @@ nav{min-height: 528px}
                 this.page=1
                 this.getTableData(1);
             },
+            reset(){
+                this.form={};
+                this.getTableData()
+            }
         },
     }
 </script>

@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+from biz.constants import WITHDRAW_MIN_CONFINE
 from biz.models import User, WithdrawLog, UserProfile, MoneyChangeLog
 
 
@@ -23,10 +24,10 @@ class WithdrawTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['amount'][0], "该字段是必填项。")
 
-        # amount小于2元
+        # amount小于规定额度
         response = self.client.post(path="/withdraw", data={"amount": 100}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['message'][0], "提现金额必须大于2.0元!")
+        self.assertEqual(response.data['message'][0], f"提现金额必须大于{WITHDRAW_MIN_CONFINE/100.0}元!")
 
         # 账户余额不足提现金额
         response = self.client.post(path="/withdraw", data={"amount": 60000}, format="json")

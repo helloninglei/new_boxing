@@ -1,8 +1,15 @@
 <template>
     <div class="">
-        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" secondTitle_name="拳馆列表" secondTitle_path="/boxinglist"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" disNone="disNone"></TopBar>
         <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
-        <nav style='margin-top:60px'>
+        <header>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click='goTodetail()' style='margin-top:30px;float:right;'>添加</el-button>
+            <div class="inline_item">
+                <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='拳馆名称' style='width:18rem'></el-input>
+                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
+            </div>
+        </header>
+        <nav style='padding:30px'>
             <template>
                 <el-table
                   :data="tableData"
@@ -25,15 +32,15 @@
                       fixed="right"
                       label="操作">
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='deleteClub(scope.row)'>删除</el-button>
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='deleteClub(scope.row)'>停用</el-button>
                             <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='goTodetail(scope.row)'>修改</el-button>                         
                         </template>
                     </el-table-column>
                 </el-table>
             </template>
         </nav>
-        <footer>
-            <Pagination :total="total" @changePage="changePage"></Pagination>
+        <footer v-show='total>10'>
+            <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
         </footer>
         
     </div>
@@ -41,6 +48,7 @@
 
 <style scoped>
     .myColor_red{color:#fff;border-color:#F95862;}
+    .inline_item{padding:30px;}
 </style>
 
 <script >
@@ -54,6 +62,11 @@
                 total     : 1000,
                 showImg   : false,
                 imgSrc    : '',
+                issearch  :false,
+                page      :1,
+                sendData  :{
+                    search:'',
+                },
                 tableData : [
                     {
                         "id": 20,
@@ -109,9 +122,9 @@
                 //获取data数据
                 let $this   = this
                 let sendData={}
-                // if(this.issearch){
-                //    sendData=this.sendData
-                // }
+                if(this.issearch){
+                   sendData=this.sendData
+                }
                 if(page){
                     sendData.page=page
                 }
@@ -135,6 +148,11 @@
                 // 要看第几页
                 this.getTableData(this.sendData,val);
             },
+            filter(){
+                this.issearch=true;
+                this.page=1;
+                this.getTableData();
+            },
             clickImg(img) {
                 // 获取当前图片地址
                 this.imgSrc =this.config.baseUrl+ img;
@@ -149,6 +167,7 @@
 
             },
             deleteClub(row){
+                //停用的接口
                 this.ajax('/club','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         $this.tableData=res.data.results;

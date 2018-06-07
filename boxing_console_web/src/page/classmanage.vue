@@ -15,19 +15,19 @@
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">已开课程</span>
-                    <el-select v-model="sendData.courseName" class="margin_rt25" style='width:11rem'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option value="拳馆" label="拳馆">拳馆</el-option>
-                        <el-option value="泰拳" label="泰拳">泰拳</el-option>
+                    <el-select v-model="sendData.course_name" class="margin_rt25" style='width:11rem'>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option value="BOXING" label="拳击">拳击</el-option>
+                        <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
                         <el-option value="MMA" label="MMA">MMA</el-option>
                     </el-select>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">接单状态</span>
                     <el-select v-model="sendData.is_accept_order" style='width:11rem'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option :value="true" label="是">是</el-option>
-                        <el-option :value="false" label="否">否</el-option>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option :value="1" label="是">是</el-option>
+                        <el-option :value="0" label="否">否</el-option>
                     </el-select>
                 </div>
                 <div style='margin-bottom:50px;margin-left:52px'>
@@ -64,7 +64,7 @@ nav{min-height: 528px}
                     price_min  : '',
                     price_max  : '',
                     search     : '',
-                    courseName : '',
+                    course_name : '',
                     is_accept_order : '',
                 },
                 total     : 20,
@@ -80,61 +80,7 @@ nav{min-height: 528px}
                         "duration": 120, //时长
                         "validity": "2018-08-25" //有效期
                     },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 3,
-                        "boxer_name": "李四", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 4,
-                        "boxer_name": "王五", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 5,
-                        "boxer_name": "赵柳", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 6,
-                        "boxer_name": "王依依", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
+                    
                 ],
                 tableColumn:[
                     {title:'boxer_name',       name :'拳手姓名',   width:''},
@@ -172,6 +118,11 @@ nav{min-height: 528px}
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
+                            if(res.data.results[i].course_name=='BOXING'){
+                                res.data.results[i].course_name='拳击'
+                            }else if(res.data.results[i].course_name=='THAI_BOXING'){
+                                res.data.results[i].course_name='泰拳'
+                            }
                         }
                         $this.tableData=res.data.results;
                         $this.total = res.data.count;
@@ -204,6 +155,7 @@ nav{min-height: 528px}
             },
             refresh(){
                 this.sendData={};
+                this.getTableData() 
             }
         },
     }
