@@ -83,7 +83,7 @@ club_url = [
 
 course_url = [
     path('boxer/course', BoxerMyCourseViewSet.as_view({'get': 'list', 'post': 'update'})),
-    path('boxer/<int:boxer_id>/course', BoxerMyCourseViewSet.as_view({'get': 'opened_courses'})),
+    path('boxer/<int:boxer_id>/course', BoxerMyCourseViewSet.as_view({'get': 'opened_courses_list'})),
 
 ]
 

@@ -2,13 +2,14 @@
 from django.db.models import Case, When, Count, Min
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from biz import constants, redis_client
 from biz.models import BoxerIdentification
 from boxing_app.filters import NearbyBoxerFilter
+from boxing_app.permissions import IsBoxerPermission
 from boxing_app.serializers import BoxerIdentificationSerializer, NearbyBoxerIdentificationSerializer
 
 
@@ -22,6 +23,7 @@ def get_boxer_status(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsBoxerPermission])
 def change_boxer_accept_order_status(request, **kwargs):
     is_accept = True if kwargs.get('is_accept') == 'open' else False
     BoxerIdentification.objects.filter(user=request.user).update(is_accept_order=is_accept)

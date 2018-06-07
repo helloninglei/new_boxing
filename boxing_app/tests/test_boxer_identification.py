@@ -269,3 +269,8 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         is_accept_order = BoxerIdentification.objects.get(id=boxer.id).is_accept_order
         self.assertTrue(is_accept_order)
+
+        # 非拳手访问接口
+        res = self.client.post('/boxer/accept-order/open')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
