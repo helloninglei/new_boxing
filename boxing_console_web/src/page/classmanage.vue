@@ -80,61 +80,7 @@ nav{min-height: 528px}
                         "duration": 120, //时长
                         "validity": "2018-08-25" //有效期
                     },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 3,
-                        "boxer_name": "李四", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 4,
-                        "boxer_name": "王五", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 5,
-                        "boxer_name": "赵柳", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 6,
-                        "boxer_name": "王依依", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
+                    
                 ],
                 tableColumn:[
                     {title:'boxer_name',       name :'拳手姓名',   width:''},

@@ -56,6 +56,12 @@
                                     value-format="yyyy-MM-dd hh:mm:ss">
                             </el-date-picker>
                         </el-form-item>
+                        <el-form-item style='margin-left:30px;margin-top:-30px'>
+                            <el-form-item prop="end_time" >
+                                <el-input v-model="form.end_time" style='display: none'></el-input>
+                            </el-form-item>
+                        </el-form-item>
+                        
                         <p class='udeitor_title'>App内正文（<span style='color:#F95862'>必填</span>），如未填写App外分享正文，App内和App外都显示App内正文。</p>
                         <div class='udeitor_content' id='ueditor1'>
                             <Ueditor @changeEditor="onEditorChange" myQuillEditor='myQuillEditor' imgInput='imgInput1' :appContent='form.app_content'></Ueditor>
@@ -213,7 +219,7 @@
                     sub_title: '',
                     initial_views_count: 1,
                     picture: '',
-                    stay_top: 'false',
+                    stay_top: false,
                     push_news: false,
                     start_time: '',
                     end_time: '',
@@ -233,8 +239,23 @@
                         }, trigger: 'blur', required: true}
                     ],
                     stay_top: [{ required: true, message: '请选择是否置顶', trigger: 'blur' }],
-                    start_time: [{ required: true, message: '请输入发送时间', trigger: 'blur' }],
-                    end_time: [{ required: true, message: '请输入发送时间', trigger: 'blur' }],
+                    end_time: [
+                        { validator: (rule, value, callback) => {
+                            if(this.form.start_time===''){
+                                callback(new Error('请选择发送的开始时间'));
+                            }else if (value==='') {
+                                callback(new Error('请选择发送的结束时间'));
+                            }else if(new Date(this.form.start_time)-new Date()<0){
+                                callback(new Error('开始发送时间不能小于当前时间'));
+                            }else if(new Date(value)-new Date(this.form.start_time)<0){
+                                callback(new Error('结束时间不能早于开始时间'));
+                            }else if(new Date(value)-new Date(this.form.start_time)> 60*60*24*14*1000){
+                                callback(new Error('推送有效时间不能超过14天'));
+                            } else {
+                                callback();
+                            }
+                        }, trigger: 'blur', required: true}
+                    ],
                     initial_views_count: [
                         { validator: (rule, value, callback) => {
                             if (value === '') callback(new Error('请输入初始阅读量'))
@@ -259,15 +280,20 @@
 
         created() {
             this.query = this.$route.query;
-            // $('.v-modal').css('z-index',-1)
             if(this.query.id){
                 //编辑
                 this.form=this.query;
                 this.dateArr=[this.query.start_time,this.query.end_time]
-                // this.form.push_news = this.form.push_news== t?true:false
                 this.imgUrl = this.form.picture ;
                 this.confirmText = '修改'
-                // console.log(this.form)
+                console.log(this.form)
+            }else{
+                // 2018-06-12 08:06:08
+                let startDate = new Date();
+                let endDate   = new Date();
+                startDate.setMinutes(startDate.getMinutes()+5);
+                endDate.setDate(endDate.getDate()+1);
+                this.dateArr=[startDate,endDate]
             }
             this.isshowPrev();
         },
@@ -350,6 +376,7 @@
                 let $this = this;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+
                         if(this.form.id){
                             //修改
                             this.ajax('/game_news/'+this.form.id,'put',this.form).then(function(res){
