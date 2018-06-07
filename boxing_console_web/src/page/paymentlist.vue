@@ -4,8 +4,8 @@
         <div class='container'>
             <header>
                  <el-row>
-                    <el-col :span="5" style='width:314px;margin-bottom:30px'>
-                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/用户账号/手机号/昵称/订单号' style='width:284px'></el-input>
+                    <el-col :span="7" style='width:364px;margin-bottom:30px'>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/手机号/昵称/订单号' style='width:334px'></el-input>
                     </el-col> 
                     <el-col :span="7" style='width:480px'>
                         <el-date-picker
@@ -26,7 +26,7 @@
                     </el-col> 
                 </el-row>  
                 <el-row>
-                    <el-col :span="5" style='width:314px;margin-bottom:30px'>
+                    <el-col :span="5" style='margin-bottom:30px'>
                         <el-select v-model="sendData.device" class="margin_rt25">
                             <el-option value="" label="交易终端"></el-option>
                             <el-option value="1" label="ios">ios</el-option>
@@ -44,11 +44,9 @@
                     <el-col :span="5" >
                         <el-select v-model="sendData.status" class="margin_rt25">
                             <el-option value="" label="交易状态">全部</el-option>
-                            <el-option value="1" label="未支付">未支付</el-option>
-                            <el-option value="2" label="待使用">待使用</el-option>
-                            <el-option value="3" label="待评论">待评论</el-option>
-                            <el-option value="4" label="已完成">已完成</el-option>
-                            <el-option value="5" label="已过期">已过期</el-option>
+                            <el-option value="1" label="支付未完成">支付未完成</el-option>
+                            <el-option value="2" label="支付成功">支付成功</el-option>
+                            <el-option value="3" label="支付失败">支付失败</el-option>
                         </el-select>
                     </el-col>  
                 </el-row>     
@@ -138,8 +136,8 @@
                     },
                 ],
                 tableColumn:[
-                    {title:'id',    name :'ID',   width: ''},
-                    {title:'out_trade_no',  name :'订单号',width: '100'},
+                    // {title:'id',    name :'ID',   width: ''},
+                    {title:'out_trade_no',  name :'流水号',width: '100'},
                     {title:'amount',name :'金额（元）' ,width: '120'},
                     {title:'user',name :'用户ID',width: ''},
                     {title:'user_nickname', name :'用户昵称'   ,width: ''},
@@ -203,6 +201,7 @@
             },
             reset(){
                 this.sendData={};
+                this.getTableData();
             },
         },
     }

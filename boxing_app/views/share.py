@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from biz.models import Message, HotVideo
 from biz.redis_client import incr_number_of_share
 from biz.utils import get_model_class_by_name, get_share_img_url
+from biz.weixin_public_client import Sign
 
 '''
 带图片（头像）、主标题（取动态文字）、副标题为 “来自xx的拳民出击”，xx为用户昵称。
@@ -77,3 +78,11 @@ def share_view(request, object_type, object_id):
     }
     incr_number_of_share(user.id)
     return Response(data)
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def second_share_signature(request):
+    url = request.query_params.get("url")
+    return Response(Sign(url).sign())

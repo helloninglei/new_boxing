@@ -14,7 +14,7 @@
                   fixed="right"
                   label="操作">
                   <template slot-scope="scope">
-                    <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' v-if="showBtnLeft" @click='btnLeftClick(scope.row)'>{{scope.row.is_locked?"解锁":"锁定"}}</el-button>
+                    <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' v-if="showBtnLeft" @click='btnLeftClick(scope.row,scope.$index)'>{{scope.row.is_locked?"解锁":"锁定"}}</el-button>
                     <span class='colorFont' @click="handleClick(scope.row)">{{operaname}}</span>
                   </template>
                 </el-table-column>
@@ -80,8 +80,8 @@
             handleClick(row){
                 this.$emit('toDetail',row)
             },
-            btnLeftClick(row){
-                this.$emit('btnLeftClick',row)
+            btnLeftClick(row,index){
+                this.$emit('btnLeftClick',row,index)
             },
         },
     }

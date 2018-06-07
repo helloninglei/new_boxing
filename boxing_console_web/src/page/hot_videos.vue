@@ -5,7 +5,7 @@
             <header>
                  <el-row>
                     <el-col :span="5" style='width:314px'>
-                        <el-input v-model="sendData.keywards"  class='myInput_40 margin_rt25' placeholder='用户ID/视频名称' style='width:284px'></el-input>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/视频名称' style='width:284px'></el-input>
                     </el-col> 
                     <el-col :span="7" style='width:460px'>
                         <el-date-picker
@@ -25,10 +25,10 @@
                     </el-col>      
                     <el-col :span='6'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red'>重置</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click="reset()">重置</el-button>
                     </el-col>   
                     <el-col :span='24'>
-                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25'  @click="toDetail()" style='margin-top:30px'>新增视频</el-button>
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click="toDetail()" style='margin-top:30px'>新增视频</el-button>
                     </el-col>   
                 </el-row>
             </header>
@@ -50,8 +50,8 @@
                           label="操作">
                             <template slot-scope="scope">
                                     <el-button  class='myBtnHover_red myButton_20' @click="toDetail(scope.row)">修改</el-button>
-                                    <el-button class='myBtnHover_red myButton_20 ' @click="openConfirm(scope.row.id)">删除</el-button>                          
-                                    <el-button class='myBtnHover_red myButton_20 ' @click="changeShow(scope.row.id,!scope.row.is_show,scope.$index)">{{scope.row.is_show?'隐藏':'显示'}}</el-button>                          
+                                    <!-- <el-button class='myBtnHover_red myButton_20 ' @click="openConfirm(scope.row.id)" v-show='scope.row.sales_count==0'>删除</el-button> -->                          
+                                    <el-button class='myBtnHover_red myButton_20 ' @click="changeShow(scope.row,scope.$index)">{{scope.row.is_show?'隐藏':'显示'}}</el-button>                          
                             </template>
                         </el-table-column>
                     </el-table>
@@ -86,7 +86,7 @@
                 sendData  : {
                     start_time : '',
                     end_time   : '',
-                    keywards  : '',
+                    search     : '',
                 },
                 confirmData:{
                     isshow: false,
@@ -206,41 +206,28 @@
                 //修改详情页
                 this.$router.push({path: '/hotvideodetail', query:row});
             },
-            changeShow(id,isshow,index){
+            changeShow(row,index){
                 // 显示隐藏
-                console.log(index)
+                console.log(row.is_show)
+                console.log(!row.is_show)
                 let $this = this;
-                // this.gc[0] ={name:'lisi',age:22} //这样直接修改不能被vue监听到
-                let resData = {
-                                    "id": 1,
-                                    "user_id": 1000000,
-                                    "name": "222",
-                                    "description": "333",
-                                    "sales_count": 0,
-                                    "price_amount": null,
-                                    "url": "/uploads/a1/ff/7fb7421ef9b445bae16be8f7a96820723e7d.mp4",
-                                    "try_url": "/uploads/a1/ff/7fb7421ef9b445bae16be8f7a96820723e7d.mp4",
-                                    "price": 222,
-                                    "is_show": isshow,
-                                    "created_time": "2018-05-11 18:15:36"
-                                }
-                resData.is_show_name = resData.is_show?'显示':'隐藏'
-                $this.tableData.splice(index,1,resData);
-                // this.ajax('/hot_videos/'+id,'patch',{isshow:isshow}).then(function(res){
-                //     if(res&&res.data){
-                //         console.log(res.data)
-                //         $this[index] = res.data
-                //     }
+                this.ajax('/hot_videos/'+row.id,'patch',{is_show:!row.is_show}).then(function(res){
+                    if(res&&res.data){
+                        console.log(res.data)
+                        row.is_show= res.data.is_show
+                        row.is_show_name = res.data.is_show?'显示':'隐藏'
+                        // $this.tableData.splice(index,1,row);
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             openConfirm(id){
                 this.confirmData.id    = id
@@ -273,6 +260,10 @@
             },
             cancel(val){
                 this.confirmData.isshow= val
+            },
+            reset(){
+                this.sendData={}
+                this.getTableData();
             }
         },
     }
