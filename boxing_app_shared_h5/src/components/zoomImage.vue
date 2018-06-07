@@ -20,7 +20,7 @@
     height:100%;
     background:#fff;
     overflow: hidden;
-    z-index 999
+    z-index 9999
     .swiper-container
         width 100%
         height 100%

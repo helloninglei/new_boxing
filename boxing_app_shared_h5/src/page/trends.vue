@@ -167,25 +167,7 @@
                 showModal: false,
                 showSwiper: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
-                info: {
-                    "id":29,
-                    "content":"hello world",
-                    "images":[
-                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                        "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-
-                    ],
-                    "msg_type": "has_image",
-                    "created_time":"2018-04-27T10:57:37.172427+08:00",
-                    "user":{
-                        "nick_name":"lerry",
-                        "id":1,
-                        "avatar":"http://i.lerry.me/sss.jpg"
-                    },
-                    video:null
-                },
+                info: {},
                 dataObj: {},
                 wx: ''
             }
@@ -194,7 +176,7 @@
         created() {
             this.id = this.$route.params.id;
             if (this.id) {
-//                this.getData();
+                this.getData();
 //                this.sharePage();
             }
         },
