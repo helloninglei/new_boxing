@@ -13,5 +13,4 @@ class OnlyOwnerCanDeletePermission(permissions.BasePermission):
 
 class IsBoxerPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if models.BoxerIdentification.objects.filter(user=request.user).exists():
-            return True
+        return models.BoxerIdentification.objects.filter(user=request.user).exists()
