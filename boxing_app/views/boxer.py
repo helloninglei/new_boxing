@@ -34,7 +34,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, id=self.request.user.id)
 
 
 class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
