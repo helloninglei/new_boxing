@@ -7,13 +7,13 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="用户/拳手">
-                                <el-input v-model="form.search" placeholder='姓名／昵称／手机号'></el-input>
+                                <el-input v-model="form.search" placeholder='姓名／手机号'></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="订单状态">
                                <el-select v-model="form.status" class="margin_rt25">
-                                    <el-option value="0" label="全部">全部</el-option>
+                                    <el-option value="" label="全部">全部</el-option>
                                     <el-option value="1" label="待付款">待付款</el-option>
                                     <el-option value="2" label="待使用">待使用</el-option>
                                     <el-option value="3" label="待评价">待评价</el-option>
@@ -46,9 +46,9 @@
                         <el-col :span="6">
                             <el-form-item label="购买课程">
                                 <el-select v-model="form.course__course_name">
-                                    <el-option value="0" label="全部">全部</el-option>
-                                    <el-option value="拳馆" label="拳馆">拳馆</el-option>
-                                    <el-option value="泰拳" label="泰拳">泰拳</el-option>
+                                    <el-option value="" label="全部">全部</el-option>
+                                    <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
+                                    <el-option value="BOXING" label="拳击">拳击</el-option>
                                     <el-option value="MMA" label="MMA">MMA</el-option>
                                 </el-select>
                             </el-form-item>
@@ -109,53 +109,20 @@ nav{min-height: 528px}
                 },
                 total     : 20,
                 tableData : [
-                    {
-                        "id": 1,
-                        "out_trade_no":"2018020300001",
-                        "order_time":"2018-02-03 12:32:23",
-                        "boxer_name": "王五", //拳手姓名
-                        "boxer_mobile": "111111111", //拳手手机号
-                        "user_nickname":"用户一",
-                        "user_mobile":"13900000000",
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "amount": 120, //价格
-                        "payment_type":1,
-                        "pay_time":"2018-02-03 14:32:23",
-                        "duration": 120, //时长
-                        "status": "待使用" //有效期
-                    },
-                    {
-                        "id": 2,
-                        "out_trade_no":"2018020300001",
-                        "order_time":"2018-02-03 12:32:23",
-                        "boxer_name": "王五", //拳手姓名
-                        "boxer_mobile": "111111111", //拳手手机号
-                        "user_nickname":"用户一",
-                        "user_mobile":"13900000000",
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "amount": 120, //价格
-                        "payment_type":2,
-                        "pay_time":"2018-02-03 14:32:23",
-                        "duration": 120, //时长
-                        "status": "待使用" //有效期
-                    },
+                    
                 ],
                 tableColumn:[
-                    {title:'order_time',  name :'下单时间',  width:'195'},
-                    {title:'out_trade_no',  name :'订单号',    width:'145'},
+                    {title:'order_time',  name :'下单时间',  width:'155'},
+                    {title:'out_trade_no',  name :'订单号',    width:'90'},
                     {title:'user_nickname',  name :'用户昵称',   width:''},
-                    {title:'user_mobile',name :'用户手机号', width:'130'},
+                    {title:'user_mobile',name :'用户手机号', width:'95'},
                     {title:'course_name',name :'购买课程',   width:''},
                     {title:'boxer_name', name :'拳手姓名',   width:''},
-                    {title:'boxer_mobile',     name :'拳手手机号', width:''},
+                    {title:'boxer_mobile',     name :'拳手手机号', width:'100'},
                     {title:'amount',      name :'支付金额（元）',width:''},
                     {title:'payment_type_name',    name :'支付方式',   width:''},
-                    {title:'pay_time',   name :'支付时间',   width:'195'},
-                    {title:'status_name',   name :'订单状态',   width:''},
+                    {title:'pay_time',   name :'支付时间',   width:'155'},
+                    {title:'status_name',   name :'订单状态',   width:'55'},
                 ],
             }
         },
@@ -180,8 +147,13 @@ nav{min-height: 528px}
                 }
                 this.ajax('/course/orders','get',{},sendData).then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
+                        // console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
+                            if(res.data.results[i].course_name=='BOXING'){
+                                res.data.results[i].course_name='拳击'
+                            }else if(res.data.results[i].course_name=='THAI_BOXING'){
+                                res.data.results[i].course_name='泰拳'
+                            }
                             if(res.data.results[i].payment_type==1){
                                 res.data.results[i].payment_type_name='支付宝'
                             }else if(res.data.results[i].payment_type==2){

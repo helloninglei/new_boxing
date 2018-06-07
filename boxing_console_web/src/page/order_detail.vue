@@ -47,8 +47,8 @@
                 <el-col :span="3">
                     <div class='detail_content margin_lf'>{{result.boxer_mobile}}</div>
                 </el-col>
-                <el-col :span="16">
-                    <el-button type="danger" class='myColor_red myButton_40' style='width:200px;margin-top:-13px' @click="checkIdent(result.boxer_id)">查看拳手认证信息</el-button>
+                <el-col :span="15" :offset='1'>
+                    <el-button type="danger" class='myColor_red myButton_40 ' style='width:200px;margin-top:-13px' @click="checkIdent(result.boxer_id)">查看拳手认证信息</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -104,7 +104,7 @@
                 </el-col>
                 <el-col :span="23" v-if="result.status==2">
                     <div class='detail_content margin_lf'>请购买保险 
-                        <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px' @click="addCount()">标记保险</el-button>
+                        <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px' @click="addCount(result.id)">标记保险</el-button>
                     </div>
                 </el-col>
                 <el-col :span="23" v-if="result.status>2">
@@ -203,7 +203,7 @@
                 <el-col :span="22" :offset="2">
                     <div class='detail_content margin_lf50' v-show='result.comment_images&&result.comment_images.length>0'>
                         <div class='addImage' v-for='value in result.comment_images'>
-                            <img :src="config.baseUrl+value" alt="" width='100%'>
+                            <img :src="config.baseUrl+value" alt="" height='100%'>
                         </div>
                     </div>
                 </el-col>
@@ -221,7 +221,7 @@
     .detail_content.margin_lf{margin-left:40px;}
     .detail_content.margin_lf50{margin-left:60px;}
     .width_160{width:145px!important;}
-    .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
+    .addImage{height:65px;float:left;margin-right:14px;}
     .classDetail .el-rate__icon{color:#F95862!important}
 </style>
 <style>
@@ -239,32 +239,32 @@
                 },
                 addData : {},
                 result:{
-                    "id": 1, //订单id
-                    "status": 4, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
-                    "out_trade_no": 11111111, //订单号
-                    "payment_type": 1,//支付方式（1:支付宝；2:微信；3:余额）
-                    "amount": 120, //金额
-                    "comment_score": null, //订单评分
-                    "comment_time": '2015-03-08 12:34:44', //订单评论时间
-                    "comment_content": '评论内容评论内容评论内容评论内容品论内容评论内容评论内容评论内容', //订单评论内容
-                    "comment_images": [
-                        "/uploads/a2/ab/da7f76418372eacd8c3410d53a5a6a0e79d4.png",
-                        "/uploads/1c/c3/fbeb379b103be64b4ff74e99f61846386eb2.png",
-                        "/uploads/1c/c3/fbeb379b103be64b4ff74e99f61846386eb2.png",
+                    // "id": 1, //订单id
+                    // "status": 4, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
+                    // "out_trade_no": 11111111, //订单号
+                    // "payment_type": 1,//支付方式（1:支付宝；2:微信；3:余额）
+                    // "amount": 120, //金额
+                    // "comment_score": null, //订单评分
+                    // "comment_time": '2015-03-08 12:34:44', //订单评论时间
+                    // "comment_content": '评论内容评论内容评论内容评论内容品论内容评论内容评论内容评论内容', //订单评论内容
+                    // "comment_images": [
+                    //     "/uploads/a2/ab/da7f76418372eacd8c3410d53a5a6a0e79d4.png",
+                    //     "/uploads/1c/c3/fbeb379b103be64b4ff74e99f61846386eb2.png",
+                    //     "/uploads/1c/c3/fbeb379b103be64b4ff74e99f61846386eb2.png",
 
-                    ], //订单评论图片
-                    "order_time": "2018-05-16 08:29:56",//下单时间
-                    "pay_time": null, //支付时间
-                    "course_name": "THAI_BOXING",//课程名
-                    "course_duration": 120, //课程时长
-                    "course_validity": "2018-08-25", //课程有效期
-                    "user_mobile": "10000000000", //用户手机号
-                    "user_id": 5, //用户id
-                    "user_nickname": "赵柳", //用户昵称
-                    "boxer_name": "张三", //拳手姓名
-                    "boxer_mobile": "111111111", //拳手手机号
-                    "object_id": 1, //课程id
-                    "club_name": "club01" //拳手所在拳馆
+                    // ], //订单评论图片
+                    // "order_time": "2018-05-16 08:29:56",//下单时间
+                    // "pay_time": null, //支付时间
+                    // "course_name": "THAI_BOXING",//课程名
+                    // "course_duration": 120, //课程时长
+                    // "course_validity": "2018-08-25", //课程有效期
+                    // "user_mobile": "10000000000", //用户手机号
+                    // "user_id": 5, //用户id
+                    // "user_nickname": "赵柳", //用户昵称
+                    // "boxer_name": "张三", //拳手姓名
+                    // "boxer_mobile": "111111111", //拳手手机号
+                    // "object_id": 1, //课程id
+                    // "club_name": "club01" //拳手所在拳馆
                 }
             }
         },
@@ -281,7 +281,7 @@
                 let $this   = this
                 this.ajax('/course/order/'+id,'get',{},{}).then(function(res){
                     if(res&&res.data){
-                        // $this.result=res.data;
+                        $this.result=res.data;
                         $this.starValue = res.data.comment_score;
                         switch ($this.result.status){
                             case 1 :
@@ -319,26 +319,27 @@
             confirm(val){
                 let $this = this;
                 this.addData.change_amount=val*100;
-                this.addData.change_type='INCREASE_MONEY_OFFICIAL_RECHARGE';
-                this.ajax('/money/change','post',this.addData).then(function(res){
-                    if(res&&res.data){
-                        $this.tableData[$this.addData.index].money_balance = res.data.remain_amount
-                        $this.dialog_label_data.isshow=false;
+                console.log(val)
+                this.dialog_label_data.isshow=false;
+                // this.ajax('/money/change','post',this.addData).then(function(res){
+                //     if(res&&res.data){
+                //         $this.tableData[$this.addData.index].money_balance = res.data.remain_amount
+                //         $this.dialog_label_data.isshow=false;
                         
-                    }
+                //     }
 
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
+                // },function(err){
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             console.log(errors[key])
+                //             // return
+                //         } 
+                //     } 
+                // })
 
             },
-            addCount(){
+            addCount(id){
                 this.addData.user=id
                 this.dialog_label_data.isshow=true
             },

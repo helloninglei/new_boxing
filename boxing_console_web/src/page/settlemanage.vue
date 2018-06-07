@@ -19,17 +19,17 @@
                             <el-form-item label="实际结算时间" label-width="122px" class='width_change'>
                                <el-date-picker
                                 v-model="form.start_date"
-                                type="datetime"
+                                type="date"
                                 :default-value= "new Date()"
-                                value-format="yyyy-MM-dd hh:mm:ss"
+                                value-format="yyyy-MM-dd"
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
                                 v-model="form.end_date"
-                                type="datetime"
-                                value-format="yyyy-MM-dd hh:mm:ss"
-                                :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                :default-value= "(new Date()).setTime((new Date()).getTime()+24*60*60*1000)"
                                 placeholder="请选择" class="margin_rt25">
                                 </el-date-picker>
                             </el-form-item>
@@ -38,11 +38,11 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="课程">
-                               <el-select v-model="form.course" class="margin_rt25">
+                                <el-select v-model="form.course">
                                     <el-option value="" label="全部">全部</el-option>
-                                    <el-option value="泰拳" label="泰拳">泰拳</el-option>
+                                    <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
+                                    <el-option value="BOXING" label="拳击">拳击</el-option>
                                     <el-option value="MMA" label="MMA">MMA</el-option>
-                                    <el-option value="拳击" label="拳击">拳击</el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -110,12 +110,12 @@
                     
                 ],
                 tableColumn:[
-                    {title:'order_id',      name :'订单号',    width:'145'},
+                    {title:'order_id',      name :'订单号',    width:'50'},
                     {title:'course_name',      name :'课程',      width:''},
                     {title:'boxer_name',       name :'拳手姓名',   width:''},
-                    {title:'boxer_mobile',           name :'拳手手机号', width:''},
+                    {title:'boxer_mobile',           name :'拳手手机号', width:'95'},
                     {title:'course_amount',            name :'课程金额', width:''},
-                    {title:'buyer_mobile',       name :'买家',   width:''},
+                    {title:'buyer_mobile',       name :'买家',   width:'95'},
                     {title:'predicted_settle_date',         name :'预计结算日期',width:''},
                     {title:'settled',  name :'结算状态',   width:''},
                     {title:'actual_settle_date',         name :'实际结算日期',width:''},
@@ -166,7 +166,8 @@
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
+                this.page    = val;
+                this.getTableData(val)
             },
             toDetail(row){
                 // console.log(row)
