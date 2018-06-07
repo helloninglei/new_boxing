@@ -209,16 +209,8 @@ class RegisterSerializer(serializers.Serializer):
         wechat_openid, weibo_openid, mobile = attrs.get('wechat_openid'), attrs.get('weibo_openid'), attrs['mobile']
         if wechat_openid and weibo_openid:
             raise ValidationError("不能同时给微信和微博绑定手机号!")
-        if User.objects.filter(mobile=attrs['mobile']).exists() and not wechat_openid and not weibo_openid:
+        if User.objects.filter(mobile=attrs['mobile']).exists():
             raise ValidationError({"message": "手机号已存在！"})
-        if wechat_openid and (
-                    User.objects.filter(wechat_openid=wechat_openid).exists() or User.objects.filter(mobile=mobile,
-                                                                                                     wechat_openid__isnull=False).exists()):
-            raise ValidationError("该微信已注册或该手机号已绑定微信！")
-        if weibo_openid and (
-                    User.objects.filter(weibo_openid=weibo_openid).exists() or User.objects.filter(mobile=mobile,
-                                                                                                   weibo_openid__isnull=False).exists()):
-            raise ValidationError("该微博已注册或该手机号已绑定微博！")
         if not verify_code_service.check_verify_code(mobile=mobile, verify_code=attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
@@ -233,6 +225,8 @@ class RegisterWithInfoSerializer(serializers.Serializer):
     def validate(self, attrs):
         if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
             raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
+        if User.objects.filter(mobile=attrs['mobile']).exists():
+            raise ValidationError("该手机号已提交个人资料!")
         return attrs
 
 
@@ -581,16 +575,4 @@ class SocialLoginSerializer(serializers.Serializer):
             raise ValidationError("wechat_openid、weibo_openid至少有一个不能为空！")
         if wechat_openid and weibo_openid:
             raise ValidationError("wechat_openid、weibo_openid只能传一个！")
-        return attrs
-
-
-class MobileIsBindAnotherSocialAccountSerializer(serializers.Serializer):
-    openid_type = serializers.CharField()
-    mobile = serializers.CharField(validators=[validate_mobile])
-
-    def validate(self, attrs):
-        openid_type = attrs.pop("openid_type")
-        if openid_type not in ['weibo_openid', "wechat_openid"]:
-            raise ValidationError("openid_type只能是weibo_openid或wechat_openid")
-        attrs[f'{openid_type}__isnull'] = False
         return attrs
