@@ -84,6 +84,5 @@ def share_view(request, object_type, object_id):
 @authentication_classes([])
 @permission_classes([])
 def second_share_signature(request):
-    base_url = settings.BASE_URL[:-1] if settings.BASE_URL.endswith("/") else settings.BASE_URL
-    request_url = f"{base_url}{request.get_full_path()}"
-    return Response(Sign(request_url).sign())
+    url = request.query_params.get("url")
+    return Response(Sign(url).sign())
