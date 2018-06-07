@@ -19,7 +19,7 @@ from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
-from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_DICT, \
+from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_LIST, \
     USER_IDENTITY_DICT
 from boxing_app.views import register
 from boxing_app.views import login
@@ -180,7 +180,7 @@ wallet_urls = [
     path("recharge_log", RechargeLogViewSet.as_view({"get": "list"}))
 ]
 
-share_object_string = '|'.join(SHARE_OBJECT_DICT.keys())
+share_object_string = '|'.join(SHARE_OBJECT_LIST)
 share_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view,
             name='share'),

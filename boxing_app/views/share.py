@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo
+from biz.models import Message, HotVideo, GameNews
 from biz.redis_client import incr_number_of_share
 from biz.utils import get_model_class_by_name, get_share_img_url
 
@@ -61,11 +61,16 @@ def share_view(request, object_type, object_id):
         title = obj.name
         sub_title = '拳民出击'
         picture = get_share_img_url(obj.try_url, is_video=True)
-    else:
+    elif isinstance(obj, GameNews):
         title = obj.title
         sub_title = obj.sub_title
         picture = get_share_img_url(obj.picture)
         user = obj.operator
+    else:  # course order  TODO 等待course order 重构
+        title = obj.course_name
+        sub_title = ''
+        picture = ''
+        user = obj.boxer.user_id
 
     plural_prefix = 's' if object_type != 'game_news' else ''
     data = {

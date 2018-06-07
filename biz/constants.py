@@ -151,7 +151,12 @@ COMMENT_OBJECT_DICT = {
 }
 
 # 分享
-SHARE_OBJECT_DICT = COMMENT_OBJECT_DICT
+SHARE_OBJECT_LIST = (
+    'message',
+    'hot_video',
+    'game_news',
+    'course_order',
+)
 
 # 支付
 PAYMENT_OBJECT_DICT = {

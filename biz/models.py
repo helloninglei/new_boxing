@@ -328,7 +328,7 @@ class HotVideo(BaseAuditModel):
     description = models.CharField(max_length=140)
     url = models.CharField(max_length=200)
     try_url = models.CharField(max_length=200)
-    price = models.PositiveIntegerField()  # 单位元
+    price = models.PositiveIntegerField()  # 单位分
     is_show = models.BooleanField(default=True, db_index=True)
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
@@ -440,7 +440,7 @@ class CourseSettleOrder(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     settled = models.BooleanField(default=False)
     settled_date = models.DateField(null=True)
-    settled_amount = models.PositiveIntegerField(null=True)  # 单位元
+    settled_amount = models.PositiveIntegerField(null=True)  # 单位分
 
     class Meta:
         db_table = 'course_settle_order'
