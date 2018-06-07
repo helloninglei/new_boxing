@@ -361,8 +361,7 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BoxerIdentification
-        fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
-                  "is_professional_boxer", "real_name", "weight", "club", "mobile", "competition_video"]
+        exclude = ['id', "created_time", "updated_time", "identity_number", "user"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
