@@ -43,7 +43,7 @@ REDIS_DB = 5
 # base url
 BASE_URL = ""
 
-SHARE_H5_BASE_URL = 'http://39.105.73.10/#!/'
+SHARE_H5_BASE_URL = 'http://qa.bituquanguan.com/share/#/'
 
 if ENVIRONMENT == TEST:
     REDIS_DB = 15  # 用于单元测试，每次会被清空

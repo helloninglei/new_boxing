@@ -49,6 +49,8 @@ def share_view(request, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
     obj = get_object_or_404(model_class, pk=object_id)
     sub_title = picture = ''
+    plural_prefix = 's' if object_type != 'game_news' else ''
+    url = f'{h5_base_url}{object_type}{plural_prefix}/{object_id}'
     if isinstance(obj, Message):
         user = obj.user
         title = obj.content
@@ -63,18 +65,18 @@ def share_view(request, object_type, object_id):
         title = obj.name
         sub_title = '拳民出击'
         picture = get_share_img_url(obj.try_url, is_video=True)
+        url = f'{h5_base_url}hot_videos/{user.id}/{object_id}'
     else:
         title = obj.title
         sub_title = obj.sub_title
         picture = get_share_img_url(obj.picture)
         user = obj.operator
 
-    plural_prefix = 's' if object_type != 'game_news' else ''
     data = {
         'title': _truncate_text(title, 14),
         'sub_title': _truncate_text(sub_title, 20),
         'picture': picture,
-        'url': f'{h5_base_url}{object_type}{plural_prefix}/{object_id}',
+        'url': url,
     }
     incr_number_of_share(user.id)
     return Response(data)
