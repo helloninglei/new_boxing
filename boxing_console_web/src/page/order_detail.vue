@@ -79,7 +79,7 @@
                     <div class='detail_title'>支付金额</div>
                 </el-col>
                 <el-col :span="23">
-                    <div class='detail_content margin_lf'> aaaaaaaaaa缺数据aaaaaaaaaaaaaa单价元/次</div>
+                    <div class='detail_content margin_lf'> {{result.amount/100+'.00'}}元/次</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>

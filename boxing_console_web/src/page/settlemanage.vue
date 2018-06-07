@@ -147,6 +147,8 @@
                         console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].settled=res.data.results[i].settled? "已结算":"待结算"
+                            res.data.results[i].course_amount=(res.data.results[i].course_amount/100).toFixed(2)
+                            res.data.results[i].settled_amount=(res.data.results[i].settled_amount/100).toFixed(2)
                         }
                         $this.tableData=res.data.results;
                         $this.total = res.data.count;

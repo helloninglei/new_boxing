@@ -118,6 +118,7 @@ nav{min-height: 528px}
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
+                            res.data.results[i].price=(res.data.results[i].price/100).toFixed(2);
                             if(res.data.results[i].course_name=='BOXING'){
                                 res.data.results[i].course_name='拳击'
                             }else if(res.data.results[i].course_name=='THAI_BOXING'){

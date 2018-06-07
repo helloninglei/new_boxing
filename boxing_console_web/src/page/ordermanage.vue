@@ -189,6 +189,7 @@ nav{min-height: 528px}
                             }else{
                                 res.data.results[i].payment_type_name='余额'
                             }
+                            res.data.results[i].amount = (res.data.results[i].amount/100).toFixed(2)
                             switch (res.data.results[i].status){
                                 case 1 :
                                 res.data.results[i].status_name='待付款';
