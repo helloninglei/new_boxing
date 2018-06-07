@@ -80,7 +80,7 @@ class PayService:
             user=user,
             content_object=obj,
             payment_type=payment_type,
-            amount=amount if amount else obj.price * 100,
+            amount=amount if amount else obj.price,
             device=device,
             out_trade_no=cls.generate_out_trade_no()
         )
@@ -96,7 +96,7 @@ class PayService:
     def get_alipay_payment_info(cls, out_trade_no, amount, name):
         return alipay.api_alipay_trade_app_pay(
             out_trade_no=out_trade_no,
-            total_amount=amount / 100,
+            total_amount=amount / 100,  # 支付宝要求单位是元
             subject=name,
             notify_url=settings.ALIPAY['app_notify_url']
         )
@@ -197,7 +197,6 @@ class PayService:
             return {
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
                 'name': name,
-                'amount': pay_order.amount / 100,
                 'pay_type': pay_order.get_payment_type_display(),
                 'pay_time': timezone.localtime(pay_order.pay_time).strftime(
                     datetime_format) if pay_order.pay_time else None,

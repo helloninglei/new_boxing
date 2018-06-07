@@ -5,7 +5,7 @@ from pypinyin import pinyin, Style
 from biz import models
 from biz.constants import DEVICE_PLATFORM_IOS, DEVICE_PLATFORM_ANDROID
 
-oss_base_url = settings.OSS_CONFIG['url']
+oss_base_url = settings.OSS_BASE_URL
 
 
 def get_client_ip(request):
