@@ -40,6 +40,9 @@ REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
 
+# base url
+BASE_URL = ""
+
 SHARE_H5_BASE_URL = 'http://39.105.73.10/#!/'
 
 if ENVIRONMENT == TEST:
@@ -120,6 +123,11 @@ IOS_VERSION = {
 }
 
 ALIPAY_NOTIFY_URL = ""
+
+WEIXIN_PUBLIC_PLATFORM_CONF = {
+    "app_id": "",
+    "app_secret": ""
+}
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
