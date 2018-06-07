@@ -242,20 +242,18 @@ class CourseOrderSerializer(serializers.ModelSerializer):
     user_mobile = serializers.CharField(source='user.mobile', read_only=True)
     user_id = serializers.IntegerField(source='user.pk', read_only=True)
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
-    course_name = serializers.CharField(source='content_object.course_name', read_only=True)
-    course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
-    course_price = serializers.IntegerField(source='content_object.price', read_only=True)
-    course_validity = serializers.DateField(source='content_object.validity', read_only=True)
-    boxer_id = serializers.IntegerField(source='content_object.boxer.pk', read_only=True)
-    boxer_name = serializers.CharField(source='content_object.boxer.real_name', read_only=True)
-    boxer_mobile = serializers.CharField(source='content_object.boxer.mobile', read_only=True)
-    club_name = serializers.CharField(source='content_object.club.name', read_only=True)
+    boxer_id = serializers.IntegerField(source='boxer.pk', read_only=True)
+    boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
+    boxer_mobile = serializers.CharField(source='boxer.mobile', read_only=True)
+    club_name = serializers.CharField(source='club.name', read_only=True)
+    out_trade_no = serializers.IntegerField(source='pay_order.out_trade_no', read_only=True)
+    payment_type = serializers.IntegerField(source='pay_order.payment_type', read_only=True)
 
     class Meta:
-        model = PayOrder
+        model = models.CourseOrder
         fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
                   "course_name", "course_duration", "course_validity", "course_price", "user_mobile",
-                  "user_id", "user_nickname", "boxer_name", "boxer_mobile", "object_id", "club_name",
+                  "user_id", "user_nickname", "boxer_name", "boxer_mobile", "club_name",
                   'boxer_id')
 
 

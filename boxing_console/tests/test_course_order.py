@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub, CourseSettleOrder
+from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub, CourseSettleOrder, \
+    CourseOrder
 
 
 class CourseOrderTestCase(APITestCase):
@@ -50,7 +51,7 @@ class CourseOrderTestCase(APITestCase):
             "validity": "2018-08-25",
             "club": None
         }
-        self.course_order_data = {
+        self.pay_order_data = {
             "user": self.user1,
             "content_object": None,
             "status": constants.PAYMENT_STATUS_WAIT_USE,
@@ -79,16 +80,36 @@ class CourseOrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
+        self.pay_order_data['content_object'] = course
 
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.other_order_data)
+        pay_order1 = PayOrder.objects.create(**self.pay_order_data)
+        pay_order2 = PayOrder.objects.create(**self.pay_order_data)
+        pay_order3 = PayOrder.objects.create(**self.other_order_data)
+
+        course_order_data = {
+            "pay_order": pay_order1,
+            "boxer": boxer,
+            "user": self.user1,
+            "club": club,
+            "course": course,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": pay_order1.out_trade_no,
+        }
+        CourseOrder.objects.create(**course_order_data)
+        course_order_data['pay_order'] = pay_order2
+        course_order_data['order_number'] = pay_order2.out_trade_no
+        CourseOrder.objects.create(**course_order_data)
+        course_order_data['pay_order'] = pay_order3
+        course_order_data['order_number'] = pay_order3.out_trade_no
+        CourseOrder.objects.create(**course_order_data)
 
         # 只返回课程相关的订单
         res = self.client.get('/course/orders')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['count'], 2)
+        self.assertEqual(res.data['count'], 3)
 
         # 通过用户手机号搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.other_order_data['user']})
@@ -146,29 +167,39 @@ class CourseOrderTestCase(APITestCase):
 
     def test_course_detail(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
-        UserProfile.objects.create(**self.user_profile_data)
+        user_profile = UserProfile.objects.create(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
+        self.pay_order_data['content_object'] = course
 
-        course_order = PayOrder.objects.create(**self.course_order_data)
+        pay_order = PayOrder.objects.create(**self.pay_order_data)
+        course_order_data = {
+            "pay_order": pay_order,
+            "boxer": boxer,
+            "user": self.user1,
+            "club": club,
+            "course": course,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": pay_order.out_trade_no,
+        }
+        course_order = CourseOrder.objects.create(**course_order_data)
         res = self.client.get(f'/course/order/{course_order.pk}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
+        self.assertEqual(res.data['out_trade_no'], self.pay_order_data['out_trade_no'])
+        self.assertEqual(res.data['course_name'], course_order_data['course_name'])
+        self.assertEqual(res.data['course_price'], course_order_data['course_price'])
+        self.assertEqual(res.data['course_duration'], course_order_data['course_duration'])
+        self.assertEqual(res.data['course_name'], course_order_data['course_name'])
+        self.assertEqual(res.data['user_mobile'], self.user1.mobile)
+        self.assertEqual(res.data['user_nickname'], user_profile.nick_name)
 
-        for key in self.course_order_data.keys():
-            if key == 'user':
-                self.assertEqual(self.course_order_data[key], User.objects.get(pk=res.data['user_id']))
-            elif key == 'content_object':
-                self.assertEqual(self.course_order_data[key], Course.objects.get(pk=res.data['object_id']))
-            elif key == 'device':
-                pass
-            elif key == 'pay_time':
-                self.assertEqual(self.course_order_data[key].strftime('%Y-%m-%d %H:%M:%S'), res.data.get(key))
-            else:
-                self.assertEqual(self.course_order_data[key], res.data.get(key))
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['course_price'], self.course_data['price'])
 
@@ -180,10 +211,10 @@ class CourseOrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
+        self.pay_order_data['content_object'] = course
 
-        order1 = PayOrder.objects.create(**self.course_order_data)
-        order2 = PayOrder.objects.create(**self.course_order_data)
+        order1 = PayOrder.objects.create(**self.pay_order_data)
+        order2 = PayOrder.objects.create(**self.pay_order_data)
         order3 = PayOrder.objects.create(**self.other_order_data)
 
         CourseSettleOrder.objects.create(order=order1, course=course)
@@ -196,7 +227,7 @@ class CourseOrderTestCase(APITestCase):
         res = self.client.get('/course/settle_orders', {'buyer': '123'})
         self.assertEqual(res.data['count'], 0)
 
-        res = self.client.get('/course/settle_orders', {'buyer': self.course_order_data['user'].mobile})
+        res = self.client.get('/course/settle_orders', {'buyer': self.pay_order_data['user'].mobile})
         self.assertEqual(res.data['count'], 3)
 
         res = self.client.get('/course/settle_orders', {'boxer': '李四'})
@@ -231,5 +262,3 @@ class CourseOrderTestCase(APITestCase):
 
         res = self.client.get('/course/settle_orders', {'start_date': '2018-05-22'})
         self.assertEqual(res.data['count'], 0)
-
-

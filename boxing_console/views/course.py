@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
 
-from biz.models import Course, PayOrder, CourseSettleOrder
+from biz.models import Course, PayOrder, CourseSettleOrder, CourseOrder
 from boxing_console.filters import CourseFilter, CourseOrderFilter, CourseSettleOrderFilter
 from boxing_console.serializers import CourseSerializer, CourseOrderSerializer, CourseSettleOrderSerializer
 
@@ -22,7 +22,7 @@ class CourseOrderViewSet(viewsets.ModelViewSet):
     filter_class = CourseOrderFilter
 
     def get_queryset(self):
-        return PayOrder.objects.filter(content_type=ContentType.objects.get_for_model(Course))
+        return CourseOrder.objects.all()
 
 
 class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):
