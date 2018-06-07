@@ -196,6 +196,17 @@ DATABASES = {
         'TEST': {
             'CHARSET': 'utf8mb4',
         }
+    },
+    'old_boxing': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'old_boxing',
+        'HOST': DB_MYSQL_HOST,
+        'PORT': DB_MYSQL_PORT,
+        'USER': DB_MYSQL_USER,
+        'PASSWORD': DB_MYSQL_PASSWORD,
+        'OPTIONS': {
+            'charset': 'utf8mb4'
+        },
     }
 }
 

@@ -394,6 +394,17 @@ class GameNews(BaseAuditModel):
         verbose_name = '赛事资讯'
 
 
+class UserReadNews(models.Model):
+    news = models.ForeignKey(GameNews, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('news', 'user')
+        db_table = 'user_read_news'
+        ordering = ('-created_time',)
+
+
 class Report(BaseAuditModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
