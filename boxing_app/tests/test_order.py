@@ -147,9 +147,9 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
         self.assertEqual(res.data['user_id'], self.test_user_1.id)
-        self.assertEqual(res.data['user_nickname'],  self.user_profile_data['nick_name'])
-        self.assertEqual(res.data['user_gender'],  self.user_profile_data['gender'])
-        self.assertEqual(res.data['user_avatar'],  self.user_profile_data['avatar'])
+        self.assertEqual(res.data['user_nickname'], self.user_profile_data['nick_name'])
+        self.assertEqual(res.data['user_gender'], self.user_profile_data['gender'])
+        self.assertEqual(res.data['user_avatar'], self.user_profile_data['avatar'])
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
         self.assertEqual(res.data['course_validity'], self.course_data['validity'])
@@ -270,6 +270,7 @@ class OrderTestCase(APITestCase):
         self.assertIsNone(course_order.pay_order)
         self.assertEqual(course_order.boxer, boxer)
         self.assertEqual(course_order.course, course)
+
 
     def test_delete_order(self):
         # 为拳手用户test_user_1创建1个课程
