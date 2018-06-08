@@ -282,20 +282,21 @@
             this.query = this.$route.query;
             if(this.query.id){
                 //编辑
+                console.log(this.query)
                 this.form=this.query;
-                this.dateArr=[this.query.start_time,this.query.end_time]
+                this.dateArr=[this.query.start_time?this.query.start_time:'',this.query.end_time?this.query.end_time:'']
                 this.imgUrl = this.form.picture ;
                 this.confirmText = '修改'
-                console.log(this.form)
             }else{
                 // 2018-06-12 08:06:08
                 let startDate = new Date();
                 let endDate   = new Date();
                 startDate.setMinutes(startDate.getMinutes()+5);
                 endDate.setDate(endDate.getDate()+1);
-                this.dateArr=[startDate,endDate]
+                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
             }
             this.isshowPrev();
+            this.getDateTime();
         },
 
         computed: {

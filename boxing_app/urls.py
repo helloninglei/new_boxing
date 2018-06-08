@@ -7,7 +7,8 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.urls import include, path, re_path
 from django.conf import settings
 from biz.views import upload_file
-from boxing_app.views.boxer import BoxerIdentificationViewSet, NearbyBoxerListViewSet, get_boxer_status
+from boxing_app.views.boxer import BoxerIdentificationViewSet, NearbyBoxerListViewSet, get_boxer_status, \
+    change_boxer_accept_order_status
 from boxing_app.views import message
 from boxing_app.views import comment
 from boxing_app.views import report
@@ -34,6 +35,7 @@ from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
 from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
+from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
@@ -72,8 +74,8 @@ report_urls = [
 boxer_url = [
     path('boxer/identification', boxer_identification, name='boxer_identification'),
     path('nearby/boxers', NearbyBoxerListViewSet.as_view({'get': 'list'}), name='nearby-boxer'),
-    path('get-boxer-status', get_boxer_status)
-
+    path('get-boxer-status', get_boxer_status),
+    re_path(r'^boxer/accept-order/(?P<is_accept>(open|close))', change_boxer_accept_order_status)
 ]
 
 club_url = [
@@ -83,6 +85,8 @@ club_url = [
 
 course_url = [
     path('boxer/course', BoxerMyCourseViewSet.as_view({'get': 'list', 'post': 'update'})),
+    path('boxer/<int:boxer_id>/course', BoxerMyCourseViewSet.as_view({'get': 'opened_courses_list'})),
+
 ]
 
 order_url = [
@@ -95,7 +99,7 @@ order_url = [
 order_comment_url = [
     path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
-    path('boxer-course-order-comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
+    path('boxer/<int:boxer_id>/comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
 ]
 
 city_url = [
@@ -192,6 +196,10 @@ version_urls = [
     path("version", version)
 ]
 
+social_login_urls = [
+    path("social_login", social_login),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -216,6 +224,7 @@ urlpatterns += share_urls
 urlpatterns += club_url
 urlpatterns += city_url
 urlpatterns += version_urls
+urlpatterns += social_login_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

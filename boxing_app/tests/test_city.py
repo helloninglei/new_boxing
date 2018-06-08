@@ -97,8 +97,8 @@ class CityTestCase(APITestCase):
         Course.objects.create(**self.course_data)
 
         res = self.client1.get('/boxer_cities')
-        self.assertEqual(len(res.data), 4)
-        self.assertEqual(res.data[0], ('B', '北京市'))
-        self.assertEqual(res.data[1][0], 'C')
-        self.assertEqual(res.data[2][0], 'C')
-        self.assertEqual(res.data[3], ('G', '广州市'))
+        self.assertEqual(len(res.data['boxerCityList']), 4)
+        self.assertEqual(res.data['boxerCityList'][0], {'cityLetter': 'B', 'cityName': '北京市'})
+        self.assertEqual(res.data['boxerCityList'][1]['cityLetter'], 'C')
+        self.assertEqual(res.data['boxerCityList'][2]['cityLetter'], 'C')
+        self.assertEqual(res.data['boxerCityList'][3], {'cityLetter': 'G', 'cityName': '广州市'})

@@ -48,7 +48,6 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
             content = request.data.get('refuse_reason')
             sms_client.send_boxer_refuse_message(boxer.mobile, refuse_reason=content)
-
         log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,
                                            operation_type=operation_type,
