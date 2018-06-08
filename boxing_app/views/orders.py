@@ -1,6 +1,7 @@
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import permission_classes
@@ -46,14 +47,24 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        serializer = PaySerializer(data=request.data, context={'request': request, 'object_type': 'course'})
-        serializer.is_valid(raise_exception=True)
-        course = serializer.data['content_object']
+        course = get_object_or_404(Course, id=kwargs['course_id'])
         if request.user == course.boxer.user:
             return Response({"message": "拳手不能购买自己的课程"}, status=status.HTTP_400_BAD_REQUEST)
-        pay_order = self.create_pay_order(request, serializer)
-        self.create_course_order(request, course, pay_order)
-        return Response(status=status.HTTP_201_CREATED)
+        course_order_data = {
+            "boxer": course.boxer.pk,
+            "user": request.user.pk,
+            "club": course.club.pk,
+            "course": course.pk,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": PayService.generate_out_trade_no()
+        }
+        serializer = self.get_serializer(data=course_order_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -61,29 +72,6 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             return Response({"message":'订单不是未支付状态，不能删除'}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @staticmethod
-    def create_pay_order(request, serializer):
-        return PayService.perform_create_order(
-            user=request.user,
-            obj=serializer.data['content_object'],
-            payment_type=serializer.validated_data.get('payment_type'),
-            device=serializer.data['device'])
-
-    @staticmethod
-    def create_course_order(request, course, pay_order):
-        return CourseOrder.objects.create(
-            pay_order=pay_order,
-            boxer=course.boxer,
-            user=request.user,
-            club=course.club,
-            course=course,
-            course_name=course.course_name,
-            course_price=course.price,
-            course_duration=course.duration,
-            course_validity=course.validity,
-            order_number=pay_order.out_trade_no,
-        )
 
 
 class CourseOrderCommentViewSet(viewsets.ModelViewSet):

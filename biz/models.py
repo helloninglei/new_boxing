@@ -361,7 +361,7 @@ class PayOrder(models.Model):
 
 
 class CourseOrder(models.Model):
-    pay_order = models.OneToOneField(PayOrder, on_delete=models.PROTECT, related_name='business_order')
+    pay_order = models.OneToOneField(PayOrder, on_delete=models.PROTECT, null=True, related_name='business_order')
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.PROTECT, related_name='boxer_course_order')
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user_course_order')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False)
@@ -381,6 +381,10 @@ class CourseOrder(models.Model):
     user_confirm_time = models.DateTimeField(null=True)
     finish_time = models.DateTimeField(null=True)  # 订单完成时间
     amount = models.PositiveIntegerField(null=True)  # 订单金额，单位分
+
+    class Meta:
+        db_table = 'course_order'
+        ordering = ('-order_time',)
 
 
 class OrderComment(SoftDeleteModel):

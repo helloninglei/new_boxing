@@ -6,7 +6,7 @@ from django.db.transaction import atomic
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
-from biz.models import PayOrder, User, HotVideo, Course
+from biz.models import PayOrder, User, HotVideo, Course, CourseOrder
 from biz.redis_client import get_order_no_serial
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
@@ -169,8 +169,11 @@ class PayService:
                 change_money(user=pay_order.content_object, amount=pay_order.amount,
                              change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
                              remarks=pay_order.out_trade_no)
-            elif isinstance(pay_order.content_object, Course):
+            elif isinstance(pay_order.content_object, CourseOrder):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
+                pay_order.content_object.pay_order = pay_order
+                pay_order.content_object.status = PAYMENT_STATUS_WAIT_USE
+                pay_order.content_object.save()
             else:
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
 
