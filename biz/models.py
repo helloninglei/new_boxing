@@ -375,12 +375,11 @@ class CourseOrder(models.Model):
                                       db_index=True)
     order_time = models.DateTimeField(auto_now_add=True)
     pay_time = models.DateTimeField(null=True)
-    confirm_status = models.SmallIntegerField(choices=constants.ORDER_CONFIRM_STATUS,
-                                              default=constants.ORDER_STATUS_NOT_CONFIRMED)
+    confirm_status = models.SmallIntegerField(choices=constants.COURSE_ORDER_CONFIRM_STATUS,
+                                              default=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
     boxer_confirm_time = models.DateTimeField(null=True)
     user_confirm_time = models.DateTimeField(null=True)
     finish_time = models.DateTimeField(null=True)  # 订单完成时间
-    settle_time = models.DateTimeField(null=True)  # 结算时间
     amount = models.PositiveIntegerField(null=True)  # 订单金额，单位分
 
 
