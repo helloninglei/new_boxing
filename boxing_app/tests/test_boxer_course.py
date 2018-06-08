@@ -81,7 +81,7 @@ class CourseTestCase(APITestCase):
         # 修改未开通课程，不需要校验数据
         update_res = self.client1.post('/boxer/course', data=json.dumps(update_course_data),
                                        content_type='application/json')
-        self.assertEqual(update_res.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(update_res.status_code, status.HTTP_204_NO_CONTENT)
 
         # 修改开通课程，需要校验数据（数据不合法，校验失败）
         course3_data['price'] = ''
@@ -95,7 +95,7 @@ class CourseTestCase(APITestCase):
         update_course_data["course_list"] = [{**course1_data}, {**course2_data}, {**course3_data}]
         update_res = self.client1.post('/boxer/course', data=json.dumps(update_course_data),
                                        content_type='application/json')
-        self.assertEqual(update_res.status_code, status.HTTP_302_FOUND)
+        self.assertEqual(update_res.status_code, status.HTTP_204_NO_CONTENT)
 
         # 比较修改后的课程数据与修改数据是否一致
         course_list_res = self.client1.get('/boxer/course')

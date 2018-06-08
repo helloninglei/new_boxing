@@ -58,7 +58,7 @@ class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrderCommentSerializer
 
     def get_queryset(self):
-        boxer = models.BoxerIdentification.objects.filter(user=self.request.user).only('id').first()
+        boxer = models.BoxerIdentification.objects.filter(id=self.kwargs['boxer_id']).only('id').first()
         return OrderComment.objects.filter(order__course__boxer=boxer)
 
     def list(self, request, *args, **kwargs):
