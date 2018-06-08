@@ -113,6 +113,7 @@ follow_url = [
     path('following', follow.FollowingView.as_view()),
     path('following/<int:user_id>', follow.FollowingView.as_view()),
     path('unfollow', follow.UnFollowView.as_view()),
+    path("contact", follow.contact_list)
 ]
 
 captcha_urls = [
