@@ -97,6 +97,7 @@ class CourseOrderTestCase(APITestCase):
             "course_duration": course.duration,
             "course_validity": course.validity,
             "order_number": pay_order1.out_trade_no,
+            "pay_time": datetime.now()
         }
         CourseOrder.objects.create(**course_order_data)
         course_order_data['pay_order'] = pay_order2
@@ -106,62 +107,62 @@ class CourseOrderTestCase(APITestCase):
         course_order_data['order_number'] = pay_order3.out_trade_no
         CourseOrder.objects.create(**course_order_data)
 
-        # 只返回课程相关的订单
+        # 获取课程订单列表
         res = self.client.get('/course/orders')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['count'], 3)
 
         # 通过用户手机号搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.other_order_data['user']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": 12222222222})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过拳手姓名搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.boxer_data['real_name']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": "你是谁"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过拳手手机号搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.boxer_data['mobile']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": 12222222222})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过大于等于支付时间过滤
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_start": self.other_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')})
-        self.assertEqual(search_order_time_res.data['count'], 2)
+            "pay_time_start": course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')})
+        self.assertEqual(search_order_time_res.data['count'], 3)
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_start": (self.other_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
+            "pay_time_start": (course_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
         self.assertEqual(search_order_time_res.data['count'], 0)
 
         # 通过小于等于支付时间过滤
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_end": (self.other_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
-        self.assertEqual(search_order_time_res.data['count'], 2)
+            "pay_time_end": (course_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
+        self.assertEqual(search_order_time_res.data['count'], 3)
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_end": (self.other_order_data['pay_time'] - timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
+            "pay_time_end": (course_order_data['pay_time'] - timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
         self.assertEqual(search_order_time_res.data['count'], 0)
 
         # 通过课程名过滤
         search_user_mobile_res = self.client.get('/course/orders', {
-            "course__course_name": self.course_data['course_name']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"course__course_name": "unkonw_course"})
+            "course_name": self.course_data['course_name']})
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
+        search_user_mobile_res = self.client.get('/course/orders', {"course_name": "unkonw_course"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过支付方式过滤
         search_user_mobile_res = self.client.get('/course/orders', {
-            "payment_type": self.other_order_data['payment_type']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"payment_type": "unknown_type"})
+            "pay_order__payment_type": self.other_order_data['payment_type']})
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
+        search_user_mobile_res = self.client.get('/course/orders', {"pay_order__payment_type": "unknown_type"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过订单状态过滤
-        search_user_mobile_res = self.client.get('/course/orders', {"status": self.other_order_data['status']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        search_user_mobile_res = self.client.get('/course/orders', {"status": constants.PAYMENT_STATUS_UNPAID})
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"status": "unknown_status"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
