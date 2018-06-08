@@ -5,7 +5,7 @@ import HotVideo from 'page/hotVideo';
 
 export default [
     {
-        path: '/trends/:id',
+        path: '/messages/:id',
         component: Trends,
         meta: {
             title: '动态详情'
@@ -16,14 +16,14 @@ export default [
         component: Download,
     },
     {
-        path: '/infoDetail/:id',
+        path: '/game_news/:id',
         component: InfoDetail,
         meta: {
             title: '资讯详情'
         }
     },
     {
-        path: '/hotVideo/:userId/:id',
+        path: '/hot_videos/:userId/:id',
         component: HotVideo,
         meta: {
             title: '热门视频',

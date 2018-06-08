@@ -53,6 +53,8 @@ body{
 }
 /*表格hover样式去掉*/
 .el-table tr.el-table__row.current-row>td,.el-table tr.el-table__row.hover-row>td{background: #fff!important}
+/*table的padding为0*/
+.el-table .cell, .el-table th div {padding-left:0;padding-right:0;}
 /*字体hover样式*/
 .colorFont{text-decoration:underline;cursor:pointer;}
 .colorFont:hover{color:#F95862;}
@@ -73,6 +75,8 @@ body{
 .el-form-item.is-success .el-input__inner, .el-form-item.is-success .el-input__inner:focus, .el-form-item.is-success .el-textarea__inner, .el-form-item.is-success .el-textarea__inner:focus {
 	border-color:#606266;
 }
+
+
 
 
 

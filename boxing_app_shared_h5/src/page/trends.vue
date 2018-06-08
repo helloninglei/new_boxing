@@ -168,7 +168,7 @@
                 showSwiper: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
                 info: {},
-                dataObj: {},
+                dataObj: '',
                 wx: ''
             }
         },
@@ -245,10 +245,12 @@
                 let Timer = '';
                 this.dataObj = '';
                 this.wx.ready(() => {
-                    Timer = setInterval(function () {
+                    Timer = setInterval(() => {
                         if (this.dataObj) {
                             clearInterval(Timer);
                             let obj = this.dataObj;
+                            console.log(obj)
+                            console.log(this.wx)
                             this.wx.onMenuShareAppMessage({
                                 title: obj.title,
                                 desc: obj.desc,

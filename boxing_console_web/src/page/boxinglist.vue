@@ -146,7 +146,8 @@
             },
             changePage(val){
                 // 要看第几页
-                this.getTableData(this.sendData,val);
+                this.page = val
+                this.getTableData(val);
             },
             filter(){
                 this.issearch=true;

@@ -15,7 +15,12 @@
                         :editable=false
                         value-format="yyyy-MM-dd hh:mm:ss">
                 </el-date-picker>
-                <el-input v-model="search"  class='myInput_40 margin_rt20' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
+                <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
+                <el-select v-model="stay_top" class="margin_tp30">
+                    <el-option value="" label="全部">全部</el-option>
+                    <el-option :value="true" label="置顶">置顶</el-option>
+                    <el-option :value="false" label="不置顶">不置顶</el-option>
+                </el-select>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70' @click.native="searchEv">查询</el-button>
             </header>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_tp30 margin_bt20' @click.native="addMatchEv">新增</el-button>
@@ -48,9 +53,13 @@
                             label="评论">
                     </el-table-column>
                     <el-table-column
+                            prop="stay_top"
+                            label="是否置顶">
+                    </el-table-column>
+                    <el-table-column
                             prop="start_time"
                             label="发布时间"
-                            width="200">
+                            width="170">
                     </el-table-column>
                     <el-table-column label="操作" width='220'>
                         <template slot-scope="scope">
@@ -91,6 +100,7 @@
                 dateArr: [],
                 start_date: '',
                 end_date: '',
+                stay_top: '',
                 hasSearch: false,
                 tableData: [],
                 confirmData:{
@@ -111,11 +121,14 @@
         methods: {
             getData(ifBtn) {
                 ifBtn && (this.page = 1);
-                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date};
+                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date,stay_top: this.stay_top};
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
                         this.tableData = res.data.results;
+                        for(var i=0;i<res.data.results.length;i++){
+                            res.data.results[i].stay_top = res.data.results[i].stay_top ? '是' : '否'
+                        }
                         this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
