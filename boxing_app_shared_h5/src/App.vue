@@ -21,5 +21,6 @@ export default {
 </script>
 
 <style lang="stylus" type="text/stylus">
+  @import "../static/css/reset.css"
   @import "./assets/common.css"
 </style>

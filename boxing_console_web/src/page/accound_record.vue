@@ -18,7 +18,7 @@
                         label="收入/支出"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.change_amount>0?'+':''}} {{scope.row.change_amount}}</span>                 
+                                <span>{{scope.row.change_amount>0?'+':''}} {{(scope.row.change_amount/100).toFixed(2)}}</span>                 
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -105,7 +105,7 @@
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData=res.data.results;
-                        $this.total_count = res.data.total_count ? res.data.total_count : 0;
+                        $this.total_count = res.data.total_count ? (res.data.total_count/100).toFixed(2) : 0;
                         $this.total = res.data.count;
                     }
 

@@ -5,13 +5,13 @@
             <header>
                 <div class="inline_item">
                     <span class="inlimeLabel">拳手</span>
-                    <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='姓名/手机号/身份证号' style='width:18rem'></el-input>
+                    <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='姓名/手机号' style='width:18rem'></el-input>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">价格区间</span>
-                    <el-input v-model="sendData.price_min"  class='myInput_40' type='number' style='width:9rem' placeholder='请输入'></el-input>
+                    <el-input v-model="sendData.price_min_int"  class='myInput_40' type='number' style='width:9rem' placeholder='请输入'></el-input>
                     <span>-</span>
-                    <el-input v-model="sendData.price_max"  class='myInput_40 margin_rt25' type='number' style='width:9rem' placeholder='请输入'></el-input>
+                    <el-input v-model="sendData.price_max_int"  class='myInput_40 margin_rt25' type='number' style='width:9rem' placeholder='请输入'></el-input>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">已开课程</span>
@@ -61,6 +61,8 @@ nav{min-height: 528px}
                 page      : 1,
                 issearch  : false,
                 sendData  : {
+                    price_min_int  : '',
+                    price_max_int  : '',
                     price_min  : '',
                     price_max  : '',
                     search     : '',
@@ -69,17 +71,6 @@ nav{min-height: 528px}
                 },
                 total     : 20,
                 tableData : [
-                    {
-                        "id": 1,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
                     
                 ],
                 tableColumn:[
@@ -108,6 +99,8 @@ nav{min-height: 528px}
                 let sendData={}
                 if(this.issearch){
                    sendData=this.sendData
+                   sendData.price_min = this.sendData.price_min_int?this.sendData.price_min_int*100:'';
+                   sendData.price_max = this.sendData.price_max_int?this.sendData.price_max_int*100:'';
                 }
                 if(page){
                     sendData.page=page
@@ -118,6 +111,7 @@ nav{min-height: 528px}
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
+                            res.data.results[i].price=(res.data.results[i].price/100).toFixed(2);
                             if(res.data.results[i].course_name=='BOXING'){
                                 res.data.results[i].course_name='拳击'
                             }else if(res.data.results[i].course_name=='THAI_BOXING'){

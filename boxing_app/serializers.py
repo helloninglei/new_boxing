@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, OrderComment, BoxingClub
+from biz.models import PayOrder, OrderComment, BoxingClub, User
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -111,7 +111,6 @@ class MessageSerializer(serializers.ModelSerializer):
         if data.get('video') and data.get('images'):
             raise ValidationError({'video': ['视频和图片不可同时上传']})
         if not data.get('content') and not data.get('images') and not data.get('video'):
-
             raise ValidationError({'message': ['文字、图片、视频需要至少提供一个']})
         return data
 
@@ -203,11 +202,16 @@ class RegisterSerializer(serializers.Serializer):
     mobile = serializers.CharField(validators=[validate_mobile])
     password = serializers.CharField(validators=[validate_password])
     verify_code = serializers.CharField()
+    wechat_openid = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    weibo_openid = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     def validate(self, attrs):
-        if models.User.objects.filter(mobile=attrs['mobile']).exists():
+        wechat_openid, weibo_openid, mobile = attrs.get('wechat_openid'), attrs.get('weibo_openid'), attrs['mobile']
+        if wechat_openid and weibo_openid:
+            raise ValidationError("不能同时给微信和微博绑定手机号!")
+        if User.objects.filter(mobile=attrs['mobile']).exists():
             raise ValidationError({"message": "手机号已存在！"})
-        if not verify_code_service.check_verify_code(mobile=attrs['mobile'], verify_code=attrs['verify_code']):
+        if not verify_code_service.check_verify_code(mobile=mobile, verify_code=attrs['verify_code']):
             raise ValidationError({"message": "短信验证码错误！"})
         return attrs
 
@@ -221,6 +225,8 @@ class RegisterWithInfoSerializer(serializers.Serializer):
     def validate(self, attrs):
         if not redis_client.exists(redis_const.REGISTER_INFO.format(mobile=attrs['mobile'])):
             raise ValidationError({"message": "手机号未注册！无法提交个人资料！"})
+        if User.objects.filter(mobile=attrs['mobile']).exists():
+            raise ValidationError("该手机号已提交个人资料!")
         return attrs
 
 
@@ -228,9 +234,13 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+
+    def get_price(self, obj):  # 返回给前端的单位是分
+        return obj.price * 100
 
     def get_url(self, obj):
-        if obj.is_paid:
+        if obj.is_paid or obj.price == 0:
             return obj.url
 
     class Meta:
@@ -357,8 +367,7 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BoxerIdentification
-        fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
-                  "is_professional_boxer", "real_name", "weight", "club", "mobile", "competition_video"]
+        exclude = ["created_time", "updated_time", "identity_number", "user"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -437,7 +446,6 @@ class NewsSerializer(serializers.ModelSerializer):
 
 
 class BlockedUserSerializer(serializers.BaseSerializer):
-
     def to_representation(self, user):
         representation_dict = {"id": user.id}
         if hasattr(user, "user_profile"):
@@ -557,3 +565,17 @@ class RechargeLogReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PayOrder
         fields = ["out_trade_no", "amount", "id", "order_time", "status"]
+
+
+class SocialLoginSerializer(serializers.Serializer):
+    wechat_openid = serializers.CharField(required=False)
+    weibo_openid = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        wechat_openid = attrs.get("wechat_openid")
+        weibo_openid = attrs.get("weibo_openid")
+        if not wechat_openid and not weibo_openid:
+            raise ValidationError("wechat_openid、weibo_openid至少有一个不能为空！")
+        if wechat_openid and weibo_openid:
+            raise ValidationError("wechat_openid、weibo_openid只能传一个！")
+        return attrs

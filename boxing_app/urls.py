@@ -19,7 +19,7 @@ from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
-from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_DICT, \
+from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_LIST, \
     USER_IDENTITY_DICT
 from boxing_app.views import register
 from boxing_app.views import login
@@ -34,6 +34,7 @@ from boxing_app.views.share import share_view
 from boxing_app.views.user_profile import bind_alipay_account, user_profile_redirect
 from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
+from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
@@ -181,7 +182,7 @@ wallet_urls = [
     path("recharge_log", RechargeLogViewSet.as_view({"get": "list"}))
 ]
 
-share_object_string = '|'.join(SHARE_OBJECT_DICT.keys())
+share_object_string = '|'.join(SHARE_OBJECT_LIST)
 share_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view,
             name='share'),
@@ -190,6 +191,10 @@ share_urls = [
 
 version_urls = [
     path("version", version)
+]
+
+social_login_urls = [
+    path("social_login", social_login),
 ]
 
 urlpatterns = []
@@ -216,6 +221,7 @@ urlpatterns += share_urls
 urlpatterns += club_url
 urlpatterns += city_url
 urlpatterns += version_urls
+urlpatterns += social_login_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
