@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from unittest.mock import patch
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 from biz import constants
@@ -29,7 +31,9 @@ class PaymentTestCase(APITestCase):
             'operator_id': self.test_superuser.id,
         }
 
-    def test_payment(self):
+    @patch("biz.services.pay_service.PayService.generate_out_trade_no")
+    def test_payment(self, generate_out_trade_no):
+        generate_out_trade_no.return_value = f"{datetime.now().strftime('%m%d%H%M%S%f')}"
         video = HotVideo.objects.create(**self.data)
         payment_data = {
             'id': video.id,
