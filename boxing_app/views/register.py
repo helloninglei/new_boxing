@@ -5,6 +5,7 @@ from biz.models import User, UserProfile
 from biz import redis_client, redis_const
 from boxing_app.serializers import RegisterSerializer, RegisterWithInfoSerializer, ChangeMobileSerializer
 from boxing_app.tasks import register_easemob_account
+from biz.utils import hans_to_initial
 
 
 @api_view(['GET'])
@@ -53,7 +54,8 @@ def register_with_user_info(request):
         mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
     UserProfile.objects.create(user=user, gender=serializer.validated_data['gender'],
                                avatar=serializer.validated_data['avatar'],
-                               nick_name=serializer.validated_data['nick_name'])
+                               nick_name=serializer.validated_data['nick_name'],
+                               nick_name_index_letter=hans_to_initial(serializer.validated_data['nick_name']))
     register_easemob_account.delay(user.id)
     redis_client.redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)

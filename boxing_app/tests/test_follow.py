@@ -76,7 +76,8 @@ class FollowTestCase(APITestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['id'], self.test_user_2.id)
 
-
-
-
-
+        # test contact list
+        response = self.client1.get(path="/contact")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertIn("index_letter", response.data['results'][0])

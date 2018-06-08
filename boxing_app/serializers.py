@@ -579,3 +579,13 @@ class SocialLoginSerializer(serializers.Serializer):
         if wechat_openid and weibo_openid:
             raise ValidationError("wechat_openid、weibo_openid只能传一个！")
         return attrs
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    nick_name = serializers.CharField(source="user_profile.nick_name")
+    avatar = serializers.CharField(source="user_profile.avatar")
+    index_letter = serializers.CharField(source="user_profile.nick_name_index_letter")
+
+    class Meta:
+        model = models.User
+        fields = ['id', "nick_name", "avatar", "index_letter"]
