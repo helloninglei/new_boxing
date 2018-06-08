@@ -14,8 +14,8 @@
                         <el-form-item label="视频介绍" prop="description">
                             <el-input type="textarea" v-model="ruleForm.description" :rows="6" placeholder='限制140字数'></el-input>
                         </el-form-item>
-                        <el-form-item label="付费金额" prop="price">
-                            <el-input v-model="ruleForm.price" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
+                        <el-form-item label="付费金额" prop="price_int">
+                            <el-input v-model="ruleForm.price_int" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
                         <!-- <el-form-item label="完整视频" prop="tsurl" style='display: none'>
                             
@@ -41,7 +41,7 @@
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
-                             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">发布</el-button>
+                             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">{{btn_name}}</el-button>
                              <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="resetForm('ruleForm')">取消</el-button>
                         </el-form-item>
                     </el-form>
@@ -102,10 +102,12 @@
                 try_ts_url  : '',
                 secondTitle_name:'添加视频',
                 id          :'',
+                btn_name    : '发布',
                 ruleForm: {
                     user_id : '',
                     name    : '',
                     description: '',
+                    price_int  : '',
                     price   : '',
                     tsurl   :'',
                     try_ts_url: '',
@@ -129,7 +131,7 @@
                                 }
                         }, trigger: 'blur' ,required:true}
                     ],
-                    price:[
+                    price_int:[
                         { validator: (rule, value, callback) => {
                               if (!/^[0-9]*$/.test(value)) {
                                 callback(new Error('付费金额为自然整数'));
@@ -157,7 +159,7 @@
             this.id = query.id
             this.ruleForm.user_id = query.user_id;
             this.ruleForm.name    = query.name;
-            this.ruleForm.price   = query.price;
+            this.ruleForm.price_int   = parseInt(query.price_amount);
             this.ruleForm.description = query.description;
             let tsurl = query.url
             this.tsurl=query.url
@@ -167,6 +169,7 @@
             $('#little_video').val(try_ts_url) 
             if(this.id){
                 this.secondTitle_name = '修改视频'
+                this.btn_name = '修改'
             }
             // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
             // console.log(query)
@@ -218,6 +221,7 @@
                         let sendData = this.ruleForm;
                         sendData.try_url = this.try_ts_url;
                         sendData.url = this.tsurl;
+                        sendData.price = parseInt(sendData.price_int)*100
                         let $this = this
                         if(this.id){
                             //编辑

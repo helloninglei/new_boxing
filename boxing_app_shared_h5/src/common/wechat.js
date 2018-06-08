@@ -1,19 +1,27 @@
 import wx from 'weixin-js-sdk';
-import {config} from 'my_config';
+import config from 'common/my_config';
+import $ from 'jquery';
 
-let signature, noncestr, timestamp, encodeUrl;
+let signature, noncestr, timestamp, appId, debug;
 let check = false;
+let url = window.location.href;
 
 function wxConfig(obj) {
-    this.ajax(`/token/jsSignature`,'post').then((res) => {
-        if (res && res.data) {
+    $.ajax({
+        type : "GET",
+        url : config.baseUrl  + "/second_share_signature?url=" + url,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success : function(msg) {
+            debug = msg.debug;
+            appId = msg.app_id
             signature = msg.signature;
-            noncestr = msg.noncestr;
+            noncestr = msg.nonceStr;
             timestamp = msg.timestamp;
             //微信JS-SDK权限验证
             wx.config({
-                debug : false,
-                appId : appid,
+                debug : debug,
+                appId : appId,
                 timestamp : timestamp,
                 nonceStr : noncestr,
                 signature : signature,
@@ -24,14 +32,7 @@ function wxConfig(obj) {
                 obj();
             }
         }
-    },(err) => {
-        if(err&&err.response){
-            let errors=err.response.data;
-            for(var key in errors){
-                this.$layer.msg(errors[key][0]);
-            }
-        }
-    })
+    });
 }
 
 export { wxConfig }

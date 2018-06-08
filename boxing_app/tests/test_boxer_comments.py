@@ -122,7 +122,7 @@ class CommentsAboutBoxerTestCase(APITestCase):
         OrderComment.objects.create(**self.conmment_data)
 
         # 获取拳手评论列表
-        res = self.client3.get('/boxer-course-order-comments')
+        res = self.client3.get(f'/boxer/{boxer.id}/comments')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
         self.assertEqual(res.data['count'], 2)

@@ -32,7 +32,7 @@
                     </el-col>   
                 </el-row>
             </header>
-            <p class="showTotal">付费人数:{{userTotal}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付费金额(元)：{{moneyTotal}}</p>
+            <p class="showTotal">付费人数:{{userTotal}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付费金额(元)：{{(moneyTotal/100).toFixed(2)}}</p>
             <nav class='myTable'>
                 <template>
                     <el-table
@@ -174,7 +174,8 @@
                     if(res&&res.data){
                         // console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
+                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?(res.data.results[i].price_amount/100).toFixed(2)  :0
+                            res.data.results[i].price = res.data.results[i].price  ?(res.data.results[i].price/100).toFixed(2)  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                         }
                         $this.tableData=res.data.results;

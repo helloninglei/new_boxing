@@ -3,13 +3,14 @@ from datetime import timedelta, datetime
 
 import requests
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
-    Message, Comment
+    Message, Comment, OrderComment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -248,13 +249,41 @@ class CourseOrderSerializer(serializers.ModelSerializer):
     club_name = serializers.CharField(source='club.name', read_only=True)
     out_trade_no = serializers.IntegerField(source='pay_order.out_trade_no', read_only=True)
     payment_type = serializers.IntegerField(source='pay_order.payment_type', read_only=True)
+    comment_score = serializers.SerializerMethodField()
+    comment_time = serializers.SerializerMethodField()
+    comment_content = serializers.SerializerMethodField()
+    comment_images = serializers.SerializerMethodField()
+
+    def get_comment_score(self, instance):
+        comment = self.get_comment(instance)
+        return comment.score if comment else None
+
+    def get_comment_time(self, instance):
+        comment = self.get_comment(instance)
+        return comment.created_time if comment else None
+
+    def get_comment_content(self, instance):
+        comment = self.get_comment(instance)
+        return comment.content if comment else None
+
+    def get_comment_images(self, instance):
+        comment = self.get_comment(instance)
+        return comment.images if comment else None
+
+    @staticmethod
+    def get_comment(instance):
+        try:
+            comment = OrderComment.objects.get(order=instance)
+            return comment
+        except ObjectDoesNotExist:
+            return None
 
     class Meta:
         model = models.CourseOrder
         fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
                   "course_name", "course_duration", "course_validity", "course_price", "user_mobile",
                   "user_id", "user_nickname", "boxer_name", "boxer_mobile", "club_name",
-                  'boxer_id')
+                  'boxer_id', "comment_score", "comment_time", "comment_content", "comment_images")
 
 
 class NewsSerializer(serializers.ModelSerializer):

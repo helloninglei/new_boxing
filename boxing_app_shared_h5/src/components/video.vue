@@ -1,7 +1,7 @@
 <template>
     <d-player :options="options"
               ref="player"
-                class="player" :style="{height: height}">
+              class="player" :style="{height: height}">
     </d-player>
 </template>
 
@@ -23,6 +23,7 @@
                     preload: true,
                     video: {
                         url: `${config.baseUrl}` + this.url,
+                        pic: `${config.baseUrl}` + this.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast',
                     },
                     autoplay: false,
                 },

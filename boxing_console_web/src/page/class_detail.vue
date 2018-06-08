@@ -41,7 +41,7 @@
                         <div class='detail_content'>{{results.course_name}}</div>
                     </el-col>
                     <el-col :span="3">
-                        <div class='detail_content margin_lf'>{{results.price}} 元/小时</div>
+                        <div class='detail_content margin_lf'>{{(results.price/100).toFixed(2)}} 元/小时</div>
                     </el-col>
                     <el-col :span="3">
                         <div class='detail_content margin_lf'>{{results.duration}} 分钟</div>

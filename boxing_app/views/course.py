@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
 from django.db.models import Count, Avg
-from django.shortcuts import redirect, get_object_or_404
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 
 from biz import redis_client
 from biz.models import Course, BoxerIdentification, BoxingClub
@@ -11,10 +12,11 @@ from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullData
 
 class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
+    condition = {}
 
     def get_queryset(self):
-        return Course.objects.filter(boxer__user=self.request.user)\
-            .annotate(order_count=Count('course_orders'),score=Avg('course_orders__comment__score'))\
+        return Course.objects.filter(**self.condition)\
+            .annotate(order_count=Count('course_orders'), score=Avg('course_orders__comment__score'))\
             .select_related('club', 'boxer')
 
     @transaction.atomic
@@ -36,9 +38,17 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
         redis_client.record_object_location(boxer, club.longitude, club.latitude)
-        return redirect('/boxer/course')
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def list(self, request, *args, **kwargs):
+        BoxerMyCourseViewSet.condition = {"boxer__user": self.request.user}
+        return self.perform_list(request, *args, **kwargs)
+
+    def opened_courses_list(self, request, *args, **kwargs):
+        BoxerMyCourseViewSet.condition = {"boxer__id": kwargs['boxer_id'], "is_open": True}
+        return self.perform_list(request, *args, **kwargs)
+
+    def perform_list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("course_orders__comment"),
                                                                 avg_score=Avg("course_orders__comment__score"))
