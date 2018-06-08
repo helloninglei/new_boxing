@@ -174,7 +174,7 @@
                         
                         $this.tableData=res.data.results;
                         for (var i=0;i<$this.tableData.length;i++){
-                            $this.tableData[i].amount = $this.tableData[i].amount /100;
+                            $this.tableData[i].amount = ($this.tableData[i].amount /100).toFixed(2);
                         }
                         $this.total = res.data.count;
                     }

@@ -122,7 +122,7 @@ IOS_VERSION = {
     'force': True
 }
 
-ALIPAY_NOTIFY_URL = ""
+OSS_BASE_URL = 'http://39.105.73.10'
 
 WEIXIN_PUBLIC_PLATFORM_CONF = {
     "app_id": "",

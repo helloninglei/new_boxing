@@ -1,7 +1,7 @@
 <template>
     <div class='login_bg'>
         <div class="login">
-            <div class='title'><b>拳民出击</b>—后台管理系统</div>
+            <div class='title'><b>拳城出击</b>—后台管理系统</div>
             <el-form ref="form" :model="form" label-width="173px" class='form' id='login'>
                 <el-form-item label="账号">
                     <el-input v-model="form.username" class='myInput' placeholder='请输入账号' :maxlength="11"></el-input>

@@ -56,18 +56,18 @@
                         :width="value.width"
                         v-for="value in tableColumn">
                         </el-table-column>
-                        <el-table-column
+                        <!-- <el-table-column
                         label="拳豆余额"
                         width="90">
                             <template slot-scope="scope">
-                                <span class='colorFont' @click='goboxbeanList(scope.row.id)'>{{scope.row.coin_balance}}</span>
+                                <span class='colorFont' @click='goboxbeanList(scope.row.id)'>{{scope.row.coin_balance/100}}</span>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
                         <el-table-column
                         label="钱包余额"
                         width="90">
                             <template slot-scope="scope">
-                                <span class='colorFont' @click='goWalletList(scope.row.id)'>{{scope.row.money_balance}}</span>
+                                <span class='colorFont' @click='goWalletList(scope.row.id)'>{{(scope.row.money_balance/100).toFixed(2)}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -91,9 +91,9 @@
                                 <div style='margin-bottom:9px'> 
                                     <el-button  class='myBtnHover_red myButton_20 ' @click="addCount(scope.row.id,'addCount',scope.$index)">增加用户余额</el-button>
                                 </div>
-                                <div> 
+                                <!-- <div> 
                                     <el-button class='myBtnHover_red myButton_20 ' @click="addCount(scope.row.id,'addBean',scope.$index)">增加用户拳豆</el-button>
-                                </div>                          
+                                </div>   -->                        
                             </template>
                         </el-table-column>
                     </el-table>
@@ -268,7 +268,7 @@
             },
 
             goboxbeanList(id){
-                //去钱包流水页面
+                //去拳豆余额页面
                 console.log(id)
                 this.$router.push({path: '/boxbeanlist', query:{id:id}});
             },
@@ -312,7 +312,7 @@
                     })
                 }else{
                     //增加钱包余额
-                    this.addData.change_amount=val;
+                    this.addData.change_amount=val*100;
                     this.addData.change_type='INCREASE_MONEY_OFFICIAL_RECHARGE';
                     this.ajax('/money/change','post',this.addData).then(function(res){
                         if(res&&res.data){

@@ -5,8 +5,7 @@ from biz import models
 from biz.redis_client import get_number_of_share
 
 h5_base_url = settings.SHARE_H5_BASE_URL
-oss_base_url = settings.OSS_CONFIG['url']
-
+oss_base_url = settings.OSS_BASE_URL
 
 class ShareTestCase(APITestCase):
     def setUp(self):
@@ -63,7 +62,7 @@ class ShareTestCase(APITestCase):
         self.assertEqual(data['title'], self.video.name)
         self.assertEqual(data['sub_title'], '拳民出击')
         self.assertEqual(data['picture'], f'{oss_base_url}{self.video.try_url}{video_prefix}')
-        self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.video.id}')
+        self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.test_user.id}/{self.video.id}')
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.assertEqual(data['title'], self.msg.content)
