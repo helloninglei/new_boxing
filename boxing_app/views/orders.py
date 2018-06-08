@@ -47,7 +47,7 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        course = get_object_or_404(Course, id=kwargs['course_id'])
+        course = get_object_or_404(Course, id=request.data.get('id'))
         if request.user == course.boxer.user:
             return Response({"message": "拳手不能购买自己的课程"}, status=status.HTTP_400_BAD_REQUEST)
         course_order_data = {

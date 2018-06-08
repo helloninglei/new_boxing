@@ -265,21 +265,12 @@ class OrderTestCase(APITestCase):
 
         # test_user_2成功创建了未支付订单
         res = self.client2.post('/user/orders', data={'id': course.id})
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         # 查询课程的订单，核对支付订单数据
         self.assertEqual(course.course_orders.count(), 1)
-        pay_order = PayOrder.objects.get(course=course)
-        self.assertEqual(pay_order.amount, course.price*100)
-        self.assertEqual(pay_order.device, constants.DEVICE_PLATFORM_IOS)
-        self.assertEqual(pay_order.status, constants.PAYMENT_STATUS_UNPAID)
-        self.assertEqual(pay_order.user, self.test_user_2)
-        self.assertIsNone(pay_order.payment_type)
-        self.assertIsNone(pay_order.pay_time)
-        self.assertEqual(pay_order.content_object, course)
-        # 核对课程订单数据
         course_order = CourseOrder.objects.get(course=course)
-        self.assertEqual(course_order.pay_order, pay_order)
+        self.assertIsNone(course_order.pay_order)
         self.assertEqual(course_order.boxer, boxer)
         self.assertEqual(course_order.course, course)
 
