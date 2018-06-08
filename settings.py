@@ -149,6 +149,7 @@ INSTALLED_APPS = [
     'captcha',
     'django_filters',
     'corsheaders',
+    'old_boxing',
 ]
 
 MIDDLEWARE = [

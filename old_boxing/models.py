@@ -1,6 +1,11 @@
 from django.db import models
 
 
+class Manager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().using('old_boxing')
+
+
 class Article(models.Model):
     id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=30)
@@ -25,6 +30,8 @@ class Article(models.Model):
     updatetime = models.DateTimeField(db_column='updateTime', blank=True, null=True)  # Field name made lowercase.
     targetid = models.BigIntegerField(db_column='targetId', blank=True, null=True)  # Field name made lowercase.
 
+    objects = Manager()
+
     class Meta:
         managed = False
         db_table = 'article'
@@ -39,6 +46,8 @@ class ArticleComment(models.Model):
     isdel = models.IntegerField(db_column='isDel', blank=True, null=True)  # Field name made lowercase.
     createtime = models.DateTimeField(db_column='createTime', blank=True, null=True)  # Field name made lowercase.
     updatetime = models.DateTimeField(db_column='updateTime', blank=True, null=True)  # Field name made lowercase.
+
+    objects = Manager()
 
     class Meta:
         managed = False
@@ -79,6 +88,7 @@ class User(models.Model):
     updatetime = models.DateTimeField(db_column='updateTime', blank=True, null=True)  # Field name made lowercase.
     rewardtotalmoney = models.BigIntegerField(db_column='rewardTotalMoney', blank=True,
                                               null=True)  # Field name made lowercase.
+    objects = Manager()
 
     class Meta:
         managed = False
@@ -113,6 +123,8 @@ class UserApply(models.Model):
     status = models.CharField(max_length=20)
     pay_money = models.BigIntegerField()
 
+    objects = Manager()
+
     class Meta:
         managed = False
         db_table = 'user_apply'
@@ -136,6 +148,8 @@ class UserInfo(models.Model):
     createtime = models.DateTimeField(db_column='createTime')  # Field name made lowercase.
     updatetime = models.DateTimeField(db_column='updateTime')  # Field name made lowercase.
 
+    objects = Manager()
+
     class Meta:
         managed = False
         db_table = 'user_info'
@@ -146,6 +160,8 @@ class UserReadArticle(models.Model):
     aid = models.BigIntegerField()
     uid = models.BigIntegerField()
     createtime = models.DateTimeField(db_column='createTime')  # Field name made lowercase.
+
+    objects = Manager()
 
     class Meta:
         managed = False
