@@ -16,7 +16,7 @@ h5_base_url = settings.SHARE_H5_BASE_URL
 def get_news_url(request, pk):
     if get_device_platform(request):
         models.GameNews.objects.filter(pk=pk).update(views_count=F('views_count') + 1)
-    return Response({'url': f'{h5_base_url}game_news/{pk}'})
+    return Response({'url': f'{h5_base_url}game_news/{pk}/1'})  # 1 在app内打开
 
 
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):

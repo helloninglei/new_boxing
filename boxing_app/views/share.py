@@ -70,6 +70,7 @@ def share_view(request, object_type, object_id):
         sub_title = obj.sub_title
         picture = get_share_img_url(obj.picture)
         user = obj.operator
+        url = f'{h5_base_url}game_news/{object_id}/0'  # 0 不在app内打开
     else:
         title = '我在拳城出击约了一个拳击教练，竟然还是个体育明星，快来看看他是谁！'
         course_name_list = list(Course.objects.filter(boxer_id=obj.boxer_id, is_open=True).values_list('course_name',
