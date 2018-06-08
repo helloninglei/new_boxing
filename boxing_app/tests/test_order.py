@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder
+from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder, PayOrder
 
 
 class OrderTestCase(APITestCase):
@@ -259,6 +259,11 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
+        pay_order = PayOrder.objects.create(user=self.test_user_2,
+                                            content_object=course,
+                                            amount=100,
+                                            out_trade_no=1111,
+                                            device=1)
 
         # test_user_2成功创建了未支付订单
         res = self.client2.post('/user/orders', data={'id': course.id})
@@ -271,6 +276,28 @@ class OrderTestCase(APITestCase):
         self.assertEqual(course_order.boxer, boxer)
         self.assertEqual(course_order.course, course)
 
+        # 拳手不能确认未支付订单
+        res = self.client1.post(f'/order/{course_order.id}/boxer-confirm')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['message'], '订单状态不是未使用状态，无法确认')
+
+        CourseOrder.objects.filter(id=course_order.id).update(status=constants.COURSE_PAYMENT_STATUS_WAIT_USE)
+        # 拳手确认订单前，用户不能确认
+        res = self.client2.post(f'/order/{course_order.id}/user-confirm')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['message'], '拳手确认完成后才能确认')
+        # 拳手可以确认待使用的订单
+        res = self.client1.post(f'/order/{course_order.id}/boxer-confirm')
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(CourseOrder.objects.get(id=course_order.id).confirm_status,
+                         constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED)
+        # 拳手确认后，用户可以确认, 并修改业务订单和支付订单的状态
+        CourseOrder.objects.filter(id=course_order.id).update(pay_order=pay_order)
+        res = self.client2.post(f'/order/{course_order.id}/user-confirm')
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(CourseOrder.objects.get(id=course_order.id).confirm_status,
+                         constants.COURSE_ORDER_STATUS_USER_CONFIRMED)
+        self.assertEqual(PayOrder.objects.get(id=pay_order.id).status, constants.PAYMENT_STATUS_WAIT_COMMENT)
 
     def test_delete_order(self):
         # 为拳手用户test_user_1创建1个课程

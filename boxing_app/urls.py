@@ -92,9 +92,13 @@ course_url = [
 order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
-    path('boxer/order/<int:pk>/confirm', BoxerCourseOrderViewSet.as_view({'post': 'perform_create'}), name='boxer-confirm-order'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}), name='user-order-detail')
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}), name='user-order-detail'),
+    path('order/<int:pk>/boxer-confirm', BoxerCourseOrderViewSet.as_view({'post': 'boxer_confirm_order'}),
+         name='boxer-confirm-order'),
+    path('order/<int:pk>/user-confirm', UserCourseOrderViewSet.as_view({'post': 'user_confirm_order'}),
+         name='user-confirm-order'),
+
 ]
 
 order_comment_url = [

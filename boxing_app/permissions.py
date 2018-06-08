@@ -13,7 +13,13 @@ class OnlyOwnerCanDeletePermission(permissions.BasePermission):
 
 class OnlyBoxerSelfCanConfirmOrderPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if obj.course.boxer.user == request.user:
+        if obj.boxer.user == request.user:
+            return True
+
+
+class OnlyUserSelfCanConfirmOrderPermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if obj.user == request.user:
             return True
 
 
