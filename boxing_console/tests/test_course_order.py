@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub, CourseSettleOrder
+from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub, CourseSettleOrder, \
+    OrderComment
 
 
 class CourseOrderTestCase(APITestCase):
@@ -145,7 +146,7 @@ class CourseOrderTestCase(APITestCase):
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
     def test_course_detail(self):
-        # 创建user_profile->创建boxer->创建club->创建course->创建course_order
+        # 创建user_profile->创建boxer->创建club->创建course->创建course_order->创建comment
         UserProfile.objects.create(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -153,8 +154,15 @@ class CourseOrderTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-
         course_order = PayOrder.objects.create(**self.course_order_data)
+        conmment_data = {
+            "score": 6,
+            "content": "i have comment",
+            "images": ["img1.png", "img2.png", "img3.png"],
+            "order": course_order,
+            "user": self.user1,
+        }
+        OrderComment.objects.create(**conmment_data)
         res = self.client.get(f'/course/order/{course_order.pk}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -169,6 +177,10 @@ class CourseOrderTestCase(APITestCase):
                 self.assertEqual(self.course_order_data[key].strftime('%Y-%m-%d %H:%M:%S'), res.data.get(key))
             else:
                 self.assertEqual(self.course_order_data[key], res.data.get(key))
+        self.assertEqual(res.data['comment_score'], conmment_data['score'])
+        self.assertEqual(res.data['comment_content'], conmment_data['content'])
+        self.assertEqual(res.data['comment_images'], conmment_data['images'])
+
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['course_price'], self.course_data['price'])
 
