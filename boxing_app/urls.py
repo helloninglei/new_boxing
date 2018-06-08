@@ -166,6 +166,7 @@ payment_urls = [
 
 news_urls = [
     path('game_news', game_news.NewsViewSet.as_view({'get': 'list'})),
+    path('game_news_url/<int:pk>', game_news.get_news_url),
     path('game_news/<int:pk>', game_news.NewsViewSet.as_view({'get': 'retrieve'})),
 ]
 
