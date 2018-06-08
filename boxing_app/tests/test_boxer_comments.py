@@ -72,7 +72,7 @@ class CommentsAboutBoxerTestCase(APITestCase):
             "pay_time": datetime.now(),
             "finish_time": (datetime.now() + timedelta(days=1))
         }
-        self.conmment_data = {
+        self.comment_data = {
             "score": 6,
             "content": "i have comment",
             "images": ["img1.png", "img2.png", "img3.png"],
@@ -115,11 +115,11 @@ class CommentsAboutBoxerTestCase(APITestCase):
         course_order2 = CourseOrder.objects.filter(boxer=boxer)[1]
 
         # 对拳手test_user_3的订单order1、order2创建2条评论
-        self.conmment_data['order'] = course_order1
-        OrderComment.objects.create(**self.conmment_data)
-        self.conmment_data['score'] = 5
-        self.conmment_data['order'] = course_order2
-        OrderComment.objects.create(**self.conmment_data)
+        self.comment_data['order'] = course_order1
+        OrderComment.objects.create(**self.comment_data)
+        self.comment_data['score'] = 5
+        self.comment_data['order'] = course_order2
+        OrderComment.objects.create(**self.comment_data)
 
         # 获取拳手评论列表
         res = self.client3.get(f'/boxer/{boxer.id}/comments')
@@ -127,7 +127,7 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.assertEqual(len(res.data['results']), 2)
         self.assertEqual(res.data['count'], 2)
         self.assertEqual(res.data['avg_score'], (6+5)/2)
-        for key in self.conmment_data:
+        for key in self.comment_data:
             # user为购买者
             if key == 'user':
                 self.assertEqual(res.data['results'][0][key]['id'], self.test_user_1.id)
@@ -136,4 +136,4 @@ class CommentsAboutBoxerTestCase(APITestCase):
             elif key == 'order':
                 self.assertEqual(res.data['results'][0][key], course_order2.id)
             else:
-                self.assertEqual(res.data['results'][0][key], self.conmment_data[key])
+                self.assertEqual(res.data['results'][0][key], self.comment_data[key])
