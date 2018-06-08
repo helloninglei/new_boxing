@@ -371,7 +371,8 @@ class CourseOrder(models.Model):
     course_duration = models.IntegerField()  # 课程时长，单位分钟
     course_validity = models.DateField()  # 课程有效期
     order_number = models.BigIntegerField()  # 订单号
-    status = models.SmallIntegerField(choices=constants.ORDER_PAYMENT_STATUS, default=constants.PAYMENT_STATUS_UNPAID,
+    status = models.SmallIntegerField(choices=constants.COURSE_ORDER_PAYMENT_STATUS,
+                                      default=constants.COURSE_PAYMENT_STATUS_UNPAID,
                                       db_index=True)
     order_time = models.DateTimeField(auto_now_add=True)
     pay_time = models.DateTimeField(null=True)

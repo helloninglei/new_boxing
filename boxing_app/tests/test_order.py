@@ -1,11 +1,8 @@
-from datetime import datetime, timedelta
-
 from rest_framework import status
-from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder, OrderComment, CourseOrder
+from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder
 
 
 class OrderTestCase(APITestCase):

@@ -1,19 +1,16 @@
 
-from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, status
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from biz import constants
 from biz.models import BoxerIdentification, PayOrder, Course, OrderComment, CourseOrder
 from biz.services.pay_service import PayService
 from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission
-from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer, \
-    PaySerializer
+from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
 class BaseCourseOrderViewSet(viewsets.ModelViewSet):
@@ -29,13 +26,13 @@ class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
         return CourseOrder.objects.filter(boxer=boxer)
 
     @permission_classes([OnlyBoxerSelfCanConfirmOrderPermission])
-    def confirm_order(self, pk):
-        order = self.get_object()
-        if order.status not in (constants.PAYMENT_STATUS_WAIT_USE, constants.PAYMENT_STATUS_WAIT_COMMENT):
+    def git(self, pk):
+        course_order = self.get_object()
+        if course_order.status not in (constants.PAYMENT_STATUS_WAIT_USE, constants.PAYMENT_STATUS_WAIT_COMMENT):
             return Response({"message": "订单状态不是未使用状态，无法确认订单！"})
-
-        # 修改订单状态
-        # 创建定时任务
+        course_order.confirm_status = constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED
+        course_order.save()
+        # TODO:创建定时任务
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
