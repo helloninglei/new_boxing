@@ -6,7 +6,6 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from django.db.models import Count, F
 from biz import models
-from biz.utils import get_device_platform
 from boxing_app import serializers
 
 h5_base_url = settings.SHARE_H5_BASE_URL
@@ -14,8 +13,6 @@ h5_base_url = settings.SHARE_H5_BASE_URL
 
 @api_view(['GET'])
 def get_news_url(request, pk):
-    if get_device_platform(request):
-        models.GameNews.objects.filter(pk=pk).update(views_count=F('views_count') + 1)
     return Response({'url': f'{h5_base_url}game_news/{pk}/1'})  # 1 在app内打开
 
 
@@ -23,3 +20,8 @@ class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.NewsSerializer
     permission_classes = (AllowAny,)
     queryset = models.GameNews.objects.annotate(comment_count=Count('comments'))
+
+    def retrieve(self, request, *args, **kwargs):
+        news_id = self.kwargs['pk']
+        models.GameNews.objects.filter(pk=news_id).update(views_count=F('views_count') + 1)
+        return super().retrieve(request, *args, **kwargs)

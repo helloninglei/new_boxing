@@ -426,7 +426,7 @@ class NewsSerializer(serializers.ModelSerializer):
     read_count = serializers.SerializerMethodField()
 
     def get_content(self, obj):
-        if self.context['request'].META.get('source'):
+        if self.context['request'].query_params.get('in_app'):
             return obj.app_content
         return obj.share_content or obj.app_content
 
