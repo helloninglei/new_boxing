@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from biz.models import User, UserProfile
 from biz import redis_const, redis_client
+from biz.constants import SERVICE_USER_ID
 
 
 class RegisterTestCase(APITestCase):
@@ -34,6 +35,8 @@ class RegisterTestCase(APITestCase):
         self.assertTrue(User.objects.filter(mobile=mobile))
         self.assertTrue(UserProfile.objects.filter(user__mobile=mobile).exists())
         self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+        user = User.objects.get(mobile=mobile)
+        self.assertTrue(redis_client.is_following(user.id, SERVICE_USER_ID))
 
     def test_social_register(self):
         mobile = "18800000011"
@@ -66,3 +69,5 @@ class RegisterTestCase(APITestCase):
         self.assertTrue(User.objects.filter(mobile=mobile))
         self.assertEqual(User.objects.get(mobile=mobile).wechat_openid, "111")
         self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+        user = User.objects.get(mobile=mobile)
+        self.assertTrue(redis_client.is_following(user.id, SERVICE_USER_ID))
