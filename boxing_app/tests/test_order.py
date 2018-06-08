@@ -87,7 +87,6 @@ class OrderTestCase(APITestCase):
         }
 
     def test_get_boxer_order_list(self):
-
         # 为普通用户test_user_1创建用户信息，用于购买课程
         UserProfile.objects.create(**self.user_profile_data)
 
@@ -162,13 +161,16 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['out_trade_no'], self.course_order_data['out_trade_no'])
         self.assertEqual(res.data['payment_type'], self.course_order_data['payment_type'])
         self.assertEqual(res.data['amount'], self.course_order_data['amount'])
-        self.assertEqual(res.data['order_time'][:-1], self.course_order_data['order_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
-        self.assertEqual(res.data['pay_time'][:-1], self.course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
-        self.assertEqual(res.data['finish_time'][:-1], self.course_order_data['finish_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
+        self.assertEqual(res.data['order_time'][:-1],
+                         self.course_order_data['order_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
+        self.assertEqual(res.data['pay_time'][:-1],
+                         self.course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
+        self.assertEqual(res.data['finish_time'][:-1],
+                         self.course_order_data['finish_time'].strftime('%Y-%m-%d %H:%M:%S')[:-1])
         self.assertEqual(res.data['user_id'], self.test_user_1.id)
-        self.assertEqual(res.data['user_nickname'],  self.user_profile_data['nick_name'])
-        self.assertEqual(res.data['user_gender'],  self.user_profile_data['gender'])
-        self.assertEqual(res.data['user_avatar'],  self.user_profile_data['avatar'])
+        self.assertEqual(res.data['user_nickname'], self.user_profile_data['nick_name'])
+        self.assertEqual(res.data['user_gender'], self.user_profile_data['gender'])
+        self.assertEqual(res.data['user_avatar'], self.user_profile_data['avatar'])
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
         self.assertEqual(res.data['course_validity'], self.course_data['validity'])
@@ -298,7 +300,7 @@ class OrderTestCase(APITestCase):
         # 查询课程的订单，核对订单数据
         self.assertEqual(course.orders.count(), 1)
         course_order = PayOrder.objects.get(course=course)
-        self.assertEqual(course_order.amount, course.price*100)
+        self.assertEqual(course_order.amount, course.price)
         self.assertEqual(course_order.device, constants.DEVICE_PLATFORM_IOS)
         self.assertEqual(course_order.status, constants.PAYMENT_STATUS_UNPAID)
         self.assertEqual(course_order.user, self.test_user_2)
@@ -319,15 +321,15 @@ class OrderTestCase(APITestCase):
 
         # test_user_2创建未支付订单
         order = PayOrder.objects.create(
-                user=self.test_user_2,
-                content_object=course,
-                status=constants.PAYMENT_STATUS_WAIT_USE,
-                out_trade_no=111111,
-                payment_type=1,
-                amount=1000,
-                device=1,
-                order_time=datetime.now(),
-            )
+            user=self.test_user_2,
+            content_object=course,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
+            out_trade_no=111111,
+            payment_type=1,
+            amount=1000,
+            device=1,
+            order_time=datetime.now(),
+        )
 
         # 不能删除不是未支付状态的支付订单
         res = self.client2.delete(f'/user/order/{order.id}')
