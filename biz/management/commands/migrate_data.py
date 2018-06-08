@@ -17,10 +17,17 @@ resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
 http_client = requests.Session()
 
 
-def move_image(path):
-    fdata = http_client.get(f'{resource_base_url}{path}').content
-    f = File(BytesIO(fdata), 'avatar.jpg')
-    return save_upload_file(f)
+def move_image(url: str):
+    if not url:
+        return
+    if not url.startswith('http'):
+        if not url.startswith('/'):
+            url = f'/{url}'
+        url = f'{resource_base_url}{url}'
+    res = http_client.get(url)
+    if res.status_code == 200:
+        f = File(BytesIO(res.content), 'avatar.jpg')
+        return save_upload_file(f)
 
 
 important_fields = (
@@ -37,14 +44,16 @@ important_fields = (
 
 
 def move_user():
-    # users = []
-    for u in OldUser.objects.all():
+    for u in OldUser.objects.all().order_by('-uid'):
         valid_fields = 0
         for field in important_fields:
             if getattr(u, field):
                 valid_fields += 1
-        if not u.phone or valid_fields < 3:
+        if valid_fields < 3:
             continue
+
+        if not u.phone:
+            u.phone = f'{u.uid}'.rjust(11, '0')
 
         weibo_openid = wechat_openid = None
 
@@ -53,7 +62,7 @@ def move_user():
         if u.source == 3:
             weibo_openid = u.uuid
 
-        obj, created = User.objects.get_or_create(
+        User.objects.get_or_create(
             id=u.uid,
             defaults=dict(
                 mobile=u.phone,
@@ -65,21 +74,18 @@ def move_user():
             )
         )
         if not UserProfile.objects.filter(user_id=u.uid).exists():
-            if u.avatar:
-                avatar = move_image(u.avatar)
-            else:
-                avatar = u.uicon
-            print(avatar)
+            print(u.avatar)
+            print(u.uicon)
+            print(u.uid)
+            avatar = move_image(u.avatar or u.uicon)
             UserProfile.objects.create(
                 user_id=u.uid,
-                defaults=dict(
-                    nick_name=u.nickname,
-                    gender=1 if u.gender != 2 else 0,
-                    birthday=u.birthday,
-                    bio=u.signature,
-                    address=city_dict.get(u.city),
-                    avatar=avatar,
-                )
+                nick_name=u.nickname[:30] if u.nickname else None,
+                gender=1 if u.gender != 2 else 0,
+                birthday=u.birthday,
+                bio=u.signature,
+                address=city_dict.get(u.city),
+                avatar=avatar,
             )
         if not BoxerIdentification.objects.filter(user_id=u.uid).exists():
             u = UserInfo.objects.filter(uid=u.uid).first()
