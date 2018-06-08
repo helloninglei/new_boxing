@@ -27,7 +27,10 @@
                       :highlight-current-row="true">
                         <el-table-column
                         label="余额"
-                        prop="change_amount">
+                        >
+                            <template slot-scope="scope">
+                                <span class='' >{{(scope.row.change_amount/100).toFixed(2)}}</span>
+                            </template>
                         </el-table-column>
                          <el-table-column
                         label="时间"

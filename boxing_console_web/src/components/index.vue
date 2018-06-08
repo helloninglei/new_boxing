@@ -15,9 +15,9 @@
                             <div class="menu-item-inner" ><div class='_hr'></div>用户提现记录</div>
                         </el-menu-item>
                     </el-submenu>
-                    <el-menu-item index="/boxBean" :disabled="disabled">
+                    <!-- <el-menu-item index="/boxBean" :disabled="disabled">
                         <div class='menu-item-inner'>公司拳豆记录</div>
-                    </el-menu-item>
+                    </el-menu-item> -->
                     <el-menu-item index="/accound_record" :disabled="disabled">
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
@@ -42,15 +42,9 @@
                     <el-menu-item index="/bannermanage" :disabled="disabled">
                         <div class='menu-item-inner'>Banner管理</div>
                     </el-menu-item>
-                    <el-submenu index='3'>
-                        <template slot="title"><div class='mySubMenu'>拳馆管理</div></template>
-                        <el-menu-item index="/boxinglist" :disabled="disabled">
-                        <div class="menu-item-inner" ><div class='_hr'></div>拳馆列表</div>
-                        </el-menu-item>
-                        <el-menu-item index="/addBoxing" :disabled="disabled">
-                            <div class="menu-item-inner" ><div class='_hr'></div>添加拳馆</div>
-                        </el-menu-item>
-                    </el-submenu>
+                    <el-menu-item index="/boxinglist" :disabled="disabled">
+                        <div class='menu-item-inner'>拳馆管理</div>
+                    </el-menu-item>
                     <el-submenu index='4'>
                         <template slot="title" ><div class='mySubMenu'>赛事管理</div></template>
                         <el-menu-item index="/infoList" :disabled="disabled">
@@ -69,9 +63,9 @@
                     <el-menu-item index="/admin" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
                     </el-menu-item>
-                    <el-menu-item index="/useDialog" :disabled="disabled">
+                    <!-- <el-menu-item index="/useDialog" :disabled="disabled">
                         <div class='menu-item-inner'>弹框管理</div>
-                    </el-menu-item>
+                    </el-menu-item> -->
                 </el-menu>
             </el-col>
             <el-col  style="height: 100%;overflow: auto;background: #fff;width:calc(100vw - 225px);float:left">

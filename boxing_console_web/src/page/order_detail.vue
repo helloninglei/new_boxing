@@ -47,8 +47,8 @@
                 <el-col :span="3">
                     <div class='detail_content margin_lf'>{{result.boxer_mobile}}</div>
                 </el-col>
-                <el-col :span="16">
-                    <el-button type="danger" class='myColor_red myButton_40' style='width:200px;margin-top:-13px' @click="checkIdent(result.id)">查看拳手认证信息</el-button>
+                <el-col :span="15" :offset='1'>
+                    <el-button type="danger" class='myColor_red myButton_40 ' style='width:200px;margin-top:-13px' @click="checkIdent(result.boxer_id)">查看拳手认证信息</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -79,7 +79,7 @@
                     <div class='detail_title'>支付金额</div>
                 </el-col>
                 <el-col :span="23">
-                    <div class='detail_content margin_lf'> aaaaaaaaaa缺数据aaaaaaaaaaaaaa单价元/次</div>
+                    <div class='detail_content margin_lf'> {{result.amount/100+'.00'}}元/次</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
@@ -104,7 +104,7 @@
                 </el-col>
                 <el-col :span="23" v-if="result.status==2">
                     <div class='detail_content margin_lf'>请购买保险 
-                        <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px'>标记保险</el-button>
+                        <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px' @click="addCount(result.id)">标记保险</el-button>
                     </div>
                 </el-col>
                 <el-col :span="23" v-if="result.status>2">
@@ -160,7 +160,7 @@
                     <div class='detail_title width_160'>拳手确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>aaaaaaaaaa缺数据aaaaaaa</div>
+                    <div class='detail_content margin_lf50'>aaaaaaaaaa缺数据aaaaaaa</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub' v-if="result.status>2">
@@ -168,7 +168,7 @@
                     <div class='detail_title width_160'>用户确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>aaaaaaaaaa缺数据aaaaaaa</div>
+                    <div class='detail_content margin_lf50'>aaaaaaaaaa缺数据aaaaaaa</div>
                 </el-col>
             </el-row>
         </div>
@@ -178,7 +178,7 @@
                     <div class='detail_title width_160'>用户评论</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf'>
+                    <div class='detail_content margin_lf50'>
                         <el-rate
                           v-model="starValue"
                           disabled
@@ -191,25 +191,25 @@
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="22" :offset="2">
-                    <div class='detail_content margin_lf'>2018-02-10 12:12:12</div>
+                    <div class='detail_content margin_lf50'>{{result.comment_time}}</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="22" :offset="2">
-                    <div class='detail_content margin_lf' style='line-height: 25px'>300字我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！300字我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！我在遇见冬哥了，看他在这里！</div>
+                    <div class='detail_content margin_lf50' style='line-height: 25px'>{{result.comment_content}}</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="22" :offset="2">
-                    <div class='detail_content margin_lf'>
-                        <div class='addImage'></div>
-                        <div class='addImage'></div>
-                        <div class='addImage'></div>
-                        <div class='addImage'></div>
+                    <div class='detail_content margin_lf50' v-show='result.comment_images&&result.comment_images.length>0'>
+                        <div class='addImage' v-for='value in result.comment_images'>
+                            <img :src="config.baseUrl+value" alt="" height='100%'>
+                        </div>
                     </div>
                 </el-col>
             </el-row>
         </div>
+        <DialogLabel :isshow="dialog_label_data.isshow" @confirm="confirm" @cancel="cancel3()" :content_title="dialog_label_data.content_title" :content_foot="dialog_label_data.content_foot" :type="'number'"></DialogLabel>
     </div>
 </template>
 <style scoped>
@@ -219,25 +219,40 @@
     .detail_item{margin-bottom:50px;}
     .detail_title{width:80px;}
     .detail_content.margin_lf{margin-left:40px;}
+    .detail_content.margin_lf50{margin-left:60px;}
     .width_160{width:145px!important;}
-    .addImage{width:95px;height:65px;float:left;margin-right:14px;border:1px solid #ccc;}
+    .addImage{height:65px;float:left;margin-right:14px;}
     .classDetail .el-rate__icon{color:#F95862!important}
 </style>
 <style>
    
 </style>
 <script>
+    import DialogLabel from "components/dialog_label"
     export default {
         data() {
             return {
                 starValue:4,
+                dialog_label_data:{
+                    isshow:false,
+                    content_title:"",
+                },
+                addData : {},
                 result:{
                     // "id": 1, //订单id
-                    // "status_name":'待付款',
-                    // "status": 1, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
+                    // "status": 4, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
                     // "out_trade_no": 11111111, //订单号
                     // "payment_type": 1,//支付方式（1:支付宝；2:微信；3:余额）
                     // "amount": 120, //金额
+                    // "comment_score": null, //订单评分
+                    // "comment_time": '2015-03-08 12:34:44', //订单评论时间
+                    // "comment_content": '评论内容评论内容评论内容评论内容品论内容评论内容评论内容评论内容', //订单评论内容
+                    // "comment_images": [
+                    //     "/uploads/a2/ab/da7f76418372eacd8c3410d53a5a6a0e79d4.png",
+                    //     "/uploads/1c/c3/fbeb379b103be64b4ff74e99f61846386eb2.png",
+                    //     "/uploads/1c/c3/fbeb379b103be64b4ff74e99f61846386eb2.png",
+
+                    // ], //订单评论图片
                     // "order_time": "2018-05-16 08:29:56",//下单时间
                     // "pay_time": null, //支付时间
                     // "course_name": "THAI_BOXING",//课程名
@@ -254,7 +269,7 @@
             }
         },
         components: {
-           
+           DialogLabel
         },
         created() {
             let query = this.$route.query
@@ -267,6 +282,7 @@
                 this.ajax('/course/order/'+id,'get',{},{}).then(function(res){
                     if(res&&res.data){
                         $this.result=res.data;
+                        $this.starValue = res.data.comment_score;
                         switch ($this.result.status){
                             case 1 :
                             $this.result.status_name='待付款';
@@ -299,7 +315,37 @@
             checkIdent(id){
                 // 参数 ID 审核状态ident_type
                 this.$router.push({path: '/Boxerindentdetail', query:{id:id}});
-            }
+            },
+            confirm(val){
+                let $this = this;
+                this.addData.change_amount=val*100;
+                console.log(val)
+                this.dialog_label_data.isshow=false;
+                // this.ajax('/money/change','post',this.addData).then(function(res){
+                //     if(res&&res.data){
+                //         $this.tableData[$this.addData.index].money_balance = res.data.remain_amount
+                //         $this.dialog_label_data.isshow=false;
+                        
+                //     }
+
+                // },function(err){
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             console.log(errors[key])
+                //             // return
+                //         } 
+                //     } 
+                // })
+
+            },
+            addCount(id){
+                this.addData.user=id
+                this.dialog_label_data.isshow=true
+            },
+            cancel3(val){
+                this.dialog_label_data.isshow=val;
+            },
         },
     }
 </script>

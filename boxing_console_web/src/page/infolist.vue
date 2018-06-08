@@ -15,7 +15,12 @@
                         :editable=false
                         value-format="yyyy-MM-dd hh:mm:ss">
                 </el-date-picker>
-                <el-input v-model="search"  class='myInput_40 margin_rt20' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
+                <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
+                <el-select v-model="stay_top" class="margin_tp30">
+                    <el-option value="" label="全部">全部</el-option>
+                    <el-option :value="true" label="置顶">置顶</el-option>
+                    <el-option :value="false" label="不置顶">不置顶</el-option>
+                </el-select>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70' @click.native="searchEv">查询</el-button>
             </header>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_tp30 margin_bt20' @click.native="addMatchEv">新增</el-button>
@@ -48,11 +53,15 @@
                             label="评论">
                     </el-table-column>
                     <el-table-column
+                            prop="stay_top"
+                            label="是否置顶">
+                    </el-table-column>
+                    <el-table-column
                             prop="start_time"
                             label="发布时间"
-                            width="200">
+                            width="170">
                     </el-table-column>
-                    <el-table-column label="操作">
+                    <el-table-column label="操作" width='220'>
                         <template slot-scope="scope">
                             <el-button
                                     size="mini"
@@ -69,6 +78,7 @@
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
     </div>
 </template>
 
@@ -79,7 +89,7 @@
 <script >
     import TopBar from 'components/topBar';
     import Pagination  from 'components/pagination';
-
+    import Confirm from "components/confirm"
     export default {
         data() {
             return {
@@ -90,13 +100,20 @@
                 dateArr: [],
                 start_date: '',
                 end_date: '',
+                stay_top: '',
                 hasSearch: false,
-                tableData: []
+                tableData: [],
+                confirmData:{
+                    isshow: false,
+                    id    :'',
+                    content:'确认删除该条资讯？'
+                },
             }
         },
         components: {
             TopBar,
-            Pagination
+            Pagination,
+            Confirm
         },
         created() {
             this.getData();
@@ -104,19 +121,26 @@
         methods: {
             getData(ifBtn) {
                 ifBtn && (this.page = 1);
-                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date};
+                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date,stay_top: this.stay_top};
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){
                         this.tableData = res.data.results;
+                        for(var i=0;i<res.data.results.length;i++){
+                            res.data.results[i].stay_top = res.data.results[i].stay_top ? '是' : '否'
+                        }
                         this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
                 })
             },
-            deleteData(id) {
+            deleteData(id,index) {
+                let $this = this;
                 this.ajax(`/game_news/${id}`,'delete').then((res) => {
-                    res && String (res.status).indexOf('2') > -1 && this.getData();
+                    $this.confirmData.isshow=false;
+                    // res && String (res.status).indexOf('2') > -1 && this.getData();
+                    $this.tableData.splice(index,1)
+                    $this.confirmData.isshow=false;
                 },(err) => {
                     if(err&&err.response){
                         let errors=err.response.data
@@ -133,8 +157,15 @@
                 this.$router.push({path: '/infodetail', query:row});
             },
             handleDelete(index, row) {
-                let id = row.id;
-                this.deleteData(id);
+                this.confirmData.id = row.id
+                this.confirmData.index = row.index
+                this.confirmData.isshow=true;
+            },
+            cancel1(val){
+                this.confirmData.isshow=val;
+            },
+            conform1(id,index){
+                this.deleteData(id,index);
             },
             changePage(page) {
                 this.page = page;

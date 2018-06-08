@@ -228,9 +228,13 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+
+    def get_price(self, obj):  # 返回给前端的单位是分
+        return obj.price * 100
 
     def get_url(self, obj):
-        if obj.is_paid:
+        if obj.is_paid or obj.price == 0:
             return obj.url
 
     class Meta:
@@ -357,8 +361,7 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BoxerIdentification
-        fields = ["birthday", "introduction", "job", "experience", "height", "honor_certificate_images",
-                  "is_professional_boxer", "real_name", "weight", "club", "mobile", "competition_video"]
+        exclude = ["created_time", "updated_time", "identity_number", "user"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -450,6 +453,8 @@ class CourseAllowNullDataSerializer(serializers.ModelSerializer):
     club_address = serializers.CharField(source='club.address', read_only=True)
     club_longitude = serializers.CharField(source='club.longitude', read_only=True)
     club_latitude = serializers.CharField(source='club.latitude', read_only=True)
+    order_count = serializers.IntegerField(read_only=True)
+    score = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Course

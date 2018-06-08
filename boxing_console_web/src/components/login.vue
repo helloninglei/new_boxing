@@ -1,10 +1,10 @@
 <template>
     <div class='login_bg'>
         <div class="login">
-            <div class='title'><b>拳民出击</b>—后台管理系统</div>
+            <div class='title'><b>拳城出击</b>—后台管理系统</div>
             <el-form ref="form" :model="form" label-width="173px" class='form' id='login'>
                 <el-form-item label="账号">
-                    <el-input v-model="form.username" class='myInput' placeholder='请输入账号'></el-input>
+                    <el-input v-model="form.username" class='myInput' placeholder='请输入账号' :maxlength="11"></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
                     <el-input v-model="form.password" type="password" class='myInput' placeholder='请输入密码'></el-input>
@@ -15,7 +15,7 @@
                         <img :src="captcha" alt="" width='100%' height='100%'>
                     </div>
                 </el-form-item>
-                <div class='error'><span v-if='isShowErr'>错误提示:{{errText}}</span></div>
+                <div class='error'><span v-if='isShowErr'>{{errText}}</span></div>
                 </el-form-item>
                 <el-form-item label="">
                     <el-button type="danger" class='myColor_red myButton' @click="onSubmit">立即登录</el-button>
@@ -149,7 +149,7 @@
                     },function(err){
                         let errors=err.response.data
                         for(var key in errors){
-                            $this.errText=errors[key]
+                            $this.errText=errors[key][0]
                             $this.isShowErr=true;
                             $this.getCaptcha();
                             return

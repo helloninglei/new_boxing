@@ -11,6 +11,9 @@ body{
 .margin_lf70{margin-left:70px;}
 .margin_lf50{margin-left:50px;}
 /*button的整体样式*/
+.btn_width_95{width:95px;}
+.btn_width_120{width:120px;}
+.btn_width_200{width:200px;}
 .el-button.myColor_red{
     background: #F95862;
 }
@@ -32,8 +35,6 @@ body{
   font-size:12px;
   font-family: 'PingFangSC-Light'
 }
-.btn_width_95{width:95px;}
-.btn_width_200{width:200px;}
 .container{height:100%;width:100%!important;padding:30px;margin:0!important;box-sizing: border-box;}
 /*input的整体样式*/
 .el-input__inner,.usermanage .el-form-item__label{
@@ -52,6 +53,8 @@ body{
 }
 /*表格hover样式去掉*/
 .el-table tr.el-table__row.current-row>td,.el-table tr.el-table__row.hover-row>td{background: #fff!important}
+/*table的padding为0*/
+.el-table .cell, .el-table th div {padding-left:0;padding-right:0;}
 /*字体hover样式*/
 .colorFont{text-decoration:underline;cursor:pointer;}
 .colorFont:hover{color:#F95862;}
@@ -65,6 +68,15 @@ body{
 /*行内表单距离样式*/
 .inline_item{display: inline-block;padding-bottom:30px}
 .dl_line {display: inline-block;}
+/*表单验证那个错误的样式class*/
+.el-form-item__error{}
+
+/*表单验证那个成功的input颜色为灰色*/
+.el-form-item.is-success .el-input__inner, .el-form-item.is-success .el-input__inner:focus, .el-form-item.is-success .el-textarea__inner, .el-form-item.is-success .el-textarea__inner:focus {
+	border-color:#606266;
+}
+
+
 
 
 

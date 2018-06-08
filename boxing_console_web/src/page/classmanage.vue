@@ -5,29 +5,29 @@
             <header>
                 <div class="inline_item">
                     <span class="inlimeLabel">拳手</span>
-                    <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='姓名/手机号/身份证号' style='width:18rem'></el-input>
+                    <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='姓名/手机号' style='width:18rem'></el-input>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">价格区间</span>
-                    <el-input v-model="sendData.price_min"  class='myInput_40' type='number' style='width:9rem' placeholder='请输入'></el-input>
+                    <el-input v-model="sendData.price_min_int"  class='myInput_40' type='number' style='width:9rem' placeholder='请输入'></el-input>
                     <span>-</span>
-                    <el-input v-model="sendData.price_max"  class='myInput_40 margin_rt25' type='number' style='width:9rem' placeholder='请输入'></el-input>
+                    <el-input v-model="sendData.price_max_int"  class='myInput_40 margin_rt25' type='number' style='width:9rem' placeholder='请输入'></el-input>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">已开课程</span>
-                    <el-select v-model="sendData.courseName" class="margin_rt25" style='width:11rem'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option value="拳馆" label="拳馆">拳馆</el-option>
-                        <el-option value="泰拳" label="泰拳">泰拳</el-option>
+                    <el-select v-model="sendData.course_name" class="margin_rt25" style='width:11rem'>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option value="BOXING" label="拳击">拳击</el-option>
+                        <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
                         <el-option value="MMA" label="MMA">MMA</el-option>
                     </el-select>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">接单状态</span>
                     <el-select v-model="sendData.is_accept_order" style='width:11rem'>
-                        <el-option value="0" label="全部">全部</el-option>
-                        <el-option :value="true" label="是">是</el-option>
-                        <el-option :value="false" label="否">否</el-option>
+                        <el-option value="" label="全部">全部</el-option>
+                        <el-option :value="1" label="是">是</el-option>
+                        <el-option :value="0" label="否">否</el-option>
                     </el-select>
                 </div>
                 <div style='margin-bottom:50px;margin-left:52px'>
@@ -61,80 +61,17 @@ nav{min-height: 528px}
                 page      : 1,
                 issearch  : false,
                 sendData  : {
+                    price_min_int  : '',
+                    price_max_int  : '',
                     price_min  : '',
                     price_max  : '',
                     search     : '',
-                    courseName : '',
+                    course_name : '',
                     is_accept_order : '',
                 },
                 total     : 20,
                 tableData : [
-                    {
-                        "id": 1,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 2,
-                        "boxer_name": "张三", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 3,
-                        "boxer_name": "李四", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 4,
-                        "boxer_name": "王五", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 5,
-                        "boxer_name": "赵柳", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
-                    {
-                        "id": 6,
-                        "boxer_name": "王依依", //拳手姓名
-                        "mobile": "111111111", //拳手手机号
-                        "is_professional_boxer": true, //是否是职业选手
-                        "is_accept_order": true,  //是否可以接单
-                        "course_name": "THAI_BOXING", //课程名称
-                        "price": 120, //价格
-                        "duration": 120, //时长
-                        "validity": "2018-08-25" //有效期
-                    },
+                    
                 ],
                 tableColumn:[
                     {title:'boxer_name',       name :'拳手姓名',   width:''},
@@ -162,6 +99,8 @@ nav{min-height: 528px}
                 let sendData={}
                 if(this.issearch){
                    sendData=this.sendData
+                   sendData.price_min = this.sendData.price_min_int?this.sendData.price_min_int*100:'';
+                   sendData.price_max = this.sendData.price_max_int?this.sendData.price_max_int*100:'';
                 }
                 if(page){
                     sendData.page=page
@@ -172,6 +111,12 @@ nav{min-height: 528px}
                         for(var i=0;i<res.data.results.length;i++){
                             res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
+                            res.data.results[i].price=(res.data.results[i].price/100).toFixed(2);
+                            if(res.data.results[i].course_name=='BOXING'){
+                                res.data.results[i].course_name='拳击'
+                            }else if(res.data.results[i].course_name=='THAI_BOXING'){
+                                res.data.results[i].course_name='泰拳'
+                            }
                         }
                         $this.tableData=res.data.results;
                         $this.total = res.data.count;
@@ -204,6 +149,7 @@ nav{min-height: 528px}
             },
             refresh(){
                 this.sendData={};
+                this.getTableData() 
             }
         },
     }

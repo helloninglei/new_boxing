@@ -49,11 +49,11 @@
                     width="200"
                     >
                     </el-table-column>
-                    <el-table-column
+                    <!-- <el-table-column
                     label="状态"
                     prop="status"
                     >
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column
                       fixed="right"
                       width='200'
@@ -96,11 +96,11 @@
                     width="200"
                     >
                     </el-table-column>
-                    <el-table-column
+                    <!-- <el-table-column
                     label="状态"
                     prop="status"
                     >
-                    </el-table-column>
+                    </el-table-column> -->
                     <el-table-column
                     label="处理结果"
                     prop="result"
@@ -253,6 +253,9 @@
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData = res.data.results
+                        for(var i=0;i<$this.tableData.length;i++){
+                            $this.tableData[i].content_type=$this.tableData[i].content_type=='comment'?'评论':'动态';
+                        }
                         $this.total = res.data.count;
                     }
 
@@ -295,7 +298,7 @@
                 if(this.issearch){
                    this.getData(this.sendData); 
                }else{
-                    this.getData();
+                    this.getData({page:val});
                }
                 
             },

@@ -32,17 +32,7 @@ class HotVideoTestCase(APITestCase):
         video = HotVideo.objects.create(**self.data)
 
         PayOrder.objects.create(
-            user=self.test_superuser,
-            status=constants.PAYMENT_STATUS_WAIT_USE,
-            content_object=video,
-            amount=video.price,
-            out_trade_no=PayService.generate_out_trade_no(),
-            payment_type=constants.PAYMENT_TYPE_ALIPAY,
-            device=constants.DEVICE_PLATFORM_IOS,
-            pay_time=datetime.datetime.now()
-        )
-        PayOrder.objects.create(
-            user=self.test_user3,
+            user=self.test_user,
             status=constants.PAYMENT_STATUS_UNPAID,
             content_object=video,
             amount=video.price,
@@ -50,15 +40,25 @@ class HotVideoTestCase(APITestCase):
             payment_type=constants.PAYMENT_TYPE_ALIPAY,
             device=constants.DEVICE_PLATFORM_IOS,
         )
+        PayOrder.objects.create(
+            user=self.test_user3,
+            status=constants.PAYMENT_STATUS_WAIT_USE,
+            content_object=video,
+            amount=video.price,
+            out_trade_no=PayService.generate_out_trade_no(),
+            payment_type=constants.PAYMENT_TYPE_ALIPAY,
+            device=constants.DEVICE_PLATFORM_IOS,
+            pay_time=datetime.datetime.now(),
+        )
 
         res = self.client1.get(f'/users/{self.test_user.id}/hot_videos')
         result = res.data['results'][0]
-        self.assertTrue(result['is_paid'])
-        self.assertEqual(result['url'], self.data['url'])
+        self.assertFalse(result['is_paid'])
+        self.assertIsNone(result['url'])
 
         res = self.client3.get(f'/users/{self.test_user.id}/hot_videos')
         result = res.data['results'][0]
-        self.assertFalse(result['is_paid'])
-        self.assertIsNone(result['url'])
+        self.assertTrue(result['is_paid'])
+        self.assertEqual(result['url'], self.data['url'])
 
 

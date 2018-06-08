@@ -18,7 +18,7 @@
                         label="收入/支出"
                         >
                             <template slot-scope="scope">
-                                <span>{{scope.row.change_amount>0?'+':''}} {{scope.row.change_amount}}</span>                 
+                                <span>{{scope.row.change_amount>0?'+':''}} {{(scope.row.change_amount/100).toFixed(2)}}</span>                 
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -104,12 +104,8 @@
                 this.ajax('/official_account_change_logs','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
-                            res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
-                        }
                         $this.tableData=res.data.results;
-                        $this.total_count = res.data.total_count ? res.data.total_count : 0;
+                        $this.total_count = res.data.total_count ? (res.data.total_count/100).toFixed(2) : 0;
                         $this.total = res.data.count;
                     }
 
@@ -125,72 +121,8 @@
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
+                this.getTableData(val)
             },
-            filter(){
-                console.log(this.sendData)
-            },
-            toDetail(row){
-                //修改详情页
-                this.$router.push({path: '/hotvideodetail', query:row});
-            },
-            changeShow(id){
-                // 显示隐藏
-                console.log(id)
-                let $this = this;
-                this.ajax('/','get',{},this.sendData).then(function(res){
-                    if(res&&res.data){
-                        // console.log(res.data)
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].price_amount = res.data.results[i].price_amount  ?res.data.results[i].price_amount  :0
-                            res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
-                        }
-                        $this.tableData=res.data.results;
-                        $this.total = res.data.count;
-                    }
-
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
-            },
-            openConfirm(id){
-                this.confirmData.id    = id
-                this.confirmData.isshow= true
-            },
-            deleteClick(id){
-                // 删除
-                console.log(id)
-                this.ajax('/hot_videos/'+id,'delete').then(function(res){
-                    if(res&&res.status==204){
-                        for(var i=0;i<$this.tableData.length;i++){
-                            if($this.tableData[i].id==id){
-                                $this.tableData.splice(i,1)
-                                $this.confirmData.isshow=false;
-                            }
-                        } 
-                    }else{
-                      console.log(res)  
-                    }
-
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
-            },
-            cancel(val){
-                this.confirmData.isshow= val
-            }
         },
     }
 </script>

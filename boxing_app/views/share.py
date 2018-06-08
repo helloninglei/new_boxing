@@ -5,9 +5,10 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo
+from biz.models import Message, HotVideo, GameNews
 from biz.redis_client import incr_number_of_share
 from biz.utils import get_model_class_by_name, get_share_img_url
+from biz.weixin_public_client import Sign
 
 '''
 带图片（头像）、主标题（取动态文字）、副标题为 “来自xx的拳民出击”，xx为用户昵称。
@@ -32,7 +33,6 @@ https://ad.weixin.qq.com/learn/n6
 '''
 
 h5_base_url = settings.SHARE_H5_BASE_URL
-oss_base_url = settings.OSS_CONFIG['url']
 
 
 def _truncate_text(s, length):
@@ -41,9 +41,9 @@ def _truncate_text(s, length):
     return f'{s[:length-3]}...'
 
 
+@api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
-@api_view(['GET'])
 def share_view(request, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
     obj = get_object_or_404(model_class, pk=object_id)
@@ -62,11 +62,16 @@ def share_view(request, object_type, object_id):
         title = obj.name
         sub_title = '拳民出击'
         picture = get_share_img_url(obj.try_url, is_video=True)
-    else:
+    elif isinstance(obj, GameNews):
         title = obj.title
         sub_title = obj.sub_title
         picture = get_share_img_url(obj.picture)
         user = obj.operator
+    else:  # course order  TODO 等待course order 重构
+        title = obj.course_name
+        sub_title = ''
+        picture = ''
+        user = obj.boxer.user_id
 
     plural_prefix = 's' if object_type != 'game_news' else ''
     data = {
@@ -77,3 +82,11 @@ def share_view(request, object_type, object_id):
     }
     incr_number_of_share(user.id)
     return Response(data)
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def second_share_signature(request):
+    url = request.query_params.get("url")
+    return Response(Sign(url).sign())

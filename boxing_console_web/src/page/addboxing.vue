@@ -32,7 +32,7 @@
                         <el-form-item label="电话" prop="phone">
                             <el-input v-model="ruleForm.phone"></el-input>
                         </el-form-item>
-                        <el-form-item label="营业时间">
+                        <el-form-item label="营业时间" prop="startTime">
                             <el-col :span="11">
                                 <el-form-item prop="startTime">
                                     <el-time-select
@@ -77,7 +77,7 @@
                             </template> -->
                         </el-form-item>
                         <el-form-item label="拳馆简介" prop="introduction">
-                            <el-input type="textarea" v-model="ruleForm.introduction" :rows="6"></el-input>
+                            <el-input type="textarea" v-model="ruleForm.introduction" :rows="6" :maxlength='120' placeholder='限制120字'></el-input>
                         </el-form-item>
                         <el-form-item label="展示图" prop="images">
                             <div style='width:200%'>
@@ -132,7 +132,9 @@
             </el-row>
         </div>
         <el-dialog title="选择地点" :visible.sync="map.isshow">
-            <Map @address='getPause'></Map>
+            <Map @address='getPause' @address_str='getAddressStr'></Map>
+            <input type="hidden" id='myAddress_lon'>
+            <input type="hidden" id='myAddress_lat'>
             <input type="hidden" id='myAddress'>
             <div slot="footer" class="dialog-footer" style='text-align: center'>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="getAddress">确定</el-button>
@@ -224,7 +226,13 @@
                         { required:true, message:'请输入拳馆地址', trigger:'blur' },
                     ],
                     phone:[
-                        { required:true, message:'请输入电话', trigger:'change' }
+                        { validator: (rule, value, callback) => {
+                            if(!this.phoneReg.test(value)){
+                                callback(new Error('请输入合法的手机号'));
+                            }else {
+                                callback();
+                            }
+                        }, trigger: 'blur' ,required:true}
                     ],
                     startTime:[
                         { required:true, message:'请选择营业开始时间', trigger:'change' }
@@ -237,7 +245,16 @@
                     ],
                     introduction:[
                         { required:true, message:'请输入拳馆简介', trigger:'blur' }
-                    ]
+                    ],
+                    images:[
+                        { validator: (rule, value, callback) => {
+                            if(!($('#img2').attr('src')&&$('#img3').attr('src')&&$('#img4').attr('src')&&$('#img5').attr('src'))){
+                                this.sendErr='请选择4张展示图'
+                            }else{
+                                callback();
+                            }
+                        }, trigger: 'blur' ,required:true}
+                    ],
                 }
                 
             }
@@ -249,27 +266,28 @@
         },
         created() {
             let query = this.$route.query
-            console.log(query)
             if(query.id){
                 //编辑
                 this.isadd=false;
                 this.clubId=query.id;
                 this.secondTitle_name = '修改拳馆'
-                this.ruleForm.address = query.longitude+','+query.latitude;
+                this.ruleForm.address = query.address;
+                this.ruleForm.longitude = query.longitude;
+                this.ruleForm.latitude = query.latitude;
                 this.ruleForm.avatar = query.avatar;
                 this.ruleForm.name = query.name;
                 this.ruleForm.phone = query.phone
-                this.ruleForm.startTime = query.opening_hours.split('--')[0]
-                this.ruleForm.endTime = query.opening_hours.split('--')[1]
+                this.ruleForm.startTime = query.opening_hours.split(/[-]+/)[0]
+                this.ruleForm.endTime = query.opening_hours.split(/[-]+/)[1]
                 this.ruleForm.introduction = query.introduction;
                 this.src_avatar = this.config.baseUrl+query.avatar
                 this.images['img2'] = this.config.baseUrl+query.images[0]
                 this.images['img3'] = this.config.baseUrl+query.images[1]
                 this.images['img4'] = this.config.baseUrl+query.images[2]
                 this.images['img5'] = this.config.baseUrl+query.images[3]
-                console.log(this.config.baseUrl)
-                console.log(query.avatar)
-                console.log(this.config.baseUrl+query.avatar)
+                // console.log(this.config.baseUrl)
+                // console.log(query.avatar)
+                // console.log(this.config.baseUrl+query.avatar)
 
             }else{
                 this.isadd=true
@@ -313,12 +331,32 @@
             }, 
             getAddress(){
                 // console.log($('#myAddress').val())
-                this.map.isshow = false
                 this.ruleForm.address=$('#myAddress').val();
+                this.ruleForm.longitude = $('#myAddress_lon').val();
+                this.ruleForm.latitude = $('#myAddress_lat').val();
+                if(!$('#myAddress').val()){
+                   
+                   this.$message({
+                        message: '请输入具体地址',
+                        type: 'error'
+                    }); 
+                }else if(!$('#myAddress_lat').val()){
+                   this.$message({
+                        message: '请点击地图地点获取经纬度',
+                        type: 'error'
+                    }); 
+                }else{
+                    this.map.isshow = false
+                }
             },
-            getPause(lng, lat){
+            getPause(lng, lat,address){
                 // console.log(lng, lat)
-                $('#myAddress').val(lng+','+lat)
+                $('#myAddress_lon').val(lng);
+                $('#myAddress_lat').val(lat);
+            },
+            getAddressStr(address){
+                // console.log(address)
+                $('#myAddress').val(address)
             },
             openMap(){
                 this.map.isshow=true;
@@ -328,8 +366,6 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.ruleForm.opening_hours = this.ruleForm.startTime + '--' + this.ruleForm.endTime
-                        this.ruleForm.longitude = this.ruleForm.address.split(',')[0];
-                        this.ruleForm.latitude = this.ruleForm.address.split(',')[1];
                         // console.log(this.ruleForm)
                         if(!($('#img2').attr('src')&&$('#img3').attr('src')&&$('#img4').attr('src')&&$('#img5').attr('src'))){
                             this.sendErr='请选择4张展示图'
