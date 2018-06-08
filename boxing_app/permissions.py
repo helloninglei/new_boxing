@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework import permissions
 
-from biz import models
+from biz import models, constants
 
 
 class OnlyOwnerCanDeletePermission(permissions.BasePermission):
@@ -13,4 +13,5 @@ class OnlyOwnerCanDeletePermission(permissions.BasePermission):
 
 class IsBoxerPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        return models.BoxerIdentification.objects.filter(user=request.user).exists()
+        return models.BoxerIdentification.objects.filter(user=request.user,
+                                                         authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).exists()
