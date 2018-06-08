@@ -99,13 +99,11 @@
         .pic
             margin auto auto .4rem .75rem
             width 8rem
-            height 8rem
     .pic_wrapper3
         margin auto auto -.5rem -.835rem
         .pic
             margin auto auto .5rem .835rem
             width 5rem
-            height 5rem
 .bottom_bar
     margin-bottom 3.5rem
     width 100%

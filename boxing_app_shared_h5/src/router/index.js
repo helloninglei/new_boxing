@@ -17,7 +17,7 @@ export default [
         component: Download,
     },
     {
-        path: '/game_news/:id',
+        path: '/game_news/:id/:inApp',
         component: InfoDetail,
         meta: {
             title: '资讯详情'
