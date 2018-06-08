@@ -155,7 +155,7 @@ SHARE_OBJECT_LIST = (
     'message',
     'hot_video',
     'game_news',
-    'course_order',
+    'course',
 )
 
 # 支付

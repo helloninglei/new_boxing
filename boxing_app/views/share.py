@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo, GameNews
+from biz.models import Message, HotVideo, GameNews, Course, UserProfile
 from biz.redis_client import incr_number_of_share
 from biz.utils import get_model_class_by_name, get_share_img_url
 from biz.weixin_public_client import Sign
@@ -71,10 +71,16 @@ def share_view(request, object_type, object_id):
         picture = get_share_img_url(obj.picture)
         user = obj.operator
     else:
-        title = obj.course_name
-        sub_title = ''
-        picture = ''
-        user = obj.boxer.user_id
+        title = '我在拳城出击约了一个拳击教练，竟然还是个体育明星，快来看看他是谁！'
+        course_name_list = Course.objects.filter(boxer_id=obj.boxer_id, is_open=True).values_list('course_name',
+                                                                                                  flat=True)
+        has_more_than_one_course = len(course_name_list) > 1
+        conjunction_str = '和' if has_more_than_one_course else ''
+        last_course_name = course_name_list[-1:] if has_more_than_one_course else ""
+        course_str = f'{"、".join(course_name_list[:-1])}{conjunction_str}{last_course_name}'
+        sub_title = f'拳手姓名：我在拳城出击开设了{course_str}课程，等你来约。'
+        picture = get_share_img_url(UserProfile.objects.filter(user=obj.boxer_id).only('avatar').first().avatar)
+        user = obj.boxer
 
     data = {
         'title': _truncate_text(title, 14),
