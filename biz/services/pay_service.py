@@ -117,6 +117,8 @@ class PayService:
     def do_wallet_payment(cls, user, order):
         if isinstance(order.content_object, HotVideo):
             change_type = MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+        elif isinstance(order.content_object, CourseOrder):
+            cls.change_course_order_status(order)
         else:
             change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
         try:
@@ -175,10 +177,7 @@ class PayService:
                              remarks=pay_order.out_trade_no)
             elif isinstance(pay_order.content_object, CourseOrder):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
-                pay_order.content_object.pay_order = pay_order
-                pay_order.content_object.status = PAYMENT_STATUS_WAIT_USE
-                pay_order.content_object.order_number = pay_order.out_trade_no
-                pay_order.content_object.save()
+                cls.change_course_order_status(pay_order)
             else:
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
 
@@ -208,3 +207,10 @@ class PayService:
                 'pay_time': timezone.localtime(pay_order.pay_time).strftime(
                     datetime_format) if pay_order.pay_time else None,
             }
+
+    @staticmethod
+    def change_course_order_status(pay_order):
+        pay_order.content_object.pay_order = pay_order
+        pay_order.content_object.status = PAYMENT_STATUS_WAIT_USE
+        pay_order.content_object.order_number = pay_order.out_trade_no
+        pay_order.content_object.save()
