@@ -208,9 +208,11 @@ class PayService:
                     datetime_format) if pay_order.pay_time else None,
             }
 
-    @staticmethod
-    def change_course_order_status(pay_order):
+    @classmethod
+    def change_course_order_status(cls, pay_order):
         pay_order.content_object.pay_order = pay_order
         pay_order.content_object.status = PAYMENT_STATUS_WAIT_USE
         pay_order.content_object.order_number = pay_order.out_trade_no
+        pay_order.content_object.amount = pay_order.amount
+        pay_order.content_object.pay_time = pay_order.pay_time
         pay_order.content_object.save()
