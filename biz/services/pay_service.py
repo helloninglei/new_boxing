@@ -13,7 +13,7 @@ from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, \
     MONEY_CHANGE_TYPE_REDUCE_ORDER, \
-    MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO, COURSE_PAYMENT_STATUS_WAIT_COMMENT
+    MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO, COURSE_PAYMENT_STATUS_WAIT_USE
 from biz.services import official_account_service
 from biz.services.money_balance_service import change_money, ChangeMoneyException
 
@@ -213,7 +213,7 @@ class PayService:
     def change_course_order_status(cls, pay_order):
         pay_order.content_object.pay_order = pay_order
         pay_order.content_object.pay_time = datetime.now()
-        pay_order.content_object.status = COURSE_PAYMENT_STATUS_WAIT_COMMENT
+        pay_order.content_object.status = COURSE_PAYMENT_STATUS_WAIT_USE
         pay_order.content_object.order_number = pay_order.out_trade_no
         pay_order.content_object.amount = pay_order.amount
         pay_order.content_object.pay_time = pay_order.pay_time
