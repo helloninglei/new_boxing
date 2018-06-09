@@ -153,16 +153,3 @@ class UserInfo(models.Model):
     class Meta:
         managed = False
         db_table = 'user_info'
-
-
-class UserReadArticle(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    aid = models.BigIntegerField()
-    uid = models.BigIntegerField()
-    createtime = models.DateTimeField(db_column='createTime')  # Field name made lowercase.
-
-    objects = Manager()
-
-    class Meta:
-        managed = False
-        db_table = 'user_read_article'

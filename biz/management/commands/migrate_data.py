@@ -6,10 +6,11 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.files import File
 from django.db.utils import IntegrityError
 from django.utils.timezone import get_default_timezone
+from pymysql import err
 from gevent import queue
 from biz.services.file_service import save_upload_file
-from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment, UserReadArticle
-from biz.models import User, UserProfile, BoxerIdentification, GameNews
+from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
+from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
 
 city_dict = {}
 with open('old_boxing/citys.txt', 'r') as fp:
@@ -187,12 +188,36 @@ def move_article():
         q.put((move_article_worker, article))
 
 
+def move_comment_worker(comment):
+    news = GameNews.objects.filter(id=comment.aid).first()
+    if news:
+        try:
+            Comment.objects.get_or_create(
+                id=comment.id,
+                defaults=dict(
+                    content_object=news,
+                    content=comment.content,
+                    user_id=comment.uid,
+                    is_deleted=not comment.isdel,
+                    created_time=comment.createtime.replace(tzinfo=get_default_timezone()),
+                )
+            )
+        except IntegrityError as e:
+            print(comment.id, comment.uid, e)
+
+
+def move_comment():
+    for c in ArticleComment.objects.all():
+        q.put((move_comment_worker, c))
+
+
 class Command(BaseCommand):
     help = '迁移数据'
 
     def handle(self, *args, **options):
         workers = [gevent.spawn(worker) for _ in range(20)]
-        move_user()
-        set_admin_user()
-        move_article()
+        # move_user()
+        # set_admin_user()
+        # move_article()
+        move_comment()
         gevent.joinall(workers)

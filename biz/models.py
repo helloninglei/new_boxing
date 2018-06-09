@@ -231,7 +231,7 @@ class Comment(SoftDeleteModel):
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='+')
     ancestor = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='+')
     is_deleted = models.BooleanField(default=False, db_index=True)
-    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    created_time = models.DateTimeField(default=timezone.now, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
     reports = GenericRelation('Report')
 
