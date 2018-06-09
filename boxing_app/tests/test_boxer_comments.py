@@ -94,8 +94,8 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-        self.client1.post('/user/orders', data={'id': course.id})
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
 
         # 为拳手用户test_user_3创建3条订单数据
         self.user_profile_data['user'] = self.test_user_3
@@ -108,9 +108,9 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-        self.client1.post('/user/orders', data={'id': course.id})
-        self.client1.post('/user/orders', data={'id': course.id})
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
         course_order1 = CourseOrder.objects.filter(boxer=boxer)[0]
         course_order2 = CourseOrder.objects.filter(boxer=boxer)[1]
 

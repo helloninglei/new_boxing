@@ -84,8 +84,8 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.client1.post('/user/orders', data={'id': course.id})
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
 
         # 为拳手用户test_user_3创建3条订单数据
         self.user_profile_data['user'] = self.test_user_3
@@ -97,10 +97,10 @@ class OrderTestCase(APITestCase):
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
         CourseOrder.objects.filter(course=course).update(status=constants.PAYMENT_STATUS_FINISHED)
-        self.client1.post('/user/orders', data={'id': course.id})
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
 
         # 拳手2获取2条订单数据
         res = self.client2.get('/boxer/orders')
@@ -134,10 +134,10 @@ class OrderTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         # 不能购买自己的课程
-        res = self.client4.post('/user/orders', data={'id': course.id})
+        res = self.client4.post('/course/order', data={'id': course.id})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
         # 为订单创建评论
         course_order = CourseOrder.objects.get(course=course)
         self.comment_data['order'] = course_order
@@ -183,14 +183,14 @@ class OrderTestCase(APITestCase):
         course = Course.objects.create(**self.course_data)
 
         # 用户test_user_2购买课程2个课程
-        self.client2.post('/user/orders', data={'id': course.id})
-        self.client2.post('/user/orders', data={'id': course.id})
+        self.client2.post('/course/order', data={'id': course.id})
+        self.client2.post('/course/order', data={'id': course.id})
 
         # 用户test_user_3购买课程3个课程
-        self.client3.post('/user/orders', data={'id': course.id})
+        self.client3.post('/course/order', data={'id': course.id})
         CourseOrder.objects.filter(course=course).update(status=constants.PAYMENT_STATUS_FINISHED)
-        self.client3.post('/user/orders', data={'id': course.id})
-        self.client3.post('/user/orders', data={'id': course.id})
+        self.client3.post('/course/order', data={'id': course.id})
+        self.client3.post('/course/order', data={'id': course.id})
 
         # 用户test_user_2获取订单列表,结果应为2条
         res = self.client2.get('/user/orders')
@@ -230,7 +230,7 @@ class OrderTestCase(APITestCase):
 
         # 为普通用户test_user_2创建用户信息，并购买课程
         self.user_profile_data['user'] = self.test_user_2
-        self.client2.post('/user/orders', data={'id': course.id})
+        self.client2.post('/course/order', data={'id': course.id})
         course_order = CourseOrder.objects.get(course=course)
         # 用户test_user_2获取所购买课程的详情
         res = self.client2.get(f'/user/order/{course_order.id}')
@@ -266,7 +266,7 @@ class OrderTestCase(APITestCase):
                                             device=1)
 
         # test_user_2成功创建了未支付订单
-        res = self.client2.post('/user/orders', data={'id': course.id})
+        res = self.client2.post('/course/order', data={'id': course.id})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         # 查询课程的订单，核对支付订单数据
@@ -311,7 +311,7 @@ class OrderTestCase(APITestCase):
         course = Course.objects.create(**self.course_data)
 
         # test_user_2创建未支付订单
-        self.client2.post('/user/orders', data={'id': course.id})
+        self.client2.post('/course/order', data={'id': course.id})
         course_order = CourseOrder.objects.get(course=course)
         # 不能删除不是未支付状态的支付订单
         CourseOrder.objects.filter(user=self.test_user_2).update(status=constants.PAYMENT_STATUS_WAIT_COMMENT)

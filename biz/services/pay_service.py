@@ -175,6 +175,7 @@ class PayService:
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
                 pay_order.content_object.pay_order = pay_order
                 pay_order.content_object.status = PAYMENT_STATUS_WAIT_USE
+                pay_order.content_object.order_number = pay_order.out_trade_no
                 pay_order.content_object.save()
             else:
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO

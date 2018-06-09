@@ -85,7 +85,7 @@ class OrderCommentTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-        self.client1.post('/user/orders', data={'id': course.id})
+        self.client1.post('/course/order', data={'id': course.id})
         course_order = CourseOrder.objects.get(course=course)
 
         # 获取订单的评论列表
