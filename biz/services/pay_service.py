@@ -76,6 +76,8 @@ class PayService:
 
     @classmethod
     def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):  # amount 单位分
+        if isinstance(obj, CourseOrder):
+            amount = obj.course.price
         return PayOrder.objects.create(
             user=user,
             content_object=obj,
