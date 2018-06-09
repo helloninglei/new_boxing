@@ -216,5 +216,4 @@ class PayService:
         pay_order.content_object.status = COURSE_PAYMENT_STATUS_WAIT_USE
         pay_order.content_object.order_number = pay_order.out_trade_no
         pay_order.content_object.amount = pay_order.amount
-        pay_order.content_object.pay_time = pay_order.pay_time
         pay_order.content_object.save()
