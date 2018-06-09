@@ -2,6 +2,7 @@
 from datetime import datetime
 from json import loads, dumps
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
@@ -385,23 +386,13 @@ class GameNews(BaseAuditModel):
     end_time = models.DateTimeField(null=True)  # 推送结束时间
     app_content = models.TextField()
     share_content = models.TextField(null=True, blank=True)
+    created_time = models.DateTimeField(default=timezone.now)
     comments = GenericRelation('Comment')
 
     class Meta:
         db_table = 'game_news'
         ordering = ('-stay_top', '-created_time',)
         verbose_name = '赛事资讯'
-
-
-class UserReadNews(models.Model):
-    news = models.ForeignKey(GameNews, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
-    created_time = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('news', 'user')
-        db_table = 'user_read_news'
-        ordering = ('-created_time',)
 
 
 class Report(BaseAuditModel):
