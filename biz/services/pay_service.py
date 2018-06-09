@@ -118,6 +118,7 @@ class PayService:
         if isinstance(order.content_object, HotVideo):
             change_type = MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
         elif isinstance(order.content_object, CourseOrder):
+            change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
             cls.change_course_order_status(order)
         else:
             change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
