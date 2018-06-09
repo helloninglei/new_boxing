@@ -212,6 +212,7 @@ class PayService:
     @classmethod
     def change_course_order_status(cls, pay_order):
         pay_order.content_object.pay_order = pay_order
+        pay_order.content_object.pay_time = datetime.now()
         pay_order.content_object.status = PAYMENT_STATUS_WAIT_USE
         pay_order.content_object.order_number = pay_order.out_trade_no
         pay_order.content_object.amount = pay_order.amount
