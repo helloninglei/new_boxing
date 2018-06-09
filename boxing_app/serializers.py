@@ -482,7 +482,7 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
 
 
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = DiscoverUserField(read_only=True)
     images = serializers.ListField(child=serializers.CharField(), required=False)
     course_name = serializers.SerializerMethodField()
 
