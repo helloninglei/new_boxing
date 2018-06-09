@@ -65,8 +65,8 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.status != constants.PAYMENT_STATUS_UNPAID:
-            return Response({"message":'订单不是未支付状态，不能删除'}, status=status.HTTP_400_BAD_REQUEST)
+        if instance.status != constants.COURSE_PAYMENT_STATUS_UNPAID:
+            return Response({"message": '订单不是未支付状态，不能删除'}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
