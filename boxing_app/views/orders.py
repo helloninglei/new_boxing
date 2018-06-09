@@ -78,6 +78,7 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
         if course_order.confirm_status != constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED:
             return Response({"message": "拳手确认完成后才能确认"}, status=status.HTTP_400_BAD_REQUEST)
         course_order.confirm_status = constants.COURSE_ORDER_STATUS_USER_CONFIRMED
+        course_order.status = constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT
         course_order.save()
         course_order.pay_order.status = constants.PAYMENT_STATUS_WAIT_COMMENT
         course_order.pay_order.save()
