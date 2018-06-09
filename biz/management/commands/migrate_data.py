@@ -82,7 +82,7 @@ def move_user_worker(u):
         id=u.uid,
         defaults=dict(
             mobile=u.phone,
-            password=f'{u.pass_field}:{u.salt}',
+            password=f'boxing${u.pass_field}${u.salt}',
             weibo_openid=weibo_openid,
             wechat_openid=wechat_openid,
             is_active=not u.isdel,
@@ -216,8 +216,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         workers = [gevent.spawn(worker) for _ in range(20)]
-        # move_user()
-        # set_admin_user()
-        # move_article()
+        move_user()
+        set_admin_user()
+        move_article()
         move_comment()
         gevent.joinall(workers)

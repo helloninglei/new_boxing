@@ -280,3 +280,9 @@ PROJECT_CONSOLE = 'console'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = default_methods
 CORS_ALLOW_HEADERS = default_headers
+
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'biz.hasher.BoxingMD5PasswordHasher',
+]
