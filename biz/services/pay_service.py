@@ -199,7 +199,7 @@ class PayService:
             elif isinstance(content, User):
                 name = '充值'
             else:
-                name = content.get_course_name_display()
+                name = content.course.get_course_name_display()
             return {
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
                 'name': name,
