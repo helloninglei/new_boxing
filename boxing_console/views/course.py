@@ -1,10 +1,12 @@
 from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
+from rest_framework.response import Response
 
 from biz.models import Course, PayOrder, CourseSettleOrder, CourseOrder
 from boxing_console.filters import CourseFilter, CourseOrderFilter, CourseSettleOrderFilter
-from boxing_console.serializers import CourseSerializer, CourseOrderSerializer, CourseSettleOrderSerializer
+from boxing_console.serializers import CourseSerializer, CourseOrderSerializer, CourseSettleOrderSerializer, \
+    CourseOrderInsuranceSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -23,6 +25,14 @@ class CourseOrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return CourseOrder.objects.all()
+
+    def mark_insurance(self, request, *args, **kwargs):
+        serializer = CourseOrderInsuranceSerializer(request.data)
+        serializer.is_valid(raise_exception=True)
+        CourseOrder.objects.filter(pk=kwargs['pk']).update(
+            insurance_amount=serializer.validated_data['insurance_amount'])
+        return Response({'message': '成功添加保险'}, status=status.HTTP_204_NO_CONTENT)
+
 
 
 class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):

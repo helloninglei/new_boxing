@@ -495,3 +495,10 @@ class OfficialAccountChangeLogsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OfficialAccountChangeLog
         fields = ["id", "change_amount", "created_time", "remarks", "change_type"]
+
+
+class CourseOrderInsuranceSerializer(serializers.Serializer):
+    insurance_amount = serializers.IntegerField(min_value=0)
+
+    class Meta:
+        fields = ('insurance',)
