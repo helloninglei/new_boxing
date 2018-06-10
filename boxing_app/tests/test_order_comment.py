@@ -112,7 +112,7 @@ class OrderCommentTestCase(APITestCase):
                                            data=json.dumps(comment_data),
                                            content_type='application/json')
         self.assertEqual(do_comment_res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(do_comment_res.data['user'], self.test_user_1.id)
+        self.assertEqual(do_comment_res.data['user']['id'], self.test_user_1.id)
         for key in comment_data:
             self.assertEqual(do_comment_res.data[key], comment_data[key])
 
