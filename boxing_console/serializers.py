@@ -500,5 +500,10 @@ class OfficialAccountChangeLogsSerializer(serializers.ModelSerializer):
 class CourseOrderInsuranceSerializer(serializers.Serializer):
     insurance_amount = serializers.IntegerField(min_value=0)
 
+    def validate(self, attrs):
+        if self.context['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_USE:
+            raise ValidationError("订单不是待使用状态，不能标记保险")
+        return attrs
+
     class Meta:
-        fields = ('insurance',)
+        fields = ('insurance_amount',)

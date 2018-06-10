@@ -1,9 +1,8 @@
-from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 
-from biz.models import Course, PayOrder, CourseSettleOrder, CourseOrder
+from biz.models import Course, CourseSettleOrder, CourseOrder
 from boxing_console.filters import CourseFilter, CourseOrderFilter, CourseSettleOrderFilter
 from boxing_console.serializers import CourseSerializer, CourseOrderSerializer, CourseSettleOrderSerializer, \
     CourseOrderInsuranceSerializer
@@ -27,7 +26,7 @@ class CourseOrderViewSet(viewsets.ModelViewSet):
         return CourseOrder.objects.all()
 
     def mark_insurance(self, request, *args, **kwargs):
-        serializer = CourseOrderInsuranceSerializer(request.data)
+        serializer = CourseOrderInsuranceSerializer(data=request.data, context={'order': self.get_object()})
         serializer.is_valid(raise_exception=True)
         CourseOrder.objects.filter(pk=kwargs['pk']).update(
             insurance_amount=serializer.validated_data['insurance_amount'])
