@@ -289,7 +289,7 @@ class BoxingClub(BaseModel):
         db_table = 'club'
 
 
-class Course(models.Model):
+class Course(SoftDeleteModel):
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='course')
     course_name = models.CharField(choices=constants.BOXER_ALLOWED_COURSES_CHOICE, max_length=20)
     price = models.PositiveIntegerField(null=True)  # 单位：元
@@ -298,6 +298,7 @@ class Course(models.Model):
     pay_orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
     is_open = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = "course"

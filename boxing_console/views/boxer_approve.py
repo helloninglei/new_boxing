@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 
 from biz import constants, sms_client
 from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE
-from biz.models import BoxerIdentification
+from biz.models import BoxerIdentification, Course
 from biz.services.operation_log_service import log_boxer_identification_operation
 from boxing_console.serializers import BoxerIdentificationSerializer, CourseSerializer
 
@@ -56,6 +56,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def create_course(boxer, allowed_courses):
+        Course.objects.filter(boxer=boxer).update(is_deleted=True)
         for course_name in allowed_courses:
             serializer = CourseSerializer(data={"course_name": course_name})
             serializer.is_valid(raise_exception=True)
