@@ -6,7 +6,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from biz import redis_client
-from biz.models import Course, BoxerIdentification, BoxingClub
+from biz.models import Course, BoxerIdentification, BoxingClub, CourseOrder
 from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullDataSerializer
 
 
@@ -42,31 +42,38 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         BoxerMyCourseViewSet.condition = {"boxer__user": self.request.user}
+        boxer = BoxerIdentification.objects.get(user=self.request.user)
+        kwargs['boxer'] = boxer
         return self.perform_list(request, *args, **kwargs)
 
     def opened_courses_list(self, request, *args, **kwargs):
         BoxerMyCourseViewSet.condition = {"boxer__id": kwargs['boxer_id'], "is_open": True}
+        boxer = BoxerIdentification.objects.get(id=kwargs['boxer_id'])
+        kwargs['boxer'] = boxer
         return self.perform_list(request, *args, **kwargs)
 
     def perform_list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("course_orders__comment"),
                                                                 avg_score=Avg("course_orders__comment__score"))
-        course = self.get_queryset().last()
-        common_info = self.get_course_comment_info(course)
+        course = self.get_queryset().filter(is_open=True).last()
+        common_info = self.get_comment_info(course=course, boxer=kwargs['boxer'])
         response.data.update(common_info)
         response.data.update(com_count_and_avg_score)
         return response
 
     @staticmethod
-    def get_course_comment_info(course):
+    def get_comment_info(course, boxer):
         comment_info = {}
+        comment_info['order_count'] = CourseOrder.objects.filter(boxer=boxer).count()
+        comment_info['allowed_course'] = boxer.allowed_course
         if course:
             comment_info['validity'] = course.validity
             comment_info['boxer_id'] = course.boxer_id
             if course.club:
                 comment_info['club_id'] = course.club.id
                 comment_info['club_name'] = course.club.name
+                comment_info['club_city'] = course.club.city
                 comment_info['club_address'] = course.club.address
                 comment_info['club_longitude'] = course.club.longitude
                 comment_info['club_latitude'] = course.club.latitude
