@@ -28,7 +28,6 @@ class Migration(migrations.Migration):
                 ('boxer_confirm_time', models.DateTimeField(null=True)),
                 ('user_confirm_time', models.DateTimeField(null=True)),
                 ('finish_time', models.DateTimeField(null=True)),
-                ('settle_time', models.DateTimeField(null=True)),
                 ('amount', models.PositiveIntegerField(null=True)),
                 ('boxer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='boxer_course_order', to='biz.BoxerIdentification')),
                 ('club', models.ForeignKey(db_index=False, on_delete=django.db.models.deletion.PROTECT, to='biz.BoxingClub')),
@@ -36,6 +35,10 @@ class Migration(migrations.Migration):
                 ('pay_order', models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, related_name='business_order', to='biz.PayOrder')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='user_course_order', to=settings.AUTH_USER_MODEL)),
             ],
+            options={
+                'db_table': 'course_order',
+                'ordering': ('-created_time',),
+            },
         ),
         migrations.AlterField(
             model_name='ordercomment',
