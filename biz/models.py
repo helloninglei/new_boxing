@@ -101,6 +101,7 @@ class PropertyChangeLog(BaseModel):
 class UserProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     nick_name = models.CharField(max_length=30, null=True, blank=True)
+    nick_name_index_letter = models.CharField(max_length=1, null=True, blank=True)  # 昵称首字母
     name = models.CharField(max_length=30, blank=True, null=True)
     nation = models.CharField(max_length=30, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
