@@ -7,7 +7,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
-from biz import constants
+from biz import constants, sms_client
 from biz.models import BoxerIdentification, PayOrder, Course, OrderComment, CourseOrder
 from biz.services.pay_service import PayService
 from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission
@@ -34,6 +34,7 @@ class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
         course_order.confirm_status = constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED
         course_order.boxer_confirm_time = datetime.now()
         course_order.save()
+        sms_client.send_boxer_confirmed_message(course_order.user.mobile, course_order)
         # TODO:创建定时任务
         return Response(status=status.HTTP_204_NO_CONTENT)
 
