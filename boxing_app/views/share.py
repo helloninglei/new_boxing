@@ -88,5 +88,5 @@ def share_view(request, object_type, object_id):
 @authentication_classes([])
 @permission_classes([])
 def second_share_signature(request):
-    url = request.query_params.get("url")
+    url = request.query_params.get("url", "")
     return Response(Sign(url).sign())

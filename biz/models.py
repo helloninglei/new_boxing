@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
         user = self.model(mobile=mobile, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        UserProfile.objects.create(user=user)
         return user
 
     def create_user(self, mobile, password=None, **extra_fields):

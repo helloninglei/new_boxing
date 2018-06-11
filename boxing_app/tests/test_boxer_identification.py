@@ -36,7 +36,6 @@ class BoxerIdentificationTestCase(APITestCase):
             "authentication_state": constants.BOXER_AUTHENTICATION_STATE_WAITING
         }
 
-
     def test_create_identification_success(self):
 
         post_data = {
@@ -275,3 +274,10 @@ class BoxerIdentificationTestCase(APITestCase):
         res = self.client2.post('/boxer/accept-order/open')
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_get_boxer_info_to_share(self):
+        client = self.client_class()
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        response = client.get(path=f"/boxer/{boxer.id}/info")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['results']['id'], boxer.id)
+        self.assertEqual(response.data['results']['honor_certificate_images'], self.boxer_data['honor_certificate_images'])
