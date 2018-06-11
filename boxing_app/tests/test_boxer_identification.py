@@ -18,6 +18,24 @@ class BoxerIdentificationTestCase(APITestCase):
         self.client2 = self.client_class()
         self.client.login(username=self.fake_user, password='test_password')
         self.client2.login(username=self.fake_user2, password='test_password')
+        self.boxer_data = {
+            "user": self.fake_user,
+            "real_name": "张三",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "113134",
+            "is_professional_boxer": True,
+            "club": "131ef2f3",
+            "job": 'hhh',
+            "introduction": "beautiful",
+            "experience": '',
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": '',
+            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_WAITING
+        }
+
 
     def test_create_identification_success(self):
 
@@ -211,23 +229,6 @@ class BoxerIdentificationTestCase(APITestCase):
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), update_data[key])
 
     def test_get_boxer_status(self):
-        boxer_data = {
-            "user": self.fake_user,
-            "real_name": "张三",
-            "height": 190,
-            "weight": 120,
-            "birthday": "2018-04-25",
-            "identity_number": "131313141444141444",
-            "mobile": "113134",
-            "is_professional_boxer": True,
-            "club": "131ef2f3",
-            "job": 'hhh',
-            "introduction": "beautiful",
-            "experience": '',
-            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
-            "competition_video": '',
-            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_WAITING
-        }
 
         # 普通用户请求
         res = self.client.get('/get-boxer-status')
@@ -235,10 +236,10 @@ class BoxerIdentificationTestCase(APITestCase):
         self.assertEqual(res.data['boxer_status'], None)
 
         # 待审核拳手请求
-        boxer = BoxerIdentification.objects.create(**boxer_data)
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
         res = self.client.get('/get-boxer-status')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['boxer_status'], boxer_data['authentication_state'])
+        self.assertEqual(res.data['boxer_status'], self.boxer_data['authentication_state'])
 
         # 审核通过的拳手请求
         BoxerIdentification.objects.filter(id=boxer.id).update(
@@ -253,3 +254,24 @@ class BoxerIdentificationTestCase(APITestCase):
         res = self.client.get('/get-boxer-status')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['boxer_status'], constants.BOXER_AUTHENTICATION_STATE_REFUSE)
+
+    def test_change_boxer_accept_order_status(self):
+        # 默认为开通
+        self.boxer_data["authentication_state"] = constants.BOXER_AUTHENTICATION_STATE_APPROVED
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        self.assertTrue(boxer.is_accept_order)
+        # 关闭接单
+        res = self.client.post('/boxer/accept-order/close')
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        is_accept_order = BoxerIdentification.objects.get(id=boxer.id).is_accept_order
+        self.assertFalse(is_accept_order)
+        # 开通接单
+        res = self.client.post('/boxer/accept-order/open')
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        is_accept_order = BoxerIdentification.objects.get(id=boxer.id).is_accept_order
+        self.assertTrue(is_accept_order)
+
+        # 非拳手访问接口
+        res = self.client2.post('/boxer/accept-order/open')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+

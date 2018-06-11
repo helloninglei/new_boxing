@@ -488,6 +488,10 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     images = serializers.ListField(child=serializers.CharField(), required=False)
+    course_name = serializers.SerializerMethodField()
+
+    def get_course_name(self, instance):
+        return instance.order.course.last().course_name
 
     def validate(self, attrs):
         if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
@@ -579,3 +583,13 @@ class SocialLoginSerializer(serializers.Serializer):
         if wechat_openid and weibo_openid:
             raise ValidationError("wechat_openid、weibo_openid只能传一个！")
         return attrs
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    nick_name = serializers.CharField(source="user_profile.nick_name")
+    avatar = serializers.CharField(source="user_profile.avatar")
+    index_letter = serializers.CharField(source="user_profile.nick_name_index_letter")
+
+    class Meta:
+        model = models.User
+        fields = ['id', "nick_name", "avatar", "index_letter"]

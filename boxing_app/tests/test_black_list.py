@@ -2,6 +2,7 @@ from rest_framework import status
 from . import APILoginTestCase
 from biz import redis_client
 from biz.models import User
+from biz.constants import SERVICE_USER_ID
 
 
 class BlackListTestCase(APILoginTestCase):
@@ -19,6 +20,11 @@ class BlackListTestCase(APILoginTestCase):
         response = self.client.post(path=f"/black_list/{self.user2.id}")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['message'][0], "不能重复添加黑名单！")
+
+        # 加入黑名单的用户是官方账号
+        response = self.client.post(path=f"/black_list/{SERVICE_USER_ID}")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'][0], "官方账号不能加入黑名单!")
 
         # 在不在黑名单中
         response = self.client.get(path=f"/black_list/{self.user2.id}")
