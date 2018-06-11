@@ -2,7 +2,6 @@ from django.db import transaction
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 
-from biz import redis_client
 from biz.models import BoxingClub
 from boxing_console.serializers import BoxingClubSerializer
 
@@ -13,7 +12,16 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name',)
 
-    def close_club(self, request, *args, **kwargs):
+    def operate(self, request, *args, **kwargs):
+        operate = kwargs['operate']
+        return self.close_club() if operate == 'close' else self.open_club()
+
+    def close_club(self):
         club = self.get_object()
         club.soft_delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "拳馆已关闭"}, status=status.HTTP_204_NO_CONTENT)
+
+    def open_club(self):
+        BoxingClub.all_objects.filter(id=self.kwargs['pk']).update(is_deleted=False)
+        return Response({"message": "拳馆已开启"}, status=status.HTTP_204_NO_CONTENT)
+

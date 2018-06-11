@@ -85,13 +85,18 @@ class BoxingClubTestCase(TestCase):
         self.assertAlmostEqual(self.data['longitude'], redis_location_record[0][0], delta=0.00001)
         self.assertAlmostEqual(self.data['latitude'], redis_location_record[0][1], delta=0.00001)
 
-    def test_close_club(self):
+    def test_close_and_open_club(self):
         create_res = self.client.post('/club', self.data)
-        delete_res = self.client.delete(f'/club/{create_res.data["id"]}')
-        self.assertEqual(delete_res.status_code, status.HTTP_204_NO_CONTENT)
+        # 关闭拳馆
+        close_res = self.client.post(f'/club/{create_res.data["id"]}/close')
+        self.assertEqual(close_res.status_code, status.HTTP_204_NO_CONTENT)
         # 判断拳馆已关闭
         self.assertFalse(BoxingClub.objects.all().filter(id=create_res.data['id']).exists())
         self.assertTrue(BoxingClub.all_objects.all().filter(id=create_res.data['id']).exists())
+        # 开启拳馆
+        open_res = self.client.post(f'/club/{create_res.data["id"]}/open')
+        self.assertEqual(open_res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertTrue(BoxingClub.objects.all().filter(id=create_res.data['id']).exists())
 
     def test_club_list(self):
         data1 = {
