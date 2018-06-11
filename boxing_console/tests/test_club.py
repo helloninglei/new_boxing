@@ -3,8 +3,8 @@ import json
 from django.test import TestCase
 from rest_framework import status
 
-from biz import redis_client
-from biz.models import User, BoxingClub
+from biz import redis_client, constants
+from biz.models import User, BoxingClub, BoxerIdentification, Course
 
 
 class BoxingClubTestCase(TestCase):
@@ -22,6 +22,23 @@ class BoxingClubTestCase(TestCase):
                     "introduction": "最牛逼的拳馆",
                     "avatar": "club_avatar"
                     }
+        self.boxer_data = {
+            "user": self.test_user1,
+            "real_name": "张三",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "11313131344",
+            "is_professional_boxer": True,
+            "club": "131ef2f3",
+            "job": 'hhh',
+            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED,
+            "introduction": "beautiful",
+            "experience": '',
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": 'https://baidu.com'
+        }
 
     def test_create_club(self):
         res = self.client.post('/club', self.data)
@@ -86,13 +103,26 @@ class BoxingClubTestCase(TestCase):
         self.assertAlmostEqual(self.data['latitude'], redis_location_record[0][1], delta=0.00001)
 
     def test_close_and_open_club(self):
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
         create_res = self.client.post('/club', self.data)
+        club = BoxingClub.objects.get(id=create_res.data['id'])
+        course_data = {
+            "boxer": boxer,
+            "course_name": constants.BOXER_ALLOWED_COURSES_MMA,
+            "price": 100,
+            "duration": 120,
+            "validity": "2018-08-25",
+            "club": club,
+            "is_open": True
+        }
+        course = Course.objects.create(**course_data)
         # 关闭拳馆
         close_res = self.client.post(f'/club/{create_res.data["id"]}/close')
         self.assertEqual(close_res.status_code, status.HTTP_204_NO_CONTENT)
-        # 判断拳馆已关闭
+        # 判断拳馆已关闭,并且课程已关闭
         self.assertFalse(BoxingClub.objects.all().filter(id=create_res.data['id']).exists())
         self.assertTrue(BoxingClub.all_objects.all().filter(id=create_res.data['id']).exists())
+        self.assertFalse(Course.objects.get(id=course.id).is_open)
         # 开启拳馆
         open_res = self.client.post(f'/club/{create_res.data["id"]}/open')
         self.assertEqual(open_res.status_code, status.HTTP_204_NO_CONTENT)

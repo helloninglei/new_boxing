@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 
-from biz.models import BoxingClub
+from biz.models import BoxingClub, Course
 from boxing_console.serializers import BoxingClubSerializer
 
 
@@ -19,6 +19,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     def close_club(self):
         club = self.get_object()
         club.soft_delete()
+        Course.objects.filter(club=club.id).update(is_open=False)
         return Response({"message": "拳馆已关闭"}, status=status.HTTP_204_NO_CONTENT)
 
     def open_club(self):
