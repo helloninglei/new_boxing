@@ -2,8 +2,9 @@
 from django_filters import rest_framework as df_filters
 from rest_framework import viewsets, filters
 from django.db.models import Count, Sum, Q
+from django.contrib.contenttypes.fields import ContentType
 from biz import models
-from biz.constants import PAYMENT_STATUS_WAIT_USE
+from biz.constants import PAYMENT_STATUS_WAIT_USE, PAYMENT_STATUS_UNPAID
 from boxing_console.serializers import HotVideoSerializer, HotVideoShowSerializer
 from boxing_console.filters import HotVideoFilter
 
@@ -13,6 +14,15 @@ class HotVideoViewSet(viewsets.ModelViewSet):
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = HotVideoFilter
     search_fields = ('user__id', 'name')
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        count_info = models.PayOrder.objects.filter(
+            content_type=ContentType.objects.get(app_label="biz", model="hotvideo"),
+            status__gt=PAYMENT_STATUS_UNPAID).aggregate(total_count=Count("id"),
+                                                        total_amount=Sum("amount"))
+        response.data.update(count_info)
+        return response
 
     def get_queryset(self):
         _filter = Q(orders__status=PAYMENT_STATUS_WAIT_USE)
