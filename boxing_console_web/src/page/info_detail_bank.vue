@@ -86,30 +86,16 @@
                 </el-col>
             </el-row>
         </div>
-<!--         <el-dialog title="预览" :visible.sync="prevVisible" id='prevShow'>
+        <el-dialog title="预览" :visible.sync="prevVisible" id='prevShow'>
             <div>
                 <h4 class="prev_title">{{form.title}}</h4>
+                <!-- <p class="prev_time">{{form.start_time}}</p> -->
                 <div id='priv_content'></div>
             </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="prevVisible = false">关闭</el-button>
             </div>
-        </el-dialog> -->
-        <div class="dialog-modal indexNone"> <!-- 根元素，z-index 需要高于父容器其他元素 -->
-            <div class="dialog-wrapper" @click="prevVisible = false" v-show="prevVisible"></div> <!-- 加载一个具有透明度的背景，使根元素透明，子元素会继承该透明度 -->
-            <transition name="drop">
-                <div class="dialog-container" v-show="prevVisible">  <!-- 模态框容器，z-index 需要高于背景 -->
-                    <div class=''>预览</div>
-                    <div class='content'>
-                        <h4 class="prev_title">{{form.title}}</h4>
-                        <div id='priv_content'></div>
-                    </div>
-                    <div slot="footer" class="dialog-footer" style='text-align: center'>
-                        <el-button @click="prevVisible = false">关闭</el-button>
-                    </div>
-                </div>
-            </transition>
-        </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -168,66 +154,6 @@
     .prev_title{font-size:20px}
     .prev_time{font-size:14px}
 </style>
-<style scope>
-    .drop-enter-active {
-      transition: all .5s;
-    }
-    .drop-leave-active {
-      transition: all .3s;
-    }
-    .drop-enter {
-      transform: translateY(-500px);
-    }
-    .drop-leave-active {
-      transform: translateY(-500px);
-    }   
-  
-    .dialog-modal{
-        position: absolute;
-        z-index: 5;
-    }
-    .dialog-modal.indexNone{
-        z-index: -5;
-    }
-    .dialog-wrapper
-    {
-        position: fixed;
-        height: 100%;
-        width: 100%;
-        z-index: 5;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-      
-    }
-    .dialog-wrapper{
-        background-color: #eee;
-        opacity: .9;
-    }
-    .dialog-container{
-        position: fixed;
-        z-index:80;
-        width:400px;height:500px;top:50%;left:50%;margin-left:-200px;margin-top:-250px!important;border-radius:10px;
-        background-color: #000;
-        padding:20px;
-        color:#fff;
-        box-shadow: 0 5px 15px rgba(0,0,0,.5);
-    }
-    span.close-btn{
-        padding: 0 5px;
-        float: right;
-        cursor: pointer;
-        font-size: 18px;
-        font-weight: bold;
-    }
-    .content{
-        height:calc(100% - 60px);
-        overflow-y: auto;
-        margin-bottom:10px;
-        margin-top:10px;
-    }
-</style>
 <style>
     #info_detail .el-checkbox__label,#info_detail .el-radio__label,#info_detail .el-form-item__label,.udeitor_title{
         font-family: PingFangSC-Regular;
@@ -242,6 +168,17 @@
         float:left;
         z-index:20;
         border: 1px solid #d5d5d5; 
+    }
+    #prevShow .el-dialog{
+        width:400px;height:500px;top:50%;margin-top:-250px!important;border-radius:10px;
+    }
+    #prevShow .el-dialog__body{
+        height:calc(100% - 160px);
+        padding:20px;
+        background:#000;
+        color:#fff;
+        border:1px solid #ccc;
+        overflow-y: auto;
     }
     #priv_content img,#priv_content video{width:100%;}
     #prevShow{z-index:-1!important}
@@ -508,8 +445,8 @@
                 // console.log(this.form)
                 this.type = type
                 
-                // $('#prevShow').addClass('addIndex')
-                $('.dialog-modal').removeClass('indexNone')
+                $('#prevShow').addClass('addIndex')
+                $('.v-modal').addClass('removeIndex')
                 
                 if(type==1){
                     $('#priv_content').html(""+this.form.app_content+"")

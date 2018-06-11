@@ -53,7 +53,7 @@
                             label="评论">
                     </el-table-column>
                     <el-table-column
-                            prop="stay_top"
+                            prop="stay_top_name"
                             label="是否置顶">
                     </el-table-column>
                     <el-table-column
@@ -127,7 +127,7 @@
                     if(res&&res.data){
                         this.tableData = res.data.results;
                         for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].stay_top = res.data.results[i].stay_top ? '是' : '否'
+                            res.data.results[i].stay_top_name = res.data.results[i].stay_top ? '是' : '否'
                         }
                         this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);

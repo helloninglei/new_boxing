@@ -79,7 +79,7 @@
                     <div class='detail_title'>支付金额</div>
                 </el-col>
                 <el-col :span="23">
-                    <div class='detail_content margin_lf'> {{result.amount/100+'.00'}}元/次</div>
+                    <div class='detail_content margin_lf'> {{result.amount}}元/次</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
@@ -142,7 +142,7 @@
                     <div class='detail_title'>支付方式</div>
                 </el-col>
                 <el-col :span="23">
-                    <div class='detail_content margin_lf'>{{result.payment_type}}</div>
+                    <div class='detail_content margin_lf'>{{result.payment_type_name}}</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub'>
@@ -283,6 +283,19 @@
                     if(res&&res.data){
                         $this.result=res.data;
                         $this.starValue = res.data.comment_score;
+                        if($this.result.course_name=='BOXING'){
+                            $this.result.course_name='拳击'
+                        }else if($this.result.course_name=='THAI_BOXING'){
+                            $this.result.course_name='泰拳'
+                        }
+                        if($this.result.payment_type==1){
+                            $this.result.payment_type_name='支付宝'
+                        }else if($this.result.payment_type==2){
+                            $this.result.payment_type_name='微信'
+                        }else{
+                            $this.result.payment_type_name='余额'
+                        }
+                        $this.result.amount = ($this.result.amount/100).toFixed(2)
                         switch ($this.result.status){
                             case 1 :
                             $this.result.status_name='待付款';
