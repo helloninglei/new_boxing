@@ -206,7 +206,7 @@ def move_comment_worker(comment):
 
 
 def move_comment():
-    for c in ArticleComment.objects.all(isdel=1):
+    for c in ArticleComment.objects.filter(isdel=1):
         q.put((move_comment_worker, c))
 
 
