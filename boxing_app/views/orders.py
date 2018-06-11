@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from biz import constants, sms_client
 from biz.models import BoxerIdentification, PayOrder, Course, OrderComment, CourseOrder
 from biz.services.pay_service import PayService
-from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission
+from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission, \
+    IsBoxerPermission
 from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
@@ -21,12 +22,12 @@ class BaseCourseOrderViewSet(viewsets.ModelViewSet):
 
 class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = BoxerCourseOrderSerializer
+    permission_classes = (IsBoxerPermission, OnlyBoxerSelfCanConfirmOrderPermission)
 
     def get_queryset(self):
         boxer = BoxerIdentification.objects.get(user=self.request.user)
         return CourseOrder.objects.filter(boxer=boxer)
 
-    @permission_classes([OnlyBoxerSelfCanConfirmOrderPermission])
     def boxer_confirm_order(self, request, *args, **kwargs):
         course_order = self.get_object()
         if course_order.status != constants.PAYMENT_STATUS_WAIT_USE:
