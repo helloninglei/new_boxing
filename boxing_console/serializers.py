@@ -283,7 +283,8 @@ class CourseOrderSerializer(serializers.ModelSerializer):
         fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
                   "course_name", "course_duration", "course_validity", "course_price", "user_mobile",
                   "user_id", "user_nickname", "boxer_name", "boxer_mobile", "club_name",
-                  'boxer_id', "comment_score", "comment_time", "comment_content", "comment_images")
+                  'boxer_id', "comment_score", "comment_time", "comment_content", "comment_images",
+                  "finish_time", "boxer_confirm_time", "user_confirm_time")
 
 
 class NewsSerializer(serializers.ModelSerializer):
