@@ -390,6 +390,13 @@ class CourseOrder(models.Model):
         db_table = 'course_order'
         ordering = ('-order_time',)
 
+    @atomic
+    def set_overdue(self):
+        self.status = constants.COURSE_PAYMENT_STATUS_OVERDUE
+        self.pay_order.status = constants.PAYMENT_STATUS_OVERDUE
+        self.pay_order.save()
+        self.save()
+
 
 class OrderComment(SoftDeleteModel):
     score = models.PositiveSmallIntegerField()

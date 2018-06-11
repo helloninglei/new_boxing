@@ -33,7 +33,6 @@ class CourseOrderViewSet(viewsets.ModelViewSet):
         return Response({'message': '成功添加保险'}, status=status.HTTP_204_NO_CONTENT)
 
 
-
 class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSettleOrderSerializer
     filter_backends = (DjangoFilterBackend,)
