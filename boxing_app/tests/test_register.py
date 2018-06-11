@@ -47,7 +47,6 @@ class RegisterTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['message'][0], "不能同时给微信和微博绑定手机号!")
         user = User.objects.create_user(mobile=mobile, password="password")
-        UserProfile.objects.create(user=user)
         response = self.client.post(path="/register",
                                     data={"mobile": mobile, "password": "password", "verify_code": "123456"})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

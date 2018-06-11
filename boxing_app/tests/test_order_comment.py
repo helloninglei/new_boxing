@@ -17,7 +17,6 @@ class OrderCommentTestCase(APITestCase):
         self.client1.login(username=self.test_user_1, password='password')
         self.client2.login(username=self.test_user_2, password='password')
         self.user_profile_data = {
-            "user": self.test_user_1,
             "nick_name": "赵柳",
             "gender": True,
             "name": "name",
@@ -73,11 +72,11 @@ class OrderCommentTestCase(APITestCase):
 
     def test_course_order_comment(self):
         # 为普通用户test_user_1创建用户信息，用于购买课程
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_1).update(**self.user_profile_data)
 
         # 为拳手用户test_user_2创建1条订单数据(依次创建user_profile->boxer->club->course->course_order）
         self.user_profile_data['user'] = self.test_user_2
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_2).update(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_2
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -115,4 +114,3 @@ class OrderCommentTestCase(APITestCase):
         comment_list_res = self.client1.get(f'/course/order/{course_order.pk}/comment')
         self.assertEqual(len(comment_list_res.data['results']), 1)
         self.assertEqual(comment_list_res.data['results'][0]['course_name'], course.course_name)
-

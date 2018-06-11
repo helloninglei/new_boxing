@@ -9,7 +9,8 @@ class WithdrawLogTestCase(APITestCase):
         self.user = User.objects.create_superuser(mobile="19090909090", password="password")
         self.client = self.client_class()
         self.client.login(username=self.user.mobile, password="password")
-        UserProfile.objects.create(user=self.user, nick_name="nick_name")
+        UserProfile.objects.filter(user=self.user).update(nick_name="nick_name")
+        self.user.refresh_from_db()
         self.user2 = User.objects.create_user(mobile="19090909099", password="password")
 
     def test_withdraw_log_list(self):

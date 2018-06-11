@@ -7,7 +7,6 @@ from biz.models import User, WithdrawLog, UserProfile, MoneyChangeLog
 class WithdrawTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(mobile="19999999908", password="password", money_balance=50000)
-        UserProfile.objects.create(user=self.user)
         self.client = self.client_class()
         self.client.login(username=self.user.mobile, password="password")
 

@@ -12,7 +12,9 @@ class ShareTestCase(APITestCase):
     def setUp(self):
         self.test_user = models.User.objects.create_superuser(mobile='11111111111', password='password')
         self.nick_name = 'lerry'
-        models.UserProfile.objects.create(user=self.test_user, nick_name=self.nick_name)
+        self.test_user.user_profile.nick_name = self.nick_name
+        self.test_user.user_profile.save()
+        self.test_user.refresh_from_db()
         self.client = self.client_class()
         self.client.login(username=self.test_user, password='password')
 

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -14,7 +13,6 @@ class CourseOrderTestCase(APITestCase):
         self.client = self.client_class()
         self.client.login(username=self.user1, password='password')
         self.user_profile_data = {
-            "user": self.user1,
             "nick_name": "赵柳"
         }
         self.boxer_data = {
@@ -74,7 +72,7 @@ class CourseOrderTestCase(APITestCase):
 
     def test_course_order_list(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
@@ -147,7 +145,7 @@ class CourseOrderTestCase(APITestCase):
 
     def test_course_detail(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order->创建comment
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
@@ -186,7 +184,7 @@ class CourseOrderTestCase(APITestCase):
 
     def test_course_settle_order_filter(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club

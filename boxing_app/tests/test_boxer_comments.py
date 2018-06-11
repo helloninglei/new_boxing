@@ -19,7 +19,6 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
         self.client3.login(username=self.test_user_3, password='password')
         self.user_profile_data = {
-            "user": self.test_user_1,
             "nick_name": "赵柳",
             "gender": True,
             "name": "name",
@@ -82,11 +81,10 @@ class CommentsAboutBoxerTestCase(APITestCase):
 
     def test_get_boxer_comments(self):
         # 为普通用户test_user_1创建用户信息，用于购买课程
-        UserProfile.objects.create(**self.user_profile_data)
+        for user in [self.test_user_1, self.test_user_2, self.test_user_3]:
+            UserProfile.objects.filter(user=user).update(**self.user_profile_data)
 
         # 为拳手用户test_user_2创建2条订单数据(依次创建user_profile->boxer->club->course->course_order）
-        self.user_profile_data['user'] = self.test_user_2
-        UserProfile.objects.create(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_2
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -98,8 +96,6 @@ class CommentsAboutBoxerTestCase(APITestCase):
         PayOrder.objects.create(**self.course_order_data)
 
         # 为拳手用户test_user_3创建3条订单数据
-        self.user_profile_data['user'] = self.test_user_3
-        UserProfile.objects.create(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_3
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         self.club_data['name'] = 'club02'
