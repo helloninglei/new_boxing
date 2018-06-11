@@ -296,7 +296,6 @@ class Course(models.Model):
     price = models.PositiveIntegerField(null=True)  # 单位：元
     duration = models.PositiveSmallIntegerField(null=True)  # 时长，单位：min
     validity = models.DateField(null=True)  # 有效期
-    pay_orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
     is_open = models.BooleanField(default=False)
 
