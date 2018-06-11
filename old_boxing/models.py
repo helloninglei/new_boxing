@@ -95,41 +95,6 @@ class User(models.Model):
         db_table = 'user'
 
 
-class UserApply(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    uid = models.BigIntegerField()
-    apply_type_id = models.BigIntegerField()
-    apply_item_id = models.BigIntegerField(blank=True, null=True)
-    user_name = models.CharField(max_length=50)
-    nick_name = models.CharField(max_length=50, blank=True, null=True)
-    male = models.IntegerField(blank=True, null=True)
-    nation = models.CharField(max_length=50)
-    birthday = models.CharField(max_length=50)
-    weight = models.CharField(max_length=10)
-    height = models.CharField(max_length=10)
-    identity_number = models.CharField(max_length=18)
-    mobile = models.CharField(max_length=11)
-    job = models.CharField(max_length=50)
-    province = models.CharField(max_length=40)
-    personal = models.IntegerField()
-    photo1 = models.CharField(max_length=100, blank=True, null=True)
-    photo2 = models.CharField(max_length=100, blank=True, null=True)
-    photo3 = models.CharField(max_length=100, blank=True, null=True)
-    martial_arts = models.CharField(max_length=100, blank=True, null=True)
-    trade_no = models.CharField(max_length=255, blank=True, null=True)
-    boxing_house = models.CharField(max_length=100, blank=True, null=True)
-    created_time = models.DateTimeField()
-    updated_time = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=20)
-    pay_money = models.BigIntegerField()
-
-    objects = Manager()
-
-    class Meta:
-        managed = False
-        db_table = 'user_apply'
-
-
 class UserInfo(models.Model):
     id = models.BigAutoField(primary_key=True)
     uid = models.BigIntegerField()
