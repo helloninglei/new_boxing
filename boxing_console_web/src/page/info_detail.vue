@@ -99,7 +99,7 @@
             <div class="dialog-wrapper" @click="prevVisible = false" v-show="prevVisible"></div> <!-- 加载一个具有透明度的背景，使根元素透明，子元素会继承该透明度 -->
             <transition name="drop">
                 <div class="dialog-container" v-show="prevVisible">  <!-- 模态框容器，z-index 需要高于背景 -->
-                    <div class=''>预览</div>
+                    <h2 class=''>预览</h2>
                     <div class='content'>
                         <h4 class="prev_title">{{form.title}}</h4>
                         <div id='priv_content'></div>
@@ -185,6 +185,9 @@
     .dialog-modal{
         position: absolute;
         z-index: 5;
+        font-family: PingFangSC-light;
+        font-size: 16px;
+        color: #fff;
     }
     .dialog-modal.indexNone{
         z-index: -5;
@@ -202,8 +205,8 @@
       
     }
     .dialog-wrapper{
-        background-color: #eee;
-        opacity: .9;
+        background-color: #000;
+        opacity: .5;
     }
     .dialog-container{
         position: fixed;
@@ -222,7 +225,7 @@
         font-weight: bold;
     }
     .content{
-        height:calc(100% - 60px);
+        height:calc(100% - 80px);
         overflow-y: auto;
         margin-bottom:10px;
         margin-top:10px;
@@ -347,6 +350,8 @@
                 //编辑
                 console.log(this.query)
                 this.form=this.query;
+                this.form.app_content   = this.form.app_content.replace(/src="/g,'src="'+this.config.baseUrl)
+                this.form.share_content = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl)
                 this.dateArr=[this.query.start_time?this.query.start_time:'',this.query.end_time?this.query.end_time:'']
                 this.imgUrl = this.form.picture ;
                 this.confirmText = '修改'
@@ -441,7 +446,9 @@
                 let $this = this;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-
+                        let reg = '/'+this.config.baseUrl+'/g'
+                        this.form.app_content   = this.form.app_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),'')
+                        this.form.share_content = this.form.share_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),'')
                         if(this.form.id){
                             //修改
                             this.ajax('/game_news/'+this.form.id,'put',this.form).then(function(res){
@@ -508,13 +515,12 @@
                 // console.log(this.form)
                 this.type = type
                 
-                // $('#prevShow').addClass('addIndex')
                 $('.dialog-modal').removeClass('indexNone')
                 
                 if(type==1){
-                    $('#priv_content').html(""+this.form.app_content+"")
+                    $('#priv_content').html(this.form.app_content)
                 }else{
-                    $('#priv_content').html(""+this.form.share_content+"")
+                    $('#priv_content').html(this.form.share_content)
                 }
                 
                 this.prevVisible = true
@@ -523,10 +529,8 @@
 
             onEditorChange(value) {
                 // console.log('editor change!', editor, html, text)
-                 console.log(value)
                  this.form.app_content = value ;
-                 $('#priv_content').html(""+this.form.app_content+"")
-                 console.log($('#priv_content').html())
+                 $('#priv_content').html(value)
             },
             onEditorChangeSub(value) {
                 // console.log('editor change!', editor, html, text)

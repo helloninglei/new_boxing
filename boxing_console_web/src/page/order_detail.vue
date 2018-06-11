@@ -1,6 +1,7 @@
 <template>
     <div class="classDetail">
         <div class='detail_header'>{{result.status_name}}</div>
+        <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <div class='detail_item'>
             <el-row class='detail_item_sub'>
                 <el-col :span="1">
@@ -102,13 +103,13 @@
                 <el-col :span="1">
                     <div class='detail_title'>保险</div>
                 </el-col>
-                <el-col :span="23" v-if="result.status==2">
+                <el-col :span="23" v-if="result.insurance_amount? false : true">
                     <div class='detail_content margin_lf'>请购买保险 
-                        <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px' @click="addCount(result.id)">标记保险</el-button>
+                        <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px' @click="addCount()">标记保险</el-button>
                     </div>
                 </el-col>
-                <el-col :span="23" v-if="result.status>2">
-                    <div class='detail_content margin_lf'>20元</div>
+                <el-col :span="23" v-else>
+                    <div class='detail_content margin_lf'>{{result.insurance_amount}}元</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub' v-if="result.status==1">
@@ -203,7 +204,7 @@
                 <el-col :span="22" :offset="2">
                     <div class='detail_content margin_lf50' v-show='result.comment_images&&result.comment_images.length>0'>
                         <div class='addImage' v-for='value in result.comment_images'>
-                            <img :src="config.baseUrl+value" alt="" height='100%'>
+                            <img :src="config.baseUrl+value" alt="" height='100%' @click='clickImg(value)'>
                         </div>
                     </div>
                 </el-col>
@@ -229,6 +230,7 @@
 </style>
 <script>
     import DialogLabel from "components/dialog_label"
+    import BigImg  from 'components/bigImg';
     export default {
         data() {
             return {
@@ -237,7 +239,10 @@
                     isshow:false,
                     content_title:"",
                 },
+                showImg   : false,
+                imgSrc    : '',
                 addData : {},
+                orderId :'',
                 result:{
                     // "id": 1, //订单id
                     // "status": 4, //订单状态（1:待付款/未支付；2:待使用; 3:待评论; 4:已完成; 5:已过期）
@@ -269,11 +274,13 @@
             }
         },
         components: {
-           DialogLabel
+           DialogLabel,
+           BigImg
         },
         created() {
             let query = this.$route.query
             this.getDetailData(query.id);
+            this.orderId = query.id
         },
         methods: {
             getDetailData(id) {
@@ -296,6 +303,7 @@
                             $this.result.payment_type_name='余额'
                         }
                         $this.result.amount = ($this.result.amount/100).toFixed(2)
+                        $this.result.insurance_amount = ($this.result.insurance_amount/100).toFixed(2)
                         switch ($this.result.status){
                             case 1 :
                             $this.result.status_name='待付款';
@@ -331,33 +339,42 @@
             },
             confirm(val){
                 let $this = this;
-                this.addData.change_amount=val*100;
-                console.log(val)
-                this.dialog_label_data.isshow=false;
-                // this.ajax('/money/change','post',this.addData).then(function(res){
-                //     if(res&&res.data){
-                //         $this.tableData[$this.addData.index].money_balance = res.data.remain_amount
-                //         $this.dialog_label_data.isshow=false;
+                this.addData.insurance_amount=val*100;
+                this.ajax('/order/'+this.orderId+'/mark_insurance','post',this.addData).then(function(res){
+                    if(res&&res.status==204){
+                        $this.result.insurance_amount = val
+                        $this.dialog_label_data.isshow=false
+                    }
+                    if(res&&res.data){
+                        console.log(res.data)
                         
-                //     }
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
 
             },
             addCount(id){
-                this.addData.user=id
                 this.dialog_label_data.isshow=true
             },
             cancel3(val){
                 this.dialog_label_data.isshow=val;
+            },
+            clickImg(img) {
+                // 获取当前图片地址
+                this.imgSrc =this.config.baseUrl+ img;
+                // this.imgSrc ="http://img.zcool.cn/community/010f87596f13e6a8012193a363df45.jpg@1280w_1l_2o_100sh.jpg";
+                this.showImg=true;
+            },
+            viewImg(){
+                this.showImg = false;
             },
         },
     }
