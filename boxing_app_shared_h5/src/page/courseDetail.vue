@@ -2,14 +2,14 @@
     <div class="course_detail">
         <div class="boxer_container">
             <template>
-                <img class="portrait" :src="boxer.avatar ? `${config.baseUrl}` + boxer.avatar : avatar_default" @click="openApp" />
+                <img class="portrait" :src="playerInfo.avatar ? `${config.baseUrl}` + playerInfo.avatar : avatar_default" @click="openApp" />
                 <div class="boxer_info">
-                    <div class="boxerName">{{playerInfo.real_name}}<span :class="boxer.gender ? 'man_icon' : 'woman_icon'"></span></div>
+                    <div class="boxerName">{{playerInfo.real_name}}<span :class="playerInfo.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
                         <span v-for="(item, index) in playerInfo.allowed_course" :key="index">{{item}}<span v-if="index < playerInfo.allowed_course.length - 1"> / </span></span>
                     </div>
                 </div>
-                <div class="order_count">约单：{{boxer.order_count}}次</div>
+                <div class="order_count">约单：11次</div>
             </template>
         </div>
         <div class="separate_line"></div>
@@ -49,15 +49,12 @@
         </div>
         <div class="award_experience_text">
             <div class="title">参赛、获奖及执教经历</div>
-            <div class="desc">umpini 拳场 135 lbs 级别排名第一</div>
-            <div class="desc">2001 泰国职业拳击协会次轻量级的冠军</div>
-            <div class="desc">Omnoi运动场次轻量级的冠军</div>
-            <div class="desc">Omnoi运动场轻量级的冠军</div>
+            <div class="desc">{{playerInfo.experience}}</div>
         </div>
         <div class="award_experience_pic">
             <div class="title">参赛、获奖及执教经历</div>
             <div class="pic_wrapper" :class="getClass">
-                <img :src="`${config.baseUrl}` + item" v-for="(item, index) in images" :key="index" class="pic" />
+                <img :src="`${config.baseUrl}` + item" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
             </div>
         </div>
         <div class="match_video" v-if="playerInfo.competition_video">
@@ -74,6 +71,7 @@
         <div class="go_order" @click="openApp">去下单</div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
+        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="playerInfo.honor_certificate_images" :slideIndex="slideIndex"></ZoomImage>
     </div>
 
 </template>
@@ -267,47 +265,21 @@
     import DownloadTip from 'components/downloadTip';
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
+    import ZoomImage from 'components/zoomImage';
     import Modal from 'components/modal';
     import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
             return {
-                images:[
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                    "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
-                ],
                 slideIndex: 1,
                 ifClose: false,
                 showModal: false,
+                showSwiper: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
                 courseInfo:  {},
                 dataObj: {},
                 wx: '',
-                boxer: {
-                    "id": 3,
-                    "longitude": 120.385763,
-                    "latitude": 30.308592,
-                    "course_min_price": 150,
-                    "order_count": 11,
-                    "gender": true,
-                    "avatar": "/uploads/31/9e/838678d0449140e5262832eb6361b0b5edaf.jpg",
-                    "real_name": "李四",
-                    "allowed_course": [
-                        "拳击",
-                        "泰拳",
-                        "MMA"
-                    ],
-                    "city": "杭州市",
-                    "user_id": 1000010
-                },
                 playerInfo: {},
 
             }
@@ -317,6 +289,7 @@
             this.id = this.$route.params.id;
             if (this.id) {
                 this.getCourseData();
+                this.getPlayerData();
                 this.sharePage();
             }
         },
@@ -326,6 +299,7 @@
             Video,
             TabBar,
             Modal,
+            ZoomImage
         },
 
         methods: {
@@ -346,7 +320,7 @@
             getPlayerData() {
                 this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
                     if (res && res.data) {
-                        this.playerInfo = res.data;
+                        this.playerInfo = res.data.results;
                     }
                 },(err) => {
                     if(err&&err.response){
@@ -385,6 +359,15 @@
                         }
                     })
                 }
+            },
+
+            showZoomImage(index) {
+                this.slideIndex = index;
+                this.showSwiper = true;
+            },
+
+            hideSwiper() {
+                this.showSwiper = false;
             },
 
             inWxShare () {
@@ -426,8 +409,8 @@
 
         computed: {
             getClass() {
-                if (this.images) {
-                    let len = this.images.length;
+                if (this.playerInfo.honor_certificate_images) {
+                    let len = this.playerInfo.honor_certificate_images.length;
                     if (len) {
                         if (len === 1) return 'pic_wrapper1';
                         else if (len <= 4 && len > 1) return 'pic_wrapper2';
