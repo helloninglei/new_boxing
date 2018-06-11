@@ -8,23 +8,27 @@
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp != 0"></TabBar>
-        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="imageArr" :slideIndex="slideIndex"></ZoomImage>
         <DownloadTip @closeEv="closeEv" v-if="inApp != 0"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <div style="display: none" class="beauty_video">
-            <template v-if="videoSrc">
-                <Video :url="videoSrc" height="9rem"></Video>
-            </template>
-        </div>
-
     </div>
 </template>
 
-<style  lang="stylus" type="text/stylus">
+<style lang="stylus" type="text/stylus">
     .infoDetail_container
         margin-bottom  3.5rem
         &.hasClose
             margin-bottom 0
+        p
+            margin-top .5rem!important
+            line-height 1rem!important
+            color #fff!important
+        img
+            width 100%
+            height 10rem
+            margin 0 auto
+        video
+            width 100%
+            margin-bottom .5rem
     .infoDetail
         margin 0 auto
         width 17.25rem
@@ -45,17 +49,6 @@
             line-height 1rem
             font-size .75rem
             color #E9E9EA
-    p
-        margin-top .5rem
-        line-height 1rem
-        color #fff!important
-        img
-            width 100%
-            height 10rem
-            margin 0 auto
-    video
-        width 100%
-        margin-bottom .5rem
 
 </style>
 
@@ -66,17 +59,11 @@
     import DownloadTip from 'components/downloadTip';
     import ZoomImage from 'components/zoomImage';
     import Video from 'components/video';
-    import {wxConfig} from 'common/wechat';
-    import $ from 'jquery'
 
     export default {
         data() {
             return {
                 inApp: 0,
-                videoSrc: '',
-                imageArr:[],
-                slideIndex: 1,
-                showSwiper: false,
                 id: '',
                 ifClose: false,
                 showModal: false,
@@ -96,24 +83,10 @@
         created() {
             this.id = this.$route.params.id;
             this.inApp = this.$route.params.inApp;
-            this.str = this.getSrc(this.str);
             if (this.id) {
                 this.getData();
                 this.sharePage();
             }
-        },
-        mounted() {
-            let This = this;
-            $('p').find('img').addClass('img');
-            $('.img').on('click',function () {
-                This.slideIndex = $('.img').index(this);
-                This.showSwiper = true;
-            });
-            $('.video_container').html('');
-            $('.video_container').append($('.beauty_video'));
-            $('.beauty_video').show();
-            this.getImgSrc();
-
         },
         methods: {
             getSrc(str) {
@@ -122,7 +95,6 @@
                 var arr = str.match(imgReg);
                 for (var i = 0; i < arr.length; i++) {
                     var src = arr[i].match(srcReg);
-                    this.videoSrc = src[1];
                     str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + `${config.baseUrl}` + src[1] + '" poster="' + `${config.baseUrl}` + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                 }
                 return str
@@ -131,7 +103,7 @@
                 this.ajax(`/game_news/${this.id}?inApp=${this.inApp}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
-                        this.str = res.data.content;
+                        this.str = this.getSrc(res.data.content);
                     }
                 },(err) => {
                     if(err&&err.response){
@@ -148,18 +120,6 @@
             },
             closeEv(val) {
                 this.ifClose = val;
-            },
-            getImgSrc() {
-                let arr = $('img');
-                let imageArr = [];
-                for (let i = 0;i < arr.length;i++) {
-                    imageArr.push($(arr[i]).attr('src'));
-                    $(arr[i]).attr('src',`${config.baseUrl}` + $(arr[i]).attr('src'));
-                }
-                this.imageArr = imageArr;
-            },
-            hideSwiper() {
-                this.showSwiper = false;
             },
             sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {

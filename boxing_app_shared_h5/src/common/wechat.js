@@ -9,7 +9,7 @@ let url = window.location.href;
 function wxConfig(obj) {
     $.ajax({
         type : "GET",
-        url : config.baseUrl  + "/second_share_signature?url=" + url,
+        url : config.baseUrl  + "/second_share_signature?url=" + encodeURIComponent(url),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success : function(msg) {

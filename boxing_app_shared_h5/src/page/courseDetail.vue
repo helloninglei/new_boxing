@@ -4,9 +4,9 @@
             <template>
                 <img class="portrait" :src="boxer.avatar ? `${config.baseUrl}` + boxer.avatar : avatar_default" @click="openApp" />
                 <div class="boxer_info">
-                    <div class="boxerName">{{boxer.real_name}}<span :class="boxer.gender ? 'man_icon' : 'woman_icon'"></span></div>
+                    <div class="boxerName">{{playerInfo.real_name}}<span :class="boxer.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
-                        <span v-for="(item, index) in boxer.allowed_course" :key="index">{{item}}<span v-if="index < boxer.allowed_course.length - 1"> / </span></span>
+                        <span v-for="(item, index) in playerInfo.allowed_course" :key="index">{{item}}<span v-if="index < playerInfo.allowed_course.length - 1"> / </span></span>
                     </div>
                 </div>
                 <div class="order_count">约单：{{boxer.order_count}}次</div>
@@ -45,7 +45,7 @@
         <div class="separate_line"></div>
         <div class="introduce">
             <div class="title">自我简介</div>
-            <div class="desc">在擂台上播求以犀利的膝法、灵活有力的扫腿、毒蛇吐信般的正蹬技惊四座。</div>
+            <div class="desc">{{playerInfo.introduction}}</div>
         </div>
         <div class="award_experience_text">
             <div class="title">参赛、获奖及执教经历</div>
@@ -57,12 +57,12 @@
         <div class="award_experience_pic">
             <div class="title">参赛、获奖及执教经历</div>
             <div class="pic_wrapper" :class="getClass">
-                <img :src="`${config.baseUrl}` + item" v-for="(item, index) in images" :key="index" class="pic" @click="showZoomImage(index) "/>
+                <img :src="`${config.baseUrl}` + item" v-for="(item, index) in images" :key="index" class="pic" />
             </div>
         </div>
-        <div class="match_video" v-if="video">
+        <div class="match_video" v-if="playerInfo.competition_video">
             <div class="title">参赛视频</div>
-            <Video :url="video"></Video>
+            <Video :url="playerInfo.competition_video"></Video>
         </div>
         <div class="comments_container">
             <span class="comments">评论</span>
@@ -74,7 +74,6 @@
         <div class="go_order" @click="openApp">去下单</div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="images" :slideIndex="slideIndex"></ZoomImage>
     </div>
 
 </template>
@@ -257,9 +256,9 @@
             margin auto auto .4rem .75rem
             width 8rem
     .pic_wrapper3
-        margin .6rem auto -.5rem -.835rem
+        margin .6rem auto -.5rem -.75rem
         .pic
-            margin auto auto .5rem .835rem
+            margin auto auto .5rem .75rem
             width 5rem
 </style>
 
@@ -269,13 +268,11 @@
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
     import Modal from 'components/modal';
-    import ZoomImage from 'components/zoomImage';
     import {wxConfig} from 'common/wechat';
 
     export default {
         data() {
             return {
-                video: '/uploads/7a/0c/5e7615519c323324e8667495e77e7adb2cf3.mp4',
                 images:[
                     "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
                     "/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png",
@@ -290,7 +287,6 @@
                 slideIndex: 1,
                 ifClose: false,
                 showModal: false,
-                showSwiper: false,
                 avatar_default: require('../assets/images/portrait_default.png'),
                 courseInfo:  {},
                 dataObj: {},
@@ -312,6 +308,7 @@
                     "city": "杭州市",
                     "user_id": 1000010
                 },
+                playerInfo: {},
 
             }
         },
@@ -329,7 +326,6 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
         },
 
         methods: {
@@ -338,6 +334,19 @@
                 this.ajax(`/boxer/${this.id}/course`,'get').then((res) => {
                     if (res && res.data) {
                         this.courseInfo = res.data;
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        console.log(errors);
+                    }
+                })
+            },
+
+            getPlayerData() {
+                this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
+                    if (res && res.data) {
+                        this.playerInfo = res.data;
                     }
                 },(err) => {
                     if(err&&err.response){
@@ -413,15 +422,6 @@
                 let url = data.url;
                 this.dataObj = {title, desc, url, imgUrl};
             },
-
-            showZoomImage(index) {
-                this.slideIndex = index;
-                this.showSwiper = true;
-            },
-
-            hideSwiper() {
-                this.showSwiper = false;
-            }
         },
 
         computed: {
