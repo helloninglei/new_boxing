@@ -2,11 +2,10 @@ import gevent
 import requests
 from io import BytesIO
 from json import load
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.db.utils import IntegrityError
 from django.utils.timezone import get_default_timezone
-from pymysql import err
 from gevent import queue
 from biz.services.file_service import save_upload_file
 from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
@@ -184,7 +183,7 @@ def move_article_worker(article):
 def move_article():
     global boxing_user
     boxing_user = User.objects.get(mobile=15801087215)
-    for article in Article.objects.all().order_by('id'):
+    for article in Article.objects.filter(contenttype=1, isdel=0).order_by('id'):
         q.put((move_article_worker, article))
 
 
@@ -207,7 +206,7 @@ def move_comment_worker(comment):
 
 
 def move_comment():
-    for c in ArticleComment.objects.all():
+    for c in ArticleComment.objects.all(isdel=1):
         q.put((move_comment_worker, c))
 
 
