@@ -2,7 +2,8 @@
 from django.db import transaction
 from django.db.models import Count, Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
+from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.response import Response
 
 from biz import redis_client

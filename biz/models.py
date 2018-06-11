@@ -271,7 +271,7 @@ class OperationLog(models.Model):
         db_table = 'operation_log'
 
 
-class BoxingClub(BaseModel):
+class BoxingClub(SoftDeleteModel):
     name = models.CharField(max_length=20, unique=True)
     avatar = models.CharField(max_length=128, default='club_avatar')
     province = models.CharField(max_length=10, null=True)
@@ -284,6 +284,7 @@ class BoxingClub(BaseModel):
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
     introduction = models.CharField(max_length=120)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'club'

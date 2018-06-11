@@ -1,5 +1,6 @@
 from django.db import transaction
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
+from rest_framework.response import Response
 
 from biz import redis_client
 from biz.models import BoxingClub
@@ -12,7 +13,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name',)
 
-    @transaction.atomic
-    def perform_destroy(self, instance):
-        redis_client.del_object_location(instance)
-        super().perform_destroy(instance)
+    def close_club(self, request, *args, **kwargs):
+        club = self.get_object()
+        club.soft_delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

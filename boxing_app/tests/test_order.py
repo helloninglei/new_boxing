@@ -40,6 +40,7 @@ class OrderTestCase(APITestCase):
             "is_professional_boxer": True,
             "club": "131ef2f3",
             "job": 'hhh',
+            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED,
             "introduction": "beautiful",
             "experience": '',
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
@@ -265,7 +266,6 @@ class OrderTestCase(APITestCase):
                                             out_trade_no=1111,
                                             device=1)
 
-        # test_user_2成功创建了未支付订单
         res = self.client2.post('/course/order', data={'id': course.id})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
