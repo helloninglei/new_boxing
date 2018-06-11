@@ -101,4 +101,5 @@ class CourseOrderCommentViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def do_order_finish(self, order_id):
-        CourseOrder.objects.filter(id=order_id).update(status=constants.PAYMENT_STATUS_FINISHED)
+        CourseOrder.objects.filter(id=order_id).update(status=constants.PAYMENT_STATUS_FINISHED,
+                                                       finish_time=datetime.now())

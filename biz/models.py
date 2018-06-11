@@ -368,7 +368,7 @@ class CourseOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user_course_order')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False)
     course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name='course_orders')
-    course_name = models.CharField(max_length=10)
+    course_name = models.CharField(max_length=20)
     course_price = models.PositiveIntegerField()  # 单位分
     course_duration = models.IntegerField()  # 课程时长，单位分钟
     course_validity = models.DateField()  # 课程有效期
