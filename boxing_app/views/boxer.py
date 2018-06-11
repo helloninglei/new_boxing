@@ -70,6 +70,6 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
 @permission_classes([])
 @authentication_classes([])
 def boxer_info_to_share(request, pk):
-    boxer = get_object_or_404(BoxerIdentification.objects.all(), pk=pk)
+    boxer = get_object_or_404(BoxerIdentification, pk=pk)
     serializer = BoxerIdentificationSerializer(boxer)
     return Response({"results": serializer.data})
