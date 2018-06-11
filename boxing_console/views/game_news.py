@@ -14,7 +14,7 @@ class NewsViewSet(viewsets.ModelViewSet):
         '-created_time').prefetch_related('operator')
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = GameNewsFilter
-    search_fields = ('title', 'sub_title', 'app_content', 'share_content')
+    search_fields = ('title', )
 
     def perform_create(self, serializer):
         news = serializer.save()

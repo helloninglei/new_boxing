@@ -216,7 +216,7 @@ class BoxingClubSerializer(serializers.ModelSerializer):
 
 
 class HotVideoSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField()
+    user_id = serializers.IntegerField(required=False)
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     sales_count = serializers.IntegerField(read_only=True)
     price_amount = serializers.IntegerField(read_only=True)
@@ -402,6 +402,8 @@ class BannerSerializer(serializers.ModelSerializer):
                 raise ValidationError({'message': [f'{model_class._meta.verbose_name}:{obj_id} 不存在']})
         else:
             url_validator(link)
+        if models.Banner.objects.filter(order_number=attrs.get('order_number')).exists():
+            raise ValidationError({'message': ['序号已存在']})
         return attrs
 
     class Meta:
