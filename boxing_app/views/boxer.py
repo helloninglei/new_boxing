@@ -2,13 +2,14 @@
 from django.db.models import Case, When, Count, Min
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
+from rest_framework.generics import get_object_or_404
 from biz import constants, redis_client
 from biz.models import BoxerIdentification
 from boxing_app.filters import NearbyBoxerFilter
+from boxing_app.permissions import IsBoxerPermission
 from boxing_app.serializers import BoxerIdentificationSerializer, NearbyBoxerIdentificationSerializer
 
 
@@ -19,6 +20,14 @@ def get_boxer_status(request):
     if boxer:
         data.update(boxer_status=boxer.authentication_state)
     return Response(data=data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsBoxerPermission])
+def change_boxer_accept_order_status(request, **kwargs):
+    is_accept = True if kwargs.get('is_accept') == 'open' else False
+    BoxerIdentification.objects.filter(user=request.user).update(is_accept_order=is_accept)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
@@ -40,6 +49,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = NearbyBoxerIdentificationSerializer
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
+                                                  is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                                                   is_locked=False).annotate(order_count=Count('course__orders'),
                                                                             course_min_price=Min('course__price')).prefetch_related('course__club')
@@ -54,3 +64,12 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
             sort_rule = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(boxer_id_list)])
             return self.queryset.filter(id__in=boxer_id_list).order_by(sort_rule)
         return self.queryset
+
+
+@api_view(['GET'])
+@permission_classes([])
+@authentication_classes([])
+def boxer_info_to_share(request, pk):
+    boxer = get_object_or_404(BoxerIdentification, pk=pk)
+    serializer = BoxerIdentificationSerializer(boxer)
+    return Response({"results": serializer.data})

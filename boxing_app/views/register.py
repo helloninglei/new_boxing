@@ -5,6 +5,9 @@ from biz.models import User, UserProfile
 from biz import redis_client, redis_const
 from boxing_app.serializers import RegisterSerializer, RegisterWithInfoSerializer, ChangeMobileSerializer
 from boxing_app.tasks import register_easemob_account
+from biz.redis_client import follow_user
+from biz.constants import SERVICE_USER_ID
+from biz.utils import hans_to_initial
 
 
 @api_view(['GET'])
@@ -30,8 +33,13 @@ def register(request):
     serializer.is_valid(raise_exception=True)
     mobile = serializer.validated_data['mobile']
     password = serializer.validated_data['password']
+    wechat_openid = serializer.validated_data.get("wechat_openid")
+    weibo_openid = serializer.validated_data.get("weibo_openid")
+    register_data = {"mobile": mobile, "password": password, "wechat_openid": wechat_openid,
+                     "weibo_openid": weibo_openid}
+    register_data = {k: v for k, v in register_data.items() if v}
     redis_client.redis_client.hmset(
-        redis_const.REGISTER_INFO.format(mobile=mobile), {"mobile": mobile, "password": password})
+        redis_const.REGISTER_INFO.format(mobile=mobile), register_data)
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 
@@ -41,14 +49,18 @@ def register_with_user_info(request):
     serializer = RegisterWithInfoSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    mobile, password = redis_client.redis_client.hmget(
-        redis_const.REGISTER_INFO.format(mobile=(serializer.validated_data['mobile'])), ["mobile", "password"])
-    user = User.objects.create_user(mobile=mobile, password=password)
+    mobile, password, wechat_openid, weibo_openid = redis_client.redis_client.hmget(
+        redis_const.REGISTER_INFO.format(mobile=(serializer.validated_data['mobile'])),
+        ["mobile", "password", "wechat_openid", "weibo_openid"])
+    user = User.objects.create_user(
+        mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
+    follow_user(user.id, SERVICE_USER_ID)
     UserProfile.objects.create(user=user, gender=serializer.validated_data['gender'],
                                avatar=serializer.validated_data['avatar'],
-                               nick_name=serializer.validated_data['nick_name'])
+                               nick_name=serializer.validated_data['nick_name'],
+                               nick_name_index_letter=hans_to_initial(serializer.validated_data['nick_name']))
+    register_easemob_account.delay(user.id)
     redis_client.redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
-    register_easemob_account.delay(*[user.id])
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 

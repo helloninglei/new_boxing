@@ -7,6 +7,7 @@ from biz.redis_client import get_number_of_share
 h5_base_url = settings.SHARE_H5_BASE_URL
 oss_base_url = settings.OSS_BASE_URL
 
+
 class ShareTestCase(APITestCase):
     def setUp(self):
         self.test_user = models.User.objects.create_superuser(mobile='11111111111', password='password')

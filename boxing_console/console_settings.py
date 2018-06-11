@@ -19,5 +19,5 @@ REST_FRAMEWORK['DEFAULT_PERMISSION_CLASSES'] = ('rest_framework.permissions.IsAd
 PROJECT_PROPERTY = PROJECT_CONSOLE
 
 AUTHENTICATION_BACKENDS = (
-    'boxing_console.authentication_backends.StaffUserBackend',
+    'biz.authentication_backends.StaffUserBackend',
 )

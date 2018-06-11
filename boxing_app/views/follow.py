@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 from biz.models import User
-from biz.redis_client import following_list, follower_list, follow_user, unfollow_user, follower_count, following_count
-from boxing_app.serializers import FollowUserSerializer
+from biz.redis_client import following_list, follower_list, follow_user, unfollow_user, follower_count, following_count,\
+    follower_list_all
+from boxing_app.serializers import FollowUserSerializer, ContactSerializer
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
 
@@ -66,3 +68,12 @@ class FollowerView(BaseFollowView):
 
 class FollowingView(BaseFollowView):
     list_type = 'following'
+
+
+@api_view(['GET'])
+def contact_list(request):
+    # 建群通讯录列表，即用户粉丝列表，不分页
+    follower_ids = follower_list_all(request.user.id)
+    user_list = User.objects.filter(id__in=follower_ids).order_by("user_profile__nick_name_index_letter")
+    serializer = ContactSerializer(user_list, many=True)
+    return Response({"results": serializer.data}, status=status.HTTP_200_OK)

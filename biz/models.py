@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
         user = self.model(mobile=mobile, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        UserProfile.objects.create(user=user)
         return user
 
     def create_user(self, mobile, password=None, **extra_fields):
@@ -101,6 +102,7 @@ class PropertyChangeLog(BaseModel):
 class UserProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     nick_name = models.CharField(max_length=30, null=True, blank=True)
+    nick_name_index_letter = models.CharField(max_length=1, null=True, blank=True)  # 昵称首字母
     name = models.CharField(max_length=30, blank=True, null=True)
     nation = models.CharField(max_length=30, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
@@ -216,6 +218,7 @@ class BoxerIdentification(BaseModel):
     competition_video = models.CharField(max_length=256, null=True)
     allowed_course = StringListField(null=True, blank=True)
     refuse_reason = models.CharField(max_length=100, null=True, blank=True)
+    is_accept_order = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'boxer_identification'
