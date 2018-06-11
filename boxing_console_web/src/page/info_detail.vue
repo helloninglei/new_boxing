@@ -365,7 +365,6 @@
             }
             this.isshowPrev();
             this.getDateTime();
-            $('.v-modal').addClass('addIndex')
         },
 
         computed: {

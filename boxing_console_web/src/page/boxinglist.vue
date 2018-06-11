@@ -157,7 +157,6 @@
             clickImg(img) {
                 // 获取当前图片地址
                 this.imgSrc =this.config.baseUrl+ img;
-                // this.imgSrc ="http://img.zcool.cn/community/010f87596f13e6a8012193a363df45.jpg@1280w_1l_2o_100sh.jpg";
                 this.showImg=true;
             },
             viewImg(){
@@ -169,10 +168,9 @@
             },
             deleteClub(row){
                 //停用的接口
-                this.ajax('/club','get',{},sendData).then(function(res){
+                this.ajax('/club/'+row.id+'/close','post').then(function(res){
                     if(res&&res.data){
-                        $this.tableData=res.data.results;
-                        $this.total = res.data.count;
+                        console.log(res.data)
                     }
 
                 },function(err){

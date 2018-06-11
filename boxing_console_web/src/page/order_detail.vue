@@ -204,7 +204,7 @@
                 <el-col :span="22" :offset="2">
                     <div class='detail_content margin_lf50' v-show='result.comment_images&&result.comment_images.length>0'>
                         <div class='addImage' v-for='value in result.comment_images'>
-                            <img :src="config.baseUrl+value" alt="" height='100%' @click='clickImg(value)'>
+                            <img :src="config.baseUrl+value" alt="" height='100%' @click='clickImg(value)' style='cursor:pointer'>
                         </div>
                     </div>
                 </el-col>
@@ -218,7 +218,7 @@
     .detail_header{font-size: 32px;color: #000000;margin-bottom:40px; }
     .detail_item_sub{margin-bottom:22px;}
     .detail_item{margin-bottom:50px;}
-    .detail_title{width:80px;}
+    .detail_title{width:80px;text-align: right;}
     .detail_content.margin_lf{margin-left:40px;}
     .detail_content.margin_lf50{margin-left:60px;}
     .width_160{width:145px!important;}
@@ -345,17 +345,15 @@
                         $this.result.insurance_amount = val
                         $this.dialog_label_data.isshow=false
                     }
-                    if(res&&res.data){
-                        console.log(res.data)
-                        
-                    }
 
                 },function(err){
                     if(err&&err.response){
                         let errors=err.response.data
                         for(var key in errors){
-                            console.log(errors[key])
-                            // return
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
                         } 
                     } 
                 })
