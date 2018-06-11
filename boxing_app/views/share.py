@@ -59,6 +59,8 @@ def share_view(request, object_type, object_id):
                 title = f'分享{profile.nick_name}动态'
             sub_title = f'来自{profile.nick_name}的拳民出击'
             picture = get_share_img_url(profile.avatar)
+        title = _truncate_text(title, 14)
+        sub_title = _truncate_text(sub_title, 20),
     elif isinstance(obj, HotVideo):
         user = obj.user
         title = obj.name
@@ -84,8 +86,8 @@ def share_view(request, object_type, object_id):
         user = obj.boxer
 
     data = {
-        'title': _truncate_text(title, 14),
-        'sub_title': _truncate_text(sub_title, 20),
+        'title': title,
+        'sub_title': sub_title,
         'picture': picture,
         'url': url,
     }
