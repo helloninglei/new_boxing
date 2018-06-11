@@ -145,7 +145,7 @@ REPORT_OBJECT_DICT = {
     'hot_video': 3,
 }
 
-# 评论
+# 评论h
 COMMENT_OBJECT_DICT = {
     'message': 1,
     'hot_video': 2,
@@ -157,7 +157,7 @@ SHARE_OBJECT_LIST = (
     'message',
     'hot_video',
     'game_news',
-    'course',
+    'boxer',
 )
 
 # 支付
