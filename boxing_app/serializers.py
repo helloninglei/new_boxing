@@ -305,19 +305,15 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class BaseCourseOrderSerializer(serializers.ModelSerializer):
-    course_name = serializers.CharField(source='content_object.course_name', read_only=True)
-    course_duration = serializers.IntegerField(source='content_object.duration', read_only=True)
-    course_validity = serializers.DateField(source='content_object.validity', read_only=True)
-    course_price = serializers.IntegerField(source='content_object.price', read_only=True)
-    club_id = serializers.IntegerField(source='content_object.club.id', read_only=True)
-    club_name = serializers.CharField(source='content_object.club.name', read_only=True)
-    club_address = serializers.CharField(source='content_object.club.address', read_only=True)
-    club_longitude = serializers.CharField(source='content_object.club.longitude', read_only=True)
-    club_latitude = serializers.CharField(source='content_object.club.latitude', read_only=True)
+    club_id = serializers.IntegerField(source='club.id', read_only=True)
+    club_name = serializers.CharField(source='club.name', read_only=True)
+    club_address = serializers.CharField(source='club.address', read_only=True)
+    club_longitude = serializers.CharField(source='club.longitude', read_only=True)
+    club_latitude = serializers.CharField(source='club.latitude', read_only=True)
 
     class Meta:
-        model = PayOrder
-        exclude = ['device']
+        model = models.CourseOrder
+        fields = '__all__'
 
 
 class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
@@ -356,10 +352,10 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
 
 
 class UserCourseOrderSerializer(BaseCourseOrderSerializer):
-    boxer_id = serializers.IntegerField(source='content_object.boxer.pk', read_only=True)
-    boxer_name = serializers.CharField(source='content_object.boxer.real_name', read_only=True)
-    boxer_gender = serializers.BooleanField(source='content_object.boxer.user.user_profile.gender', read_only=True)
-    boxer_avatar = serializers.CharField(source='content_object.boxer.user.user_profile.avatar', read_only=True)
+    boxer_id = serializers.IntegerField(source='boxer.pk', read_only=True)
+    boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
+    boxer_gender = serializers.BooleanField(source='boxer.user.user_profile.gender', read_only=True)
+    boxer_avatar = serializers.CharField(source='boxer.user.user_profile.avatar', read_only=True)
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
@@ -486,12 +482,12 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
 
 
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = DiscoverUserField(read_only=True)
     images = serializers.ListField(child=serializers.CharField(), required=False)
     course_name = serializers.SerializerMethodField()
 
     def get_course_name(self, instance):
-        return instance.order.course.last().course_name
+        return instance.order.course_name
 
     def validate(self, attrs):
         if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:

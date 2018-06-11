@@ -5,15 +5,15 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
-from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder
+from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, PayOrder, CourseOrder
 
 
 class OrderCommentTestCase(APITestCase):
     def setUp(self):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
         self.test_user_2 = User.objects.create_user(mobile='11111111112', password='password')
-        self.client1 = self.client_class()
-        self.client2 = self.client_class()
+        self.client1 = self.client_class(HTTP_SOURCE='iOS')
+        self.client2 = self.client_class(HTTP_SOURCE='iOS')
         self.client1.login(username=self.test_user_1, password='password')
         self.client2.login(username=self.test_user_2, password='password')
         self.user_profile_data = {
@@ -85,31 +85,36 @@ class OrderCommentTestCase(APITestCase):
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
         self.course_order_data['content_object'] = course
-        course_order = PayOrder.objects.create(**self.course_order_data)
+        self.client1.post('/course/order', data={'id': course.id})
+        course_order = CourseOrder.objects.get(course=course)
 
         # 获取订单的评论列表
         comment_list_res = self.client1.get(f'/course/order/{course_order.pk}/comment')
         self.assertEqual(len(comment_list_res.data['results']), 0)
 
         # 进行评论,并比对数据
-        conmment_data = {
+        comment_data = {
             "score": 6,
             "content": "i have comment",
             "images": ["img1.png", "img2.png", "img3.png"],
             "order": course_order.pk,
         }
         # 订单状态是待使用，不能进行评论
-        do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment', data=json.dumps(conmment_data), content_type='application/json')
+        do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment',
+                                           data=json.dumps(comment_data),
+                                           content_type='application/json')
         self.assertEqual(do_comment_res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # 修改订单状态为待评论，可以正常评论
         course_order.status = constants.PAYMENT_STATUS_WAIT_COMMENT
         course_order.save()
-        do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment', data=json.dumps(conmment_data), content_type='application/json')
+        do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment',
+                                           data=json.dumps(comment_data),
+                                           content_type='application/json')
         self.assertEqual(do_comment_res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(do_comment_res.data['user'], self.test_user_1.id)
-        for key in conmment_data:
-            self.assertEqual(do_comment_res.data[key], conmment_data[key])
+        self.assertEqual(do_comment_res.data['user']['id'], self.test_user_1.id)
+        for key in comment_data:
+            self.assertEqual(do_comment_res.data[key], comment_data[key])
 
         # 再次获取订单评论列表
         comment_list_res = self.client1.get(f'/course/order/{course_order.pk}/comment')
