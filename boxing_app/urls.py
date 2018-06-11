@@ -37,6 +37,7 @@ from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
 from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
+from boxing_app.views.boxer import boxer_info_to_share
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -93,13 +94,15 @@ order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}), name='user-order-detail')
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve', "delete": "destroy"}),
+         name='user-order-detail')
 ]
 
 order_comment_url = [
     path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
-    path('boxer/<int:boxer_id>/comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
+    path('boxer/<int:boxer_id>/comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}),
+         name='boxer-order-comments')
 ]
 
 city_url = [
@@ -190,7 +193,8 @@ share_object_string = '|'.join(SHARE_OBJECT_LIST)
 share_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view,
             name='share'),
-    path("second_share_signature", second_share_signature)
+    path("second_share_signature", second_share_signature),
+    path("boxer/<int:pk>/info", boxer_info_to_share)
 ]
 
 version_urls = [
