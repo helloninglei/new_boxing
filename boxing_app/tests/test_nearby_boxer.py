@@ -26,7 +26,6 @@ class NearbyBoxerTestCase(APITestCase):
         self.client5.login(username=self.user5, password='password')
         self.client6.login(username=self.user6, password='password')
         self.user_profile_data = {
-            "user": None,
             "nick_name": "nike_name",
             "gender": True,
             "name": "name",
@@ -125,16 +124,8 @@ class NearbyBoxerTestCase(APITestCase):
         club4 = BoxingClub.objects.create(**self.club4_data)
 
         # 为user1-5创建user_profile
-        self.user_profile_data['user'] = self.user1
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.user2
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.user3
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.user4
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.user5
-        UserProfile.objects.create(**self.user_profile_data)
+        for user in [self.user1, self.user2, self.user3, self.user4, self.user5]:
+            UserProfile.objects.filter(user=user).update(**self.user_profile_data)
 
         # 创建boxer1-5,
         self.boxer_data['user'] = self.user1

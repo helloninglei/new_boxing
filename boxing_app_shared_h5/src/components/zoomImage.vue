@@ -99,7 +99,7 @@
         },
 
         updated() {
-            if (this.showSwiper) this.$refs.mySwiper.swiper.slideTo(this.slideIndex, 500, false);
+            if (this.showSwiper) this.$refs.mySwiper.swiper.slideTo(this.slideIndex, 300, false);
         },
 
         methods: {
