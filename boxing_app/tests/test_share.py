@@ -59,7 +59,7 @@ class ShareTestCase(APITestCase):
         self.assertEqual(data['title'], self.news.title)
         self.assertEqual(data['sub_title'], self.news.sub_title)
         self.assertEqual(data['picture'], f'{oss_base_url}{self.news.picture}{img_prefix}')
-        self.assertEqual(data['url'], f'{h5_base_url}game_news/{self.news.id}')
+        self.assertEqual(data['url'], f'{h5_base_url}game_news/{self.news.id}/0')  # 0 不在app内打开
 
         data = self.client.get(f'/hot_videos/{self.video.id}/share').data
         self.assertEqual(data['title'], self.video.name)
@@ -93,7 +93,7 @@ class ShareTestCase(APITestCase):
         news = models.GameNews.objects.create(**self.news_data)
 
         data = self.client.get(f'/game_news/{news.id}/share').data
-        self.assertEqual(data['title'], self.news_data['title'][:11] + '...')
+        self.assertEqual(data['title'], self.news_data['title'])
 
         data = self.client.get(f'/messages/{self.msg2.id}/share').data
         self.assertEqual(data['title'], f'分享{self.nick_name}动态')
