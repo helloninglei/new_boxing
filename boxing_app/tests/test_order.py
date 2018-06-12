@@ -163,6 +163,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['comment_images'], self.comment_data['images'])
         self.assertEqual(res.data['comment_score'], self.comment_data['score'])
         self.assertIsNotNone(res.data['comment_time'])
+        self.assertEqual(res.data['identity'], 'user')
 
     def test_get_user_order_list(self):
         # 分别为test_user_1、2、3、4创建user_profile

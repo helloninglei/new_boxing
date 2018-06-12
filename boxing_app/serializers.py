@@ -321,16 +321,11 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     user_gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     user_avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
-    user_is_boxer = serializers.SerializerMethodField()
+    identity = serializers.CharField(source='user.identity', read_only=True)
     comment_score = serializers.SerializerMethodField()
     comment_time = serializers.SerializerMethodField()
     comment_content = serializers.SerializerMethodField()
     comment_images = serializers.SerializerMethodField()
-
-    def get_user_is_boxer(self, instance):
-        return BoxerIdentification.objects\
-            .filter(user=instance.user.id, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)\
-            .exists()
 
     def get_comment_score(self, instance):
         comment = self.get_comment(instance)

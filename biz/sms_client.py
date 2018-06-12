@@ -39,7 +39,7 @@ SMS_TEMPLATES = {
         "text": "您在拳城出击app提交的拳手认证已经被驳回，驳回原因为: {reason}，快去查看。",
     },
     "boxerConfirmedOrder": {
-        "code": "需要申请code",
+        "code": "SMS_137410094",
         "text": "你预定的{duration}分钟{name}课程已经消费，请尽快登录拳民出击app进行确认。"
     }
 }
