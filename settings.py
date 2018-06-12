@@ -109,16 +109,16 @@ BAIDU_MAP_AK = 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
 
 # version conf
 ANDROID_VERSION = {
-    'version': '3.0',
-    'version_code': '1.1',
+    'version': '3.1',
+    'version_code': '41',
     'url': '',
-    'message': '',
+    'message': '3.0大改版',
     'force': True
 }
 
 IOS_VERSION = {
-    'version': '1.1',
-    'message': '',
+    'version': '3.1',
+    'message': '3.0大改版',
     'force': True
 }
 
