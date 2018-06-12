@@ -65,7 +65,7 @@ class ShareTestCase(APITestCase):
         self.assertEqual(data['title'], self.video.name)
         self.assertEqual(data['sub_title'], '拳民出击')
         self.assertEqual(data['picture'], f'{oss_base_url}{self.video.try_url}{video_prefix}')
-        self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.video.id}')
+        self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.test_user.id}/{self.video.id}')
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.assertEqual(data['title'], self.msg.content)

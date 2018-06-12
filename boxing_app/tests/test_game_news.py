@@ -33,3 +33,13 @@ class GameNewsTestCase(APITestCase):
             res = self.client.get(f'/game_news/{res.data["id"]}')
 
         self.assertEqual(read_count + n, res.data['read_count'])
+
+    def test_content(self):
+        news = models.GameNews.objects.create(**self.data)
+        res = self.client.get(f'/game_news/{news.id}', {'in_app': 1})
+        content = res.data['content']
+        self.assertEqual(content, self.data['app_content'])
+
+        res = self.client.get(f'/game_news/{news.id}')
+        content = res.data['content']
+        self.assertEqual(content, self.data['share_content'])
