@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import PayOrder, OrderComment, BoxingClub, User, BoxerIdentification
+from biz.models import OrderComment, BoxingClub, User
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -32,6 +32,12 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
     allowed_course = serializers.ListField(child=serializers.CharField(), required=False)
+    gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
+    avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
+    course_order_count = serializers.SerializerMethodField()
+
+    def get_course_order_count(self, instance):
+        return instance.boxer_course_order.count()
 
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
@@ -429,7 +435,7 @@ class NewsSerializer(serializers.ModelSerializer):
     read_count = serializers.SerializerMethodField()
 
     def get_content(self, obj):
-        if self.context['request'].META.get('source'):
+        if self.context['request'].query_params.get('in_app'):
             return obj.app_content
         return obj.share_content or obj.app_content
 

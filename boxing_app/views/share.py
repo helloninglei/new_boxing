@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo, GameNews
+from biz.models import Message, HotVideo, GameNews, Course, UserProfile
 from biz.redis_client import incr_number_of_share
 from biz.utils import get_model_class_by_name, get_share_img_url
 from biz.weixin_public_client import Sign
@@ -48,6 +48,8 @@ def share_view(request, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
     obj = get_object_or_404(model_class, pk=object_id)
     sub_title = picture = ''
+    plural_prefix = 's' if object_type != 'game_news' else ''
+    url = f'{h5_base_url}{object_type}{plural_prefix}/{object_id}'
     if isinstance(obj, Message):
         user = obj.user
         title = obj.content
@@ -57,28 +59,37 @@ def share_view(request, object_type, object_id):
                 title = f'分享{profile.nick_name}动态'
             sub_title = f'来自{profile.nick_name}的拳民出击'
             picture = get_share_img_url(profile.avatar)
+        title = _truncate_text(title, 14)
+        sub_title = _truncate_text(sub_title, 20),
     elif isinstance(obj, HotVideo):
         user = obj.user
         title = obj.name
         sub_title = '拳民出击'
         picture = get_share_img_url(obj.try_url, is_video=True)
+        url = f'{h5_base_url}hot_videos/{user.id}/{object_id}'
     elif isinstance(obj, GameNews):
         title = obj.title
         sub_title = obj.sub_title
         picture = get_share_img_url(obj.picture)
         user = obj.operator
-    else:  # course order  TODO 等待course order 重构
-        title = obj.course_name
-        sub_title = ''
-        picture = ''
-        user = obj.boxer.user_id
+        url = f'{h5_base_url}game_news/{object_id}/0'  # 0 不在app内打开
+    else:
+        title = '我在拳城出击约了一个拳击教练，竟然还是个体育明星，快来看看他是谁！'
+        course_name_list = list(Course.objects.filter(boxer_id=obj.id, is_open=True).values_list('course_name',
+                                                                                                  flat=True))
+        has_more_than_one_course = len(course_name_list) > 1
+        conjunction_str = '和' if has_more_than_one_course else ''
+        last_course_name = course_name_list[-1:] if has_more_than_one_course else ""
+        course_str = f'{"、".join(course_name_list[:-1])}{conjunction_str}{last_course_name}'
+        sub_title = f'{obj.real_name}：我在拳城出击开设了{course_str}课程，等你来约。'
+        picture = get_share_img_url(UserProfile.objects.filter(user_id=obj.id).only('avatar').first().avatar)
+        user = obj
 
-    plural_prefix = 's' if object_type != 'game_news' else ''
     data = {
-        'title': _truncate_text(title, 14),
-        'sub_title': _truncate_text(sub_title, 20),
+        'title': title,
+        'sub_title': sub_title,
         'picture': picture,
-        'url': f'{h5_base_url}{object_type}{plural_prefix}/{object_id}',
+        'url': url,
     }
     incr_number_of_share(user.id)
     return Response(data)

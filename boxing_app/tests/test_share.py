@@ -12,7 +12,9 @@ class ShareTestCase(APITestCase):
     def setUp(self):
         self.test_user = models.User.objects.create_superuser(mobile='11111111111', password='password')
         self.nick_name = 'lerry'
-        models.UserProfile.objects.create(user=self.test_user, nick_name=self.nick_name)
+        self.test_user.user_profile.nick_name = self.nick_name
+        self.test_user.user_profile.save()
+        self.test_user.refresh_from_db()
         self.client = self.client_class()
         self.client.login(username=self.test_user, password='password')
 
@@ -63,7 +65,7 @@ class ShareTestCase(APITestCase):
         self.assertEqual(data['title'], self.video.name)
         self.assertEqual(data['sub_title'], '拳民出击')
         self.assertEqual(data['picture'], f'{oss_base_url}{self.video.try_url}{video_prefix}')
-        self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.video.id}')
+        self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.test_user.id}/{self.video.id}')
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.assertEqual(data['title'], self.msg.content)
