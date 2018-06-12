@@ -9,7 +9,7 @@ clear_cache(){
 
 install(){
     echo "install..."
-    pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple -r requirements.txt
+    pip install -r requirements.txt
     echo "install done"
 }
 

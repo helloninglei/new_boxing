@@ -2,6 +2,7 @@
 from datetime import datetime
 from json import loads, dumps
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, GenericRelation
@@ -233,7 +234,7 @@ class Comment(SoftDeleteModel):
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='+')
     ancestor = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='+')
     is_deleted = models.BooleanField(default=False, db_index=True)
-    created_time = models.DateTimeField(auto_now_add=True, db_index=True)
+    created_time = models.DateTimeField(default=timezone.now, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
     reports = GenericRelation('Report')
 
@@ -426,6 +427,7 @@ class GameNews(BaseAuditModel):
     end_time = models.DateTimeField(null=True)  # 推送结束时间
     app_content = models.TextField()
     share_content = models.TextField(null=True, blank=True)
+    created_time = models.DateTimeField(default=timezone.now)
     comments = GenericRelation('Comment')
 
     class Meta:

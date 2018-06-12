@@ -149,6 +149,7 @@ INSTALLED_APPS = [
     'captcha',
     'django_filters',
     'corsheaders',
+    'old_boxing',
 ]
 
 MIDDLEWARE = [
@@ -196,6 +197,17 @@ DATABASES = {
         'TEST': {
             'CHARSET': 'utf8mb4',
         }
+    },
+    'old_boxing': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'old_boxing',
+        'HOST': DB_MYSQL_HOST,
+        'PORT': DB_MYSQL_PORT,
+        'USER': DB_MYSQL_USER,
+        'PASSWORD': DB_MYSQL_PASSWORD,
+        'OPTIONS': {
+            'charset': 'utf8mb4'
+        },
     }
 }
 
@@ -268,3 +280,9 @@ PROJECT_CONSOLE = 'console'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = default_methods
 CORS_ALLOW_HEADERS = default_headers
+
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'biz.hasher.BoxingMD5PasswordHasher',
+]
