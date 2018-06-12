@@ -86,20 +86,11 @@
                 </el-col>
             </el-row>
         </div>
-<!--         <el-dialog title="预览" :visible.sync="prevVisible" id='prevShow'>
-            <div>
-                <h4 class="prev_title">{{form.title}}</h4>
-                <div id='priv_content'></div>
-            </div>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="prevVisible = false">关闭</el-button>
-            </div>
-        </el-dialog> -->
         <div class="dialog-modal indexNone"> <!-- 根元素，z-index 需要高于父容器其他元素 -->
             <div class="dialog-wrapper" @click="prevVisible = false" v-show="prevVisible"></div> <!-- 加载一个具有透明度的背景，使根元素透明，子元素会继承该透明度 -->
             <transition name="drop">
                 <div class="dialog-container" v-show="prevVisible">  <!-- 模态框容器，z-index 需要高于背景 -->
-                    <h2 class=''>预览</h2>
+                    <h2 style='font-size:24px;font-weight:bold'>预览</h2>
                     <div class='content'>
                         <h4 class="prev_title">{{form.title}}</h4>
                         <div id='priv_content'></div>
@@ -165,7 +156,7 @@
     .udeitor_content{
         margin-bottom:60px
     }
-    .prev_title{font-size:20px}
+    .prev_title{font-size:20px;margin-bottom:10px}
     .prev_time{font-size:14px}
 </style>
 <style scope>
@@ -246,6 +237,7 @@
         z-index:20;
         border: 1px solid #d5d5d5; 
     }
+    #priv_content{line-height:24px;}
     #priv_content img,#priv_content video{width:100%;}
     #prevShow{z-index:-1!important}
     .v-modal.addIndex{z-index:-1!important}
@@ -350,8 +342,13 @@
                 //编辑
                 console.log(this.query)
                 this.form=this.query;
-                this.form.app_content   = this.form.app_content.replace(/src="/g,'src="'+this.config.baseUrl)
-                this.form.share_content = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl)
+                if(this.form.app_content&&this.form.app_content.indexOf('http')==-1){
+                   this.form.app_content   = this.form.app_content.replace(/src="/g,'src="'+this.config.baseUrl) 
+                }
+                if(this.form.share_content&&this.form.share_content.indexOf('http')==-1){
+                   this.form.share_content   = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl) 
+                }
+                // this.form.share_content = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl)
                 this.dateArr=[this.query.start_time?this.query.start_time:'',this.query.end_time?this.query.end_time:'']
                 this.imgUrl = this.form.picture ;
                 this.confirmText = '修改'
@@ -452,7 +449,6 @@
                             //修改
                             this.ajax('/game_news/'+this.form.id,'put',this.form).then(function(res){
                                 if(res&&res.data){
-                                    // console.log(res.data)
                                     $this.cancelEv(formName)
                                 }
 

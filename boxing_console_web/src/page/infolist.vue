@@ -172,6 +172,7 @@
                 this.getData();
             },
             searchEv() {
+                this.hasSearch = true
                 this.getData(true);
             },
             getDateTime() {
