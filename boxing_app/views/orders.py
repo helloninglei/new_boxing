@@ -54,7 +54,7 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             "user": request.user.pk,
             "club": course.club.pk,
             "course": course.pk,
-            "course_name": course.course_name,
+            "course_name": course.get_course_name_display(),
             "course_price": course.price,
             "course_duration": course.duration,
             "course_validity": course.validity,

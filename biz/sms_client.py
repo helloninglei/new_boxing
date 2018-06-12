@@ -109,3 +109,11 @@ def send_boxer_refuse_message(mobile, refuse_reason):
     template = SMS_TEMPLATES['boxerRefused']
     return _send_template_sms(template, mobile, template['text'].format(reason=refuse_reason),
                               {"reason": refuse_reason})
+
+
+def send_boxer_confirmed_message(mobile, course_order):
+    template = SMS_TEMPLATES['boxerConfirmedOrder']
+    return _send_template_sms(template, mobile, template['text'].
+                              format(duration=course_order.course_duration,
+                                     name=course_order.get_course_name_display()),
+                              {"duration": course_order.course_duration, "name": course_order.get_course_name_display()})
