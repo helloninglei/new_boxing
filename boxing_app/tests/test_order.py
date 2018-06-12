@@ -39,6 +39,7 @@ class OrderTestCase(APITestCase):
             "is_professional_boxer": True,
             "club": "131ef2f3",
             "job": 'hhh',
+            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED,
             "introduction": "beautiful",
             "experience": '',
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
@@ -158,6 +159,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['comment_images'], self.comment_data['images'])
         self.assertEqual(res.data['comment_score'], self.comment_data['score'])
         self.assertIsNotNone(res.data['comment_time'])
+        self.assertEqual(res.data['identity'], 'user')
 
     def test_get_user_order_list(self):
         # 分别为test_user_1、2、3、4创建user_profile
@@ -253,7 +255,6 @@ class OrderTestCase(APITestCase):
                                             out_trade_no=1111,
                                             device=1)
 
-        # test_user_2成功创建了未支付订单
         res = self.client2.post('/course/order', data={'id': course.id})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

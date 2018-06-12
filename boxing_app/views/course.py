@@ -2,7 +2,7 @@
 from django.db import transaction
 from django.db.models import Count, Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 
 from biz import redis_client
@@ -12,6 +12,7 @@ from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullData
 
 class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
+    permission_classes = (permissions.AllowAny,)
     condition = {}
 
     def get_queryset(self):
