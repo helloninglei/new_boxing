@@ -387,6 +387,8 @@ class CourseOrder(models.Model):
     finish_time = models.DateTimeField(null=True)  # 订单完成时间
     amount = models.PositiveIntegerField(null=True)  # 订单金额，单位分
     insurance_amount = models.PositiveIntegerField(null=True)  #保险金额
+    refund_record = models.ForeignKey(MoneyChangeLog, null=True, on_delete=models.PROTECT,
+                                      related_name='+', db_index=False)
 
     class Meta:
         db_table = 'course_order'

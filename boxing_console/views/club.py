@@ -1,4 +1,3 @@
-from django.db import transaction
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 
@@ -25,4 +24,3 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     def open_club(self):
         BoxingClub.all_objects.filter(id=self.kwargs['pk']).update(is_deleted=False)
         return Response({"message": "拳馆已开启"}, status=status.HTTP_204_NO_CONTENT)
-

@@ -36,7 +36,6 @@ class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
         course_order.boxer_confirm_time = datetime.now()
         course_order.save()
         sms_client.send_boxer_confirmed_message(course_order.user.mobile, course_order)
-        # TODO:创建定时任务
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
