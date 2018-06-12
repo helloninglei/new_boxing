@@ -103,13 +103,13 @@
                 <el-col :span="1">
                     <div class='detail_title'>保险</div>
                 </el-col>
-                <el-col :span="23" v-if="result.insurance_amount? false : true">
+                <el-col :span="23" v-if="result.insurance_amount==0||result.insurance_amount>0? false : true">
                     <div class='detail_content margin_lf'>请购买保险 
                         <el-button  class='myBtnHover_red myButton_20' size='mini' style='width:100px;height:25px!important;margin-top:-4px' @click="addCount()">标记保险</el-button>
                     </div>
                 </el-col>
                 <el-col :span="23" v-else>
-                    <div class='detail_content margin_lf'>{{result.insurance_amount}}元</div>
+                    <div class='detail_content margin_lf'>{{(result.insurance_amount/100).toFixed(2)}}元</div>
                 </el-col>
             </el-row>
             <el-row class='detail_item_sub' v-if="result.status==1">
@@ -161,15 +161,23 @@
                     <div class='detail_title width_160'>拳手确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf50'>aaaaaaaaaa缺数据aaaaaaa</div>
+                    <div class='detail_content margin_lf50'>{{result.boxer_confirm_time}}</div>
                 </el-col>
             </el-row>
-            <el-row class='detail_item_sub' v-if="result.status>2">
+            <el-row class='detail_item_sub' v-if="result.user_confirm_time">
                 <el-col :span="2">
                     <div class='detail_title width_160'>用户确认完成时间</div>
                 </el-col>
                 <el-col :span="22">
-                    <div class='detail_content margin_lf50'>aaaaaaaaaa缺数据aaaaaaa</div>
+                    <div class='detail_content margin_lf50'>{{result.user_confirm_time}}</div>
+                </el-col>
+            </el-row>
+            <el-row class='detail_item_sub' v-else-if="result.boxer_confirm_time&&(new Date()-new Date(result.boxer_confirm_time)-7*24*60*60*1000>0)" style='background: #ebebeb;padding:10px 0;width:600px'>
+                <el-col :span="4">
+                    <div class='detail_title width_160'>用户确认完成时间</div>
+                </el-col>
+                <el-col :span="20">
+                    <div class='detail_content margin_lf50' style='margin-left:54px'>{{result.user_moren_time}} （过期默认确认）</div>
                 </el-col>
             </el-row>
         </div>
@@ -290,6 +298,10 @@
                     if(res&&res.data){
                         $this.result=res.data;
                         $this.starValue = res.data.comment_score;
+                        // 用户确认默认时间
+                        $this.result.user_moren_time = new Date($this.result.boxer_confirm_time)
+                        $this.result.user_moren_time.setDate($this.result.user_moren_time.getDate()+7)
+                        $this.result.user_moren_time = $this.result.user_moren_time.Format("yyyy-MM-dd hh:mm:ss")
                         if($this.result.course_name=='BOXING'){
                             $this.result.course_name='拳击'
                         }else if($this.result.course_name=='THAI_BOXING'){
@@ -303,7 +315,7 @@
                             $this.result.payment_type_name='余额'
                         }
                         $this.result.amount = ($this.result.amount/100).toFixed(2)
-                        $this.result.insurance_amount = ($this.result.insurance_amount/100).toFixed(2)
+                        // $this.result.insurance_amount = ($this.result.insurance_amount/100).toFixed(2)
                         switch ($this.result.status){
                             case 1 :
                             $this.result.status_name='待付款';
@@ -343,6 +355,7 @@
                 this.ajax('/order/'+this.orderId+'/mark_insurance','post',this.addData).then(function(res){
                     if(res&&res.status==204){
                         $this.result.insurance_amount = val
+                        $this.getDetailData($this.orderId);
                         $this.dialog_label_data.isshow=false
                     }
 

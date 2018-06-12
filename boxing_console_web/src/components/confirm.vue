@@ -46,7 +46,7 @@
         		this.showDialog=newval;
         	},
           showDialog(val){
-            console.log(val)
+            // console.log(val)
             if(!val){
               this.$emit('cancel',val)
             }

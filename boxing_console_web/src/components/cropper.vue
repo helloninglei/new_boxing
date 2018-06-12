@@ -70,6 +70,7 @@
     .cropper-container {  
       font-size: 0;  
       line-height: 0;
+      height:830px!important;
       position: relative;
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -411,7 +412,6 @@
               $(image).cropper('getCroppedCanvas')  
           }
         }); 
-        // console.log(this.width,this.height,this.width/this.height)
         this.cropper2 = new Cropper(image, {  
           aspectRatio: this.width/this.height,  
           // viewMode: 1, 
@@ -421,12 +421,6 @@
           minCanvasWidth:160,
           minCanvasHeight:90,
           cropBoxResizable:true,//裁剪框能放大缩小
-          // ready: function () {  
-          //   self.croppable = true;  
-          // } 
-          // aspectRatio:picScale.width/picScale.height,
-          // autoCrop:false,
-          // zoomable:false,
           scalable:true,
           // rotatable:false,
           ready:function(){
