@@ -108,32 +108,7 @@
                 moneyTotal : 1000000,//付费金额
                 total     : 1000,//数据的总条数
                 tableData : [
-                    {
-                        "id": 1,
-                        "user_nickname": "nick_name",   // 用户昵称
-                        "user_mobile": "18800000000",   // 用户手机号
-                        "device": "iOS",  // 交易终端
-                        "payment_type": "支付宝",  // 交易渠道
-                        "status": "未支付",  // 交易状态
-                        "remarks": "【user】id:1",  // 备注
-                        "out_trade_no": 1323234234234,  // 订单号
-                        "amount": 10000,  // 金额（分）
-                        "order_time": "2018-05-25 18:35:05",  // 交易时间
-                        "user": 1   // 用户ID
-                    },
-                    {
-                        "id": 2,
-                        "user_nickname": "nick_name",   // 用户昵称
-                        "user_mobile": "18800000000",   // 用户手机号
-                        "device": "iOS",  // 交易终端
-                        "payment_type": "支付宝",  // 交易渠道
-                        "status": "未支付",  // 交易状态
-                        "remarks": "【user】id:1",  // 备注
-                        "out_trade_no": 1323234234234,  // 订单号
-                        "amount": 10000,  // 金额（分）
-                        "order_time": "2018-05-25 18:35:05",  // 交易时间
-                        "user": 1   // 用户ID
-                    },
+                    
                 ],
                 tableColumn:[
                     // {title:'id',    name :'ID',   width: ''},

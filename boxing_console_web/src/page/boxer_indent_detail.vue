@@ -83,7 +83,7 @@
     
         <div class="detail_item">
             <el-row class='detail_item_sub'>
-                <div class='detail_title'>自我介绍</div>
+                <div class='detail_title_lf detail_title'>自我介绍</div>
             </el-row>
             <el-row class='detail_item_sub'>
                 <div class='detail_content_p detail_content'>{{result.introduction?result.introduction:'无'}}</div>
@@ -91,7 +91,7 @@
         </div>
         <div class="detail_item">
             <el-row class='detail_item_sub'>
-                <div class='detail_title' style='width:176px'>参赛、获奖及执教经历</div>
+                <div class='detail_title_lf detail_title' style='width:176px'>参赛、获奖及执教经历</div>
             </el-row>
             <el-row class='detail_item_sub'>
                 <div class='detail_content_p detail_content'>{{result.experience?result.experience:'无'}}</div>
@@ -99,12 +99,12 @@
         </div>
         <div class="detail_item" v-show='result.honor_certificate_images&&result.honor_certificate_images.length>0'>
             <el-row class='detail_item_sub'>
-                <div class='detail_title'>荣誉证明</div>
+                <div class='detail_title_lf detail_title'>荣誉证明</div>
             </el-row>
             <el-row class='detail_item_sub'>
                 <div class='detail_content_p detail_content'>
                     <div class='addImage' v-for="item in result.honor_certificate_images">
-                        <img :src="config.baseUrl+item" alt="" width='100%' height='100%' @click='clickImg(item)'>
+                        <img :src="config.baseUrl+item" alt="" width='100%' height='100%' style="cursor:pointer;" @click='clickImg(item)'>
                     </div>
                     <!-- <div class='addImage'>图片</div> -->
                 </div>
@@ -112,7 +112,7 @@
         </div>
         <div class="detail_item" v-show='result.competition_video'>
             <el-row class='detail_item_sub'>
-                <div class='detail_title'>参赛视频</div>
+                <div class='detail_title_lf detail_title'>参赛视频</div>
             </el-row>
             <el-row class='detail_item_sub'>
                 <div class='detail_content_p detail_content'>
@@ -141,6 +141,7 @@
     .detail_item_sub{margin-bottom:22px;}
     .detail_item{margin-bottom:30px;}
     .detail_title{width:80px;}
+    .detail_title_lf{width:80px;text-align: left}
     .detail_content.margin_lf{margin-left:39px;}
     .detail_content.detail_content_p{margin-left:16px;line-height:25px;}
     .width_160{width:145px!important;}

@@ -76,11 +76,11 @@
             conform1(id,index){
                 this.deleteAdmin(id,index)
             },
-            getData(){
+            getData(page){
                 var $this=this;
-                this.ajax('/admins/','get',{},{}).then(function(res){
+                this.ajax('/admins/','get',{},{page:page}).then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
+                        // console.log(res.data)
                         $this.tableData = res.data.results
                         $this.total = res.data.total
                     }
@@ -98,6 +98,7 @@
             changePage(val){
                 // 要看第几页
                 console.log(val)
+                this.getData(val)
             },
             cancel(val){
                 this.dialog_label_data.isshow=val;
@@ -129,6 +130,8 @@
                 this.confirmData.id=id
                 this.confirmData.index=index
                 this.confirmData.isshow=true
+                $('.v-modal').addClass('addIndex')
+                console.log($('.v-modal'))
             },
             deleteAdmin(id,index){
                 let $this=this;
