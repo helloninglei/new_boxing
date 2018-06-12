@@ -32,15 +32,12 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     height = serializers.IntegerField(max_value=250, min_value=100)
     weight = serializers.IntegerField(max_value=999)
     allowed_course = serializers.ListField(child=serializers.CharField(), required=False)
-    gender = serializers.SerializerMethodField()
+    gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
     avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
     course_order_count = serializers.SerializerMethodField()
 
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.count()
-
-    def get_gender(self, instance):
-        return instance.user.user_profile.gender
 
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
