@@ -25,5 +25,6 @@ class OnlyUserSelfCanConfirmOrderPermission(permissions.BasePermission):
 
 class IsBoxerPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        return models.BoxerIdentification.objects.filter(user=request.user,
-                                                         authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED).exists()
+        return models.BoxerIdentification.objects\
+            .filter(user=request.user.id, authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)\
+            .exists()

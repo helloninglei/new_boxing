@@ -16,4 +16,20 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute=10, hour=3),
         'args': [],
     },
+    'judge-course-order-overdue': {
+        'task': 'boxing_console.tasks.set_course_order_overdue',
+        'schedule': crontab(minute=0, hour=0),
+        'args': [],
+    },
+    'order-tear-finished-after-boxer-confirmed-7-days': {
+        'task': 'boxing_console.tasks.order_tear_finished_after_boxer_confirmed',
+        'schedule': crontab(minute=0, hour=0),
+        'args': []
+    },
+    'refund-after-order-overdue': {
+        'task': 'boxing_console.tasks.refund_after_order_overdue',
+        'schedule': crontab(minute=0, hour=0),
+        'args': []
+    }
+
 }

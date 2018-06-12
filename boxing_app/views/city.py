@@ -16,5 +16,6 @@ def get_boxer_list(request):
                      .extra(select={'cityLetter': 'city_index_letter',
                                     'cityName': 'city'})
                      .values('cityLetter', 'cityName')
+                     .distinct()
                      .order_by('city_index_letter'))
     return Response({'boxerCityList': city_list})

@@ -213,6 +213,41 @@ class CourseOrderTestCase(APITestCase):
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['course_price'], self.course_data['price'])
 
+    def test_course_order_mark_insurance(self):
+        # 创建user_profile->创建boxer->创建club->创建course->创建course_order
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
+        boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        club = BoxingClub.objects.create(**self.club_data)
+        self.course_data['club'] = club
+        self.course_data['boxer'] = boxer
+        course = Course.objects.create(**self.course_data)
+        self.pay_order_data['content_object'] = course
+        pay_order = PayOrder.objects.create(**self.pay_order_data)
+        course_order_data = {
+            "pay_order": pay_order,
+            "boxer": boxer,
+            "user": self.user1,
+            "club": club,
+            "course": course,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": pay_order.out_trade_no,
+            "pay_time": datetime.now()
+        }
+        insurance_data = {"insurance_amount": 100}
+        course_order = CourseOrder.objects.create(**course_order_data)
+        # 订单不是待使用状态不能标记
+        res = self.client.post(f'/order/{course_order.id}/mark_insurance', data=insurance_data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # 订单状态是待使用状态，可以标记
+        CourseOrder.objects.filter(id=course_order.id).update(status=constants.COURSE_PAYMENT_STATUS_WAIT_USE)
+        res = self.client.post(f'/order/{course_order.id}/mark_insurance', data=insurance_data)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(CourseOrder.objects.get(id=course_order.id).insurance_amount, insurance_data['insurance_amount'])
+
+
     def test_course_settle_order_filter(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
         UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)

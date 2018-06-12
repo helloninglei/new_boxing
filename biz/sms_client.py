@@ -37,6 +37,10 @@ SMS_TEMPLATES = {
     "boxerRefused": {
         "code": "SMS_135793085",
         "text": "您在拳城出击app提交的拳手认证已经被驳回，驳回原因为: {reason}，快去查看。",
+    },
+    "boxerConfirmedOrder": {
+        "code": "SMS_137410094",
+        "text": "你预定的{duration}分钟{name}课程已经消费，请尽快登录拳民出击app进行确认。"
     }
 }
 
@@ -113,7 +117,9 @@ def send_boxer_refuse_message(mobile, refuse_reason):
 
 def send_boxer_confirmed_message(mobile, course_order):
     template = SMS_TEMPLATES['boxerConfirmedOrder']
-    return _send_template_sms(template, mobile, template['text'].
-                              format(duration=course_order.course_duration,
-                                     name=course_order.get_course_name_display()),
-                              {"duration": course_order.course_duration, "name": course_order.get_course_name_display()})
+    return _send_template_sms(template,
+                              mobile,
+                              template['text'].format(duration=course_order.course_duration,
+                                                      name=course_order.get_course_name_display()),
+                              {"duration": course_order.course_duration,"name": course_order.get_course_name_display()}
+                              )

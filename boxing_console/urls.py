@@ -47,11 +47,13 @@ course_url = [
     path('course/orders', CourseOrderViewSet.as_view({'get': 'list'})),
     path('course/order/<int:pk>', CourseOrderViewSet.as_view({'get': 'retrieve'})),
     path('course/settle_orders', CourseSettleOrderViewSet.as_view({'get': 'list'})),
+    path('order/<int:pk>/mark_insurance', CourseOrderViewSet.as_view({'post': 'mark_insurance'}))
 ]
 
 club_url = [
     path('club', BoxingClubVewSet.as_view({'post': 'create', 'get': 'list'})),
-    path('club/<int:pk>', BoxingClubVewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}))
+    path('club/<int:pk>', BoxingClubVewSet.as_view({'get': 'retrieve', 'put': 'update'})),
+    re_path("^club/(?P<pk>\d+)/(?P<operate>(open|close))$", BoxingClubVewSet.as_view({'post': 'operate'}))
 ]
 
 login_urls = [
@@ -110,7 +112,6 @@ urlpatterns += boxer_url
 urlpatterns += course_url
 urlpatterns += club_url
 urlpatterns += login_urls
-urlpatterns += course_url
 urlpatterns += hot_video_url
 urlpatterns += upload_url
 urlpatterns += captcha_urls

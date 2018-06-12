@@ -280,10 +280,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CourseOrder
-        fields = ("id", "status", "out_trade_no", "payment_type", "amount", "order_time", "pay_time",
-                  "course_name", "course_duration", "course_validity", "course_price", "user_mobile",
-                  "user_id", "user_nickname", "boxer_name", "boxer_mobile", "club_name",
-                  'boxer_id', "comment_score", "comment_time", "comment_content", "comment_images")
+        fields = "__all__"
 
 
 class NewsSerializer(serializers.ModelSerializer):
@@ -497,3 +494,15 @@ class OfficialAccountChangeLogsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OfficialAccountChangeLog
         fields = ["id", "change_amount", "created_time", "remarks", "change_type"]
+
+
+class CourseOrderInsuranceSerializer(serializers.Serializer):
+    insurance_amount = serializers.IntegerField(min_value=0)
+
+    def validate(self, attrs):
+        if self.context['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_USE:
+            raise ValidationError("订单不是待使用状态，不能标记保险")
+        return attrs
+
+    class Meta:
+        fields = ('insurance_amount',)
