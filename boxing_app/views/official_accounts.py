@@ -8,4 +8,4 @@ from biz.constants import USER_IDENTITY_DICT
 @permission_classes([])
 @authentication_classes([])
 def get_official_accounts_info(request):
-    return Response({"results": USER_IDENTITY_DICT}, status=status.HTTP_200_OK)
+    return Response(USER_IDENTITY_DICT, status=status.HTTP_200_OK)

@@ -13,4 +13,4 @@ class OfficialAccountsTestCase(APITestCase):
     def test_official_accounts(self):
         response = self.client.get(path="/get_official_accounts_info")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(response.data['results'], USER_IDENTITY_DICT)
+        self.assertDictEqual(response.data, USER_IDENTITY_DICT)
