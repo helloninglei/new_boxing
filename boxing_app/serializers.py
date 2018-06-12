@@ -491,10 +491,7 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
 class CourseOrderCommentSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     images = serializers.ListField(child=serializers.CharField(), required=False)
-    course_name = serializers.SerializerMethodField()
-
-    def get_course_name(self, instance):
-        return instance.order.course_name
+    course_name = serializers.CharField(source='order.course_name', read_only=True)
 
     def validate(self, attrs):
         if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
@@ -550,6 +547,7 @@ class WithdrawSerializer(serializers.ModelSerializer):
 class OrderCommentSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField())
     user = DiscoverUserField(read_only=True)
+    course_name = serializers.CharField(source='order.course_name', read_only=True)
 
     class Meta:
         model = models.OrderComment
