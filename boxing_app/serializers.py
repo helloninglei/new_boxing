@@ -463,12 +463,11 @@ class CourseAllowNullDataSerializer(serializers.ModelSerializer):
     club_latitude = serializers.CharField(source='club.latitude', read_only=True)
     order_count = serializers.IntegerField(read_only=True)
     score = serializers.IntegerField(read_only=True)
-    course_name = serializers.CharField(source='get_course_name_display', read_only=True)
 
     class Meta:
         model = models.Course
         fields = '__all__'
-        read_only_fields = ('boxer',)
+        read_only_fields = ('boxer', 'course_name')
 
 
 class BannerSerializer(serializers.ModelSerializer):
@@ -548,7 +547,7 @@ class WithdrawSerializer(serializers.ModelSerializer):
 class OrderCommentSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField())
     user = DiscoverUserField(read_only=True)
-    course_name = serializers.CharField(source='order.get_course_name_display', read_only=True)
+    course_name = serializers.CharField(source='order.course_name', read_only=True)
 
     class Meta:
         model = models.OrderComment

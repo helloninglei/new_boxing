@@ -118,4 +118,4 @@ class OrderCommentTestCase(APITestCase):
         # 再次获取订单评论列表
         comment_list_res = self.client1.get(f'/course/order/{course_order.pk}/comment')
         self.assertEqual(len(comment_list_res.data['results']), 1)
-        self.assertEqual(comment_list_res.data['results'][0]['course_name'], course.get_course_name_display())
+        self.assertEqual(comment_list_res.data['results'][0]['course_name'], course.course_name)
