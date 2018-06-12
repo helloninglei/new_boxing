@@ -49,7 +49,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = '__all__'
-        read_only_fields = ('authentication_state', 'is_locked', "gender", "course_order_count")
+        read_only_fields = ('authentication_state', 'is_locked')
 
 
 class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
