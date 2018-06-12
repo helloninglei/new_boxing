@@ -120,6 +120,6 @@ def send_boxer_confirmed_message(mobile, course_order):
     return _send_template_sms(template,
                               mobile,
                               template['text'].format(duration=course_order.course_duration,
-                                                      name=course_order.get_course_name_display()),
-                              {"duration": course_order.course_duration,"name": course_order.get_course_name_display()}
+                                                      name=course_order.course_name),
+                              {"duration": course_order.course_duration, "name": course_order.course_name}
                               )

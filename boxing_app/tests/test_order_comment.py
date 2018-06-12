@@ -51,7 +51,7 @@ class OrderCommentTestCase(APITestCase):
         }
         self.course_data = {
             "boxer": None,
-            "course_name": constants.BOXER_ALLOWED_COURSES_THAI_BOXING,
+            "course_name": constants.BOXER_ALLOWED_COURSES_MMA,
             "price": 100,
             "duration": 120,
             "validity": "2018-08-25",
