@@ -24,6 +24,8 @@ def get_device_platform(request):
 
 
 def get_model_class_by_name(name):
+    if name == 'boxer':
+        return models.BoxerIdentification
     return getattr(models, name.title().replace('_', ''))
 
 

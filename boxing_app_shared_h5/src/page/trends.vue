@@ -16,7 +16,7 @@
                 </span>
             </template>
             <GetTime :createTime="info.created_time"></GetTime>
-            <div class="content">那些沉浸在海底的人，终于付出了水面.新世纪最新拳王出炉，快看看采访火爆现场吧。 </div>
+            <div class="content">{{info.content}}</div>
             <template v-if="info.video">
                 <Video :url="info.video"></Video>
             </template>
@@ -99,13 +99,11 @@
         .pic
             margin auto auto .4rem .75rem
             width 8rem
-            height 8rem
     .pic_wrapper3
         margin auto auto -.5rem -.835rem
         .pic
             margin auto auto .5rem .835rem
             width 5rem
-            height 5rem
 .bottom_bar
     margin-bottom 3.5rem
     width 100%

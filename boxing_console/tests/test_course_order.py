@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
-from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
 from biz.models import User, BoxerIdentification, Course, PayOrder, UserProfile, BoxingClub, CourseSettleOrder, \
-    OrderComment
+    CourseOrder, OrderComment
 
 
 class CourseOrderTestCase(APITestCase):
@@ -14,7 +13,6 @@ class CourseOrderTestCase(APITestCase):
         self.client = self.client_class()
         self.client.login(username=self.user1, password='password')
         self.user_profile_data = {
-            "user": self.user1,
             "nick_name": "赵柳"
         }
         self.boxer_data = {
@@ -51,7 +49,7 @@ class CourseOrderTestCase(APITestCase):
             "validity": "2018-08-25",
             "club": None
         }
-        self.course_order_data = {
+        self.pay_order_data = {
             "user": self.user1,
             "content_object": None,
             "status": constants.PAYMENT_STATUS_WAIT_USE,
@@ -74,87 +72,123 @@ class CourseOrderTestCase(APITestCase):
 
     def test_course_order_list(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
+        self.pay_order_data['content_object'] = course
 
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.course_order_data)
-        PayOrder.objects.create(**self.other_order_data)
+        pay_order1 = PayOrder.objects.create(**self.pay_order_data)
+        pay_order2 = PayOrder.objects.create(**self.pay_order_data)
+        pay_order3 = PayOrder.objects.create(**self.other_order_data)
 
-        # 只返回课程相关的订单
+        course_order_data = {
+            "pay_order": pay_order1,
+            "boxer": boxer,
+            "user": self.user1,
+            "club": club,
+            "course": course,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": pay_order1.out_trade_no,
+            "pay_time": datetime.now()
+        }
+        CourseOrder.objects.create(**course_order_data)
+        course_order_data['pay_order'] = pay_order2
+        course_order_data['order_number'] = pay_order2.out_trade_no
+        CourseOrder.objects.create(**course_order_data)
+        course_order_data['pay_order'] = pay_order3
+        course_order_data['order_number'] = pay_order3.out_trade_no
+        CourseOrder.objects.create(**course_order_data)
+
+        # 获取课程订单列表
         res = self.client.get('/course/orders')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['count'], 2)
+        self.assertEqual(res.data['count'], 3)
 
         # 通过用户手机号搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.other_order_data['user']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": 12222222222})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过拳手姓名搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.boxer_data['real_name']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": "你是谁"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过拳手手机号搜索
         search_user_mobile_res = self.client.get('/course/orders', {"search": self.boxer_data['mobile']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": 12222222222})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过大于等于支付时间过滤
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_start": self.other_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')})
-        self.assertEqual(search_order_time_res.data['count'], 2)
+            "pay_time_start": course_order_data['pay_time'].strftime('%Y-%m-%d %H:%M:%S')})
+        self.assertEqual(search_order_time_res.data['count'], 3)
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_start": (self.other_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
+            "pay_time_start": (course_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
         self.assertEqual(search_order_time_res.data['count'], 0)
 
         # 通过小于等于支付时间过滤
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_end": (self.other_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
-        self.assertEqual(search_order_time_res.data['count'], 2)
+            "pay_time_end": (course_order_data['pay_time'] + timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
+        self.assertEqual(search_order_time_res.data['count'], 3)
         search_order_time_res = self.client.get('/course/orders', {
-            "pay_time_end": (self.other_order_data['pay_time'] - timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
+            "pay_time_end": (course_order_data['pay_time'] - timedelta(seconds=1)).strftime('%Y-%m-%d %H:%M:%S')})
         self.assertEqual(search_order_time_res.data['count'], 0)
 
         # 通过课程名过滤
         search_user_mobile_res = self.client.get('/course/orders', {
-            "course__course_name": self.course_data['course_name']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"course__course_name": "unkonw_course"})
+            "course_name": self.course_data['course_name']})
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
+        search_user_mobile_res = self.client.get('/course/orders', {"course_name": "unkonw_course"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过支付方式过滤
         search_user_mobile_res = self.client.get('/course/orders', {
-            "payment_type": self.other_order_data['payment_type']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
-        search_user_mobile_res = self.client.get('/course/orders', {"payment_type": "unknown_type"})
+            "pay_order__payment_type": self.other_order_data['payment_type']})
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
+        search_user_mobile_res = self.client.get('/course/orders', {"pay_order__payment_type": "unknown_type"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过订单状态过滤
-        search_user_mobile_res = self.client.get('/course/orders', {"status": self.other_order_data['status']})
-        self.assertEqual(search_user_mobile_res.data['count'], 2)
+        search_user_mobile_res = self.client.get('/course/orders', {"status": constants.PAYMENT_STATUS_UNPAID})
+        self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"status": "unknown_status"})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
     def test_course_detail(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order->创建comment
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
+        user_profile = UserProfile.objects.get(user=self.user1)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
-        course_order = PayOrder.objects.create(**self.course_order_data)
+        self.pay_order_data['content_object'] = course
+
+        pay_order = PayOrder.objects.create(**self.pay_order_data)
+        course_order_data = {
+            "pay_order": pay_order,
+            "boxer": boxer,
+            "user": self.user1,
+            "club": club,
+            "course": course,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": pay_order.out_trade_no,
+        }
+        course_order = CourseOrder.objects.create(**course_order_data)
         conmment_data = {
             "score": 6,
             "content": "i have comment",
@@ -165,37 +199,32 @@ class CourseOrderTestCase(APITestCase):
         OrderComment.objects.create(**conmment_data)
         res = self.client.get(f'/course/order/{course_order.pk}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        for key in self.course_order_data.keys():
-            if key == 'user':
-                self.assertEqual(self.course_order_data[key], User.objects.get(pk=res.data['user_id']))
-            elif key == 'content_object':
-                self.assertEqual(self.course_order_data[key], Course.objects.get(pk=res.data['object_id']))
-            elif key == 'device':
-                pass
-            elif key == 'pay_time':
-                self.assertEqual(self.course_order_data[key].strftime('%Y-%m-%d %H:%M:%S'), res.data.get(key))
-            else:
-                self.assertEqual(self.course_order_data[key], res.data.get(key))
+        self.assertEqual(res.data['status'], constants.PAYMENT_STATUS_UNPAID)
+        self.assertEqual(res.data['out_trade_no'], self.pay_order_data['out_trade_no'])
+        self.assertEqual(res.data['course_name'], course_order_data['course_name'])
+        self.assertEqual(res.data['course_price'], course_order_data['course_price'])
+        self.assertEqual(res.data['course_duration'], course_order_data['course_duration'])
+        self.assertEqual(res.data['course_name'], course_order_data['course_name'])
+        self.assertEqual(res.data['user_mobile'], self.user1.mobile)
+        self.assertEqual(res.data['user_nickname'], user_profile.nick_name)
         self.assertEqual(res.data['comment_score'], conmment_data['score'])
         self.assertEqual(res.data['comment_content'], conmment_data['content'])
         self.assertEqual(res.data['comment_images'], conmment_data['images'])
-
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['course_price'], self.course_data['price'])
 
     def test_course_settle_order_filter(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user1).update(**self.user_profile_data)
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
         course = Course.objects.create(**self.course_data)
-        self.course_order_data['content_object'] = course
+        self.pay_order_data['content_object'] = course
 
-        order1 = PayOrder.objects.create(**self.course_order_data)
-        order2 = PayOrder.objects.create(**self.course_order_data)
+        order1 = PayOrder.objects.create(**self.pay_order_data)
+        order2 = PayOrder.objects.create(**self.pay_order_data)
         order3 = PayOrder.objects.create(**self.other_order_data)
 
         CourseSettleOrder.objects.create(order=order1, course=course)
@@ -208,7 +237,7 @@ class CourseOrderTestCase(APITestCase):
         res = self.client.get('/course/settle_orders', {'buyer': '123'})
         self.assertEqual(res.data['count'], 0)
 
-        res = self.client.get('/course/settle_orders', {'buyer': self.course_order_data['user'].mobile})
+        res = self.client.get('/course/settle_orders', {'buyer': self.pay_order_data['user'].mobile})
         self.assertEqual(res.data['count'], 3)
 
         res = self.client.get('/course/settle_orders', {'boxer': '李四'})
@@ -243,5 +272,3 @@ class CourseOrderTestCase(APITestCase):
 
         res = self.client.get('/course/settle_orders', {'start_date': '2018-05-22'})
         self.assertEqual(res.data['count'], 0)
-
-

@@ -37,6 +37,8 @@ from boxing_app.views.wallet import WithdrawViewSet
 from boxing_app.views.version import version
 from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
+from boxing_app.views.boxer import boxer_info_to_share
+from boxing_app.views.official_accounts import get_official_accounts_info
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -86,20 +88,26 @@ club_url = [
 course_url = [
     path('boxer/course', BoxerMyCourseViewSet.as_view({'get': 'list', 'post': 'update'})),
     path('boxer/<int:boxer_id>/course', BoxerMyCourseViewSet.as_view({'get': 'opened_courses_list'})),
-
 ]
 
 order_url = [
     path('boxer/orders', BoxerCourseOrderViewSet.as_view({'get': 'list'}), name='boxer-orders'),
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}), name='user-order-detail')
+    path('course/order', UserCourseOrderViewSet.as_view({'post': 'create'}), name='create-course-orders'),
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}),
+         name='user-order-detail'),
+    path('order/<int:pk>/boxer-confirm', BoxerCourseOrderViewSet.as_view({'post': 'boxer_confirm_order'}),
+         name='boxer-confirm-order'),
+    path('order/<int:pk>/user-confirm', UserCourseOrderViewSet.as_view({'post': 'user_confirm_order'}),
+         name='user-confirm-order'),
 ]
 
 order_comment_url = [
     path('course/order/<int:order_id>/comment', CourseOrderCommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('course/order/<int:order_id>/comment/<int:pk>', CourseOrderCommentViewSet.as_view({'get': 'retrieve'})),
-    path('boxer/<int:boxer_id>/comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}), name='boxer-order-comments')
+    path('boxer/<int:boxer_id>/comments', CourseCommentsAboutBoxer.as_view({'get': 'list'}),
+         name='boxer-order-comments')
 ]
 
 city_url = [
@@ -162,8 +170,6 @@ payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
 payment_urls = [
     re_path(r'^(?P<object_type>({0}))s/create_order'.format(payment_object_string), pay.create_order,
             name='create-order'),
-    re_path(r'^(?P<object_type>({0}))s/create_unpaid_order'.format(payment_object_string), pay.create_unpaid_order,
-            name='create-unpaid-order'),
     path('callback/alipay', pay.alipay_calback),
     path('callback/wechat', pay.wechat_calback),
     path('pay_status', pay.pay_status),
@@ -171,6 +177,7 @@ payment_urls = [
 
 news_urls = [
     path('game_news', game_news.NewsViewSet.as_view({'get': 'list'})),
+    path('game_news_url/<int:pk>', game_news.get_news_url),
     path('game_news/<int:pk>', game_news.NewsViewSet.as_view({'get': 'retrieve'})),
 ]
 
@@ -190,7 +197,8 @@ share_object_string = '|'.join(SHARE_OBJECT_LIST)
 share_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/share'.format(share_object_string), share_view,
             name='share'),
-    path("second_share_signature", second_share_signature)
+    path("second_share_signature", second_share_signature),
+    path("boxer/<int:pk>/info", boxer_info_to_share)
 ]
 
 version_urls = [
@@ -199,6 +207,10 @@ version_urls = [
 
 social_login_urls = [
     path("social_login", social_login),
+]
+
+official_accounts_urls = [
+    path("get_official_accounts_info", get_official_accounts_info)
 ]
 
 urlpatterns = []
@@ -226,6 +238,7 @@ urlpatterns += club_url
 urlpatterns += city_url
 urlpatterns += version_urls
 urlpatterns += social_login_urls
+urlpatterns += official_accounts_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

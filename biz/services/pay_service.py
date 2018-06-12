@@ -7,13 +7,13 @@ from django.db.transaction import atomic
 from django.conf import settings
 from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
-from biz.models import PayOrder, User, HotVideo, Course
+from biz.models import PayOrder, User, HotVideo, CourseOrder
 from biz.redis_client import get_order_no_serial
 from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, \
     MONEY_CHANGE_TYPE_REDUCE_ORDER, \
-    MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+    MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO, COURSE_PAYMENT_STATUS_WAIT_USE
 from biz.services import official_account_service
 from biz.services.money_balance_service import change_money, ChangeMoneyException
 
@@ -76,6 +76,8 @@ class PayService:
 
     @classmethod
     def perform_create_order(cls, user, obj, device, amount=None, payment_type=None):  # amount 单位分
+        if isinstance(obj, CourseOrder):
+            amount = obj.course.price
         return PayOrder.objects.create(
             user=user,
             content_object=obj,
@@ -115,6 +117,9 @@ class PayService:
     def do_wallet_payment(cls, user, order):
         if isinstance(order.content_object, HotVideo):
             change_type = MONEY_CHANGE_TYPE_REDUCE_PAY_FOR_VIDEO
+        elif isinstance(order.content_object, CourseOrder):
+            change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
+            cls.change_course_order_status(order)
         else:
             change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
         try:
@@ -171,8 +176,9 @@ class PayService:
                 change_money(user=pay_order.content_object, amount=pay_order.amount,
                              change_type=MONEY_CHANGE_TYPE_INCREASE_RECHARGE,
                              remarks=pay_order.out_trade_no)
-            elif isinstance(pay_order.content_object, Course):
+            elif isinstance(pay_order.content_object, CourseOrder):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE
+                cls.change_course_order_status(pay_order)
             else:
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO
 
@@ -193,7 +199,7 @@ class PayService:
             elif isinstance(content, User):
                 name = '充值'
             else:
-                name = content.get_course_name_display()
+                name = content.course.get_course_name_display()
             return {
                 'status': 'paid' if pay_order.status > PAYMENT_STATUS_UNPAID else 'unpaid',
                 'name': name,
@@ -202,3 +208,12 @@ class PayService:
                 'pay_time': timezone.localtime(pay_order.pay_time).strftime(
                     datetime_format) if pay_order.pay_time else None,
             }
+
+    @classmethod
+    def change_course_order_status(cls, pay_order):
+        pay_order.content_object.pay_order = pay_order
+        pay_order.content_object.pay_time = datetime.now()
+        pay_order.content_object.status = COURSE_PAYMENT_STATUS_WAIT_USE
+        pay_order.content_object.order_number = pay_order.out_trade_no
+        pay_order.content_object.amount = pay_order.amount
+        pay_order.content_object.save()

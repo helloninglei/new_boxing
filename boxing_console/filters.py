@@ -63,8 +63,8 @@ class CourseOrderFilter(CommonFilter):
     pay_time_end = django_filters.DateTimeFilter(name='pay_time', lookup_expr='lte')
 
     class Meta:
-        model = models.PayOrder
-        fields = ['pay_time_start', 'pay_time_end', 'course__course_name', 'payment_type', 'status']
+        model = models.CourseOrder
+        fields = ['pay_time_start', 'pay_time_end', 'course_name', 'pay_order__payment_type', 'status']
 
 
 class UserFilter(django_filters.FilterSet):

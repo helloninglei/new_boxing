@@ -7,7 +7,7 @@ class UserProfileTestCase(APILoginTestCase):
     def setUp(self):
         self.user_profile_data = dict(user=self.user, name="姓名", gender=False, nick_name="昵称", nation="汉族", weight=70,
                                       height=180, profession="职业", avatar="头像", bio="个性签名")
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.user).update(**self.user_profile_data)
         self.client.credentials(**self.authorization_header)
 
     def test_user_profile_detail(self):

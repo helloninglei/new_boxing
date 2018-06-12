@@ -88,7 +88,9 @@
                 userId: 1000000,
                 showPayTip: true,
                 showModal: false,
-                videoObj: {}
+                videoObj: {},
+                wx: '',
+                dataObj: ''
             }
         },
         components: {
@@ -103,6 +105,12 @@
             this.userId = this.$route.params.userId;
             if (this.id && this.userId) {
                 this.getData();
+                if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
+                    this.sharePage();
+                }
+                else {
+                    this.commonShare();
+                }
             }
         },
         methods: {
@@ -130,6 +138,75 @@
             openApp() {
                 this.showModal = true;
             },
+            commonShare() {
+                this.ajax(`/hot_videos/${this.id}/share`,'get').then((res) => {
+                    if (res && res.data) {
+                        document.title = res.data.title;
+                        let metaList = document.getElementsByTagName("meta");
+                        for (let i = 0; i < metaList.length; i++) {
+                            if (metaList[i].getAttribute("name") == "description") {
+                                metaList[i].content = res.data.sub_title;
+                                return;
+                            }
+                        }
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        console.log(errors);
+                    }
+                })
+            },
+            sharePage() {
+                let wechat = require('../common/wechat');
+                this.wx = require('weixin-js-sdk');
+                wechat.wxConfig();
+                this.inWxShare();
+                this.ajax(`/hot_videos/${this.id}/share`,'get').then((res) => {
+                    if (res && res.data) {
+                        this.initShare(res.data);
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        console.log(errors);
+                    }
+                })
+            },
+            inWxShare () {
+                let Timer = '';
+                this.dataObj = '';
+                this.wx.ready(() => {
+                    Timer = setInterval(() => {
+                        if (this.dataObj) {
+                            clearInterval(Timer);
+                            let obj = this.dataObj;
+                            this.wx.onMenuShareAppMessage({
+                                title: obj.title,
+                                desc: obj.desc,
+                                link: obj.url,
+                                imgUrl: obj.imgUrl,
+                            });
+                            this.wx.onMenuShareTimeline({
+                                title: obj.title,
+                                link: obj.url,
+                                imgUrl: obj.imgUrl,
+                            });
+                        }
+                        else {
+                            clearInterval(Timer);
+                        }
+                    },300)
+                })
+
+            },
+            initShare(data) {
+                let title = data.title;
+                let desc = data.sub_title;
+                let imgUrl = data.picture;
+                let url = data.url;
+                this.dataObj = {title, desc, url, imgUrl};
+            }
         }
     }
 </script>
