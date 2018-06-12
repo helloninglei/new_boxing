@@ -19,7 +19,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     def close_club(self):
         club = self.get_object()
         club.soft_delete()
-        Course.objects.filter(club=club.id).update(is_open=False)
+        Course.all_objects.filter(club=club.id).update(is_open=False)
         return Response({"message": "拳馆已关闭"}, status=status.HTTP_204_NO_CONTENT)
 
     def open_club(self):
