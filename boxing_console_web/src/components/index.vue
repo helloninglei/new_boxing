@@ -87,7 +87,13 @@
     
 </style>
 <style>
-    .index .el-submenu .el-submenu__title:focus{}
+    /*.index .el-submenu .el-submenu__title:focus{}*/
+    .index .el-submenu  .el-submenu__title{
+        padding-left: 12px!important;
+        height: 40px;
+        line-height: 40px;
+        width: 200px;
+        margin-left: 8px;}
     .index .el-submenu  .el-submenu__title:hover {background: #32323C!important;opacity: 1;}
     .index .el-submenu .el-submenu__title .mySubMenu{opacity: 1;padding-left:30px;}
 </style>

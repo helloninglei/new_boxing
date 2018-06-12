@@ -5,9 +5,9 @@
             <el-row> 
                 <el-col :span="12">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-                        <el-form-item label="用户ID" prop="user_id">
+                        <!-- <el-form-item label="用户ID" prop="user_id">
                             <el-input v-model="ruleForm.user_id" placeholder='必须为有效的用户ID'></el-input>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="视频名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
@@ -113,9 +113,9 @@
                     try_ts_url: '',
                 },
                 rules:{
-                    user_id:[
-                        { required:true,message:'请输入用户id', trigger:'blur' }
-                    ],
+                    // user_id:[
+                    //     { required:true,message:'请输入用户id', trigger:'blur' }
+                    // ],
                     name:[
                         { required:true,message:'请输入视频名称', trigger:'blur' }
                     ],
@@ -157,7 +157,6 @@
         created() {
             let query     = this.$route.query
             this.id = query.id
-            this.ruleForm.user_id = query.user_id;
             this.ruleForm.name    = query.name;
             this.ruleForm.price_int   = parseInt(query.price_amount);
             this.ruleForm.description = query.description;

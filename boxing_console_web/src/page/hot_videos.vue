@@ -32,7 +32,7 @@
                     </el-col>   
                 </el-row>
             </header>
-            <p class="showTotal">付费人数:{{userTotal}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付费金额(元)：{{(moneyTotal/100).toFixed(2)}}</p>
+            <p class="showTotal">付费人数:{{total_count}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;付费金额(元)：{{(total_amount/100).toFixed(2)}}</p>
             <nav class='myTable'>
                 <template>
                     <el-table
@@ -94,8 +94,8 @@
                     content:'确定删除这条记录？',
                     isDel :true,
                 },
-                userTotal : 1000000,//付费人数
-                moneyTotal : 1000000,//付费金额
+                total_count : 1000000,//付费人数
+                total_amount : 1000000,//付费金额
                 total     : 1000,//数据的总条数
                 tableData : [
                     {
@@ -110,32 +110,6 @@
                         "price": 111,
                         "is_show": true,
                         "created_time": "2018-05-10 18:51:03"
-                    },
-                    {
-                        "id": 2,
-                        "user_id": 1,
-                        "name": "2",
-                        "description": "9992",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "http://127.0.0.1:8000/hot_videos",
-                        "try_url": "http://127.0.0.1:8000/hot_videos1",
-                        "price": 22222,
-                        "is_show": true,
-                        "created_time": "2018-05-10 18:34:43"
-                    },
-                    {
-                        "id": 3,
-                        "user_id": 1,
-                        "name": "2",
-                        "description": "999",
-                        "sales_count": 0,
-                        "price_amount": null,
-                        "url": "http://127.0.0.1:8000/hot_videos",
-                        "try_url": "http://127.0.0.1:8000/hot_videos1",
-                        "price": 22222,
-                        "is_show": false,
-                        "created_time": "2018-05-10 18:23:49"
                     }
                 ],
                 tableColumn:[
@@ -144,7 +118,7 @@
                     {title:'user_id',name :'用户ID' ,width: '80'},
                     {title:'price',name :'价格（元）',width: '100'},
                     {title:'sales_count', name :'付费人数'   ,width: ''},
-                    {title:'price_amount',name :'付费金额（元）',width: '90'},
+                    {title:'price_amount',name :'付费金额（元）',width: '100'},
                     {title:'created_time',name :'发布时间' ,width: '200'},
                     {title:'is_show_name',name :'显示状态' ,width: '90'},
                 ],
@@ -180,6 +154,8 @@
                         }
                         $this.tableData=res.data.results;
                         $this.total = res.data.count;
+                        $this.total_count = res.data.total_count;
+                        $this.total_amount = res.data.total_amount;
                     }
 
                 },function(err){

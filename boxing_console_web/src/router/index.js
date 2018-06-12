@@ -3,7 +3,6 @@ import Login            from 'components/login';
 import UserManage       from 'page/usermanage';
 import BoxingList       from 'page/boxinglist';
 import AddBoxing        from 'page/addboxing';
-import Financemanage    from 'page/financemanage';
 import Paymentlist      from 'page/paymentlist';
 import Precentlist      from 'page/precentlist';
 import Boxerindentify   from 'page/boxerindentify';
@@ -58,10 +57,6 @@ export default [
             {
                 path: '/addboxing',
                 component: AddBoxing,
-            },
-            {
-                path: '/financemanage',
-                component: Financemanage,
             },
             {
                 path: '/paymentlist',

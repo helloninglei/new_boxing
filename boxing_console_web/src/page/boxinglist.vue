@@ -32,7 +32,7 @@
                       fixed="right"
                       label="操作">
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='deleteClub(scope.row)'>停用</el-button>
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click="openConfirm(scope.row.id,scope.$index)">停用</el-button>
                             <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='goTodetail(scope.row)'>修改</el-button>                         
                         </template>
                     </el-table-column>
@@ -42,7 +42,7 @@
         <footer v-show='total>10'>
             <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
         </footer>
-        
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
     </div>
 </template>
 
@@ -55,6 +55,7 @@
     import TopBar  from 'components/topBar';
     import Pagination  from 'components/pagination';
     import BigImg  from 'components/bigImg';
+    import Confirm     from "components/confirm"
     export default {
         data() {
             return {
@@ -67,39 +68,13 @@
                 sendData  :{
                     search:'',
                 },
+                confirmData:{
+                    isshow: false,
+                    id    :'',
+                    content:'确认停用拳馆？'
+                },
                 tableData : [
-                    {
-                        "id": 20,
-                        "images": [
-                            "www.baidu.com",
-                            "www.sina.com.cn"
-                        ],
-                        "created_time": "2018-05-12 08:08:11",
-                        "updated_time": "2018-05-12 08:08:11",
-                        "club_name": "拳王06",
-                        "address": "丰台区角门东洋桥",
-                        "longitude": "111.222222",
-                        "latitude": "11.222223",
-                        "phone": "11111111111",
-                        "opening_hours": "10:00--20:00",
-                        "introduction": "最牛逼的拳馆"
-                    },
-                    {
-                        "id": 22,
-                        "images": [
-                            "www.baidu.com",
-                            "www.sina.com.cn"
-                        ],
-                        "created_time": "2018-05-12 09:28:16",
-                        "updated_time": "2018-05-12 09:28:16",
-                        "club_name": "拳王08",
-                        "address": "丰台区角门东洋桥",
-                        "longitude": "111.444444",
-                        "latitude": "11.444444",
-                        "phone": "11111111111",
-                        "opening_hours": "10:00--20:00",
-                        "introduction": "最牛逼的拳馆"
-                    }
+                    
                 ],
                 tableColumn:[
                     {title:'id',       name :'ID',  width:''},
@@ -112,7 +87,8 @@
         components: {
             TopBar,
             Pagination,
-            BigImg
+            BigImg,
+            Confirm
         },
         created() {
             this.getTableData();
@@ -157,7 +133,6 @@
             clickImg(img) {
                 // 获取当前图片地址
                 this.imgSrc =this.config.baseUrl+ img;
-                // this.imgSrc ="http://img.zcool.cn/community/010f87596f13e6a8012193a363df45.jpg@1280w_1l_2o_100sh.jpg";
                 this.showImg=true;
             },
             viewImg(){
@@ -167,12 +142,24 @@
                 this.$router.push({path: '/addboxing', query:row});
 
             },
-            deleteClub(row){
+            openConfirm(id,index){
+                this.confirmData.id=id
+                this.confirmData.index=index
+                this.confirmData.isshow=true
+            },
+            conform1(id,index){
+                this.deleteClub(id,index)
+            },
+            cancel1(val){
+                this.confirmData.isshow=val;
+            },
+            deleteClub(id,index){
                 //停用的接口
-                this.ajax('/club','get',{},sendData).then(function(res){
-                    if(res&&res.data){
-                        $this.tableData=res.data.results;
-                        $this.total = res.data.count;
+                let $this = this;
+                this.ajax('/club/'+id+'/close','post').then(function(res){
+                    if(res&&res.status==204){
+                        $this.tableData.splice(index,1)
+                        $this.confirmData.isshow=false;
                     }
 
                 },function(err){

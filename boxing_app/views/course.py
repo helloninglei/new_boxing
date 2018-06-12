@@ -13,6 +13,7 @@ from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullData
 class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
     permission_classes = (permissions.AllowAny,)
+    condition = {}
 
     def get_queryset(self):
         return Course.objects.filter(**self.condition)\

@@ -24,4 +24,6 @@ import axios from 'axios';
 <style lang="stylus" type="text/stylus">
   @import "./assets/public.styl"
   @import "./assets/common.css"
+  @import "../static/css/reset.css"
+  @import "../static/font/font.css"
 </style>

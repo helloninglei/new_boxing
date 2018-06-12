@@ -121,7 +121,7 @@
                 //手机号
                 this.$refs['form1'].validate((valid) => {
                   if (valid) {
-                    console.log(this.form1.mobile)
+                    // console.log(this.form1.mobile)
                     this.$emit('confirm',this.form1.mobile)
                   } else {
                     // console.log('error submit!!');

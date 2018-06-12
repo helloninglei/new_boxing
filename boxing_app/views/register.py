@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from biz.models import User, UserProfile
 from biz import redis_client, redis_const
 from boxing_app.serializers import RegisterSerializer, RegisterWithInfoSerializer, ChangeMobileSerializer
-from boxing_app.tasks import register_easemob_account
+from boxing_app.tasks import register_easemob_account, send_message
 from biz.redis_client import follow_user
 from biz.constants import SERVICE_USER_ID
 from biz.utils import hans_to_initial
@@ -55,6 +55,7 @@ def register_with_user_info(request):
     user = User.objects.create_user(
         mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
     follow_user(user.id, SERVICE_USER_ID)
+    send_message.delay(user.id)
     UserProfile.objects.filter(user=user).update(gender=serializer.validated_data['gender'],
                                                  avatar=serializer.validated_data['avatar'],
                                                  nick_name=serializer.validated_data['nick_name'],
