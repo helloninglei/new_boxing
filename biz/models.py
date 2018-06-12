@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
         user = self.model(mobile=mobile, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        UserProfile.objects.create(user=user)
         return user
 
     def create_user(self, mobile, password=None, **extra_fields):
@@ -296,7 +297,6 @@ class Course(SoftDeleteModel):
     price = models.PositiveIntegerField(null=True)  # 单位：元
     duration = models.PositiveSmallIntegerField(null=True)  # 时长，单位：min
     validity = models.DateField(null=True)  # 有效期
-    pay_orders = GenericRelation('PayOrder', related_query_name='course')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
     is_open = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
