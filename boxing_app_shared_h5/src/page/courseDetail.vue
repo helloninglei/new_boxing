@@ -9,7 +9,7 @@
                         <span v-for="(item, index) in playerInfo.allowed_course" :key="index">{{item}}<span v-if="index < playerInfo.allowed_course.length - 1"> / </span></span>
                     </div>
                 </div>
-                <div class="order_count">约单：11次</div>
+                <div class="order_count">约单：{{playerInfo.course_order_count}}次</div>
             </template>
         </div>
         <div class="separate_line"></div>
