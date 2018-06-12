@@ -1,8 +1,6 @@
 from celery import shared_task
 from datetime import datetime, timedelta
 
-from django.db.models import Q
-
 from biz import constants
 from biz.constants import MONEY_CHANGE_TYPE_INCREASE_ORDER_OVERDUE
 from biz.models import CourseSettleOrder, CourseOrder
