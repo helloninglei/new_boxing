@@ -2,6 +2,7 @@ import Trends from 'page/trends';
 import Download from 'page/download';
 import InfoDetail from 'page/infoDetail';
 import HotVideo from 'page/hotVideo';
+import CourseDetail from 'page/courseDetail';
 
 export default [
     {
@@ -16,7 +17,7 @@ export default [
         component: Download,
     },
     {
-        path: '/game_news/:id',
+        path: '/game_news/:id/:inApp',
         component: InfoDetail,
         meta: {
             title: '资讯详情'
@@ -28,6 +29,13 @@ export default [
         meta: {
             title: '热门视频',
             desc: '1111'
+        }
+    },
+    {
+        path: '/courseDetail/:id',
+        component: CourseDetail,
+        meta: {
+            title: '课程详情'
         }
     },
 ]
