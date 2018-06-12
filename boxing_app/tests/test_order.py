@@ -22,7 +22,6 @@ class OrderTestCase(APITestCase):
         self.client4.login(username=self.test_user_4, password='password')
 
         self.user_profile_data = {
-            "user": self.test_user_1,
             "nick_name": "赵柳",
             "gender": True,
             "name": "name",
@@ -73,11 +72,10 @@ class OrderTestCase(APITestCase):
 
     def test_get_boxer_order_list(self):
         # 为普通用户test_user_1创建用户信息，用于购买课程
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_1).update(**self.user_profile_data)
 
         # 为拳手用户test_user_2创建2条订单数据(依次创建user_profile->boxer->club->course->course_order）
-        self.user_profile_data['user'] = self.test_user_2
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_2).update(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_2
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -88,8 +86,7 @@ class OrderTestCase(APITestCase):
         self.client1.post('/course/order', data={'id': course.id})
 
         # 为拳手用户test_user_3创建3条订单数据
-        self.user_profile_data['user'] = self.test_user_3
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_3).update(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_3
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         self.club_data['name'] = 'club02'
@@ -122,11 +119,10 @@ class OrderTestCase(APITestCase):
 
     def test_get_boxer_order_detail(self):
         # 为普通用户test_user_1创建用户信息，用于购买课程
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_1).update(**self.user_profile_data)
 
         # 为拳手用户test_user_4创建1条订单数据(依次创建user_profile->boxer->club->course->course_order）
-        self.user_profile_data['user'] = self.test_user_4
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_4).update(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_4
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -165,14 +161,7 @@ class OrderTestCase(APITestCase):
 
     def test_get_user_order_list(self):
         # 分别为test_user_1、2、3、4创建user_profile
-        self.user_profile_data['user'] = self.test_user_1
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.test_user_2
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.test_user_3
-        UserProfile.objects.create(**self.user_profile_data)
-        self.user_profile_data['user'] = self.test_user_4
-        UserProfile.objects.create(**self.user_profile_data)
+        [UserProfile.objects.filter(user=user).update(**self.user_profile_data) for user in [self.test_user_1, self.test_user_2, self.test_user_3, self.test_user_4]]
 
         # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
         self.boxer_data['user'] = self.test_user_4
@@ -219,8 +208,8 @@ class OrderTestCase(APITestCase):
 
     def test_get_user_order_detail(self):
         # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
-        self.user_profile_data['user'] = self.test_user_1
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_1).update(**self.user_profile_data)
+        self.test_user_1.refresh_from_db()
         self.boxer_data['user'] = self.test_user_1
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -251,8 +240,7 @@ class OrderTestCase(APITestCase):
 
     def test_create_course_order(self):
         # 为拳手用户test_user_1创建1个课程
-        self.user_profile_data['user'] = self.test_user_1
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_1).update(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_1
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
@@ -301,8 +289,7 @@ class OrderTestCase(APITestCase):
 
     def test_delete_order(self):
         # 为拳手用户test_user_1创建1个课程
-        self.user_profile_data['user'] = self.test_user_1
-        UserProfile.objects.create(**self.user_profile_data)
+        UserProfile.objects.filter(user=self.test_user_1).update(**self.user_profile_data)
         self.boxer_data['user'] = self.test_user_1
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         club = BoxingClub.objects.create(**self.club_data)
