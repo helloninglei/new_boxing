@@ -138,6 +138,7 @@ class BasicReplySerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     replies = serializers.SerializerMethodField()
+    comment_count = serializers.IntegerField(read_only=True)
 
     def get_replies(self, obj):
         latest = obj.reply_list()
@@ -148,7 +149,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = ['id', 'content', 'user', 'replies', 'created_time']
+        fields = ['id', 'content', 'user', 'replies', 'created_time', 'comment_count']
+        read_only_fields = ('created_time',)
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -446,6 +448,7 @@ class NewsSerializer(serializers.ModelSerializer):
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'created_time', 'read_count', 'picture',
                   'stay_top')
+        read_only_fields = ('created_time',)
 
 
 class BlockedUserSerializer(serializers.BaseSerializer):

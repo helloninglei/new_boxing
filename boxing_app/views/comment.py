@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg, Q
 from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.fields import ContentType
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
-from biz.models import OrderComment
+from biz.models import OrderComment, Comment
 from biz.utils import get_model_class_by_name
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
@@ -23,6 +24,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        content_type = ContentType.objects.get_for_model(self.content_object)
+        comment_count = Comment.all_objects.filter(content_type=content_type, object_id=self.content_object.id).aggregate(
+            comment_count=Count('id', filter=Q(is_deleted=False) & (
+                    Q(ancestor__is_deleted=False) | Q(ancestor__isnull=True)),
+                        distinct=True))
+        response.data.update(comment_count)
+        return response
 
     def perform_create(self, serializer):
         kwargs = {
