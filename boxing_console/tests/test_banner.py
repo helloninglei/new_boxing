@@ -91,6 +91,10 @@ class BannerTestCase(APITestCase):
         res = self.client.post('/banners', valid_link_data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+        res = self.client.post('/banners', valid_link_data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['message'][0], '序号已存在')
+
     def test_list_search(self):
         valid_link_data = {
             'name': 'test banner 1',
@@ -102,9 +106,11 @@ class BannerTestCase(APITestCase):
         self.client.post('/banners', valid_link_data)
 
         valid_link_data['name'] = 'test banner 2'
+        valid_link_data['order_number'] = 101
         self.client.post('/banners', valid_link_data)
 
         valid_link_data['name'] = 'test banner 3'
+        valid_link_data['order_number'] = 102
         self.client.post('/banners', valid_link_data)
 
         res = self.client.get('/banners', {'search': 'test banner'})

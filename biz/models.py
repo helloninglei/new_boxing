@@ -390,6 +390,7 @@ class CourseOrder(models.Model):
     class Meta:
         db_table = 'course_order'
         ordering = ('-order_time',)
+        verbose_name = "约单"
 
     @atomic
     def set_overdue(self):

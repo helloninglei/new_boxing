@@ -10,10 +10,11 @@ from boxing_console.filters import GameNewsFilter
 
 class NewsViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NewsSerializer
-    queryset = models.GameNews.objects.annotate(comment_count=Count('comments')).prefetch_related('operator')
+    queryset = models.GameNews.objects.annotate(comment_count=Count('comments')).order_by(
+        '-created_time').prefetch_related('operator')
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = GameNewsFilter
-    search_fields = ('title', 'sub_title', 'app_content', 'share_content')
+    search_fields = ('title', )
 
     def perform_create(self, serializer):
         news = serializer.save()

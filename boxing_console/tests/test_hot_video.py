@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
+from biz.constants import HOT_VIDEO_USER_ID
 
 
 class HotVideoTestCase(APITestCase):
@@ -13,6 +14,7 @@ class HotVideoTestCase(APITestCase):
         self.test_user = User.objects.create_superuser(mobile='11111111111', password='password')
         self.test_superuser = User.objects.create_superuser(mobile='11111111112', password='password')
         self.test_user3 = User.objects.create_superuser(mobile='11111111113', password='password')
+        self.hot_video_user = User.objects.create(id=HOT_VIDEO_USER_ID, mobile='11111111114', password='password')
         self.client1 = self.client_class()
         self.client2 = self.client_class()
         self.client3 = self.client_class()
@@ -32,6 +34,7 @@ class HotVideoTestCase(APITestCase):
     def test_create(self):
         res = self.client2.post('/hot_videos', self.data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['user_id'], self.hot_video_user.id)
 
         not_exists_user_id = User.objects.all().order_by('-id').first().id + 1
         self.data['user_id'] = not_exists_user_id
@@ -44,7 +47,7 @@ class HotVideoTestCase(APITestCase):
 
         new_name = 'new_name'
         self.data['name'] = new_name
-        res = self.client2.put(f'/hot_videos/{video_id}', self.data)
+        self.client2.put(f'/hot_videos/{video_id}', self.data)
         video = HotVideo.objects.get(pk=video_id)
         self.assertEqual(video.name, new_name)
 
@@ -60,7 +63,10 @@ class HotVideoTestCase(APITestCase):
 
         # search by user_id
         res = self.client2.get(f'/hot_videos?search={self.test_user.id}')
-        self.assertEqual(res.data['count'], 1)
+        self.assertEqual(res.data['count'], 0)
+
+        res = self.client2.get(f'/hot_videos?search={self.hot_video_user.id}')
+        self.assertEqual(res.data['count'], 2)
 
         most_early_date = HotVideo.objects.all().order_by('created_time').first().created_time
         most_late_date = HotVideo.objects.all().order_by('-created_time').first().created_time
@@ -126,4 +132,4 @@ class HotVideoTestCase(APITestCase):
         res = self.client2.get('/hot_videos')
         result = res.data['results'][0]
         self.assertEqual(result['sales_count'], 2)
-        self.assertEqual(result['price_amount'], video.price*2)
+        self.assertEqual(result['price_amount'], video.price * 2)

@@ -230,7 +230,7 @@ class BoxerIdentificationTestCase(TestCase):
         user_list = [User.objects.create_superuser(mobile=13000000000 + int('%d' % i), password='123')
                      for i in range(self.identification_count)]
 
-        [UserProfile.objects.create(user=user, nick_name='user{}'.format(user.pk)) for user in user_list]
+        [UserProfile.objects.filter(user=user).update(nick_name='user{}'.format(user.pk)) for user in user_list]
 
         [BoxerIdentification.objects.create(
             user=user,
