@@ -145,7 +145,7 @@ REPORT_OBJECT_DICT = {
     'hot_video': 3,
 }
 
-# 评论h
+# 评论
 COMMENT_OBJECT_DICT = {
     'message': 1,
     'hot_video': 2,
