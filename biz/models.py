@@ -272,7 +272,7 @@ class OperationLog(models.Model):
         db_table = 'operation_log'
 
 
-class BoxingClub(BaseModel):
+class BoxingClub(SoftDeleteModel):
     name = models.CharField(max_length=20, unique=True)
     avatar = models.CharField(max_length=128, default='club_avatar')
     province = models.CharField(max_length=10, null=True)
@@ -285,12 +285,13 @@ class BoxingClub(BaseModel):
     opening_hours = models.CharField(max_length=30)
     images = StringListField()
     introduction = models.CharField(max_length=120)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'club'
 
 
-class Course(models.Model):
+class Course(SoftDeleteModel):
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.CASCADE, related_name='course')
     course_name = models.CharField(choices=constants.BOXER_ALLOWED_COURSES_CHOICE, max_length=20)
     price = models.PositiveIntegerField(null=True)  # 单位：元
@@ -298,6 +299,7 @@ class Course(models.Model):
     validity = models.DateField(null=True)  # 有效期
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False, null=True)
     is_open = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = "course"
@@ -367,7 +369,7 @@ class CourseOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user_course_order')
     club = models.ForeignKey(BoxingClub, on_delete=models.PROTECT, db_index=False)
     course = models.ForeignKey(Course, on_delete=models.PROTECT, related_name='course_orders')
-    course_name = models.CharField(max_length=10)
+    course_name = models.CharField(max_length=20)
     course_price = models.PositiveIntegerField()  # 单位分
     course_duration = models.IntegerField()  # 课程时长，单位分钟
     course_validity = models.DateField()  # 课程有效期
@@ -383,11 +385,19 @@ class CourseOrder(models.Model):
     user_confirm_time = models.DateTimeField(null=True)
     finish_time = models.DateTimeField(null=True)  # 订单完成时间
     amount = models.PositiveIntegerField(null=True)  # 订单金额，单位分
+    insurance_amount = models.PositiveIntegerField(null=True)  #保险金额
 
     class Meta:
         db_table = 'course_order'
         ordering = ('-order_time',)
         verbose_name = "约单"
+
+    @atomic
+    def set_overdue(self):
+        self.status = constants.COURSE_PAYMENT_STATUS_OVERDUE
+        self.pay_order.status = constants.PAYMENT_STATUS_OVERDUE
+        self.pay_order.save()
+        self.save()
 
 
 class OrderComment(SoftDeleteModel):
