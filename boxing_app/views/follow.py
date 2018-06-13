@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 from biz.models import User
-from biz.redis_client import following_list, follower_list, follow_user, unfollow_user, follower_count, following_count,\
+from biz.redis_client import following_list, follower_list, follow_user, unfollow_user, follower_count, following_count, \
     follower_list_all
 from boxing_app.serializers import FollowUserSerializer, ContactSerializer
 
@@ -44,7 +44,7 @@ class BaseFollowView(APIView):
 
     def _make_response(self, user_id_list, page, has_more):
         current_user_id = self.request.user.id
-        user_list = User.objects.filter(id__in=user_id_list)
+        user_list = User.objects.filter(id__in=user_id_list).select_related('boxer_identification', 'user_profile')
 
         serializer = FollowUserSerializer(user_list, context={'current_user_id': current_user_id}, many=True)
         return Response({

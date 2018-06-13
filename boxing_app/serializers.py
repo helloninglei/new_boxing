@@ -164,6 +164,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comment
         fields = ['id', 'content', 'user', 'replies', 'created_time']
+        read_only_fields = ('created_time',)
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -382,6 +383,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField())
+    allowed_course = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = models.BoxerIdentification
@@ -461,6 +463,7 @@ class NewsSerializer(serializers.ModelSerializer):
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'created_time', 'read_count', 'picture',
                   'stay_top')
+        read_only_fields = ('created_time',)
 
 
 class BlockedUserSerializer(serializers.BaseSerializer):
