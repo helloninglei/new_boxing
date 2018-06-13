@@ -27,12 +27,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        content_type = ContentType.objects.get_for_model(self.content_object)
-        comment_count = Comment.all_objects.filter(content_type=content_type, object_id=self.content_object.id).aggregate(
-            comment_count=Count('id', filter=Q(is_deleted=False) & (
-                    Q(ancestor__is_deleted=False) | Q(ancestor__isnull=True)),
-                        distinct=True))
-        response.data.update(comment_count)
+        comment_count = 0
+        for comment in response.data['results']:
+            comment_count += 1
+            comment_count += comment['replies']['count']
+        response.data['comment_count'] = comment_count
         return response
 
     def perform_create(self, serializer):
