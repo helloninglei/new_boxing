@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -52,8 +53,18 @@ def register_with_user_info(request):
     mobile, password, wechat_openid, weibo_openid = redis_client.redis_client.hmget(
         redis_const.REGISTER_INFO.format(mobile=(serializer.validated_data['mobile'])),
         ["mobile", "password", "wechat_openid", "weibo_openid"])
-    user = User.objects.create_user(
-        mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
+
+    if User.objects.filter(
+            Q(wechat_openid=wechat_openid, wechat_openid__isnull=False) | Q(weibo_openid=weibo_openid,
+                                                                            weibo_openid__isnull=False),
+            mobile__startswith=0).exists():
+        user = User.objects.get(Q(wechat_openid=wechat_openid) | Q(weibo_openid=weibo_openid), mobile__startswith=0)
+        user.mobile = mobile
+        user.set_password(password)
+        user.save()
+    else:
+        user = User.objects.create_user(
+            mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
     follow_user(user.id, SERVICE_USER_ID)
     send_message.delay(user.id)
     UserProfile.objects.filter(user=user).update(gender=serializer.validated_data['gender'],
