@@ -367,6 +367,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField())
+    allowed_course = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = models.BoxerIdentification
