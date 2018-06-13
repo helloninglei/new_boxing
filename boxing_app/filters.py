@@ -1,5 +1,5 @@
 import django_filters
-from biz.models import MoneyChangeLog
+from biz.models import MoneyChangeLog, Course
 
 from biz.models import BoxerIdentification
 
