@@ -72,7 +72,6 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         return dict
 
 
-
 class GetBoxerCourseByAnyOneViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
     permission_classes = (permissions.AllowAny,)

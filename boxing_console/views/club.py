@@ -13,6 +13,11 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name',)
 
+    def update(self, request, *args, **kwargs):
+        club = self.get_object()
+        self.record_club_boxer_location(club)
+        return super().update(request, *args, **kwargs)
+
     def operate(self, request, *args, **kwargs):
         operate = kwargs['operate']
         return self.close_club() if operate == 'close' else self.open_club()
@@ -28,6 +33,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     def open_club(self):
         club = BoxingClub.all_objects.get(id=self.kwargs['pk'])
         self.open_club_and_record_location(club)
+        self.record_club_boxer_location(club)
         return Response({"message": "拳馆已开启"}, status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
@@ -51,3 +57,8 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
         club.save()
         redis_client.record_object_location(club, club.longitude, club.latitude)
 
+    @staticmethod
+    def record_club_boxer_location(club):
+        courses = Course.objects.filter(club=club, is_open=True).select_related('boxer')
+        for course in courses:
+            redis_client.record_object_location(course.boxer, club.longitude, club.latitude)
