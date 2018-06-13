@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Count, Avg, Q
+from django.db.models import Count, Avg
 from django.shortcuts import get_object_or_404
-from django.contrib.contenttypes.fields import ContentType
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
-from biz.models import OrderComment, Comment
+from biz.models import OrderComment
 from biz.utils import get_model_class_by_name
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
