@@ -245,8 +245,8 @@ class CourseOrderTestCase(APITestCase):
         CourseOrder.objects.filter(id=course_order.id).update(status=constants.COURSE_PAYMENT_STATUS_WAIT_USE)
         res = self.client.post(f'/order/{course_order.id}/mark_insurance', data=insurance_data)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(CourseOrder.objects.get(id=course_order.id).insurance_amount, insurance_data['insurance_amount'])
-
+        self.assertEqual(CourseOrder.objects.get(id=course_order.id).insurance_amount,
+                         insurance_data['insurance_amount'])
 
     def test_course_settle_order_filter(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order
@@ -262,9 +262,34 @@ class CourseOrderTestCase(APITestCase):
         order2 = PayOrder.objects.create(**self.pay_order_data)
         order3 = PayOrder.objects.create(**self.other_order_data)
 
-        CourseSettleOrder.objects.create(order=order1, course=course)
-        CourseSettleOrder.objects.create(order=order2, course=course, settled=True, settled_date='2018-05-21')
-        CourseSettleOrder.objects.create(order=order3, course=course)
+        course_order_data = {
+            "pay_order": order1,
+            "boxer": boxer,
+            "user": self.user1,
+            "club": club,
+            "course": course,
+            "course_name": course.course_name,
+            "course_price": course.price,
+            "course_duration": course.duration,
+            "course_validity": course.validity,
+            "order_number": order1.out_trade_no,
+            "pay_time": datetime.now()
+        }
+
+        course_order1 = CourseOrder.objects.create(**course_order_data)
+
+        course_order_data['pay_order'] = order2
+        course_order_data['order_number'] = order2.out_trade_no
+        course_order2 = CourseOrder.objects.create(**course_order_data)
+
+        course_order_data['pay_order'] = order3
+        course_order_data['order_number'] = order3.out_trade_no
+        course_order3 = CourseOrder.objects.create(**course_order_data)
+
+        CourseSettleOrder.objects.create(order=order1, course=course, course_order=course_order1)
+        CourseSettleOrder.objects.create(order=order2, course=course, course_order=course_order2, settled=True,
+                                         settled_date='2018-05-21')
+        CourseSettleOrder.objects.create(order=order3, course=course, course_order=course_order3)
 
         res = self.client.get('/course/settle_orders')
         self.assertEqual(res.data['count'], 3)

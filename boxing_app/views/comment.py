@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -65,6 +65,7 @@ class ReplyViewSet(CommentViewSet):
 class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
     """与拳手相关的课程订单评论"""
     serializer_class = OrderCommentSerializer
+    permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
         boxer = models.BoxerIdentification.objects.filter(id=self.kwargs['boxer_id']).only('id').first()

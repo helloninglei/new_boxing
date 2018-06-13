@@ -8,9 +8,9 @@
           </div>
           <div class="dialog_content" v-if="type==2" style='margin-top:40px'>
           	<el-checkbox-group v-model="form.class_name">
-      			    <el-checkbox label="THAI_BOXING" name="class_name">泰拳</el-checkbox>
-      			    <el-checkbox label="BOXING" name="class_name">拳击</el-checkbox>
-      			    <el-checkbox label="MMA" name="class_name"></el-checkbox>
+      			    <el-checkbox label="泰拳" name="class_name">泰拳</el-checkbox>
+      			    <el-checkbox label="拳击" name="class_name">拳击</el-checkbox>
+      			    <el-checkbox label="MMA" name="class_name">MMA</el-checkbox>
       			</el-checkbox-group>
             <div class="el-form-item__error">{{errorTxt}}</div>
           </div>

@@ -17,8 +17,8 @@
                     <span class="inlimeLabel">已开课程</span>
                     <el-select v-model="sendData.course_name" class="margin_rt25" style='width:11rem'>
                         <el-option value="" label="全部">全部</el-option>
-                        <el-option value="BOXING" label="拳击">拳击</el-option>
-                        <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
+                        <el-option value="拳击" label="拳击">拳击</el-option>
+                        <el-option value="泰拳" label="泰拳">泰拳</el-option>
                         <el-option value="MMA" label="MMA">MMA</el-option>
                     </el-select>
                 </div>
@@ -112,11 +112,11 @@ nav{min-height: 528px}
                             res.data.results[i].professional_boxer=res.data.results[i].is_professional_boxer? "职业":"非职业"
                             res.data.results[i].is_accept_order=res.data.results[i].is_accept_order? "是":"否"
                             res.data.results[i].price=(res.data.results[i].price/100).toFixed(2);
-                            if(res.data.results[i].course_name=='BOXING'){
-                                res.data.results[i].course_name='拳击'
-                            }else if(res.data.results[i].course_name=='THAI_BOXING'){
-                                res.data.results[i].course_name='泰拳'
-                            }
+                            // if(res.data.results[i].course_name=='BOXING'){
+                            //     res.data.results[i].course_name='拳击'
+                            // }else if(res.data.results[i].course_name=='THAI_BOXING'){
+                            //     res.data.results[i].course_name='泰拳'
+                            // }
                         }
                         $this.tableData=res.data.results;
                         $this.total = res.data.count;
