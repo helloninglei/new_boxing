@@ -24,7 +24,7 @@
                             
                         </el-form-item> -->
                         <el-form-item label="完整视频" prop="tsurl">
-                            <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
+                            <el-button class='myButton_40 btn_width_95 myBtnHover_red'  @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
                             <p v-if="(tsurl)">
                                 <span class='video_name'>{{tsurl}} </span>
                                 <span ><i class="el-icon-error" style='cursor:pointer' @click='deleteUrl(1)'></i></span>
@@ -77,6 +77,7 @@
 <script>
     import TopBar from 'components/topBar';
     import $      from 'jquery' 
+    import { Loading } from 'element-ui';
     export default {
         data() {
             var validateUrl = (rule, value, callback) => {
@@ -147,12 +148,14 @@
                     try_ts_url:[
                         { validator: validateTryUrl, trigger: 'blur',required:true }
                     ]
-                }
+                },
+                loadingInstance:'',
                 
             }
         },
         components: {
             TopBar,
+            Loading
         },
         created() {
             let query     = this.$route.query
@@ -170,6 +173,7 @@
                 this.secondTitle_name = '修改视频'
                 this.btn_name = '修改'
             }
+            
             // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
             // console.log(query)
         },
@@ -182,7 +186,7 @@
                 var file=event.target.files;
                 var $this=this
                 this.upload(file[0],function(url){
-                    console.log(url)
+                    $this.loadingInstance.close();
                     $this.tsurl = url
                 });
             },
@@ -192,12 +196,15 @@
                 var $this=this
                 this.upload(file[0],function(url){
                     $this.try_ts_url = url
+                    $this.loadingInstance.close();
                 });
             },
             upload(file,fun){
                 // console.log(file)
                 let formData = new FormData() 
+                let $this = this;
                 formData.append('file', file) 
+                this.loadingInstance = Loading.service();
                 this.ajax('/upload','post',formData).then(function(res){
                     if(res&&res.data){
                         fun(res.data.urls[res.data.urls.length-1])
@@ -205,10 +212,13 @@
 
                 },function(err){
                     if(err&&err.response){
+                        $this.loadingInstance.close();
                         let errors=err.response.data
                         for(var key in errors){
-                            console.log(errors[key])
-                            // return
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
                         } 
                     } 
                 })
