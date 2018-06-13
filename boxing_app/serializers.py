@@ -138,7 +138,6 @@ class BasicReplySerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     replies = serializers.SerializerMethodField()
-    comment_count = serializers.IntegerField(read_only=True)
 
     def get_replies(self, obj):
         latest = obj.reply_list()
@@ -149,7 +148,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = ['id', 'content', 'user', 'replies', 'created_time', 'comment_count']
+        fields = ['id', 'content', 'user', 'replies', 'created_time']
         read_only_fields = ('created_time',)
 
 
