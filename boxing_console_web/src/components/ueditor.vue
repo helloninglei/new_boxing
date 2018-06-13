@@ -90,6 +90,14 @@
             // 图片上传之前调取的函数
             // 这个钩子还支持 promise
             beforeUpload (file) {
+                // 对文件格式的要求
+                // let Xls = file.name.split('.');
+                // if(Xls[1] === 'xls'||Xls[1] === 'xlsx'){
+                //     return file
+                // }else {
+                //     this.$message.error('上传文件只能是 xls/xlsx 格式!')
+                //     return false
+                // }
                 return this.qnUpload(file)
             },
             // 图片上传前获得数据token数据
