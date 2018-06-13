@@ -3,7 +3,7 @@ from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 
 from biz import redis_client
-from biz.models import BoxingClub, Course, BoxerIdentification
+from biz.models import BoxingClub, Course
 from boxing_console.serializers import BoxingClubSerializer
 
 
