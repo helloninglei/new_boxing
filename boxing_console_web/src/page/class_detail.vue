@@ -117,7 +117,7 @@ nav{min-height: 528px}
             },
             checkIdent(row){
                // 参数 ID 审核状态ident_type
-                this.$router.push({path: '/Boxerindentdetail', query:{id:row.id}});
+                this.$router.push({path: '/Boxerindentdetail', query:{id:row.boxer_id}});
             }
         },
     }
