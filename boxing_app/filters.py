@@ -11,8 +11,8 @@ class NearbyBoxerFilter(django_filters.FilterSet):
     city = django_filters.CharFilter('course__club__city')
 
     def filter_course_name(self, qs, name, value):
-        course_set = Course.objects.filter(course_name=value, is_open=True).select_related('boxer')
-        boxer_id_set = set(course.boxer.id for course in course_set)
+        courses_qs = Course.objects.filter(course_name=value, is_open=True).select_related('boxer')
+        boxer_id_set = set(course.boxer.id for course in courses_qs)
         return qs.filter(id__in=boxer_id_set)
 
     class Meta:
