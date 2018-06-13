@@ -24,6 +24,15 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')
 
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        comment_count = 0
+        for comment in response.data['results']:
+            comment_count += 1
+            comment_count += comment['replies']['count']
+        response.data['comment_count'] = comment_count
+        return response
+
     def perform_create(self, serializer):
         kwargs = {
             'user': self.request.user,
