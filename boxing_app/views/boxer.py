@@ -52,8 +52,7 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                                  is_locked=False).annotate(order_count=Count('course__course_orders'),
-                                                                            course_min_price=Min('course__price')).prefetch_related('course__club')
+                                                  is_locked=False).prefetch_related('course__club').distinct()
     filter_backends = (DjangoFilterBackend,)
     filter_class = NearbyBoxerFilter
 

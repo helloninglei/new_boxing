@@ -1,5 +1,5 @@
 import django_filters
-from biz.models import MoneyChangeLog
+from biz.models import MoneyChangeLog, Course
 
 from biz.models import BoxerIdentification
 
@@ -7,8 +7,13 @@ from biz.models import BoxerIdentification
 class NearbyBoxerFilter(django_filters.FilterSet):
     min_price = django_filters.NumberFilter(name='course__price', lookup_expr='gte')
     max_price = django_filters.NumberFilter(name='course__price', lookup_expr='lte')
-    course_name = django_filters.CharFilter('course__course_name')
+    course_name = django_filters.CharFilter(method='filter_course_name')
     city = django_filters.CharFilter('course__club__city')
+
+    def filter_course_name(self, qs, name, value):
+        courses_qs = Course.objects.filter(course_name=value, is_open=True).select_related('boxer')
+        boxer_id_set = set(course.boxer.id for course in courses_qs)
+        return qs.filter(id__in=boxer_id_set)
 
     class Meta:
         model = BoxerIdentification
