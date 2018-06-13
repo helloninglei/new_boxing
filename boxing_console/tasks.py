@@ -19,15 +19,19 @@ def set_course_order_overdue():
                                                 confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
     for course_order in overdue_orders:
         course_order.set_overdue()
-        course_order.pay_order.status=constants.PAYMENT_STATUS_OVERDUE
+        course_order.pay_order.status = constants.PAYMENT_STATUS_OVERDUE
         course_order.pay_order.save()
 
 
 @shared_task()
 def order_tear_finished_after_boxer_confirmed():
-    CourseOrder.objects.filter(confirm_status=constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED,
-                               boxer_confirm_time__lt=datetime.now() - timedelta(days=ORDER_AUTO_CONFIRMED_DAYS))\
-        .update(status=constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT)
+    course_sets = CourseOrder.objects.filter(confirm_status=constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED,
+                                             boxer_confirm_time__lt=datetime.now() - timedelta(
+                                                 days=ORDER_AUTO_CONFIRMED_DAYS))
+    for course_order in course_sets:
+        CourseSettleOrder.objects.create(course=course_order.course, order=course_order.pay_order,
+                                         course_order=course_order)
+    course_sets.update(status=constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT)
 
 
 @shared_task()

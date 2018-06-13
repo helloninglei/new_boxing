@@ -411,7 +411,7 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='course.get_course_name_display')
     boxer_name = serializers.CharField(source='course.boxer.real_name')
     boxer_mobile = serializers.CharField(source='course.boxer.mobile')
-    course_amount = serializers.IntegerField(source='course.price')
+    course_amount = serializers.IntegerField(source='course_order.course_price')
     buyer_mobile = serializers.CharField(source='order.user.mobile')
     predicted_settle_date = serializers.SerializerMethodField()
     actual_settle_date = serializers.DateField(source='settled_date', format='%Y%m%d')
@@ -421,7 +421,7 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CourseSettleOrder
-        exclude = ('order', 'course', 'created_time')
+        exclude = ('order', 'course', 'course_order', 'created_time')
 
 
 class WithdrawLogSerializer(serializers.ModelSerializer):

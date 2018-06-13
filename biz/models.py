@@ -478,10 +478,10 @@ class WithdrawLog(BaseAuditModel):
         ordering = ("-created_time",)
 
 
-# TODO 订单状态变为 PAYMENT_STATUS_WAIT_COMMENT 时创建结算单
 class CourseSettleOrder(models.Model):
     order = models.ForeignKey(PayOrder, on_delete=models.PROTECT, db_index=False, related_name='+')
     course = models.ForeignKey(Course, on_delete=models.PROTECT, db_index=False, related_name='+')
+    course_order = models.ForeignKey(CourseOrder, on_delete=models.PROTECT, db_index=False, related_name='+')
     created_time = models.DateTimeField(auto_now_add=True)
     settled = models.BooleanField(default=False)
     settled_date = models.DateField(null=True)
@@ -494,17 +494,15 @@ class CourseSettleOrder(models.Model):
     @atomic
     def settle_order(self):
         from biz.services.money_balance_service import change_money
-        price = self.course.price
+        amount = self.course_order.course_price
+        insurance_amount = self.course_order.insurance_amount
+        if insurance_amount:
+            amount -= insurance_amount
         self.settled = True
         self.settled_date = datetime.now()
-        self.settled_amount = price
+        self.settled_amount = amount
         self.save()
-
-        # TODO 获取保险金额
-        if 'has_insurance':
-            insurance_amount = 0
-            price -= insurance_amount
-        change_money(self.course.boxer.user, price * 100, MONEY_CHANGE_TYPE_INCREASE_ORDER, self.order.out_trade_no)
+        change_money(self.course.boxer.user, amount, MONEY_CHANGE_TYPE_INCREASE_ORDER, self.order.out_trade_no)
 
 
 class OfficialAccountChangeLog(models.Model):
