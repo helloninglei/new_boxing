@@ -85,7 +85,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_boxer_club(boxer):
-        course = Course.all_objects.filter(boxer=boxer, is_open=True, is_deleted=False).last()
+        course = Course.objects.filter(boxer=boxer, is_open=True).last()
         return course.club
 
     class Meta:
