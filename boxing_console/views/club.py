@@ -1,3 +1,4 @@
+from django.db.transaction import atomic
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 
@@ -16,6 +17,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
         operate = kwargs['operate']
         return self.close_club() if operate == 'close' else self.open_club()
 
+    @atomic
     def close_club(self):
         club = self.get_object()
         self.del_club_and_location(club)
@@ -34,12 +36,6 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
         redis_client.del_object_location(club)
 
     @staticmethod
-    def open_club_and_record_location(club):
-        club.is_deleted = False
-        club.save()
-        redis_client.record_object_location(club, club.longitude, club.latitude)
-
-    @staticmethod
     def del_club_boxer_location(club):
         courses = Course.objects.filter(club=club.id).select_related('boxer')
         for course in courses:
@@ -48,4 +44,10 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     @staticmethod
     def close_club_courses(club):
         Course.objects.filter(club=club.id).update(is_open=False)
+
+    @staticmethod
+    def open_club_and_record_location(club):
+        club.is_deleted = False
+        club.save()
+        redis_client.record_object_location(club, club.longitude, club.latitude)
 
