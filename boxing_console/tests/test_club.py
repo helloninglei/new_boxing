@@ -106,6 +106,12 @@ class BoxingClubTestCase(TestCase):
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
         create_res = self.client.post('/club', self.data)
         club = BoxingClub.objects.get(id=create_res.data['id'])
+        redis_client.record_object_location(boxer, club.longitude, club.latitude)
+        self.assertAlmostEqual(redis_client.get_object_location(club)[0][0], float(club.longitude), delta=0.00001)
+        self.assertAlmostEqual(redis_client.get_object_location(club)[0][1], float(club.latitude), delta=0.00001)
+        self.assertAlmostEqual(redis_client.get_object_location(boxer)[0][0], float(club.longitude), delta=0.00001)
+        self.assertAlmostEqual(redis_client.get_object_location(boxer)[0][1], float(club.latitude), delta=0.00001)
+
         course_data = {
             "boxer": boxer,
             "course_name": constants.BOXER_ALLOWED_COURSES_MMA,
@@ -123,6 +129,9 @@ class BoxingClubTestCase(TestCase):
         self.assertFalse(BoxingClub.objects.all().filter(id=create_res.data['id']).exists())
         self.assertTrue(BoxingClub.all_objects.all().filter(id=create_res.data['id']).exists())
         self.assertFalse(Course.objects.get(id=course.id).is_open)
+        # 拳馆位置、拳手位置已删除
+        self.assertIsNone(redis_client.get_object_location(club)[0])
+        self.assertIsNone(redis_client.get_object_location(boxer)[0])
         # 开启拳馆
         open_res = self.client.post(f'/club/{create_res.data["id"]}/open')
         self.assertEqual(open_res.status_code, status.HTTP_204_NO_CONTENT)

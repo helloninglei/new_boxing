@@ -27,6 +27,7 @@ class CourseTestCase(APITestCase):
                     "job": 'hhh',
                     "introduction": "beautiful",
                     "experience": '',
+                    "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                     "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
                     "competition_video": 'https://baidu.com',
                     "allowed_course": [constants.BOXER_ALLOWED_COURSES_BOXING, constants.BOXER_ALLOWED_COURSES_MMA,
