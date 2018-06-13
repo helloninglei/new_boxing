@@ -70,3 +70,19 @@ class RegisterTestCase(APITestCase):
         self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
         user = User.objects.get(mobile=mobile)
         self.assertTrue(redis_client.is_following(user.id, SERVICE_USER_ID))
+
+        user.delete()
+
+        user = User.objects.create_user(mobile="00000111111", password="password", weibo_openid="1111")
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456",
+                                          "weibo_openid": "1111"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+        self.assertEqual(response.data['result'], "ok")
+        response = self.client.post(path="/register_with_user_info", data={
+            "mobile": mobile, "gender": True, "avatar": "avatar", "nick_name": "nick_name"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['result'], "ok")
+        self.assertEqual(user.id, User.objects.get(mobile=mobile).id)
+        self.assertEqual(User.objects.get(pk=user.id).mobile, mobile)
