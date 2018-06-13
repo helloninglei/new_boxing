@@ -8,7 +8,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
 from biz import constants, sms_client
-from biz.models import BoxerIdentification, PayOrder, Course, OrderComment, CourseOrder
+from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder
 from biz.services.pay_service import PayService
 from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission, \
     IsBoxerPermission

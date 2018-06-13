@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Case, When, Count, Min
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status, mixins
+from rest_framework import viewsets, status, mixins, permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -48,11 +48,11 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
 
 class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = NearbyBoxerIdentificationSerializer
+    permission_classes = (permissions.AllowAny,)
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                                  is_locked=False).annotate(order_count=Count('course__course_orders'),
-                                                                            course_min_price=Min('course__price')).prefetch_related('course__club')
+                                                  is_locked=False).prefetch_related('course__club').distinct()
     filter_backends = (DjangoFilterBackend,)
     filter_class = NearbyBoxerFilter
 

@@ -40,8 +40,8 @@
                             <el-form-item label="课程">
                                 <el-select v-model="form.course">
                                     <el-option value="" label="全部">全部</el-option>
-                                    <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
-                                    <el-option value="BOXING" label="拳击">拳击</el-option>
+                                    <el-option value="泰拳" label="泰拳">泰拳</el-option>
+                                    <el-option value="拳击" label="拳击">拳击</el-option>
                                     <el-option value="MMA" label="MMA">MMA</el-option>
                                 </el-select>
                             </el-form-item>

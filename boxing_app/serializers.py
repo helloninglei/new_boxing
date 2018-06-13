@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Min
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import OrderComment, BoxingClub, User
+from biz.models import OrderComment, BoxingClub, User, CourseOrder, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -52,26 +53,40 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     longitude = serializers.SerializerMethodField()
     latitude = serializers.SerializerMethodField()
-    course_min_price = serializers.IntegerField()
-    order_count = serializers.IntegerField()
+    course_min_price = serializers.SerializerMethodField()
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
     allowed_course = serializers.ListField(read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     city = serializers.SerializerMethodField()
+    order_count = serializers.SerializerMethodField()
 
     def get_longitude(self, instance):
-        return instance.course.first().club.longitude
+        club = self.get_boxer_club(instance)
+        return club.longitude
 
     def get_latitude(self, instance):
-        return instance.course.first().club.latitude
+        club = self.get_boxer_club(instance)
+        return club.latitude
 
     def get_city(self, instance):
-        return instance.course.first().club.city
+        club = self.get_boxer_club(instance)
+        return club.city
+
+    def get_order_count(self, instance):
+        return instance.boxer_course_order.count()
+
+    def get_course_min_price(self, instance):
+        return Course.objects.filter(boxer=instance).aggregate(min_price=Min('price'))['min_price']
 
     @staticmethod
     def get_boxer_loacation(obj):
         return get_object_location(obj)[0]
+
+    @staticmethod
+    def get_boxer_club(boxer):
+        course = Course.objects.filter(boxer=boxer, is_open=True).last()
+        return course.club
 
     class Meta:
         model = models.BoxerIdentification
@@ -149,6 +164,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comment
         fields = ['id', 'content', 'user', 'replies', 'created_time']
+        read_only_fields = ('created_time',)
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -367,6 +383,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField())
+    allowed_course = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = models.BoxerIdentification
@@ -446,6 +463,7 @@ class NewsSerializer(serializers.ModelSerializer):
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'created_time', 'read_count', 'picture',
                   'stay_top')
+        read_only_fields = ('created_time',)
 
 
 class BlockedUserSerializer(serializers.BaseSerializer):

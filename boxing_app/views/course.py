@@ -6,17 +6,17 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 
 from biz import redis_client
-from biz.models import Course, BoxerIdentification, BoxingClub, CourseOrder
+from biz.models import Course, BoxerIdentification, BoxingClub, CourseOrder, OrderComment
+from boxing_app.permissions import IsBoxerPermission
 from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullDataSerializer
 
 
 class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseAllowNullDataSerializer
-    permission_classes = (permissions.AllowAny,)
-    condition = {}
+    permission_classes = (permissions.IsAuthenticated, IsBoxerPermission)
 
     def get_queryset(self):
-        return Course.objects.filter(**self.condition)\
+        return Course.objects.filter(boxer__user=self.request.user)\
             .annotate(order_count=Count('course_orders'), score=Avg('course_orders__comment__score'))\
             .select_related('club', 'boxer')
 
@@ -42,40 +42,49 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def list(self, request, *args, **kwargs):
-        BoxerMyCourseViewSet.condition = {"boxer__user": self.request.user}
-        boxer = BoxerIdentification.objects.get(user=self.request.user)
-        kwargs['boxer'] = boxer
-        return self.perform_list(request, *args, **kwargs)
-
-    def opened_courses_list(self, request, *args, **kwargs):
-        BoxerMyCourseViewSet.condition = {"boxer__id": kwargs['boxer_id'], "is_open": True}
-        boxer = BoxerIdentification.objects.get(id=kwargs['boxer_id'])
-        kwargs['boxer'] = boxer
-        return self.perform_list(request, *args, **kwargs)
-
-    def perform_list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        com_count_and_avg_score = self.get_queryset().aggregate(comments_count=Count("course_orders__comment"),
-                                                                avg_score=Avg("course_orders__comment__score"))
-        course = self.get_queryset().filter(is_open=True).last()
-        common_info = self.get_comment_info(course=course, boxer=kwargs['boxer'])
-        response.data.update(common_info)
-        response.data.update(com_count_and_avg_score)
+        boxer = BoxerIdentification.objects.get(user=self.request.user)
+        self.get_boxer_base_info(dict=response.data, boxer=boxer)
+        course = self.get_queryset().filter(is_open=True).select_related('club').last()
+        if course:
+            self.get_course_base_info(dict=response.data, course=course)
         return response
 
     @staticmethod
-    def get_comment_info(course, boxer):
-        comment_info = {}
-        comment_info['order_count'] = CourseOrder.objects.filter(boxer=boxer).count()
-        comment_info['allowed_course'] = boxer.allowed_course
-        if course:
-            comment_info['validity'] = course.validity
-            comment_info['boxer_id'] = course.boxer_id
-            if course.club:
-                comment_info['club_id'] = course.club.id
-                comment_info['club_name'] = course.club.name
-                comment_info['club_city'] = course.club.city
-                comment_info['club_address'] = course.club.address
-                comment_info['club_longitude'] = course.club.longitude
-                comment_info['club_latitude'] = course.club.latitude
-        return comment_info
+    def get_course_base_info(dict, course):
+        dict['validity'] = course.validity
+        dict['boxer_id'] = course.boxer_id
+        dict['club_id'] = course.club.id
+        dict['club_name'] = course.club.name
+        dict['club_city'] = course.club.city
+        dict['club_address'] = course.club.address
+        dict['club_longitude'] = course.club.longitude
+        dict['club_latitude'] = course.club.latitude
+        return dict
+
+    @staticmethod
+    def get_boxer_base_info(dict, boxer):
+        dict['order_count'] = CourseOrder.objects.filter(boxer=boxer).count()
+        dict['allowed_course'] = boxer.allowed_course
+        comment_count_and_avg_score = OrderComment.objects.filter(order__boxer=boxer) \
+            .aggregate(comments_count=Count('id'), avg_score=Avg('score'))
+        dict.update(comment_count_and_avg_score)
+        return dict
+
+
+class GetBoxerCourseByAnyOneViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CourseAllowNullDataSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        return Course.objects.filter(boxer__id=self.kwargs['boxer_id'], is_open=True)\
+            .annotate(order_count=Count('course_orders'), score=Avg('course_orders__comment__score'))\
+            .select_related('club', 'boxer')
+
+    def opened_courses_list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        boxer = BoxerIdentification.objects.get(id=kwargs['boxer_id'])
+        course = self.get_queryset().select_related('club').last()
+        BoxerMyCourseViewSet.get_course_base_info(dict=response.data, course=course)
+        BoxerMyCourseViewSet.get_boxer_base_info(dict=response.data, boxer=boxer)
+        return response

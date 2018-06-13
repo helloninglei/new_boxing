@@ -17,7 +17,7 @@ from boxing_app.views import follow
 from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
-from boxing_app.views.course import BoxerMyCourseViewSet
+from boxing_app.views.course import BoxerMyCourseViewSet, GetBoxerCourseByAnyOneViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_LIST, \
@@ -87,7 +87,7 @@ club_url = [
 
 course_url = [
     path('boxer/course', BoxerMyCourseViewSet.as_view({'get': 'list', 'post': 'update'})),
-    path('boxer/<int:boxer_id>/course', BoxerMyCourseViewSet.as_view({'get': 'opened_courses_list'})),
+    path('boxer/<int:boxer_id>/course', GetBoxerCourseByAnyOneViewSet.as_view({'get': 'opened_courses_list'})),
 ]
 
 order_url = [

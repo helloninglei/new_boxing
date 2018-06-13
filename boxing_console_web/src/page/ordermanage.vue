@@ -47,8 +47,8 @@
                             <el-form-item label="购买课程">
                                 <el-select v-model="form.course__course_name">
                                     <el-option value="" label="全部">全部</el-option>
-                                    <el-option value="THAI_BOXING" label="泰拳">泰拳</el-option>
-                                    <el-option value="BOXING" label="拳击">拳击</el-option>
+                                    <el-option value="泰拳" label="泰拳">泰拳</el-option>
+                                    <el-option value="拳击" label="拳击">拳击</el-option>
                                     <el-option value="MMA" label="MMA">MMA</el-option>
                                 </el-select>
                             </el-form-item>
@@ -149,11 +149,11 @@ nav{min-height: 528px}
                     if(res&&res.data){
                         // console.log(res.data)
                         for(var i=0;i<res.data.results.length;i++){
-                            if(res.data.results[i].course_name=='BOXING'){
-                                res.data.results[i].course_name='拳击'
-                            }else if(res.data.results[i].course_name=='THAI_BOXING'){
-                                res.data.results[i].course_name='泰拳'
-                            }
+                            // if(res.data.results[i].course_name=='BOXING'){
+                            //     res.data.results[i].course_name='拳击'
+                            // }else if(res.data.results[i].course_name=='THAI_BOXING'){
+                            //     res.data.results[i].course_name='泰拳'
+                            // }
                             if(res.data.results[i].payment_type==1){
                                 res.data.results[i].payment_type_name='支付宝'
                             }else if(res.data.results[i].payment_type==2){

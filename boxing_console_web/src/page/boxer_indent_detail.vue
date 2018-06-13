@@ -2,7 +2,7 @@
     <div class="classDetail">
         <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <div class='detail_header' v-if="authentication_state=='APPROVED'">审核通过 
-            <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_course">{{item=='BOXING'?'拳击':item=='THAI_BOXING'?'泰拳':item}} &nbsp;&nbsp;</span>
+            <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_course">{{item}} &nbsp;&nbsp;</span>
                 <el-button type="danger" class='myColor_red myButton_40' style='width:95px;margin-top:-13px' @click="openApprove()">修改</el-button>
             </span>
         </div>
