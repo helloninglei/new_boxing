@@ -29,9 +29,9 @@ ut(){
     exit_code3=$?
     echo "console test result: $exit_code3"
 
-    exit_code=$((exit_code1+exit_code2+exit_code3))
+    exit_code=`expr $exit_code1 + $exit_code2 + $exit_code3`
 }
 
 clear_cache && install && ut
 
-exit ${exit_code}
+exit $exit_code
