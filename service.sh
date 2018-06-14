@@ -1,19 +1,27 @@
 #!/usr/bin/env bash
 
-# 管理docker容器
+PROJECT_PATH='/workspace/new_boxing'
+LOG_PATH='/workspace/new_boxing/logs'
+
+build(){
+    cd deploy
+    sh ./build.sh
+}
 
 pull(){
     git pull origin master
 }
 
 init(){
-    docker run -p 8001:8000 --name new_boxing_app -v /new_boxing:/work -v /new_boxing/boxing_app/uwsgi.ini:/etc/uwsgi.ini -v /var/log/boxing:/var/log/boxing -d -it new_boxing_image /bin/bash /work/run.sh
-    docker run -p 8002:8000 --name new_boxing_console -v /new_boxing:/work -v /new_boxing/boxing_console/uwsgi.ini:/etc/uwsgi.ini -v /var/log/boxing:/var/log/boxing -d -it new_boxing_image /bin/bash /work/run.sh
+    build
+    pull
+    docker run -p 8001:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_app.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/run.sh
+    docker run -p 8002:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_console.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/run.sh
 }
 
 reset(){
-    docker stop $(docker ps -a -q)
-    docker rm $(docker ps -a -q)
+    docker stop $(docker ps --filter "name=new_boxing" --all --quiet)
+    docker rm $(docker ps --filter "name=new_boxing" --all --quiet)
 }
 
 start(){
@@ -31,4 +39,8 @@ restart(){
     docker restart new_boxing_console
 }
 
+
+deploy(){
+    pull && restart
+}
 eval $1
