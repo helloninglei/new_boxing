@@ -52,7 +52,10 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                                  is_locked=False).prefetch_related('course__club').distinct()
+                                                  is_locked=False) \
+        .annotate(od_count=Count('course__course_orders'), m_price=Min('course__price'))\
+        .prefetch_related('course__club')\
+        .distinct()
     filter_backends = (DjangoFilterBackend,)
     filter_class = NearbyBoxerFilter
 
@@ -62,9 +65,8 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
         if longitude and latitude:
             boxer_id_list = redis_client.get_near_object(BoxerIdentification, longitude, latitude)
             sort_rule = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(boxer_id_list)])
-            return self.queryset.filter(id__in=boxer_id_list).order_by(sort_rule)
-        return self.queryset.annotate(od_count=Count('course__course_orders'), m_price=Min('course__price'))\
-            .order_by('-od_count', 'm_price', '-created_time')
+            return self.queryset.filter(id__in=boxer_id_list).order_by(sort_rule, '-od_count', 'm_price', '-created_time')
+        return self.queryset.order_by('-od_count', 'm_price', '-created_time')
 
 
 @api_view(['GET'])
