@@ -22,7 +22,7 @@ migrate(){
 
 deploy(){
 #    /usr/local/bin/uwsgi /etc/uwsgi.ini
-    /usr/local/bin/gunicorn /etc/wsgi:application -c /work/deploy/config.py
+    /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
 }
 
 cd /work && clear_cache && install && migrate && deploy
