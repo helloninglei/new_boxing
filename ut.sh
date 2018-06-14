@@ -17,7 +17,7 @@ ut(){
     echo "test app"
     python manage.py test --settings boxing_app.app_settings boxing_app.tests
     exit_code1=$?
-    echo "api test result: $exit_code1"
+    echo "app test result: $exit_code1"
 
     echo "test biz"
     python manage.py test --settings boxing_app.app_settings biz
