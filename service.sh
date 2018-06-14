@@ -15,8 +15,8 @@ pull(){
 init(){
     build
     pull
-    docker run -p 5000:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_app.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/deploy/run.sh
-    docker run -p 5001:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_console.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5000:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $PROJECT_PATH/boxing_app/uwsgi.py:/etc/wsgi.py -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5001:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $PROJECT_PATH/boxing_console/uwsgi.py:/etc/wsgi.py -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
 
 reset(){
@@ -25,18 +25,15 @@ reset(){
 }
 
 start(){
-    docker start new_boxing_app
-    docker start new_boxing_console
+    docker start $(docker ps --filter "name=new_boxing" --all --quiet)
 }
 
 stop(){
-    docker stop new_boxing_app
-    docker stop new_boxing_console
+    docker stop $(docker ps --filter "name=new_boxing" --all --quiet)
 }
 
 restart(){
-    docker restart new_boxing_app
-    docker restart new_boxing_console
+    docker restart $(docker ps --filter "name=new_boxing" --all --quiet)
 }
 
 
