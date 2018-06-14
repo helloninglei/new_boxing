@@ -15,8 +15,8 @@ pull(){
 init(){
     build
     pull
-    docker run -p 8001:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_app.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/run.sh
-    docker run -p 8002:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_console.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/run.sh
+    docker run -p 5000:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_app.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5001:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $PROJECT_PATH/deploy/uwsgi_console.ini:/etc/uwsgi.ini -v $LOG_PATH:/var/log/boxing -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
 
 reset(){
