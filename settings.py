@@ -206,7 +206,7 @@ DATABASES = {
     },
     'old_boxing': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'old_boxing',
+        'NAME': DB_MYSQL_DATABASE_OLD,
         'HOST': DB_MYSQL_HOST,
         'PORT': DB_MYSQL_PORT,
         'USER': DB_MYSQL_USER_OLD,
