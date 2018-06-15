@@ -14,3 +14,5 @@ db 0  默认数据库
 db 1  session
 
 db 2  celery
+
+db 15 test
