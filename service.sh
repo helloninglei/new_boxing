@@ -14,7 +14,6 @@ pull(){
 
 init(){
     build
-    pull
     docker run -p 5000:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_app' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
     docker run -p 5001:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_console' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
