@@ -1,1 +1,3 @@
 FROM vuejs/ci
+
+RUN apt-get install -yq libavahi-compat-libdnssd-dev
