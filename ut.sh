@@ -20,7 +20,7 @@ ut(){
     echo "app test result: $exit_code1"
 
     echo "test biz"
-    python manage.py test --settings boxing_app.app_settings biz
+    python manage.py test --settings boxing_app.app_settings biz.tests
     exit_code2=$?
     echo "biz test result: $exit_code2"
 
