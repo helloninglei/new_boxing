@@ -131,7 +131,6 @@ class BoxingClubTestCase(TestCase):
         self.assertFalse(Course.objects.get(id=course.id).is_open)
         # 拳馆位置、拳手位置已删除
         self.assertIsNone(redis_client.get_object_location(club)[0])
-        print(redis_client.get_object_location(boxer), type(redis_client.get_object_location(boxer)), "hello")
         self.assertIsNone(redis_client.get_object_location(boxer)[0])
         # 开启拳馆
         open_res = self.client.post(f'/club/{create_res.data["id"]}/open')
