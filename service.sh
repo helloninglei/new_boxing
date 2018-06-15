@@ -12,11 +12,11 @@ pull(){
 }
 
 api(){
-    docker run -p 5000:8000 --name new_boxing_app -v .:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_app' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5000:8000 --name new_boxing_app -v `pwd`:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_app' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
 
 console(){
-    docker run -p 5001:8000 --name new_boxing_console -v .:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_console' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5001:8000 --name new_boxing_console -v `pwd`:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_console' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
 
 filter(){
@@ -35,7 +35,7 @@ restart(){
 
 init(){
     mkdir -p $LOG_PATH
-    if [ -z $2 ]; then
+    if [[ -n $2 ]]; then
         eval $2
     else
         api && console
@@ -44,10 +44,10 @@ init(){
 
 deploy(){
     if [ ! "$(filter)" ]; then
-        build  && init
+        build  && init $@
     else
         restart
     fi
 }
 
-eval $1
+eval $1 $@
