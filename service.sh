@@ -18,19 +18,19 @@ console(){
 }
 
 web_console(){
-    docker run --name new_boxing_node_console -v `pwd`:/work -d -it new_boxing_node_image /bin/bash /work/deploy/web.sh boxing_console_web
+    docker run --name web_console_new_boxing -v `pwd`:/work -d -it new_boxing_node_image /bin/bash /work/deploy/web.sh boxing_console_web
 }
 
 web_share(){
-    docker run --name new_boxing_node_share -v `pwd`:/work -d -it new_boxing_node_image /bin/bash /work/deploy/web.sh boxing_app_shared_h5
+    docker run --name web_share_new_boxing -v `pwd`:/work -d -it new_boxing_node_image /bin/bash /work/deploy/web.sh boxing_app_shared_h5
 }
 
 filter(){
     echo $(docker ps --filter "name=new_boxing" --all --quiet)
 }
 
-filter_node(){
-    echo $(docker ps --filter "name=new_boxing_node" --all --quiet)
+filter_web(){
+    echo $(docker ps --filter "name=web_" --all --quiet)
 }
 
 reset(){
@@ -38,8 +38,18 @@ reset(){
     docker rm $(filter)
 }
 
-restart(){
+reset_web(){
+    docker stop $(filter_web)
+    docker rm $(filter_web)
+}
+
+
+restart_api(){
     docker restart $(filter)
+}
+
+restart_web(){
+    docker restart $(filter_web)
 }
 
 init(){
@@ -63,15 +73,15 @@ deploy(){
     if [ ! "$(filter)" ]; then
         build_image  && init $@
     else
-        restart
+        restart_api
     fi
 }
 
 build(){
-    if [ ! "$(filter_node)" ]; then
+    if [ ! "$(filter_web)" ]; then
         build_image  && init_web $@
     else
-        restart
+        restart_web
     fi
 }
 
