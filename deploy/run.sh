@@ -21,6 +21,7 @@ migrate(){
 }
 
 deploy(){
+    mkdir -p /var/log/new_boxing
     /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
 }
 
