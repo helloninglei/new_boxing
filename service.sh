@@ -5,7 +5,7 @@ LOG_PATH='/var/log/new_boxing'
 build(){
     cd deploy
     docker build -t new_boxing_image .
-    docker build -f deploy/NodeDockerfile -t new_boxing_node_image .
+    docker build -f NodeDockerfile -t new_boxing_node_image .
     cd ..
 }
 
