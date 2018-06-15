@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-PROJECT_PATH='/workspace/new_boxing'
-LOG_PATH='/workspace/new_boxing/logs'
+PROJECT_PATH="${RUN_PATH:-/workspace/new_boxing}"
+LOG_PATH=$PROJECT_PATH'/logs'
 
 build(){
     cd deploy
