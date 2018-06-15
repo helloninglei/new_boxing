@@ -1,5 +1,5 @@
-let config={
-    'baseUrl':'http://39.105.73.10',
-}
+let config = {
+    'baseUrl': location.host.indexOf('api') == 0 ? 'https://api.bituquanguan.com' : 'http://qa.bituquanguan.com',
+};
 
 export default config;
