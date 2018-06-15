@@ -13,11 +13,11 @@ pull(){
 }
 
 api(){
-    docker run -p 5000:8000 --name new_boxing_app -v `pwd`:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_app' -d -it new_boxing_image /work/deploy/run.sh
+    docker run -p 5000:8000 --name new_boxing_app -v `pwd`:/work -v $LOG_PATH:/var/log/new_boxing -e APP='boxing_app' -d -it new_boxing_image /work/deploy/run.sh
 }
 
 console(){
-    docker run -p 5001:8000 --name new_boxing_console -v `pwd`:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_console' -d -it new_boxing_image /work/deploy/run.sh
+    docker run -p 5001:8000 --name new_boxing_console -v `pwd`:/work -v $LOG_PATH:/var/log/new_boxing -e APP='boxing_console' -d -it new_boxing_image /work/deploy/run.sh
 }
 
 filter(){
