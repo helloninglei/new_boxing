@@ -126,11 +126,12 @@ tmp_upload_dir = None
 #       A string of "debug", "info", "warning", "error", "critical"
 #
 app = os.environ.get('APP')
-errorlog = f'/var/log/new_boxing/{app}_error.log'
+
 loglevel = 'debug'
+capture_output = True
+errorlog = f'/var/log/new_boxing/{app}_error.log'
 accesslog = f'/var/log/new_boxing/{app}_access.log'
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
-capture_output = True
 #
 # Process naming
 #
