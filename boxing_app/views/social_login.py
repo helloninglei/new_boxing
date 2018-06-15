@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -11,7 +12,7 @@ from boxing_app.serializers import SocialLoginSerializer
 def social_login(request):
     serializer = SocialLoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = User.objects.filter(**serializer.validated_data).first()
+    user = User.objects.filter(~Q(mobile__startswith=0), **serializer.validated_data).first()
     if user:
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key})

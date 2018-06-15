@@ -130,8 +130,8 @@ class BoxingClubTestCase(TestCase):
         self.assertTrue(BoxingClub.all_objects.all().filter(id=create_res.data['id']).exists())
         self.assertFalse(Course.objects.get(id=course.id).is_open)
         # 拳馆位置、拳手位置已删除
-        self.assertIsNone(redis_client.get_object_location(club)[0])
-        self.assertIsNone(redis_client.get_object_location(boxer)[0])
+        self.assertIn(redis_client.get_object_location(club), ([], [None]))
+        self.assertIn(redis_client.get_object_location(boxer), ([], [None]))
         # 开启拳馆
         open_res = self.client.post(f'/club/{create_res.data["id"]}/open')
         self.assertEqual(open_res.status_code, status.HTTP_204_NO_CONTENT)

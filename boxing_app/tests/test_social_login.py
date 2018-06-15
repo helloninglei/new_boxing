@@ -20,3 +20,8 @@ class SocialLoginTestCase(APITestCase):
         response = self.client.post(path="/social_login", data={"wechat_openid": "111"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(bool(response.data['token']))
+
+        User.objects.create_user(mobile="00000111111", password="password", weibo_openid=11)
+        response = self.client.post(path="/social_login", data={"wechat_openid": "11"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(bool(response.data['token']))
