@@ -130,7 +130,7 @@ errorlog = f'/var/log/new_boxing/{app}_error.log'
 loglevel = 'debug'
 accesslog = f'/var/log/new_boxing/{app}_access.log'
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
-
+capture_output = True
 #
 # Process naming
 #
