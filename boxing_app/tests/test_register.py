@@ -70,6 +70,27 @@ class RegisterTestCase(APITestCase):
         self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
         user = User.objects.get(mobile=mobile)
         self.assertTrue(redis_client.is_following(user.id, SERVICE_USER_ID))
+        self.assertEqual(UserProfile.objects.get(user=user).nick_name_index_letter, "N")
+
+        user.delete()
+
+        response = self.client.post(path="/register",
+                                    data={"mobile": mobile, "password": "password", "verify_code": "123456",
+                                          "wechat_openid": "111"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+        self.assertEqual(response.data['result'], "ok")
+
+        response = self.client.post(path="/register_with_user_info", data={
+            "mobile": mobile, "gender": True, "avatar": "avatar", "nick_name": "1223"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['result'], "ok")
+        self.assertTrue(User.objects.filter(mobile=mobile))
+        self.assertEqual(User.objects.get(mobile=mobile).wechat_openid, "111")
+        self.assertFalse(redis_client.redis_client.exists(redis_const.REGISTER_INFO.format(mobile=mobile)))
+        user = User.objects.get(mobile=mobile)
+        self.assertTrue(redis_client.is_following(user.id, SERVICE_USER_ID))
+        self.assertEqual(UserProfile.objects.get(user=user).nick_name_index_letter, "#")
 
         user.delete()
 
