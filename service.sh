@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-PROJECT_PATH="${RUN_PATH:-/workspace/new_boxing}"
-LOG_PATH=$PROJECT_PATH'/logs'
+LOG_PATH='/var/log/new_boxing'
 
 build(){
     cd deploy
@@ -13,11 +12,11 @@ pull(){
 }
 
 api(){
-    docker run -p 5000:8000 --name new_boxing_app -v $PROJECT_PATH:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_app' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5000:8000 --name new_boxing_app -v .:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_app' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
 
 console(){
-    docker run -p 5001:8000 --name new_boxing_console -v $PROJECT_PATH:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_console' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
+    docker run -p 5001:8000 --name new_boxing_console -v .:/work -v $LOG_PATH:/var/log/boxing -e APP='boxing_console' -d -it new_boxing_image /bin/bash /work/deploy/run.sh
 }
 
 filter(){
@@ -35,6 +34,7 @@ restart(){
 }
 
 init(){
+    mkdir -p $LOG_PATH
     if [ -z $2 ]; then
         eval $2
     else
