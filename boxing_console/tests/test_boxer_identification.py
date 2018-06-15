@@ -97,7 +97,7 @@ class BoxerIdentificationTestCase(TestCase):
         self.assertEqual(self.fake_user1.boxer_identification.authentication_state,
                          constants.BOXER_AUTHENTICATION_STATE_WAITING)
         data = {'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                'allowed_course': ['THAI_BOXING', 'BOXING']}
+                'allowed_course': [constants.BOXER_ALLOWED_COURSES_THAI_BOXING, constants.BOXER_ALLOWED_COURSES_BOXING]}
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data=json.dumps(data), content_type='application/json')
         identification = BoxerIdentification.objects.get(user=self.fake_user1)

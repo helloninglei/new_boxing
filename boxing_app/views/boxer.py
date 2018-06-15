@@ -50,6 +50,7 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     serializer_class = NearbyBoxerIdentificationSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
+                                                  course__is_deleted=False,
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                                                   is_locked=False).prefetch_related('course__club').distinct()
