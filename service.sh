@@ -75,4 +75,4 @@ build(){
     fi
 }
 
-eval $1 $
+eval $1 $@
