@@ -2,7 +2,7 @@
 
 LOG_PATH='/var/log/new_boxing'
 
-build(){
+build_image(){
     cd deploy
     docker build -t new_boxing_image .
     docker build -f NodeDockerfile -t new_boxing_node_image .
@@ -61,7 +61,7 @@ init_web(){
 
 deploy(){
     if [ ! "$(filter)" ]; then
-        build  && init $@
+        build_image  && init $@
     else
         restart
     fi
@@ -69,7 +69,7 @@ deploy(){
 
 build(){
     if [ ! "$(filter_node)" ]; then
-        build  && init_web $@
+        build_image  && init_web $@
     else
         restart
     fi
