@@ -36,6 +36,11 @@ DB_MYSQL_PORT = '3306'
 DB_MYSQL_USER = 'root'
 DB_MYSQL_PASSWORD = 'root'
 
+DB_MYSQL_DATABASE_OLD = 'old_boxing'
+DB_MYSQL_USER_OLD = DB_MYSQL_USER
+DB_MYSQL_PASSWORD_OLD = DB_MYSQL_PASSWORD
+
+
 REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
@@ -191,6 +196,7 @@ DATABASES = {
         'PORT': DB_MYSQL_PORT,
         'USER': DB_MYSQL_USER,
         'PASSWORD': DB_MYSQL_PASSWORD,
+        'CONN_MAX_AGE': 120,
         'OPTIONS': {
             'charset': 'utf8mb4'
         },
@@ -200,11 +206,11 @@ DATABASES = {
     },
     'old_boxing': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'old_boxing',
+        'NAME': DB_MYSQL_DATABASE_OLD,
         'HOST': DB_MYSQL_HOST,
         'PORT': DB_MYSQL_PORT,
-        'USER': DB_MYSQL_USER,
-        'PASSWORD': DB_MYSQL_PASSWORD,
+        'USER': DB_MYSQL_USER_OLD,
+        'PASSWORD': DB_MYSQL_PASSWORD_OLD,
         'OPTIONS': {
             'charset': 'utf8mb4'
         },
