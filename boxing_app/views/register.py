@@ -1,3 +1,4 @@
+import re
 from django.db.models import Q
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
@@ -67,11 +68,13 @@ def register_with_user_info(request):
             mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
     follow_user(user.id, SERVICE_USER_ID)
     send_message.delay(user.id)
+    nick_name_index_letter = hans_to_initial(serializer.validated_data['nick_name'])
+    nick_name_index_letter = nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#"
+
     UserProfile.objects.filter(user=user).update(gender=serializer.validated_data['gender'],
                                                  avatar=serializer.validated_data['avatar'],
                                                  nick_name=serializer.validated_data['nick_name'],
-                                                 nick_name_index_letter=hans_to_initial(
-                                                     serializer.validated_data['nick_name']))
+                                                 nick_name_index_letter=nick_name_index_letter)
     register_easemob_account.delay(user.id)
     redis_client.redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
