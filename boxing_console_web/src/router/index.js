@@ -25,7 +25,7 @@ import Report           from 'page/report';
 import Hotvideo         from 'page/hot_videos';
 import Hotvideodetail   from 'page/hot_video_detail';
 import AccoundRecord    from 'page/accound_record';
-import InfoList         from 'page/infoList';
+import InfoList         from 'page/infolist';
 import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
 
