@@ -17,7 +17,7 @@ import Walletlist       from 'page/walletlist';
 import Boxbeanlist      from 'page/boxbeanlist';
 import UseDialog        from 'components/useDialog';
 import BannerManage     from 'page/bannermanage';
-import BannerContent    from 'page/BannerContent';
+import BannerContent    from 'page/bannercontent';
 import Cropper          from 'components/cropper';
 import Map1             from 'components/map';
 import Admin            from 'page/admin';
