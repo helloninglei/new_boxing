@@ -17,7 +17,7 @@ import Walletlist       from 'page/walletlist';
 import Boxbeanlist      from 'page/boxbeanlist';
 import UseDialog        from 'components/useDialog';
 import BannerManage     from 'page/bannermanage';
-import BannerContent    from 'page/BannerContent';
+import BannerContent    from 'page/bannercontent';
 import Cropper          from 'components/cropper';
 import Map1             from 'components/map';
 import Admin            from 'page/admin';
@@ -28,6 +28,7 @@ import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infoList';
 import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
+
 
 export default [
     {
