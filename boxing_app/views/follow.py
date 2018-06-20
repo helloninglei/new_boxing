@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Case, When, Value
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -74,6 +75,8 @@ class FollowingView(BaseFollowView):
 def contact_list(request):
     # 建群通讯录列表，即用户粉丝列表，不分页
     follower_ids = follower_list_all(request.user.id)
-    user_list = User.objects.filter(id__in=follower_ids).order_by("user_profile__nick_name_index_letter")
+    user_list = User.objects.filter(id__in=follower_ids).order_by(Case(
+        When(user_profile__nick_name_index_letter="#", then=Value(chr(ord("Z") + 1))),
+        default="user_profile__nick_name_index_letter"))
     serializer = ContactSerializer(user_list, many=True)
     return Response({"results": serializer.data}, status=status.HTTP_200_OK)

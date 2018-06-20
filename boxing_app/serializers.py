@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Min
@@ -21,7 +22,7 @@ from biz import redis_const
 from biz.redis_client import redis_client
 from biz.redis_const import SEND_VERIFY_CODE
 from boxing_app.services import verify_code_service
-from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name
+from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
 from biz.constants import WITHDRAW_MIN_CONFINE
 from biz.services.money_balance_service import change_money
 
@@ -425,6 +426,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_boxer_info(self, instance):
         return BoxerInfoReadOnlySerializer(models.BoxerIdentification.objects.filter(user=instance.user).first()).data
+
+    def validate(self, attrs):
+        if attrs.get("nick_name"):
+            nick_name_index_letter = hans_to_initial(attrs['nick_name'])
+            if not re.match(r"[a-zA-Z]", nick_name_index_letter):
+                nick_name_index_letter = "#"
+            attrs['nick_name_index_letter'] = nick_name_index_letter
+        return attrs
 
     class Meta:
         model = models.UserProfile

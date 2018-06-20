@@ -33,7 +33,16 @@ class UserProfileTestCase(APILoginTestCase):
         data = {"nick_name": "新昵称"}
         response = self.client.put(path="/user_profile_patch", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(UserProfile.objects.get(id=self.user.user_profile.id).nick_name, data['nick_name'])
+        user_profile = UserProfile.objects.get(pk=self.user.user_profile.id)
+        self.assertEqual(user_profile.nick_name, data['nick_name'])
+        self.assertEqual(user_profile.nick_name_index_letter, 'X')
+
+        data = {"nick_name": "1新昵称"}
+        response = self.client.put(path="/user_profile_patch", data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user_profile = UserProfile.objects.get(pk=self.user.user_profile.id)
+        self.assertEqual(user_profile.nick_name, data['nick_name'])
+        self.assertEqual(user_profile.nick_name_index_letter, '#')
 
     def test_update_user_profile(self):
         data = {
