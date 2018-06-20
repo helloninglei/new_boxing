@@ -35,13 +35,17 @@
                             <el-option :value="true" label="认证拳手">认证拳手</el-option>
                         </el-select>
                     </el-col>
+                    <el-col :span="5">
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70 margin_top_30' @click="filter()">查询</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='reset()'>重置</el-button>
+                    </el-col> 
                 </el-row>
-                <el-row>     
+                <!-- <el-row>     
                     <el-col :md="24" :xl='5'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70 margin_top_30' @click="filter()">查询</el-button>
                         <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='reset()'>重置</el-button>
                     </el-col>     
-                </el-row>
+                </el-row> -->
             </header>
             <p class="showTotal">注册用户数:{{total}}</p>
             <nav class='myTable'>
@@ -109,9 +113,7 @@
 <style scoped>
     .myTable{font-size:14px!important;}
     .inlimeLabel{font-family: PingFangSC-Regular;font-size: 16px;color: #000000;padding-right:15px;height:40px;line-height:40px;}
-    @media screen and (max-width:1919px){
-       .margin_top_30{margin-top:30px;margin-left:0!important;} 
-    } 
+    .margin_top_30{margin-top:30px;margin-left:0!important;} 
 </style>
 <style>
 </style>
