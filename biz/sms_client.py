@@ -27,8 +27,8 @@ region_provider.add_endpoint(PRODUCT_NAME, REGION, DOMAIN)
 
 SMS_TEMPLATES = {
     "verifyCode": {
-        "code": "SMS_134110376",
-        "text": "您的验证码：{code}，您正进行身份验证，打死不告诉别人！",
+        "code": "SMS_137666864",
+        "text": "您的验证码：{code}，请于5分钟内完成验证。"
     },
     "boxerApproved": {
         "code": "SMS_135803000",
