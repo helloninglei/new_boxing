@@ -24,6 +24,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.client4.login(username=self.user4, password='password')
         self.client5.login(username=self.user5, password='password')
         self.client6.login(username=self.user6, password='password')
+        redis_client.redis_client.flushdb()
         self.user_profile_data = {
             "nick_name": "nike_name",
             "gender": True,
