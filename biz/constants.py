@@ -1,4 +1,5 @@
 # coding=utf-8
+from django.conf import settings
 
 MESSAGE_TYPE_ONLY_TEXT = 'only_text'
 MESSAGE_TYPE_HAS_IMAGE = 'has_image'
@@ -7,7 +8,7 @@ MESSAGE_TYPE_HAS_VIDEO = 'has_video'
 HOT_VIDEO_USER_ID = 3997
 FRIDAY_USER_ID = 3982
 BOXING_USER_ID = 980
-SERVICE_USER_ID = 4123
+SERVICE_USER_ID = 4123 if settings.ENVIRONMENT == settings.PRODUCTION else 1000048  # qa环境客服账号id
 
 USER_IDENTITY_DICT = {
     'hot_video': HOT_VIDEO_USER_ID,
