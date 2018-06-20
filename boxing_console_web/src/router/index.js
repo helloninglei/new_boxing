@@ -29,6 +29,7 @@ import InfoList         from 'page/infolist';
 import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
 
+
 export default [
     {
         path: '',
