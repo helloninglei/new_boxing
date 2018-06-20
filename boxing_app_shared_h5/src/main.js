@@ -1,10 +1,10 @@
-import Vue        from 'vue';
-import VueRouter  from 'vue-router';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 import VueResoure from 'vue-resource';
-import App        from './App';
-import axios      from './common/axios'
-import config     from './common/my_config'
-import routes     from './router/index.js';
+import App from './App';
+import axios from './common/axios'
+import config from './common/my_config'
+import routes from './router/index.js';
 import VueQuillEditor from 'vue-quill-editor'
 import layer from 'vue-layer'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
@@ -26,14 +26,14 @@ Vue.use(VueAwesomeSwiper);
 let linkActiveClass = 'active';
 
 //添加全局函数用this调用
-Vue.prototype.ajax    = axios
-Vue.prototype.config  = config
-Vue.prototype.token   = ''
+Vue.prototype.ajax = axios
+Vue.prototype.config = config
+Vue.prototype.token = ''
 
 let router = new VueRouter({
-  routes,
-  // mode:"history",
-  linkActiveClass
+    routes,
+    // mode:"history",
+    linkActiveClass
 });
 
 router.beforeEach((to, from, next) => {
@@ -47,10 +47,10 @@ router.beforeEach((to, from, next) => {
 })
 
 new Vue({
-  el: '#app',
-  router,
-  template: '<App/>',
-  components: { App }
+    el: '#app',
+    router,
+    template: '<App/>',
+    components: {App}
 })
 
 
