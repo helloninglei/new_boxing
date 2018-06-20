@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User
-from biz.redis_client import redis_client
+from biz.models import User, UserProfile
+from biz.redis_client import redis_client, follow_user
 
 
 class FollowTestCase(APITestCase):
@@ -81,3 +81,13 @@ class FollowTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
         self.assertIn("index_letter", response.data['results'][0])
+
+    def test_contact_order(self):
+        UserProfile.objects.filter(user=self.test_user_2).update(nick_name="zoom", nick_name_index_letter="Z")
+        UserProfile.objects.filter(user=self.test_user_3).update(nick_name="122", nick_name_index_letter="#")
+        [follow_user(user.id, self.test_user_1.id) for user in [self.test_user_2, self.test_user_3]]
+
+        response = self.client1.get(path="/contact")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 2)
+        self.assertEqual(response.data['results'][-1]['index_letter'], "#")
