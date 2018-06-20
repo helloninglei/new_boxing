@@ -4,7 +4,7 @@
         <div class='container'>
             <header>
                 <div class="inline_item">
-                    <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='姓名/手机号/身份证号' style='width:18rem'></el-input>
+                    <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='昵称/姓名/手机号' style='width:18rem'></el-input>
                 </div>
                 <div class="inline_item">
                     <span class="inlimeLabel">选手类型</span>
