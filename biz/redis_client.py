@@ -82,6 +82,7 @@ def get_near_object(obj_or_cls, longitude, latitude, radius=10000, unit='km'):
                                   latitude=latitude,
                                   radius=radius,
                                   unit=unit,
+                                  withdist=True,
                                   sort='ASC')
 
 
