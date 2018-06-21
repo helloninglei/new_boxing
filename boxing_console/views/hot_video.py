@@ -4,7 +4,7 @@ from rest_framework import viewsets, filters
 from django.db.models import Count, Sum, Q
 from django.contrib.contenttypes.fields import ContentType
 from biz import models
-from biz.constants import PAYMENT_STATUS_WAIT_USE, PAYMENT_STATUS_UNPAID, HOT_VIDEO_USER_ID
+from biz.constants import PAYMENT_STATUS_WAIT_USE, PAYMENT_STATUS_UNPAID
 from boxing_console.serializers import HotVideoSerializer, HotVideoShowSerializer
 from boxing_console.filters import HotVideoFilter
 
@@ -14,9 +14,6 @@ class HotVideoViewSet(viewsets.ModelViewSet):
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = HotVideoFilter
     search_fields = ('user__id', 'name')
-
-    def perform_create(self, serializer):
-        serializer.save(user_id=HOT_VIDEO_USER_ID)  # 固定由"热门视频"用户发布
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)

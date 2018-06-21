@@ -36,10 +36,11 @@ class HotVideoTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['user_id'], self.hot_video_user.id)
 
-        not_exists_user_id = User.objects.all().order_by('-id').first().id + 1
-        self.data['user_id'] = not_exists_user_id
-        res = self.client2.post('/hot_videos', self.data)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # TODO 热门视频暂时只会发在指定用户名下，以后还会改回去
+        # not_exists_user_id = User.objects.all().order_by('-id').first().id + 1
+        # self.data['user_id'] = not_exists_user_id
+        # res = self.client2.post('/hot_videos', self.data)
+        # self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update(self):
         res = self.client2.post('/hot_videos', self.data)
