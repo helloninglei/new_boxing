@@ -105,7 +105,7 @@
                 id          :'',
                 btn_name    : '发布',
                 ruleForm: {
-                    user_id : '',
+                    user_id : 1,
                     name    : '',
                     description: '',
                     price_int  : '',

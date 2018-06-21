@@ -18,7 +18,7 @@ from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
-    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, HOT_VIDEO_USER_ID
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -222,9 +222,10 @@ class HotVideoSerializer(serializers.ModelSerializer):
     price_amount = serializers.IntegerField(read_only=True)
 
     def validate(self, data):
-        user_id = data['user_id']
-        if not models.User.objects.filter(pk=user_id).exists():
-            raise ValidationError({'user_id': [f'用户 {user_id} 不存在']})
+        data['user_id'] = HOT_VIDEO_USER_ID  # 固定由"热门视频"用户发布
+        # user_id = data['user_id']
+        # if not models.User.objects.filter(pk=user_id).exists():
+        #     raise ValidationError({'user_id': [f'用户 {user_id} 不存在']})
         return data
 
     class Meta:
