@@ -3,8 +3,8 @@
 LOG_PATH="${LOG_PATH:-/var/log/new_boxing}"
 
 build_image(){
-    docker build -f ./deploy/docker/Dockerfile -t new_boxing_image .
-    docker build -f ./deploy/docker/NodeDockerfile -t new_boxing_node_image .
+    docker build -f ./deploy/docker/Dockerfile -t new_boxing_image deploy/docker
+    docker build -f ./deploy/docker/NodeDockerfile -t new_boxing_node_image deploy/docker
 }
 
 api(){
