@@ -1,4 +1,3 @@
-from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from biz import constants, redis_client
@@ -25,6 +24,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.client4.login(username=self.user4, password='password')
         self.client5.login(username=self.user5, password='password')
         self.client6.login(username=self.user6, password='password')
+        redis_client.redis_client.flushdb()
         self.user_profile_data = {
             "nick_name": "nike_name",
             "gender": True,
@@ -159,7 +159,7 @@ class NearbyBoxerTestCase(APITestCase):
         Course.objects.create(**self.course_data)
         self.course_data['club'] = club1
         self.course_data['boxer'] = boxer5
-        Course.objects.create(**self.course_data)
+        course5 = Course.objects.create(**self.course_data)
 
         # 将boxer1-5的位置存入redis(boxer位置为所开课程的club的位置，其中boxer1与boxer5位置相同）
         redis_client.record_object_location(boxer1, club1.longitude, club1.latitude)
@@ -171,9 +171,23 @@ class NearbyBoxerTestCase(APITestCase):
         # 获取用户周围的拳手列表（假设用户在北京奥林匹克森林公园，经纬度为116.39737,40.024919)
         res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919')
         # 比较获取boxer结果的排序是否与redis中获取的距离排序一致
-        boxer_id_list = redis_client.get_near_object(BoxerIdentification, 116.39737, 40.024919)
+        boxer_list = redis_client.get_near_object(BoxerIdentification, 116.39737, 40.024919)
+        boxer_id_list = [item[0] for item in boxer_list]
         nearby_boxer_id_list = [str(res.data['results'][i]['id']) for i in range(len(res.data['results']))]
         self.assertEqual(boxer_id_list, nearby_boxer_id_list)
+
+        # 为boxer5的课程创建一个订单,再次比较排序(此时位置相同时，boxer5应该排在boxer1位置之前）
+        self.client1.post('/course/order', data={'id': course5.id})
+        for index, boxer_id in enumerate(boxer_id_list):
+            if int(boxer_id) == boxer1.id:
+                boxer1_index = index
+            elif int(boxer_id) == boxer5.id:
+                boxer5_index = index
+        if boxer5_index > boxer1_index:
+            boxer_id_list[boxer5_index], boxer_id_list[boxer1_index] = str(boxer1.id), str(boxer5.id)
+        res = self.client6.get('/nearby/boxers', data={'longitude': 116.39737, 'latitude': 40.024919})
+        nearby_boxer_id_list = [str(res.data['results'][i]['id']) for i in range(len(res.data['results']))]
+        self.assertEqual(nearby_boxer_id_list, boxer_id_list)
 
         # 验证获取到的拳手信息是否完整且正确
         boxer = res.data['results'][0]
