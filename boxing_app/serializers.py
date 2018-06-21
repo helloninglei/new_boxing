@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Min
+from django.db.transaction import atomic
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
@@ -41,8 +42,10 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.count()
 
+    @atomic
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
+        Course.objects.filter(boxer=instance).update(is_open=False)
         return super().update(instance, validated_data)
 
     class Meta:
