@@ -185,7 +185,7 @@ class NearbyBoxerTestCase(APITestCase):
                 boxer5_index = index
         if boxer5_index > boxer1_index:
             boxer_id_list[boxer5_index], boxer_id_list[boxer1_index] = str(boxer1.id), str(boxer5.id)
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919')
+        res = self.client6.get('/nearby/boxers', data={'longitude': 116.39737, 'latitude': 40.024919})
         nearby_boxer_id_list = [str(res.data['results'][i]['id']) for i in range(len(res.data['results']))]
         self.assertEqual(nearby_boxer_id_list, boxer_id_list)
 
