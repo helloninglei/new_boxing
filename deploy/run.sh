@@ -1,15 +1,12 @@
 #!/bin/bash
 
-# 在docker容器内运行uwsgi
-
 clear_cache(){
-    find . -type f -name "*.py[co]" -delete
-    find . -type d -name "__pycache__" -delete
+    find . -type d -name "__pycache__" | xargs rm -rf
 }
 
 install(){
     echo "install..."
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
     echo "install done"
 }
 
@@ -22,6 +19,7 @@ migrate(){
 
 deploy(){
     mkdir -p /var/log/new_boxing
+    /etc/init.d/supervisord restart
     /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
 }
 

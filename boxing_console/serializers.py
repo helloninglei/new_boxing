@@ -9,7 +9,7 @@ from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, PayOrder, \
+from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, \
     Message, Comment, OrderComment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
@@ -18,7 +18,8 @@ from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
-    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, HOT_VIDEO_USER_ID
+    OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
+    HOT_VIDEO_USER_ID
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -445,7 +446,7 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
         if instance.status == WITHDRAW_STATUS_REJECTED:
-            change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK)
+            change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, remarks=instance.order_number)
         if instance.status == WITHDRAW_STATUS_APPROVED:
             create_official_account_change_log(
                 -instance.amount, self.context['request'].user,
@@ -462,6 +463,12 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
 
 class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):
     change_type = serializers.CharField(source="get_change_type_display")
+    remarks = serializers.SerializerMethodField()
+
+    def get_remarks(self, instance):
+        if instance.change_type == MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE:
+            return instance.operator.mobile
+        return instance.remarks
 
     class Meta:
         model = models.MoneyChangeLog
