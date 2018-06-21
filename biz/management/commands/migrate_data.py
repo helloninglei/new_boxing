@@ -10,7 +10,7 @@ from gevent import queue
 from biz.services.file_service import save_upload_file
 from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
 from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
-from biz.constants import OFFICIAL_USER_MOBILE_MAP, FRIDAY_USER_ID, BOXING_USER_ID
+from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID
 from biz.redis_client import follow_user
 
 city_dict = {}
@@ -143,9 +143,6 @@ def set_admin_user():
     for mobile in OFFICIAL_USERS.keys():
         u, _ = User.objects.get_or_create(
             mobile=mobile,
-            defaults=dict(
-                id=OFFICIAL_USER_MOBILE_MAP[mobile]
-            )
         )
         u.set_password('1qaz1qaz1qaZ')
         u.is_staff = True
