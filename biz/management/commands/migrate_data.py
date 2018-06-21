@@ -10,6 +10,8 @@ from gevent import queue
 from biz.services.file_service import save_upload_file
 from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
 from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
+from biz.constants import OFFICIAL_USER_MOBILE_MAP, FRIDAY_USER_ID, BOXING_USER_ID
+from biz.redis_client import follow_user
 
 city_dict = {}
 with open('old_boxing/citys.txt', 'r') as fp:
@@ -133,7 +135,7 @@ OFFICIAL_USERS = {
     15801087215: '拳城出击',
     15210750150: 'Friday',
     16619770891: '热门视频',
-    13800138000: 'app客服账号',
+    13800138000: '客服账号',
 }
 
 
@@ -141,6 +143,9 @@ def set_admin_user():
     for mobile in OFFICIAL_USERS.keys():
         u, _ = User.objects.get_or_create(
             mobile=mobile,
+            defaults=dict(
+                id=OFFICIAL_USER_MOBILE_MAP[mobile]
+            )
         )
         u.set_password('1qaz1qaz1qaZ')
         u.is_staff = True
@@ -211,6 +216,12 @@ def move_comment():
         q.put((move_comment_worker, c))
 
 
+def follow_official_user():
+    for u in User.objects.all():
+        follow_user(u.id, FRIDAY_USER_ID)
+        follow_user(u.id, BOXING_USER_ID)
+
+
 class Command(BaseCommand):
     help = '迁移数据'
 
@@ -218,6 +229,7 @@ class Command(BaseCommand):
         workers = [gevent.spawn(worker) for _ in range(20)]
         move_user()
         set_admin_user()
+        follow_official_user()
         move_article()
         move_comment()
         gevent.joinall(workers)
