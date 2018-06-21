@@ -386,6 +386,7 @@ class BannerSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate(self, attrs):
+        pk = self.context['view'].kwargs.get('pk')
         link = attrs.get('link')
         if attrs.get('link_type') == BANNER_LINK_TYPE_IN_APP_NATIVE:
             params = link.split(':')
@@ -399,7 +400,7 @@ class BannerSerializer(serializers.ModelSerializer):
                 raise ValidationError({'message': [f'{model_class._meta.verbose_name}:{obj_id} 不存在']})
         else:
             url_validator(link)
-        if models.Banner.objects.filter(order_number=attrs.get('order_number')).exists():
+        if models.Banner.objects.filter(order_number=attrs.get('order_number')).exclude(id=pk).exists():
             raise ValidationError({'message': ['序号已存在']})
         return attrs
 
