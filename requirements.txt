@@ -1,4 +1,4 @@
---index-url https://pypi.doubanio.com/simple
+--index-url https://mirrors.aliyun.com/pypi/simple
 
 Django>=2.0,<2.1
 django-filter==1.1.0
