@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-LOG_PATH='/var/log/new_boxing'
+LOG_PATH="${LOG_PATH:-/var/log/new_boxing}"
 
 build_image(){
-    cd deploy
-    docker build -t new_boxing_image .
-    docker build -f NodeDockerfile -t new_boxing_node_image .
-    cd ..
+    docker build -f ./deploy/docker/Dockerfile -t new_boxing_image .
+    docker build -f ./deploy/docker/NodeDockerfile -t new_boxing_node_image .
 }
 
 api(){
-    docker run -p 5000:8000 --name new_boxing_app -v `pwd`:/work -v $LOG_PATH:/var/log/new_boxing -e APP='boxing_app' -d -it new_boxing_image /work/deploy/run.sh
+    docker run -p 5000:8000 --name new_boxing_app -v `pwd`:/work -v $LOG_PATH:/var/log/new_boxing -v `pwd`/deploy/celery.conf:/etc/supervisor/celery.conf -e APP='boxing_app' -d -it new_boxing_image /work/deploy/run.sh
 }
 
 console(){
