@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# 在docker容器内运行uwsgi
-
 clear_cache(){
-    find . -type f -name "*.py[co]" | xargs rm -rf
     find . -type d -name "__pycache__" | xargs rm -rf
 }
 
