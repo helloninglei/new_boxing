@@ -49,7 +49,7 @@
                             style="position: relative;width: 375px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
                         <template v-if="picture">
                             <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
-                            <img  :src="picture" class="avatar">
+                            <img  :src="config.baseUrl+picture" class="avatar">
                         </template>
                         <template v-else>
                             <i class="el-icon-plus avatar-uploader-icon"></i>
@@ -287,6 +287,7 @@
             },
 
             modifyBannerEv(obj) {
+                obj.picture = this.picture;
                 this.ajax(`/banners/${this.id}`,'put',obj).then((res) => {
                     res && res.data && this.$router.push({path: '/bannermanage'});
                 },(err) => {
