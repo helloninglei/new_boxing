@@ -93,10 +93,13 @@
                 var imgReg = /<iframe.*?(?:>|\/>)/gi;
                 var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
                 var arr = str.match(imgReg);
-                for (var i = 0; i < arr.length; i++) {
-                    var src = arr[i].match(srcReg);
-                    str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + `${config.baseUrl}` + src[1] + '" poster="' + `${config.baseUrl}` + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                if (arr) {
+                    for (var i = 0; i < arr.length; i++) {
+                        var src = arr[i].match(srcReg);
+                        str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + `${config.baseUrl}` + src[1] + '" poster="' + `${config.baseUrl}` + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                    }
                 }
+
                 return str
             },
             getData() {

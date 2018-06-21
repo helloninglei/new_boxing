@@ -39,7 +39,7 @@ def broadcast_message(content, jump_to=None, start_time=None, end_time=None):
 
 
 def _build_message(content, jump_to, start_time, end_time, device):
-    msg = PushMessage().title('拳民出击').description(content).extra({'jump_to': jump_to}).restricted_package_name(
+    msg = PushMessage().title('拳城出击').description(content).extra({'jump_to': jump_to}).restricted_package_name(
         settings.ANDROID_PACKAGE_NAME)
     if device == 'android':
         msg.payload(content).notify_type(1)
