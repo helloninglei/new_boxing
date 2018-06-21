@@ -78,7 +78,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
         return instance.boxer_course_order.count()
 
     def get_course_min_price(self, instance):
-        return Course.objects.filter(boxer=instance).aggregate(min_price=Min('price'))['min_price']
+        return Course.objects.filter(boxer=instance, is_deleted=False, is_open=True).aggregate(min_price=Min('price'))['min_price']
 
     @staticmethod
     def get_boxer_loacation(obj):
