@@ -379,7 +379,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Report
-        exclude = ('updated_time',)
+        fields = '__all__'
 
 
 class BannerSerializer(serializers.ModelSerializer):
