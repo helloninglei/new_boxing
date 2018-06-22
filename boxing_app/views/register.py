@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from biz.models import User, UserProfile
 from biz import redis_client, redis_const
 from boxing_app.serializers import RegisterSerializer, RegisterWithInfoSerializer, ChangeMobileSerializer
-from boxing_app.tasks import register_easemob_account, send_message
+from boxing_app.tasks import register_easemob_account
 from biz.redis_client import follow_user
 from biz.constants import SERVICE_USER_ID
 from biz.utils import hans_to_initial
@@ -67,7 +67,6 @@ def register_with_user_info(request):
         user = User.objects.create_user(
             mobile=mobile, password=password, wechat_openid=wechat_openid, weibo_openid=weibo_openid)
     follow_user(user.id, SERVICE_USER_ID)
-    send_message.delay(user.id)
     nick_name_index_letter = hans_to_initial(serializer.validated_data['nick_name'])
     nick_name_index_letter = nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#"
 
