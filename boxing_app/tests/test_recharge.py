@@ -14,7 +14,7 @@ class RechargeTestCase(APITestCase):
     def test_money_detail(self):
         pay_order_data = dict(
             user=self.user,
-            status=constants.PAYMENT_STATUS_WAIT_USE,
+            status=constants.PAYMENT_STATUS_PAID,
             content_object=self.user,
             amount=1000,
             out_trade_no=PayService.generate_out_trade_no(),

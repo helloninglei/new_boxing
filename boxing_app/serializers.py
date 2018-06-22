@@ -524,7 +524,7 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='order.course_name', read_only=True)
 
     def validate(self, attrs):
-        if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+        if attrs['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT:
             raise ValidationError('订单不是未评论状态，不能评论！')
         return attrs
 

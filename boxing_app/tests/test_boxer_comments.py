@@ -62,7 +62,7 @@ class CommentsAboutBoxerTestCase(APITestCase):
         self.course_order_data = {
             "user": self.test_user_1,
             "content_object": None,
-            "status": constants.PAYMENT_STATUS_WAIT_USE,
+            "status": constants.COURSE_PAYMENT_STATUS_WAIT_USE,
             "out_trade_no": 111111111,
             "payment_type": constants.PAYMENT_TYPE_WALLET,
             "amount": 100000,
