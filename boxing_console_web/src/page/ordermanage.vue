@@ -28,14 +28,14 @@
                                 v-model="form.pay_time_start"
                                 type="datetime"
                                 :default-value= "new Date()"
-                                value-format="yyyy-MM-dd hh:mm:ss"
+                                value-format="yyyy-MM-dd HH:mm:ss"
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
                                 v-model="form.pay_time_end"
                                 type="datetime"
-                                value-format="yyyy-MM-dd hh:mm:ss"
+                                value-format="yyyy-MM-dd HH:mm:ss"
                                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                                 placeholder="请选择"  class="margin_rt25">
                                 </el-date-picker>
