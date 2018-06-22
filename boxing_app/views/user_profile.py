@@ -63,7 +63,6 @@ class UserProfileNoLoginViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMix
     serializer_class = UserProfileSerializer
     queryset = UserProfile.objects.all()
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = ()
 
     def get_object(self):
         return get_object_or_404(self.queryset, user=self.kwargs['pk'])
