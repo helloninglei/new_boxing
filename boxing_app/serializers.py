@@ -8,7 +8,7 @@ from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import OrderComment, BoxingClub, User, CourseOrder, Course
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -20,7 +20,7 @@ from biz.validator import validate_mobile, validate_password, validate_mobile_or
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
 from biz.redis_client import redis_client
-from biz.redis_const import SEND_VERIFY_CODE
+from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
 from biz.constants import WITHDRAW_MIN_CONFINE
@@ -216,7 +216,7 @@ class SendVerifyCodeSerializer(serializers.Serializer):
             if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
+            if redis_client.exists(SENDING_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "需要图形验证码！"})
         return attrs
 
@@ -533,6 +533,11 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
 class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     change_type = serializers.CharField(source='get_change_type_display')
     created_time = serializers.DateTimeField()
+    change_amount = serializers.SerializerMethodField()
+
+    def get_change_amount(self, instance):
+        change_amount = instance.change_amount
+        return "+" + str(change_amount) if change_amount > 0 else str(change_amount)
 
     class Meta:
         model = models.MoneyChangeLog
