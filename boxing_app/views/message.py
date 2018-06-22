@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -14,6 +15,9 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = (OnlyOwnerCanDeletePermission, IsAuthenticatedOrReadOnly)
     serializer_class = MessageSerializer
     queryset = Message.objects.all()
+
+    def get_object(self):
+        return get_object_or_404(self._get_query_set(), pk=self.kwargs['pk'])
 
     def destroy(self, request, *args, **kwargs):
         self.get_object().soft_delete()
@@ -31,8 +35,8 @@ class MessageViewSet(viewsets.ModelViewSet):
                               distinct=True)
         return Message.objects.exclude(user_id__in=blocked_user_id_list).annotate(
             like_count=Count('likes', distinct=True), comment_count=comment_count,
-            is_like=is_like).prefetch_related('user__boxer_identification',
-                                              'user__user_profile')
+            is_like=is_like).select_related('user__boxer_identification',
+                                            'user__user_profile')
 
     def list(self, request, *args, **kwargs):
         user_id = request.query_params.get('user_id')
