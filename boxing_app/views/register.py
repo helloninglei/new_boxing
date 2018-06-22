@@ -59,7 +59,10 @@ def register_with_user_info(request):
             Q(wechat_openid=wechat_openid, wechat_openid__isnull=False) | Q(weibo_openid=weibo_openid,
                                                                             weibo_openid__isnull=False),
             mobile__startswith=0).exists():
-        user = User.objects.get(Q(wechat_openid=wechat_openid) | Q(weibo_openid=weibo_openid), mobile__startswith=0)
+        user = User.objects.get(
+            Q(wechat_openid=wechat_openid, wechat_openid__isnull=False) | Q(weibo_openid=weibo_openid,
+                                                                            weibo_openid__isnull=False),
+            mobile__startswith=0)
         user.mobile = mobile
         user.set_password(password)
         user.save()

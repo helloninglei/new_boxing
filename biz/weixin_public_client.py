@@ -1,10 +1,8 @@
 import hashlib
 import random
 import string
-
 import requests
 import logging
-
 import time
 from django.conf import settings
 from requests.exceptions import RequestException

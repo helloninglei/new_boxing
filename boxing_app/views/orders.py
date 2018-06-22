@@ -43,7 +43,8 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = UserCourseOrderSerializer
 
     def get_queryset(self):
-        return CourseOrder.objects.filter(user=self.request.user)
+        return CourseOrder.objects.filter(user=self.request.user).select_related("boxer", "boxer__user",
+                                                                                 "boxer__user__user_profile")
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -91,7 +92,7 @@ class CourseOrderCommentViewSet(viewsets.ModelViewSet):
     serializer_class = CourseOrderCommentSerializer
 
     def get_queryset(self):
-        return OrderComment.objects.filter(order_id=self.kwargs['order_id'])
+        return OrderComment.objects.filter(order_id=self.kwargs['order_id']).select_related("order")
 
     def perform_create(self, serializer):
         self.do_order_finish(self.kwargs['order_id'])
