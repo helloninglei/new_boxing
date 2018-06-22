@@ -9,6 +9,4 @@ def register_easemob_account(*usernames):
     EaseMobClient.batch_register(*usernames)
     user = UserProfile.objects.get(user_id=SERVICE_USER_ID)
     msg = "欢迎来到拳城出击！"
-    resp = EaseMobClient.send_text_messages(msg, SERVICE_USER_ID, user.nick_name, user.avatar, usernames)
-    print(resp)
-    return resp
+    return EaseMobClient.send_text_messages(msg, SERVICE_USER_ID, user.nick_name, user.avatar, *usernames)
