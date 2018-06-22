@@ -30,7 +30,7 @@ class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
 
     def boxer_confirm_order(self, request, *args, **kwargs):
         course_order = self.get_object()
-        if course_order.status != constants.PAYMENT_STATUS_WAIT_USE:
+        if course_order.status != constants.COURSE_PAYMENT_STATUS_WAIT_USE:
             return Response({"message": "订单状态不是未使用状态，无法确认"}, status=status.HTTP_400_BAD_REQUEST)
         course_order.confirm_status = constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED
         course_order.boxer_confirm_time = datetime.now()
@@ -84,8 +84,6 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
         course_order.status = constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT
         course_order.user_confirm_time = datetime.now()
         course_order.save()
-        course_order.pay_order.status = constants.PAYMENT_STATUS_WAIT_COMMENT
-        course_order.pay_order.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -100,5 +98,5 @@ class CourseOrderCommentViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def do_order_finish(self, order_id):
-        CourseOrder.objects.filter(id=order_id).update(status=constants.PAYMENT_STATUS_FINISHED,
+        CourseOrder.objects.filter(id=order_id).update(status=constants.COURSE_PAYMENT_STATUS_FINISHED,
                                                        finish_time=datetime.now())

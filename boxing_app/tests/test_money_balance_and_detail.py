@@ -34,12 +34,12 @@ class MoneyBalanceTestCase(APITestCase):
         response = self.client.get(path="/money_change_log", data={"keyword": "income"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['change_amount'], money_change_log_income_data['change_amount'])
+        self.assertEqual(response.data['results'][0]['change_amount'], "+" + str(money_change_log_income_data['change_amount']))
         self.assertEqual(response.data['results'][0]['change_type'], "充值")
 
         # 支出
         response = self.client.get(path="/money_change_log", data={"keyword": "expend"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['change_amount'], money_change_log_expend_data['change_amount'])
+        self.assertEqual(response.data['results'][0]['change_amount'], str(money_change_log_expend_data['change_amount']))
         self.assertEqual(response.data['results'][0]['change_type'], "约单(支出)")

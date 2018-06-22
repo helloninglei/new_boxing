@@ -42,7 +42,7 @@ class HotVideoTestCase(APITestCase):
         )
         PayOrder.objects.create(
             user=self.test_user3,
-            status=constants.PAYMENT_STATUS_WAIT_USE,
+            status=constants.PAYMENT_STATUS_PAID,
             content_object=video,
             amount=video.price,
             out_trade_no=PayService.generate_out_trade_no(),

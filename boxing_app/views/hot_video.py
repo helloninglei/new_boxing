@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
-from biz.constants import PAYMENT_STATUS_WAIT_USE, HOT_VIDEO_USER_ID
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
 from boxing_app.serializers import HotVideoSerializer
 
 
@@ -23,7 +23,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        _filter = Q(orders__status=PAYMENT_STATUS_WAIT_USE, orders__user_id=self.request.user.id)
+        _filter = Q(orders__status=PAYMENT_STATUS_PAID, orders__user_id=self.request.user.id)
         pk = self.kwargs['user_id']
         return models.HotVideo.objects.filter(
             user=models.User.objects.get(pk=pk),
