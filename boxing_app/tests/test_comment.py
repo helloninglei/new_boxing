@@ -100,7 +100,7 @@ class CommentTestCase(APITestCase):
         self.assertEqual(replies['count'], 1)
         reply = replies['results'][0]
         self.assertEqual(reply['id'], reply_to_reply_id)
-        self.assertIsNone(reply['to_user'])
+        self.assertIsNotNone(reply['to_user'])
 
     def test_permission(self):
         self.prepare()

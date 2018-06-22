@@ -17,7 +17,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
 
     def get_object(self):
-        return get_object_or_404(self._get_query_set(), pk=self.kwargs['pk'])
+        self.queryset = self._get_query_set().filter(pk=self.kwargs['pk'])
+        return super().get_object()
 
     def destroy(self, request, *args, **kwargs):
         self.get_object().soft_delete()
