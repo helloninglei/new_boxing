@@ -131,7 +131,7 @@ loglevel = 'debug'
 capture_output = True
 errorlog = f'/var/log/new_boxing/{app}_error.log'
 accesslog = f'/var/log/new_boxing/{app}_access.log'
-access_log_format = '%({X-Real-IP}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+access_log_format = '%({X-Real-IP}i)s %({source}i)s %(l)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 #
 # Process naming
 #
