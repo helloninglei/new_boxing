@@ -9,7 +9,7 @@ from weixin.pay import WeixinPay, WeixinPayError
 from alipay import AliPay, AliPayException
 from biz.models import PayOrder, User, HotVideo, CourseOrder
 from biz.redis_client import get_order_no_serial
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_WAIT_USE, \
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_PAID, \
     MONEY_CHANGE_TYPE_INCREASE_RECHARGE, PAYMENT_STATUS_UNPAID, OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_COURSE, OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, PAYMENT_TYPE_WALLET, \
     MONEY_CHANGE_TYPE_REDUCE_ORDER, \
@@ -124,7 +124,7 @@ class PayService:
             change_type = MONEY_CHANGE_TYPE_REDUCE_ORDER
         try:
             change_money(user=user, amount=-order.amount, change_type=change_type, remarks=order.out_trade_no)
-            order.status = PAYMENT_STATUS_WAIT_USE
+            order.status = PAYMENT_STATUS_PAID
             order.pay_time = datetime.now()
             order.save()
             return {
@@ -185,7 +185,7 @@ class PayService:
             official_account_service.create_official_account_change_log(
                 pay_order.amount, pay_order.user, change_type, remarks=pay_order.out_trade_no)
 
-        pay_order.status = PAYMENT_STATUS_WAIT_USE
+        pay_order.status = PAYMENT_STATUS_PAID
         pay_order.pay_time = datetime.now()
         pay_order.save()
 

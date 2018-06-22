@@ -44,4 +44,4 @@ class EaseMobClient:
         url = f"{cls.domain}{cls.org_name}/{cls.app_name}/messages"
         json_data = {"target_type": "users", "target": target, "msg": {"type": "txt", "msg": msg},
                      "from": sender, "ext": {"nickName": sender_nick_name, "avatar": sender_avatar}}
-        requests.post(url=url, json=json_data, headers={"Authorization": f"Bearer {token}"})
+        return requests.post(url=url, json=json_data, headers={"Authorization": f"Bearer {token}"})

@@ -260,10 +260,6 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
-    price = serializers.SerializerMethodField()
-
-    def get_price(self, obj):  # 返回给前端的单位是分
-        return obj.price * 100
 
     def get_url(self, obj):
         if obj.is_paid or obj.price == 0:
@@ -524,7 +520,7 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='order.course_name', read_only=True)
 
     def validate(self, attrs):
-        if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+        if attrs['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT:
             raise ValidationError('订单不是未评论状态，不能评论！')
         return attrs
 

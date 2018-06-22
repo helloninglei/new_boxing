@@ -246,7 +246,7 @@ class Comment(SoftDeleteModel):
         return self.__class__.objects.filter(ancestor_id=self.id).prefetch_related('user', 'parent')
 
     def to_user(self):
-        if not self.parent.is_deleted and self.parent.id != self.ancestor_id:
+        if self.parent.id != self.ancestor_id:
             return self.parent.user
 
 
@@ -398,7 +398,6 @@ class CourseOrder(models.Model):
     @atomic
     def set_overdue(self):
         self.status = constants.COURSE_PAYMENT_STATUS_OVERDUE
-        self.pay_order.status = constants.PAYMENT_STATUS_OVERDUE
         self.pay_order.save()
         self.save()
 

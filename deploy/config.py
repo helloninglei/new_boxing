@@ -52,7 +52,7 @@ backlog = 2048
 
 worker_class = 'sync'
 worker_connections = 1000
-timeout = 30
+timeout = 180
 keepalive = 2
 
 #
