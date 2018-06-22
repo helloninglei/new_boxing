@@ -9,7 +9,7 @@ from boxing_console.serializers import BoxingClubSerializer
 
 class BoxingClubVewSet(viewsets.ModelViewSet):
     serializer_class = BoxingClubSerializer
-    queryset = BoxingClub.objects.all()
+    queryset = BoxingClub.objects.all().order_by('-id')
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name',)
 

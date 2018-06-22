@@ -176,9 +176,9 @@ class BoxingClubTestCase(TestCase):
         self.assertEqual(list_res.data['count'], 3)
         for key in data1:
             if key in ("longitude", "latitude"):
-                self.assertEqual(str(data1[key]), list_res.data['results'][0].get(key))
+                self.assertEqual(str(data1[key]), list_res.data['results'][2].get(key))
             else:
-                self.assertEqual(data1[key], list_res.data['results'][0].get(key))
+                self.assertEqual(data1[key], list_res.data['results'][2].get(key))
 
         # 通过拳馆名进行搜索,并验证结果
         search_res = self.client.get('/club', data={'search': data2['name']})

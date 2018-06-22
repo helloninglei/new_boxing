@@ -19,6 +19,7 @@ migrate(){
 
 deploy(){
     mkdir -p /var/log/new_boxing
+    rm -f /var/run/celery.pid
     /etc/init.d/supervisord restart
     /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
 }

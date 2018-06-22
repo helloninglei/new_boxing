@@ -110,7 +110,7 @@ class UserProfile(BaseModel):
     weight = models.PositiveSmallIntegerField(blank=True, null=True)
     height = models.PositiveSmallIntegerField(blank=True, null=True)
     profession = models.CharField(max_length=20, null=True, blank=True)
-    avatar = models.CharField(null=True, blank=True, max_length=128)
+    avatar = models.CharField(null=True, blank=True, max_length=256)
     gender = models.BooleanField(default=True)  # True-男，False-女
     address = models.CharField(max_length=254, null=True, blank=True)
     bio = models.CharField(max_length=30, blank=True, null=True)  # 个性签名
