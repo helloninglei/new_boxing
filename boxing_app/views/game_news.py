@@ -19,6 +19,7 @@ def get_news_url(request, pk):
 class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.NewsSerializer
     permission_classes = (AllowAny,)
+    authentication_classes = ()
     queryset = models.GameNews.objects.annotate(comment_count=Count('comments'))
 
     def retrieve(self, request, *args, **kwargs):
