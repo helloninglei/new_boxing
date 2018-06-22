@@ -4,7 +4,7 @@ from rest_framework import viewsets, filters
 from django.db.models import Count, Sum, Q
 from django.contrib.contenttypes.fields import ContentType
 from biz import models
-from biz.constants import PAYMENT_STATUS_WAIT_USE, PAYMENT_STATUS_UNPAID
+from biz.constants import PAYMENT_STATUS_PAID, PAYMENT_STATUS_UNPAID
 from boxing_console.serializers import HotVideoSerializer, HotVideoShowSerializer
 from boxing_console.filters import HotVideoFilter
 
@@ -25,7 +25,7 @@ class HotVideoViewSet(viewsets.ModelViewSet):
         return response
 
     def get_queryset(self):
-        _filter = Q(orders__status=PAYMENT_STATUS_WAIT_USE)
+        _filter = Q(orders__status=PAYMENT_STATUS_PAID)
         return models.HotVideo.objects.annotate(
             sales_count=Count('orders', filter=_filter, distinct=True),
             price_amount=Sum('orders__amount', filter=_filter, distinct=True)

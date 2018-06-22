@@ -19,7 +19,6 @@ def set_course_order_overdue():
                                                 confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
     for course_order in overdue_orders:
         course_order.set_overdue()
-        course_order.pay_order.status = constants.PAYMENT_STATUS_OVERDUE
         course_order.pay_order.save()
 
 
