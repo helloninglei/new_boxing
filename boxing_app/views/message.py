@@ -39,13 +39,18 @@ class MessageViewSet(viewsets.ModelViewSet):
             is_like=is_like).select_related('user__boxer_identification',
                                             'user__user_profile')
 
+    # 最新动态
     def list(self, request, *args, **kwargs):
         user_id = request.query_params.get('user_id')
-        self.queryset = self._get_query_set().filter(user_id=user_id) if user_id else self._get_query_set()
+        if user_id:  # 指定用户的动态
+            self.queryset = self._get_query_set().filter(user_id=user_id)
+        else:
+            following_user_id_list = following_list_all(request.user.id)
+            self.queryset = self._get_query_set().exclude(user_id__in=following_user_id_list)
         return super().list(request, *args, **kwargs)
 
     def hot(self, request, *args, **kwargs):
-        self.queryset = self._get_query_set().order_by('-like_count')
+        self.queryset = self._get_query_set().order_by('-like_count', '-created_time')
         return super().list(request, *args, **kwargs)
 
     def following(self, request, *args, **kwargs):
