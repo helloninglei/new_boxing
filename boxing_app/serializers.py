@@ -40,7 +40,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     course_order_count = serializers.SerializerMethodField()
 
     def get_course_order_count(self, instance):
-        return instance.boxer_course_order.count()
+        return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
 
     @atomic
     def update(self, instance, validated_data):
@@ -78,7 +78,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
         return club.city
 
     def get_order_count(self, instance):
-        return instance.boxer_course_order.count()
+        return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
 
     def get_course_min_price(self, instance):
         return Course.objects.filter(boxer=instance, is_deleted=False, is_open=True).aggregate(min_price=Min('price'))['min_price']
