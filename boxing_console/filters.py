@@ -36,7 +36,7 @@ class CourseFilter(django_filters.FilterSet):
     def filter_is_accept_order(self, qs, name, value):
         if value:
             return qs.filter(~Q(boxer__is_locked=value))
-        return qs.filter()
+        return qs
 
     class Meta:
         model = Course
@@ -52,10 +52,19 @@ class HotVideoFilter(CommonFilter):
 class GameNewsFilter(django_filters.FilterSet):
     start_date = django_filters.DateFilter(name='created_time', lookup_expr='gte')
     end_date = django_filters.DateFilter(name='created_time', lookup_expr='lte')
+    stay_top = django_filters.CharFilter(method='filter_stay_top')
+
+    def filter_stay_top(self, qs, name, value):
+        value = value.lower()
+        if value == 'true':
+            return qs.filter(stay_top=True)
+        if value == 'false':
+            return qs.filter(stay_top=False)
+        return qs
 
     class Meta:
         model = models.GameNews
-        fields = ('start_date', 'end_date')
+        fields = ('start_date', 'end_date', 'stay_top')
 
 
 class CourseOrderFilter(CommonFilter):

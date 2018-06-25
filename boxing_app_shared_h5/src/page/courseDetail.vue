@@ -348,7 +348,7 @@
                     this.wx = require('weixin-js-sdk');
                     wechat.wxConfig();
                     this.inWxShare();
-                    this.ajax(`/messages/${this.id}/share`,'get').then((res) => {
+                    this.ajax(`/boxers/${this.id}/share`,'get').then((res) => {
                         if (res && res.data) {
                             this.initShare(res.data);
                         }

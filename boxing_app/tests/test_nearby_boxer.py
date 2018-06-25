@@ -202,31 +202,50 @@ class NearbyBoxerTestCase(APITestCase):
         self.assertEqual(boxer['allowed_course'], self.boxer_data['allowed_course'])
 
         # 通过课程最低价筛选拳手
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&min_price={self.course_data["price"]}')
-        self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&min_price={self.course_data["price"] + 1}')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "min_price": {self.course_data["price"]}})
+
         self.assertEqual(len(res.data['results']), 0)
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "min_price": {self.course_data["price"] - 1}})
+        self.assertEqual(len(res.data['results']), 5)
 
         # 通过课程最高价筛选拳手
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&max_price={self.course_data["price"]}')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "max_price": {self.course_data["price"]}})
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&max_price={self.course_data["price"] - 1}')
-        self.assertEqual(len(res.data['results']), 0)
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "mxn_price": {self.course_data["price"] + 1}})
+        self.assertEqual(len(res.data['results']), 5)
 
         # 通过课程名筛选拳手
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919&course_name={self.course_data["course_name"]}')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "course_name": {self.course_data["course_name"]}})
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&course_name=unknow_course')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "course_name": "unknown_course"})
         self.assertEqual(len(res.data['results']), 0)
 
         # 通过城市筛选(已知经纬度116.39737,40.024919为北京奥林匹克森林公园位置)
-        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&city=北京市')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "city": "北京市"})
         self.assertEqual(len(res.data['results']), 5)
-        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&city=上海市')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "city": "上海市"})
         self.assertEqual(len(res.data['results']), 0)
 
         # 将拳手5的接单状态修改为关闭
         boxer5.is_accept_order = False
         boxer5.save()
-        res = self.client6.get('/nearby/boxers?longitude=116.39737&latitude=40.024919&city=北京市')
+        res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
+                                                       "latitude": 40.024919,
+                                                       "city": "北京市"})
         self.assertEqual(len(res.data['results']), 4)

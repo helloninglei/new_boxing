@@ -1,22 +1,22 @@
 <template>
     <div class="hot_video_container" :class="{hasClose: ifClose}">
         <div>
-            <div class="payTip" v-if="showPayTip">
-                可免费观看15S,看完整视频需付费99元
+            <div class="payTip" v-if="videoObj.price && showPayTip">
+                免费观看15S,看完整视频需付费{{videoObj.price / 100}}元
                 <div class="close_btn" @click="closePayTipEv"></div>
             </div>
             <div class="video_info_wrapper">
-                <div v-if="videoObj.try_url" class="video">
-                    <Video :url="videoObj.try_url" height="11.8rem"></Video>
+                <div v-if="videoObj.try_url || videoObj.url" class="video">
+                    <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem"></Video>
                 </div>
                 <div class="text">
                     <h2 class="title">{{videoObj.name}}</h2>
                     <div class="desc">{{videoObj.description}}</div>
                 </div>
             </div>
-            <div class="seeVideo" v-if="videoObj.try_url" @click="openApp">99元观看完整视频</div>
+            <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
-        <TabBar :id="id" :ifShowPraise=false commentType="message" @openApp="openApp"></TabBar>
+        <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
@@ -24,9 +24,9 @@
 
 <style scoped lang="stylus" type="text/stylus">
 .hot_video_container
-    margin-bottom 3.5rem
+    padding-bottom 3.5rem
     &.hasClose
-        margin-bottom 0
+        padding-bottom 0
 .payTip
     width 100%
     height 1.2rem
@@ -118,6 +118,7 @@
                 this.ajax(`/users/${this.userId}/hot_videos/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
                         this.videoObj = res.data;
+                        console.log(this.videoObj)
                     }
                 },(err) => {
                     if(err&&err.response){
