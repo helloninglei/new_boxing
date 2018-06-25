@@ -22,9 +22,9 @@
             margin-top .5rem!important
             line-height 1rem!important
             color #fff!important
-        img
-            width 17.25rem!important
-            margin 0 auto
+            img
+                width 17.25rem!important
+                margin 0 auto
         video
             width 100%
             margin-bottom .5rem
