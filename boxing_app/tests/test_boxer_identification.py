@@ -267,8 +267,7 @@ class BoxerIdentificationTestCase(APITestCase):
         # 关闭接单
         res = self.client.post('/boxer/accept-order/close')
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-        is_accept_order = BoxerIdentification.objects.get(id=boxer.id).is_accept_order
-        self.assertFalse(is_accept_order)
+        self.assertFalse(BoxerIdentification.objects.get(id=boxer.id).is_accept_order)
 
         # 非拳手访问接口
         res = self.client2.post('/boxer/accept-order/open')
