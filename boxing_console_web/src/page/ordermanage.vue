@@ -28,14 +28,14 @@
                                 v-model="form.pay_time_start"
                                 type="datetime"
                                 :default-value= "new Date()"
-                                value-format="yyyy-MM-dd hh:mm:ss"
+                                value-format="yyyy-MM-dd HH:MM:SS"
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
                                 v-model="form.pay_time_end"
                                 type="datetime"
-                                value-format="yyyy-MM-dd hh:mm:ss"
+                                value-format="yyyy-MM-dd HH:MM:SS"
                                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                                 placeholder="请选择"  class="margin_rt25">
                                 </el-date-picker>
@@ -112,7 +112,7 @@ nav{min-height: 528px}
                     
                 ],
                 tableColumn:[
-                    {title:'order_time',  name :'下单时间',  width:'155'},
+                    // {title:'order_time',  name :'下单时间',  width:'155'},
                     {title:'out_trade_no',  name :'订单号',    width:'120'},
                     {title:'user_nickname',  name :'用户昵称',   width:''},
                     {title:'user_mobile',name :'用户手机号', width:'95'},
@@ -158,7 +158,7 @@ nav{min-height: 528px}
                                 res.data.results[i].payment_type_name='支付宝'
                             }else if(res.data.results[i].payment_type==2){
                                 res.data.results[i].payment_type_name='微信'
-                            }else{
+                            }else if(res.data.results[i].payment_type==3){
                                 res.data.results[i].payment_type_name='余额'
                             }
                             res.data.results[i].amount = (res.data.results[i].amount/100).toFixed(2)

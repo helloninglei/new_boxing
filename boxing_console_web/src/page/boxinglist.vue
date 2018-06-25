@@ -3,7 +3,7 @@
         <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" disNone="disNone"></TopBar>
         <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <header>
-            <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click='goTodetail()' style='margin-top:30px;float:right;'>添加</el-button>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click='goTodetail()' style='margin-top:30px;float:right;'>新建拳馆</el-button>
             <div class="inline_item">
                 <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='拳馆名称' style='width:18rem'></el-input>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
@@ -71,7 +71,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    content:'确认停用拳馆？'
+                    content:'停用后，拳手将不能选择，确认停用拳馆？'
                 },
                 tableData : [
                     

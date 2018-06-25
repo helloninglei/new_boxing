@@ -43,7 +43,7 @@
                         <el-checkbox-group v-model="form.push_news" style='margin-bottom:22px'>
                           <el-checkbox label="创建推送" name="push_news"></el-checkbox>
                         </el-checkbox-group>
-                        <el-form-item label="发送时间" prop="stay_top" style='margin-left:32px'>
+                        <el-form-item label="发送时间" style='margin-left:32px' id='addTime'>
                             <el-date-picker
                                     class="margin_rt25"
                                     v-model="dateArr"
@@ -299,7 +299,9 @@
                     stay_top: [{ required: true, message: '请选择是否置顶', trigger: 'blur' }],
                     end_time: [
                         { validator: (rule, value, callback) => {
-                            if(this.form.start_time===''){
+                            if(!this.form.push_news){
+                                callback();
+                            }else if(this.form.start_time===''){
                                 callback(new Error('请选择发送的开始时间'));
                             }else if (value==='') {
                                 callback(new Error('请选择发送的结束时间'));
@@ -312,7 +314,7 @@
                             } else {
                                 callback();
                             }
-                        }, trigger: 'blur', required: true}
+                        }, trigger: 'blur', }
                     ],
                     initial_views_count: [
                         { validator: (rule, value, callback) => {
@@ -340,7 +342,6 @@
             this.query = this.$route.query;
             if(this.query.id){
                 //编辑
-                console.log(this.query)
                 this.form=this.query;
                 if(this.form.app_content&&this.form.app_content.indexOf('http')==-1){
                    this.form.app_content   = this.form.app_content.replace(/src="/g,'src="'+this.config.baseUrl) 
@@ -348,6 +349,7 @@
                 if(this.form.share_content&&this.form.share_content.indexOf('http')==-1){
                    this.form.share_content   = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl) 
                 }
+                this.form.push_news = this.query.push_news;
                 // this.form.share_content = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl)
                 this.dateArr=[this.query.start_time?this.query.start_time:'',this.query.end_time?this.query.end_time:'']
                 this.imgUrl = this.form.picture ;
@@ -384,6 +386,14 @@
             },
             'form.share_content'(){
                 this.isshowPrev();
+            },
+            'form.push_news'(val){
+                if(val){
+                    $('#addTime').addClass('is-required')
+
+                }else{
+                    $('#addTime').removeClass('is-required')
+                }
             },
         },
 
@@ -443,8 +453,8 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let reg = '/'+this.config.baseUrl+'/g'
-                        this.form.app_content   = this.form.app_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),'')
-                        this.form.share_content = this.form.share_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),'')
+                        this.form.app_content   = this.form.app_content?this.form.app_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),''):'';
+                        this.form.share_content = this.form.share_content?this.form.share_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),''):'';
                         if(this.form.id){
                             //修改
                             this.ajax('/game_news/'+this.form.id,'put',this.form).then(function(res){
@@ -490,8 +500,8 @@
             },
 
             getDateTime() {
-                this.form.start_time = this.dateArr[0];
-                this.form.end_time = this.dateArr[1];
+                this.form.start_time = this.dateArr?this.dateArr[0]:'';
+                this.form.end_time = this.dateArr?this.dateArr[1]:'';
             },
 
 

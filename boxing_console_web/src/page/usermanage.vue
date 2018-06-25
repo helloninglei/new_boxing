@@ -5,20 +5,20 @@
             <header>
                  <el-row>
                     <el-col :span="5" style='width:314px'>
-                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='输入用户/昵称/手机号' style='width:284px'></el-input>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='请输入用户ID/昵称/手机号' style='width:284px'></el-input>
                     </el-col> 
                     <el-col :span="7" style='width:560px'>
                         <el-date-picker
                         v-model="sendData.start_time"
                         type="datetime"
-                        value-format="yyyy-MM-dd hh:mm:ss"
+                        value-format="yyyy-MM-dd HH:MM:SS"
                         :default-value= "new Date()"
                         placeholder="注册开始时间" style='width:250px' class="margin_rt25">
                         </el-date-picker>
                         <el-date-picker
                         v-model="sendData.end_time"
                         type="datetime"
-                        value-format="yyyy-MM-dd hh:mm:ss"
+                        value-format="yyyy-MM-dd HH:MM:SS"
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="注册结束时间" style='width:250px' class="margin_rt25">
                         </el-date-picker>
