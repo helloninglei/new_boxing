@@ -120,6 +120,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     nick_name = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     allowed_course = serializers.ListField(child=serializers.CharField())
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
+    mobile = serializers.CharField(source='user.mobile')
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
@@ -142,7 +143,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
-    mobile = serializers.CharField(source='boxer.mobile', read_only=True)
+    mobile = serializers.CharField(source='boxer.user.mobile', read_only=True)
     is_professional_boxer = serializers.BooleanField(source='boxer.is_professional_boxer', read_only=True)
     is_accept_order = serializers.SerializerMethodField()
     allowed_course = serializers.ListField(source='boxer.allowed_course', read_only=True)
