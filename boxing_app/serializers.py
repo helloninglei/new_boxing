@@ -387,7 +387,7 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.BoxerIdentification
-        exclude = ["created_time", "updated_time", "identity_number", "user"]
+        exclude = ["created_time", "updated_time", "user"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
