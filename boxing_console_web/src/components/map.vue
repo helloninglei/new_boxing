@@ -2,7 +2,7 @@
 	<div>
 		<div class="baiduTop" style="padding:10px 0;">
 		  	<label >地点：</label>
-		  	<input id="where" name="where" type="text" placeholder="请输入搜索的地址" v-model='address' @blur="onblur()"  @focus="onfocus()">
+		  	<input id="where" name="where" type="text" :maxlength="30" placeholder="请输入搜索的地址" v-model='address' @blur="onblur()"  @focus="onfocus()">
 			<!-- <button type="button" @click="sear();">查找</button> -->
 			<el-button type="danger" class='myColor_red myButton_20' style='width:40px' @click="sear();">查找</el-button>
 		  	<label style="margin-left:118px">经纬度：</label>

@@ -28,14 +28,15 @@
                                 v-model="form.pay_time_start"
                                 type="datetime"
                                 :default-value= "new Date()"
-                                value-format="yyyy-MM-dd HH:mm:ss"
+                                value-format="yyyy-MM-dd HH:MM:SS"
+
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>
                                 <el-date-picker
                                 v-model="form.pay_time_end"
                                 type="datetime"
-                                value-format="yyyy-MM-dd HH:mm:ss"
+                                value-format="yyyy-MM-dd HH:MM:SS"
                                 :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                                 placeholder="请选择"  class="margin_rt25">
                                 </el-date-picker>
@@ -45,7 +46,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="购买课程">
-                                <el-select v-model="form.course__course_name">
+                                <el-select v-model="form.course_name">
                                     <el-option value="" label="全部">全部</el-option>
                                     <el-option value="泰拳" label="泰拳">泰拳</el-option>
                                     <el-option value="拳击" label="拳击">拳击</el-option>
@@ -55,7 +56,7 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="支付方式">
-                                <el-select v-model="form.payment_type" >
+                                <el-select v-model="form.pay_order__payment_type" >
                                     <el-option value="" label="全部">全部</el-option>
                                     <el-option value="2" label="微信">微信</el-option>
                                     <el-option value="1" label="支付宝">支付宝</el-option>
@@ -99,8 +100,8 @@ nav{min-height: 528px}
                 issearch  :false,
                 form : {
                     search     : '',
-                    payment_type    : '',
-                    course__course_name : '',
+                    pay_order__payment_type    : '',
+                    course_name : '',
                     pay_time_start : '',
                     pay_time_end   : '',
                     courseStatus : '',
@@ -112,7 +113,7 @@ nav{min-height: 528px}
                     
                 ],
                 tableColumn:[
-                    {title:'order_time',  name :'下单时间',  width:'155'},
+                    // {title:'order_time',  name :'下单时间',  width:'155'},
                     {title:'out_trade_no',  name :'订单号',    width:'120'},
                     {title:'user_nickname',  name :'用户昵称',   width:''},
                     {title:'user_mobile',name :'用户手机号', width:'95'},
@@ -158,7 +159,7 @@ nav{min-height: 528px}
                                 res.data.results[i].payment_type_name='支付宝'
                             }else if(res.data.results[i].payment_type==2){
                                 res.data.results[i].payment_type_name='微信'
-                            }else{
+                            }else if(res.data.results[i].payment_type==3){
                                 res.data.results[i].payment_type_name='余额'
                             }
                             res.data.results[i].amount = (res.data.results[i].amount/100).toFixed(2)

@@ -11,14 +11,14 @@
                         <el-date-picker
                         v-model="sendData.start_time"
                         type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd HH:MM:SS"
                         :default-value= "new Date()"
                         placeholder="发布开始时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>
                         <el-date-picker
                         v-model="sendData.end_time"
                         type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd HH:MM:SS"
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="发布结束时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>

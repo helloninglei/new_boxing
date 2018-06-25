@@ -13,15 +13,15 @@
                         @change="getDateTime"
                         :clearable=false
                         :editable=false
-                        value-format="yyyy-MM-dd HH:mm:ss">
+                        value-format="yyyy-MM-dd HH:MM:SS">
                 </el-date-picker>
                 <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
-                <el-select v-model="stay_top" class="margin_tp30">
-                    <el-option value="" label="全部">全部</el-option>
+                <el-select v-model="stay_top" class="margin_tp30 margin_rt60">
+                    <el-option value="all" label="全部">全部</el-option>
                     <el-option :value="true" label="置顶">置顶</el-option>
                     <el-option :value="false" label="不置顶">不置顶</el-option>
                 </el-select>
-                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70' @click.native="searchEv">查询</el-button>
+                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click.native="searchEv">查询</el-button>
             </header>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_tp30 margin_bt20' @click.native="addMatchEv">新增</el-button>
             <template>
