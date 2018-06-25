@@ -136,6 +136,7 @@
         created() {
             if (this.id) {
                 this.getComments();
+                this.getPraises();
             }
         },
         methods: {
