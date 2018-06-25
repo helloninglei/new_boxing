@@ -15,16 +15,15 @@
 
 <style lang="stylus" type="text/stylus">
     .infoDetail_container
-        margin-bottom  3.5rem
+        padding-bottom  3.5rem
         &.hasClose
-            margin-bottom 0
+            padding-bottom 0
         p
             margin-top .5rem!important
             line-height 1rem!important
             color #fff!important
         img
-            width 100%
-            height 10rem
+            width 17.25rem!important
             margin 0 auto
         video
             width 100%

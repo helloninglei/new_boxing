@@ -2,7 +2,7 @@
     <div class="download_app_container" v-show="show">
         <div class="container_position">
             <div class="logo_container"></div>
-            <div class="text_desc">拳民出击APP</div>
+            <div class="text_desc">拳城出击APP</div>
             <div class="open_app" @click="openApp"></div>
             <div class="close_btn" @click="closeEv"></div>
         </div>
