@@ -360,7 +360,7 @@
                 let endDate   = new Date();
                 startDate.setMinutes(startDate.getMinutes()+5);
                 endDate.setDate(endDate.getDate()+1);
-                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
+                this.dateArr=[startDate.Format("yyyy-MM-dd HH:mm:ss"),endDate.Format("yyyy-MM-dd HH:mm:ss")]
             }
             this.isshowPrev();
             this.getDateTime();

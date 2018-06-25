@@ -13,7 +13,7 @@
                         @change="getDateTime"
                         :clearable=false
                         :editable=false
-                        value-format="yyyy-MM-dd HH:MM:SS">
+                        value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
                 <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
                 <el-select v-model="stay_top" class="margin_tp30 margin_rt60">
