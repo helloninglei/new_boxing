@@ -16,7 +16,7 @@
             </div>
             <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
-        <TabBar :id="id" :ifShowPraise=false commentType="message" @openApp="openApp"></TabBar>
+        <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
