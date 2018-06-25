@@ -7,8 +7,8 @@
             <!--<div class="content">{{info.content}}</div>-->
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
-        <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp != 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp != 0"></DownloadTip>
+        <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
@@ -63,7 +63,7 @@
     export default {
         data() {
             return {
-                inApp: 0,
+                inApp: 1,
                 id: '',
                 ifClose: false,
                 showModal: false,
