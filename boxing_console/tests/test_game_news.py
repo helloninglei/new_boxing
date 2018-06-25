@@ -30,7 +30,6 @@ class GameNewsTestCase(APITestCase):
 
         res = self.client.get(f'/game_news/{res.data["id"]}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        result = res.data
 
         # test author
         nick_name = 'Lerry'
@@ -57,5 +56,16 @@ class GameNewsTestCase(APITestCase):
         res = self.client.post('/game_news', self.data)
         self.assertEqual(res.data['message'][0], '结束时间必须在开始时间以后的14天内')
 
+    def test_stay_top(self):
+        self.client.post('/game_news', self.data)
+        self.data['stay_top'] = False
+        self.client.post('/game_news', self.data)
 
+        res = self.client.get('/game_news', {'stay_top': 'all'})
+        self.assertEqual(res.data['count'], 2)
 
+        res = self.client.get('/game_news', {'stay_top': 'true'})
+        self.assertEqual(res.data['count'], 1)
+
+        res = self.client.get('/game_news', {'stay_top': 'false'})
+        self.assertEqual(res.data['count'], 1)

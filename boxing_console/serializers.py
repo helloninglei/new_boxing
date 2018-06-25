@@ -307,7 +307,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.GameNews
-        exclude = ('created_time', 'updated_time')
+        exclude = ('updated_time',)
         read_only_fields = ('views_count',)
 
 
@@ -447,7 +447,8 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
         if instance.status == WITHDRAW_STATUS_REJECTED:
-            change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, remarks=instance.order_number)
+            change_money(instance.user, instance.amount, change_type=MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK,
+                         remarks=instance.order_number)
         if instance.status == WITHDRAW_STATUS_APPROVED:
             create_official_account_change_log(
                 -instance.amount, self.context['request'].user,
