@@ -5,8 +5,8 @@ from biz.models import BoxerIdentification
 
 
 class NearbyBoxerFilter(django_filters.FilterSet):
-    min_price = django_filters.NumberFilter(name='course__price', lookup_expr='gte')
-    max_price = django_filters.NumberFilter(name='course__price', lookup_expr='lte')
+    min_price = django_filters.NumberFilter(name='m_price', lookup_expr='gt')
+    max_price = django_filters.NumberFilter(name='m_price', lookup_expr='lte')
     course_name = django_filters.CharFilter(method='filter_course_name')
     city = django_filters.CharFilter('course__club__city')
 
