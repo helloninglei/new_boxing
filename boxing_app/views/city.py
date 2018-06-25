@@ -14,6 +14,7 @@ def get_boxer_list(request):
     拳手城市列表
     """
     city_list = list(BoxingClub.objects.filter(course__is_open=True,
+                                               course__is_deleted=False,
                                                course__boxer__authentication_state=BOXER_AUTHENTICATION_STATE_APPROVED,
                                                course__boxer__is_accept_order=True,
                                                course__boxer__is_locked=False
