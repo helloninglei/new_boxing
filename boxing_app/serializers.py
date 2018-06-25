@@ -388,7 +388,7 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
 
     def get_identity_number(self, instance):
         if instance.identity_number:
-            return instance.identity_number[:4] + "******" + instance[-5:-1]
+            return instance.identity_number[:4] + "******" + instance.identity_number[-5:]
 
     class Meta:
         model = models.BoxerIdentification
