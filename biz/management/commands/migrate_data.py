@@ -1,6 +1,5 @@
 import re
 import gevent
-import re
 import requests
 from io import BytesIO
 from json import load
