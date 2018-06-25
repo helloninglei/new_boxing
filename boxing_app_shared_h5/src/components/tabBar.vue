@@ -6,7 +6,7 @@
             <span class="underline"></span>
         </span>
         <span class="item praise" :class="{active: checked === 'praise'}" @click="tab('praise')" v-if="ifShowPraise">
-            点赞
+            点赞 {{praises.length}}
             <span class="underline"></span>
         </span>
         </div>
@@ -136,6 +136,7 @@
         created() {
             if (this.id) {
                 this.getComments();
+                this.getPraises();
             }
         },
         methods: {
