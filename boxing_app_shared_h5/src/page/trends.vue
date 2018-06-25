@@ -2,7 +2,7 @@
     <div>
         <div class="trends_container_head">
             <template v-if="info.user">
-                <img class="portrait" :src="info.user.avatar ? `${config.baseUrl}` + info.user.avatar : avatar_default" />
+                <img class="portrait" :src="info.user.avatar ? info.user.avatar : avatar_default" />
                 <span class="userName">{{info.user.nick_name}}</span>
                 <span class="is_following" @click="followEv">
                     <template v-if="info.user.is_following">
@@ -22,7 +22,7 @@
             </template>
             <template v-else>
                 <div class="pic_wrapper" :class="getClass">
-                    <img :src="`${config.baseUrl}` + item" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>
+                    <img :src="item" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>
                 </div>
             </template>
         </div>
