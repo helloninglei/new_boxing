@@ -46,7 +46,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="购买课程">
-                                <el-select v-model="form.course__course_name">
+                                <el-select v-model="form.course_name">
                                     <el-option value="" label="全部">全部</el-option>
                                     <el-option value="泰拳" label="泰拳">泰拳</el-option>
                                     <el-option value="拳击" label="拳击">拳击</el-option>
@@ -56,7 +56,7 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="支付方式">
-                                <el-select v-model="form.payment_type" >
+                                <el-select v-model="form.pay_order__payment_type" >
                                     <el-option value="" label="全部">全部</el-option>
                                     <el-option value="2" label="微信">微信</el-option>
                                     <el-option value="1" label="支付宝">支付宝</el-option>
@@ -100,8 +100,8 @@ nav{min-height: 528px}
                 issearch  :false,
                 form : {
                     search     : '',
-                    payment_type    : '',
-                    course__course_name : '',
+                    pay_order__payment_type    : '',
+                    course_name : '',
                     pay_time_start : '',
                     pay_time_end   : '',
                     courseStatus : '',
