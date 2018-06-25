@@ -1,5 +1,5 @@
-import gevent
 import re
+import gevent
 import requests
 from io import BytesIO
 from json import load
@@ -21,6 +21,8 @@ with open('old_boxing/citys.txt', 'r') as fp:
         city_dict[i['id']] = i['name']
 
 resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
+
+re_resource_base_url = re.compile('\'?\"?(http:\/\/boxing-1251438677\.cossh\.myqcloud\.com.*?)\'?\"\s')
 
 http_client = requests.Session()
 
@@ -162,6 +164,13 @@ def set_admin_user():
 boxing_user = None
 
 
+def replace_article_img(html):
+    for url in re_resource_base_url.findall(html):
+        new_url = move_image(url)
+        html = html.replace(url, new_url, 1)
+    return html
+
+
 def move_article_worker(article):
     try:
         GameNews.objects.get_or_create(
@@ -174,7 +183,7 @@ def move_article_worker(article):
                 initial_views_count=article.basereadnum,
                 picture=move_image(article.cover),
                 stay_top=article.istotop,
-                app_content=article.contenthtml,
+                app_content=replace_article_img(article.contenthtml),
                 created_time=article.createtime.replace(tzinfo=get_default_timezone()),
                 push_news=article.is_push,
                 start_time=article.push_start_time.replace(
