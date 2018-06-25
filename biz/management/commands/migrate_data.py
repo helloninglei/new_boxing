@@ -1,4 +1,5 @@
 import gevent
+import re
 import requests
 from io import BytesIO
 from json import load
@@ -12,6 +13,7 @@ from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
 from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
 from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID
 from biz.redis_client import follow_user
+from biz.utils import hans_to_initial
 
 city_dict = {}
 with open('old_boxing/citys.txt', 'r') as fp:
@@ -91,10 +93,12 @@ def move_user_worker(u):
         )
     )
     if not UserProfile.objects.filter(user_id=u.uid).exists():
+        nick_name_index_letter = hans_to_initial(u.nickname)
         avatar = move_image(u.avatar or u.uicon)
         UserProfile.objects.create(
             user_id=u.uid,
             nick_name=u.nickname[:30] if u.nickname else None,
+            nick_name_index_letter=nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#",
             gender=1 if u.gender != 2 else 0,
             birthday=u.birthday,
             bio=u.signature,
