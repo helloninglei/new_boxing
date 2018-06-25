@@ -52,7 +52,7 @@ class CourseOrderTestCase(APITestCase):
         self.pay_order_data = {
             "user": self.user1,
             "content_object": None,
-            "status": constants.PAYMENT_STATUS_WAIT_USE,
+            "status": constants.PAYMENT_STATUS_PAID,
             "out_trade_no": 111111111,
             "payment_type": constants.PAYMENT_TYPE_WALLET,
             "amount": 100000,
@@ -62,7 +62,7 @@ class CourseOrderTestCase(APITestCase):
         self.other_order_data = {
             "user": self.user1,
             "content_object": self.user1,
-            "status": constants.PAYMENT_STATUS_WAIT_USE,
+            "status": constants.PAYMENT_STATUS_PAID,
             "out_trade_no": 111111111,
             "payment_type": constants.PAYMENT_TYPE_WALLET,
             "amount": 100000,

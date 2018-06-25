@@ -40,7 +40,8 @@ class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mix
 class BlackListViewSet(viewsets.GenericViewSet):
 
     def list(self, request):
-        blocked_user_list = User.objects.filter(id__in=redis_client.blocked_user_list(request.user.id))
+        blocked_user_list = User.objects.filter(
+            id__in=redis_client.blocked_user_list(request.user.id)).prefetch_related("user_profile")
         return Response({"result": BlockedUserSerializer(blocked_user_list, many=True).data}, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk):
@@ -61,9 +62,8 @@ class BlackListViewSet(viewsets.GenericViewSet):
 
 class UserProfileNoLoginViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.all()
+    queryset = UserProfile.objects.prefetch_related("user")
     permission_classes = (permissions.AllowAny,)
-    authentication_classes = ()
 
     def get_object(self):
         return get_object_or_404(self.queryset, user=self.kwargs['pk'])

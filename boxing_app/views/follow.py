@@ -45,7 +45,8 @@ class BaseFollowView(APIView):
 
     def _make_response(self, user_id_list, page, has_more):
         current_user_id = self.request.user.id
-        user_list = User.objects.filter(id__in=user_id_list).select_related('boxer_identification', 'user_profile')
+        user_list = User.objects.filter(id__in=user_id_list).select_related('boxer_identification',
+                                                                            'user_profile').order_by("-date_joined")
 
         serializer = FollowUserSerializer(user_list, context={'current_user_id': current_user_id}, many=True)
         return Response({

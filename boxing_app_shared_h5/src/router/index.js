@@ -9,7 +9,7 @@ export default [
         path: '/messages/:id',
         component: Trends,
         meta: {
-            title: '动态详情'
+            title: '拳城出击'
         }
     },
     {
@@ -20,14 +20,14 @@ export default [
         path: '/game_news/:id/:inApp',
         component: InfoDetail,
         meta: {
-            title: '资讯详情'
+            title: '拳城出击'
         }
     },
     {
         path: '/hot_videos/:userId/:id',
         component: HotVideo,
         meta: {
-            title: '热门视频',
+            title: '拳城出击',
             desc: '1111'
         }
     },
@@ -35,7 +35,7 @@ export default [
         path: '/courseDetail/:id',
         component: CourseDetail,
         meta: {
-            title: '课程详情'
+            title: '拳城出击'
         }
     },
 ]

@@ -20,6 +20,7 @@
                         v-model="sendData.end_time"
                         type="datetime"
                         value-format="yyyy-MM-dd HH:MM:SS"
+
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="交易结束时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>

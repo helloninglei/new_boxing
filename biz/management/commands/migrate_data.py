@@ -1,3 +1,4 @@
+import re
 import gevent
 import requests
 from io import BytesIO
@@ -10,6 +11,9 @@ from gevent import queue
 from biz.services.file_service import save_upload_file
 from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
 from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
+from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID
+from biz.redis_client import follow_user
+from biz.utils import hans_to_initial
 
 city_dict = {}
 with open('old_boxing/citys.txt', 'r') as fp:
@@ -17,6 +21,8 @@ with open('old_boxing/citys.txt', 'r') as fp:
         city_dict[i['id']] = i['name']
 
 resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
+
+re_resource_base_url = re.compile('\'?\"?(http:\/\/boxing-1251438677\.cossh\.myqcloud\.com.*?)\'?\"\s')
 
 http_client = requests.Session()
 
@@ -89,10 +95,12 @@ def move_user_worker(u):
         )
     )
     if not UserProfile.objects.filter(user_id=u.uid).exists():
+        nick_name_index_letter = hans_to_initial(u.nickname)
         avatar = move_image(u.avatar or u.uicon)
         UserProfile.objects.create(
             user_id=u.uid,
             nick_name=u.nickname[:30] if u.nickname else None,
+            nick_name_index_letter=nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#",
             gender=1 if u.gender != 2 else 0,
             birthday=u.birthday,
             bio=u.signature,
@@ -133,7 +141,7 @@ OFFICIAL_USERS = {
     15801087215: '拳城出击',
     15210750150: 'Friday',
     16619770891: '热门视频',
-    13800138000: 'app客服账号',
+    13800138000: '客服账号',
 }
 
 
@@ -156,6 +164,13 @@ def set_admin_user():
 boxing_user = None
 
 
+def replace_article_img(html):
+    for url in re_resource_base_url.findall(html):
+        new_url = move_image(url)
+        html = html.replace(url, new_url, 1)
+    return html
+
+
 def move_article_worker(article):
     try:
         GameNews.objects.get_or_create(
@@ -168,7 +183,7 @@ def move_article_worker(article):
                 initial_views_count=article.basereadnum,
                 picture=move_image(article.cover),
                 stay_top=article.istotop,
-                app_content=article.contenthtml,
+                app_content=replace_article_img(article.contenthtml),
                 created_time=article.createtime.replace(tzinfo=get_default_timezone()),
                 push_news=article.is_push,
                 start_time=article.push_start_time.replace(
@@ -211,6 +226,12 @@ def move_comment():
         q.put((move_comment_worker, c))
 
 
+def follow_official_user():
+    for u in User.objects.all():
+        follow_user(u.id, FRIDAY_USER_ID)
+        follow_user(u.id, BOXING_USER_ID)
+
+
 class Command(BaseCommand):
     help = '迁移数据'
 
@@ -218,6 +239,7 @@ class Command(BaseCommand):
         workers = [gevent.spawn(worker) for _ in range(20)]
         move_user()
         set_admin_user()
+        follow_official_user()
         move_article()
         move_comment()
         gevent.joinall(workers)

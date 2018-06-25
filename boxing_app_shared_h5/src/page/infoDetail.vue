@@ -7,25 +7,24 @@
             <!--<div class="content">{{info.content}}</div>-->
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
-        <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp != 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp != 0"></DownloadTip>
+        <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
 
 <style lang="stylus" type="text/stylus">
     .infoDetail_container
-        margin-bottom  3.5rem
+        padding-bottom  3.5rem
         &.hasClose
-            margin-bottom 0
+            padding-bottom 0
         p
             margin-top .5rem!important
             line-height 1rem!important
             color #fff!important
-        img
-            width 100%
-            height 10rem
-            margin 0 auto
+            img
+                width 17.25rem!important
+                margin 0 auto
         video
             width 100%
             margin-bottom .5rem
@@ -63,7 +62,7 @@
     export default {
         data() {
             return {
-                inApp: 0,
+                inApp: 1,
                 id: '',
                 ifClose: false,
                 showModal: false,
@@ -93,10 +92,13 @@
                 var imgReg = /<iframe.*?(?:>|\/>)/gi;
                 var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
                 var arr = str.match(imgReg);
-                for (var i = 0; i < arr.length; i++) {
-                    var src = arr[i].match(srcReg);
-                    str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + `${config.baseUrl}` + src[1] + '" poster="' + `${config.baseUrl}` + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                if (arr) {
+                    for (var i = 0; i < arr.length; i++) {
+                        var src = arr[i].match(srcReg);
+                        str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                    }
                 }
+
                 return str
             },
             getData() {

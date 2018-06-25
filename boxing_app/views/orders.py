@@ -30,7 +30,7 @@ class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
 
     def boxer_confirm_order(self, request, *args, **kwargs):
         course_order = self.get_object()
-        if course_order.status != constants.PAYMENT_STATUS_WAIT_USE:
+        if course_order.status != constants.COURSE_PAYMENT_STATUS_WAIT_USE:
             return Response({"message": "订单状态不是未使用状态，无法确认"}, status=status.HTTP_400_BAD_REQUEST)
         course_order.confirm_status = constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED
         course_order.boxer_confirm_time = datetime.now()
@@ -43,7 +43,8 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = UserCourseOrderSerializer
 
     def get_queryset(self):
-        return CourseOrder.objects.filter(user=self.request.user)
+        return CourseOrder.objects.filter(user=self.request.user).select_related("boxer", "boxer__user",
+                                                                                 "boxer__user__user_profile")
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -84,8 +85,6 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
         course_order.status = constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT
         course_order.user_confirm_time = datetime.now()
         course_order.save()
-        course_order.pay_order.status = constants.PAYMENT_STATUS_WAIT_COMMENT
-        course_order.pay_order.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -93,12 +92,12 @@ class CourseOrderCommentViewSet(viewsets.ModelViewSet):
     serializer_class = CourseOrderCommentSerializer
 
     def get_queryset(self):
-        return OrderComment.objects.filter(order_id=self.kwargs['order_id'])
+        return OrderComment.objects.filter(order_id=self.kwargs['order_id']).select_related("order")
 
     def perform_create(self, serializer):
         self.do_order_finish(self.kwargs['order_id'])
         serializer.save(user=self.request.user)
 
     def do_order_finish(self, order_id):
-        CourseOrder.objects.filter(id=order_id).update(status=constants.PAYMENT_STATUS_FINISHED,
+        CourseOrder.objects.filter(id=order_id).update(status=constants.COURSE_PAYMENT_STATUS_FINISHED,
                                                        finish_time=datetime.now())

@@ -3,12 +3,13 @@ import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Min
+from django.db.transaction import atomic
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import OrderComment, BoxingClub, User, CourseOrder, Course
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -20,7 +21,7 @@ from biz.validator import validate_mobile, validate_password, validate_mobile_or
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
 from biz.redis_client import redis_client
-from biz.redis_const import SEND_VERIFY_CODE
+from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
 from biz.constants import WITHDRAW_MIN_CONFINE
@@ -41,8 +42,10 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.count()
 
+    @atomic
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
+        Course.objects.filter(boxer=instance).update(is_open=False)
         return super().update(instance, validated_data)
 
     class Meta:
@@ -78,7 +81,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
         return instance.boxer_course_order.count()
 
     def get_course_min_price(self, instance):
-        return Course.objects.filter(boxer=instance).aggregate(min_price=Min('price'))['min_price']
+        return Course.objects.filter(boxer=instance, is_deleted=False, is_open=True).aggregate(min_price=Min('price'))['min_price']
 
     @staticmethod
     def get_boxer_loacation(obj):
@@ -216,7 +219,7 @@ class SendVerifyCodeSerializer(serializers.Serializer):
             if not check_captcha(captcha.get("captcha_code"), captcha.get("captcha_hash")):
                 raise ValidationError({"message": "图形验证码错误！"})
         else:
-            if redis_client.exists(SEND_VERIFY_CODE.format(mobile=attrs['mobile'])):
+            if redis_client.exists(SENDING_VERIFY_CODE.format(mobile=attrs['mobile'])):
                 raise ValidationError({"message": "需要图形验证码！"})
         return attrs
 
@@ -257,10 +260,6 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
-    price = serializers.SerializerMethodField()
-
-    def get_price(self, obj):  # 返回给前端的单位是分
-        return obj.price * 100
 
     def get_url(self, obj):
         if obj.is_paid or obj.price == 0:
@@ -385,10 +384,15 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField())
     allowed_course = serializers.ListField(child=serializers.CharField())
+    identity_number = serializers.SerializerMethodField()
+
+    def get_identity_number(self, instance):
+        if instance.identity_number:
+            return instance.identity_number[:4] + "******" + instance.identity_number[-5:]
 
     class Meta:
         model = models.BoxerIdentification
-        exclude = ["created_time", "updated_time", "identity_number", "user"]
+        exclude = ["created_time", "updated_time", "user"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -521,7 +525,7 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='order.course_name', read_only=True)
 
     def validate(self, attrs):
-        if attrs['order'].status != constants.PAYMENT_STATUS_WAIT_COMMENT:
+        if attrs['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT:
             raise ValidationError('订单不是未评论状态，不能评论！')
         return attrs
 
@@ -533,6 +537,11 @@ class CourseOrderCommentSerializer(serializers.ModelSerializer):
 class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
     change_type = serializers.CharField(source='get_change_type_display')
     created_time = serializers.DateTimeField()
+    change_amount = serializers.SerializerMethodField()
+
+    def get_change_amount(self, instance):
+        change_amount = instance.change_amount
+        return "+" + str(change_amount) if change_amount > 0 else str(change_amount)
 
     class Meta:
         model = models.MoneyChangeLog
@@ -562,7 +571,8 @@ class WithdrawSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         instance = super().create(validated_data)
-        change_money(instance.user, -instance.amount, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW, remarks=f"{instance.id}")
+        change_money(instance.user, -instance.amount, MONEY_CHANGE_TYPE_REDUCE_WITHDRAW,
+                     remarks=f"{instance.order_number}")
         return instance
 
     class Meta:

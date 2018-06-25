@@ -54,6 +54,7 @@
                                     @change="getDateTime"
                                     :default-value='new Date()'
                                     value-format="yyyy-MM-dd HH:MM:SS">
+
                             </el-date-picker>
                         </el-form-item>
                         <el-form-item style='margin-left:30px;margin-top:-30px'>

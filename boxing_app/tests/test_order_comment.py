@@ -60,7 +60,7 @@ class OrderCommentTestCase(APITestCase):
         self.course_order_data = {
             "user": self.test_user_1,
             "content_object": None,
-            "status": constants.PAYMENT_STATUS_WAIT_USE,
+            "status": constants.COURSE_PAYMENT_STATUS_WAIT_USE,
             "out_trade_no": 111111111,
             "payment_type": constants.PAYMENT_TYPE_WALLET,
             "amount": 100000,
@@ -105,7 +105,7 @@ class OrderCommentTestCase(APITestCase):
         self.assertEqual(do_comment_res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # 修改订单状态为待评论，可以正常评论
-        course_order.status = constants.PAYMENT_STATUS_WAIT_COMMENT
+        course_order.status = constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT
         course_order.save()
         do_comment_res = self.client1.post(f'/course/order/{course_order.pk}/comment',
                                            data=json.dumps(comment_data),

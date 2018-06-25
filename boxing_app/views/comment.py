@@ -19,7 +19,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     @property
     def content_object(self):
         object_class = get_model_class_by_name(self.kwargs['object_type'])
-        return get_object_or_404(object_class, pk=self.kwargs['object_id'])
+        query_set = object_class.objects.all()
+        if hasattr(object_class, 'is_show'):
+            query_set = query_set.filter(is_show=True)
+        return get_object_or_404(query_set, pk=self.kwargs['object_id'])
 
     def get_queryset(self):
         return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')
@@ -69,7 +72,7 @@ class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         boxer = models.BoxerIdentification.objects.filter(id=self.kwargs['boxer_id']).only('id').first()
-        return OrderComment.objects.filter(order__course__boxer=boxer)
+        return OrderComment.objects.filter(order__course__boxer=boxer).select_related("order")
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)

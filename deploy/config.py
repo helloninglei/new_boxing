@@ -2,7 +2,7 @@ import os
 import multiprocessing
 
 bind = "0.0.0.0:8000"
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = multiprocessing.cpu_count() + 1
 
 backlog = 2048
 
@@ -52,7 +52,7 @@ backlog = 2048
 
 worker_class = 'sync'
 worker_connections = 1000
-timeout = 30
+timeout = 180
 keepalive = 2
 
 #
@@ -131,7 +131,7 @@ loglevel = 'debug'
 capture_output = True
 errorlog = f'/var/log/new_boxing/{app}_error.log'
 accesslog = f'/var/log/new_boxing/{app}_access.log'
-access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+access_log_format = '%({X-Real-IP}i)s %({source}i)s %(l)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 #
 # Process naming
 #

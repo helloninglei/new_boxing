@@ -2,6 +2,7 @@
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz.models import Like
 from biz.models import Message
@@ -13,8 +14,7 @@ class LikeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def _get_message_instance(self):
-        message_id = self.kwargs['message_id']
-        return Message.objects.get(id=message_id)
+        return get_object_or_404(Message, id=self.kwargs['message_id'])
 
     def get_queryset(self):
         return Like.objects.filter(message=self._get_message_instance()).prefetch_related('user')

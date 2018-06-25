@@ -2,7 +2,7 @@
     <div class="course_detail">
         <div class="boxer_container">
             <template>
-                <img class="portrait" :src="playerInfo.avatar ? `${config.baseUrl}` + playerInfo.avatar : avatar_default" @click="openApp" />
+                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar : avatar_default" @click="openApp" />
                 <div class="boxer_info">
                     <div class="boxerName">{{playerInfo.real_name}}<span :class="playerInfo.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
@@ -54,7 +54,7 @@
         <div class="award_experience_pic">
             <div class="title">参赛、获奖及执教经历</div>
             <div class="pic_wrapper" :class="getClass">
-                <img :src="`${config.baseUrl}` + item" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
+                <img :src="item" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
             </div>
         </div>
         <div class="match_video" v-if="playerInfo.competition_video">

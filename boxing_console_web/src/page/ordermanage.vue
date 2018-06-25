@@ -29,6 +29,7 @@
                                 type="datetime"
                                 :default-value= "new Date()"
                                 value-format="yyyy-MM-dd HH:MM:SS"
+
                                 placeholder="请选择">
                                 </el-date-picker>
                                 <span>-</span>

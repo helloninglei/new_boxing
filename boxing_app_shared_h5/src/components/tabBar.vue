@@ -85,6 +85,7 @@
         .comments_container
             color  #9DA3B4
             .topic
+                line-height 1rem
                 margin .35rem auto .6rem 1.2rem
             .replay_container
                 width 15.4rem

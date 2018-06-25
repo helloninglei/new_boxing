@@ -13,7 +13,7 @@ from boxing_console.serializers import BoxerIdentificationSerializer, CourseSeri
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
-    queryset = BoxerIdentification.objects.all()
+    queryset = BoxerIdentification.objects.all().order_by('-id')
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('is_professional_boxer', 'authentication_state', 'is_locked')
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')

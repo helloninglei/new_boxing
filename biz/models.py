@@ -110,7 +110,7 @@ class UserProfile(BaseModel):
     weight = models.PositiveSmallIntegerField(blank=True, null=True)
     height = models.PositiveSmallIntegerField(blank=True, null=True)
     profession = models.CharField(max_length=20, null=True, blank=True)
-    avatar = models.CharField(null=True, blank=True, max_length=128)
+    avatar = models.CharField(null=True, blank=True, max_length=256)
     gender = models.BooleanField(default=True)  # True-男，False-女
     address = models.CharField(max_length=254, null=True, blank=True)
     bio = models.CharField(max_length=30, blank=True, null=True)  # 个性签名
@@ -219,7 +219,7 @@ class BoxerIdentification(BaseModel):
     competition_video = models.CharField(max_length=256, null=True)
     allowed_course = StringListField(null=True, blank=True)
     refuse_reason = models.CharField(max_length=100, null=True, blank=True)
-    is_accept_order = models.BooleanField(default=True)
+    is_accept_order = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'boxer_identification'
@@ -246,7 +246,7 @@ class Comment(SoftDeleteModel):
         return self.__class__.objects.filter(ancestor_id=self.id).prefetch_related('user', 'parent')
 
     def to_user(self):
-        if not self.parent.is_deleted and self.parent.id != self.ancestor_id:
+        if self.parent.id != self.ancestor_id:
             return self.parent.user
 
 
@@ -398,7 +398,6 @@ class CourseOrder(models.Model):
     @atomic
     def set_overdue(self):
         self.status = constants.COURSE_PAYMENT_STATUS_OVERDUE
-        self.pay_order.status = constants.PAYMENT_STATUS_OVERDUE
         self.pay_order.save()
         self.save()
 
