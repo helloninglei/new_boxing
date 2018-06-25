@@ -384,6 +384,11 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField())
     allowed_course = serializers.ListField(child=serializers.CharField())
+    identity_number = serializers.SerializerMethodField()
+
+    def get_identity_number(self, instance):
+        if instance.identity_number:
+            return instance.identity_number[:4] + "******" + instance[-5:-1]
 
     class Meta:
         model = models.BoxerIdentification
