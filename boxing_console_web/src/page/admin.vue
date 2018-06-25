@@ -108,7 +108,7 @@
                 this.ajax('/admins/','post',{mobile:val},{}).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
-                        $this.tableData.push(res.data);
+                        $this.tableData.unshift(res.data);
                         $this.dialog_label_data.isshow=false;
                     }
 

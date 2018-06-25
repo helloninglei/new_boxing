@@ -224,7 +224,7 @@
                     {title:'id',       name :'ID',  width:''},
                     {title:'user',     name :'举报用户ID',    width:''},
                     {title:'reported_user',  name :'被举报用户',   width:''},
-                    {title:'reason',   name :'举报理由', width:''},
+                    {title:'reason_content',   name :'举报理由', width:''},
                 ],
             }
         },
@@ -255,6 +255,10 @@
                         $this.tableData = res.data.results
                         for(var i=0;i<$this.tableData.length;i++){
                             $this.tableData[i].content_type=$this.tableData[i].content_type=='comment'?'评论':'动态';
+                            if($this.tableData[i].remark){
+                                $this.tableData[i].remark = '--'+$this.tableData[i].remark
+                            }
+                            $this.tableData[i].reason_content=$this.tableData[i].reason+$this.tableData[i].remark;
                         }
                         $this.total = res.data.count;
                     }

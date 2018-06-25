@@ -132,7 +132,7 @@ nav{min-height: 528px}
                         $this.tableData=res.data.results;
                         for(var i=0;i<$this.tableData.length;i++){
                             $this.tableData[i].professional_boxer=$this.tableData[i].is_professional_boxer? "职业":"非职业"
-                            $this.tableData[i].lock_name=$this.tableData[i].is_locked? "已锁定":"已解锁"  
+                            $this.tableData[i].lock_name=$this.tableData[i].authentication_state=='WAITING'? '--' :$this.tableData[i].is_locked? "已锁定":"已解锁"  
                             if($this.tableData[i].authentication_state=='APPROVED'){
                                 $this.tableData[i].authentication_name="已通过"
                             }else if($this.tableData[i].authentication_state=='REFUSE'){
