@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
 
 from biz.models import BoxingClub
-from biz.redis_client import redis_client
+from biz import redis_client
 from boxing_app.serializers import BoxingClubSerializer
 
 
