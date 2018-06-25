@@ -32,7 +32,7 @@ export default [
         }
     },
     {
-        path: '/courseDetail/:id',
+        path: '/boxers/:id',
         component: CourseDetail,
         meta: {
             title: '拳城出击'
