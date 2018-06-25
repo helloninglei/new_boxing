@@ -247,7 +247,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     boxer_id = serializers.IntegerField(source='boxer.pk', read_only=True)
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
-    boxer_mobile = serializers.CharField(source='boxer.mobile', read_only=True)
+    boxer_mobile = serializers.CharField(source='boxer.user.mobile', read_only=True)
     club_name = serializers.CharField(source='club.name', read_only=True)
     out_trade_no = serializers.IntegerField(source='pay_order.out_trade_no', read_only=True)
     payment_type = serializers.IntegerField(source='pay_order.payment_type', read_only=True)
