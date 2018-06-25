@@ -44,6 +44,8 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         boxer = BoxerIdentification.objects.get(user=self.request.user)
+        if boxer.is_locked:
+            return Response({'message': '拳手接单状态已锁定，无法前往接单！'}, status=status.HTTP_400_BAD_REQUEST)
         self.get_boxer_base_info(dict=response.data, boxer=boxer)
         course = self.get_queryset().filter(is_open=True).select_related('club').last()
         if course:
