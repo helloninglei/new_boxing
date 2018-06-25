@@ -465,6 +465,10 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
 class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):
     change_type = serializers.CharField(source="get_change_type_display")
     remarks = serializers.SerializerMethodField()
+    change_amount = serializers.SerializerMethodField()
+
+    def get_change_amount(self, instance):
+        return "+" + str(instance.change_amount) if instance.change_amount > 0 else str(instance.change_amount)
 
     def get_remarks(self, instance):
         if instance.change_type == MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE:
