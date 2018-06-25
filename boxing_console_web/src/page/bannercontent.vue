@@ -49,7 +49,7 @@
                             style="position: relative;width: 375px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
                         <template v-if="picture">
                             <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
-                            <img  :src="config.baseUrl+picture" class="avatar">
+                            <img  :src="picture" class="avatar">
                         </template>
                         <template v-else>
                             <i class="el-icon-plus avatar-uploader-icon"></i>
@@ -212,7 +212,7 @@
         methods: {
 
             handleAvatarSuccess(res, file) {
-                let picUrl = `${config.baseUrl}/${res.urls[0]}`;
+                let picUrl = `${config.baseUrl}${res.urls[0]}`;
                 let image = new Image();
                 image.src = picUrl;
                 image.onload = () => {
