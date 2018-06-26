@@ -299,7 +299,7 @@
                     stay_top: [{ required: true, message: '请选择是否置顶', trigger: 'blur' }],
                     end_time: [
                         { validator: (rule, value, callback) => {
-                            if(!this.form.push_news){
+                            if(this.form.push_news=='false'||!this.form.push_news){
                                 callback();
                             }else if(this.form.start_time===''){
                                 callback(new Error('请选择发送的开始时间'));
@@ -360,7 +360,13 @@
                 let endDate   = new Date();
                 startDate.setMinutes(startDate.getMinutes()+5);
                 endDate.setDate(endDate.getDate()+1);
-                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
+                this.dateArr=[startDate.Format("yyyy-MM-dd HH:mm:ss"),endDate.Format("yyyy-MM-dd HH:mm:ss")]
+            }
+            if(this.form.push_news=='false'){
+                this.form.push_news=false;
+            }
+            if(this.form.push_news=='true'){
+                this.form.push_news=true;
             }
             this.isshowPrev();
             this.getDateTime();
@@ -388,11 +394,12 @@
                 this.isshowPrev();
             },
             'form.push_news'(val){
-                if(val){
-                    $('#addTime').addClass('is-required')
+                
+                if(val=='false'||!val){
+                    $('#addTime').removeClass('is-required')
 
                 }else{
-                    $('#addTime').removeClass('is-required')
+                    $('#addTime').addClass('is-required')
                 }
             },
         },
@@ -455,6 +462,11 @@
                         let reg = '/'+this.config.baseUrl+'/g'
                         this.form.app_content   = this.form.app_content?this.form.app_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),''):'';
                         this.form.share_content = this.form.share_content?this.form.share_content.replace(new RegExp("(" + this.config.baseUrl + ")", "g"),''):'';
+                        if(!this.form.push_news){
+                           delete this.form['start_time']; 
+                           delete this.form['end_time']; 
+                        }
+                        
                         if(this.form.id){
                             //修改
                             this.ajax('/game_news/'+this.form.id,'put',this.form).then(function(res){

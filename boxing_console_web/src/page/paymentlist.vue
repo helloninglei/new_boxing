@@ -5,13 +5,13 @@
             <header>
                  <el-row>
                     <el-col :span="7" style='width:364px;margin-bottom:30px'>
-                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/手机号/昵称/订单号' style='width:334px'></el-input>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/手机号/昵称/流水号' style='width:334px'></el-input>
                     </el-col> 
                     <el-col :span="7" style='width:480px'>
                         <el-date-picker
                         v-model="sendData.start_time"
                         type="datetime"
-                        value-format="yyyy-MM-dd HH:MM:SS"
+                        value-format="yyyy-MM-dd HH:mm:ss"
                         :default-value= "new Date()"
                         placeholder="交易开始时间" style='width:200px'>
                         </el-date-picker>
@@ -19,7 +19,7 @@
                         <el-date-picker
                         v-model="sendData.end_time"
                         type="datetime"
-                        value-format="yyyy-MM-dd HH:MM:SS"
+                        value-format="yyyy-MM-dd HH:mm:ss"
 
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="交易结束时间" style='width:200px' class="margin_rt25">

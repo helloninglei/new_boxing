@@ -66,9 +66,11 @@
                 var target = event.target;
                 if(target.id == "firstPage"){
                     $this.currentPage=1;
+                    $this.$emit('changePage',1)
                 }
                 if(target.id == "lastPage"){
                     $this.currentPage=($this.total%10>0)?parseInt($this.total/10)+1:parseInt($this.total/10);
+                    $this.$emit('changePage',$this.currentPage)
                 }
             })
         },

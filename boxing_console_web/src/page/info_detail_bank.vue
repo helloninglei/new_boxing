@@ -53,7 +53,7 @@
                                     end-placeholder="结束日期"
                                     @change="getDateTime"
                                     :default-value='new Date()'
-                                    value-format="yyyy-MM-dd HH:MM:SS">
+                                    value-format="yyyy-MM-dd HH:mm:ss">
 
                             </el-date-picker>
                         </el-form-item>
@@ -294,7 +294,7 @@
                 let endDate   = new Date();
                 startDate.setMinutes(startDate.getMinutes()+5);
                 endDate.setDate(endDate.getDate()+1);
-                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
+                this.dateArr=[startDate.Format("yyyy-MM-dd HH:mm:ss"),endDate.Format("yyyy-MM-dd HH:mm:ss")]
             }
             this.isshowPrev();
             this.getDateTime();

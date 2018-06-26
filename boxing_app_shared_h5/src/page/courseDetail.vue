@@ -1,5 +1,5 @@
 <template>
-    <div class="course_detail">
+    <div class="course_detail" :class="{hasClose: ifClose}">
         <div class="boxer_container">
             <template>
                 <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar : avatar_default" @click="openApp" />
@@ -78,8 +78,10 @@
 
 <style scoped lang="stylus" type="text/stylus">
     .course_detail
-        margin-bottom 3.5rem
+        padding-bottom  3.5rem
         overflow hidden
+        .hasClose
+            padding-bottom 0
     .portrait
         margin-right .6rem
         width 2.5rem
