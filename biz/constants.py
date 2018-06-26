@@ -264,8 +264,7 @@ OFFICIAL_ACCOUNT_CHANGE_TYPE_CHOICE = (
 )
 
 
-if settings.ENVIRONMENT != settings.DEVELOPMENT:
+if settings.ENVIRONMENT != settings.PRODUCTION:
     DELAY_SEVEN_DAYS = timedelta(minutes=5)
 else:
     DELAY_SEVEN_DAYS = timedelta(days=7)
-

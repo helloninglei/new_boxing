@@ -11,7 +11,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.autodiscover_tasks()
 
-if settings.ENVIRONMENT != settings.DEVELOPMENT:
+if settings.ENVIRONMENT != settings.PRODUCTION:
     everyday_crontab = {}
 else:
     everyday_crontab = {"minute": 0, "hour": 0}
