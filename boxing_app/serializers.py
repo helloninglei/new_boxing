@@ -45,6 +45,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     @atomic
     def update(self, instance, validated_data):
         validated_data['authentication_state'] = BOXER_AUTHENTICATION_STATE_WAITING
+        validated_data['is_accept_order'] = False
         Course.objects.filter(boxer=instance).update(is_open=False)
         return super().update(instance, validated_data)
 
