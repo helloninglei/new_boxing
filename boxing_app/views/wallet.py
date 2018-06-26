@@ -4,10 +4,11 @@ from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from biz.models import MoneyChangeLog
 from biz.models import WithdrawLog, PayOrder
-from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, RechargeSerializer, WithdrawSerializer, RechargeLogReadOnlySerializer
+from boxing_app.serializers import MoneyChangeLogReadOnlySerializer, RechargeSerializer, WithdrawSerializer, \
+    RechargeLogReadOnlySerializer
 from boxing_app.filters import MoneyChangeLogFilter
 from biz.services.pay_service import PayService
-from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT
+from biz.constants import PAYMENT_TYPE_ALIPAY, PAYMENT_TYPE_WECHAT, PAYMENT_STATUS_PAID
 from biz.utils import get_client_ip, get_device_platform
 
 
@@ -56,4 +57,5 @@ class RechargeLogViewSet(mixins.ListModelMixin,
     serializer_class = RechargeLogReadOnlySerializer
 
     def get_queryset(self):
-        return PayOrder.objects.filter(user=self.request.user, content_type__model="user").order_by("-order_time")
+        return PayOrder.objects.filter(user=self.request.user, content_type__model="user",
+                                       status=PAYMENT_STATUS_PAID).order_by("-order_time")
