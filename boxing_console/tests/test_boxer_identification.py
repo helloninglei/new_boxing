@@ -223,6 +223,8 @@ class BoxerIdentificationTestCase(TestCase):
         for key in identification_data.keys():
             if key == 'user':
                 self.assertEqual(response.data[key], self.fake_user1.pk)
+            elif key == 'mobile':
+                self.assertEqual(response.data[key], self.fake_user1.mobile)
             else:
                 self.assertEqual(response.data[key], identification_data[key])
 

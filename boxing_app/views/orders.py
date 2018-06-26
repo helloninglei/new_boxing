@@ -22,7 +22,7 @@ class BaseCourseOrderViewSet(viewsets.ModelViewSet):
 
 class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = BoxerCourseOrderSerializer
-    permission_classes = (IsBoxerPermission, OnlyBoxerSelfCanConfirmOrderPermission)
+    permission_classes = (OnlyBoxerSelfCanConfirmOrderPermission,)
 
     def get_queryset(self):
         boxer = BoxerIdentification.objects.get(user=self.request.user)

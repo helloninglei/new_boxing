@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db import transaction
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status, permissions
 from rest_framework.response import Response
 
 from biz import redis_client
+from biz.constants import COURSE_PAYMENT_STATUS_UNPAID
 from biz.models import Course, BoxerIdentification, BoxingClub, CourseOrder, OrderComment
 from boxing_app.permissions import IsBoxerPermission
 from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullDataSerializer
@@ -17,7 +18,9 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Course.objects.filter(boxer__user=self.request.user)\
-            .annotate(order_count=Count('course_orders'), score=Avg('course_orders__comment__score'))\
+            .annotate(order_count=Count('course_orders',
+                                        filter=Q(course_orders__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
+                      score=Avg('course_orders__comment__score'))\
             .select_related('club', 'boxer')
 
     @transaction.atomic
@@ -66,7 +69,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def get_boxer_base_info(dict, boxer):
-        dict['order_count'] = CourseOrder.objects.filter(boxer=boxer).count()
+        dict['order_count'] = CourseOrder.objects.filter(boxer=boxer, status__gt=COURSE_PAYMENT_STATUS_UNPAID).count()
         dict['allowed_course'] = boxer.allowed_course
         comment_count_and_avg_score = OrderComment.objects.filter(order__boxer=boxer) \
             .aggregate(comments_count=Count('id'), avg_score=Avg('score'))
@@ -80,7 +83,9 @@ class GetBoxerCourseByAnyOneViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Course.objects.filter(boxer__id=self.kwargs['boxer_id'], is_open=True)\
-            .annotate(order_count=Count('course_orders'), score=Avg('course_orders__comment__score'))\
+            .annotate(order_count=Count('course_orders',
+                                        filter=Q(course_orders__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
+                      score=Avg('course_orders__comment__score'))\
             .select_related('club', 'boxer')
 
     def opened_courses_list(self, request, *args, **kwargs):

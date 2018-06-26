@@ -16,7 +16,7 @@ class CourseTestCase(APITestCase):
 
     @staticmethod
     def make_identification_list():
-        user_list = [User.objects.create_superuser(mobile=11111111112+num, password='password')
+        user_list = [User.objects.create_superuser(mobile=str(11111111112+num), password='password')
                      for num in range(0, 10)]
 
         identification_list = [BoxerIdentification.objects.create(
@@ -186,6 +186,8 @@ class CourseTestCase(APITestCase):
         for key in update_data:
             if key == 'real_name':
                 self.assertEqual(res.data['boxer_name'], update_data[key])
+            elif key == 'mobile':
+                self.assertEqual(res.data[key], data['boxer'].user.mobile)
             else:
                 self.assertEqual(res.data[key], update_data[key])
         self.assertIsNot(res.data['is_accept_order'], data['boxer'].is_locked)

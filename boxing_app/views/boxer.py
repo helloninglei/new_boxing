@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Case, When, Count, Min
+from django.db.models import Case, When, Count, Min, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins, permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import get_object_or_404
 from biz import constants, redis_client
+from biz.constants import COURSE_PAYMENT_STATUS_UNPAID
 from biz.models import BoxerIdentification
 from boxing_app.filters import NearbyBoxerFilter
 from boxing_app.permissions import IsBoxerPermission
@@ -54,7 +55,9 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                                                   is_locked=False).prefetch_related('course__club') \
-        .annotate(od_count=Count('course__course_orders'), m_price=Min('course__price'))\
+        .annotate(od_count=Count('course__course_orders',
+                                 filter=Q(course__course_orders__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
+                  m_price=Min('course__price'))\
         .distinct()
     filter_backends = (DjangoFilterBackend,)
     filter_class = NearbyBoxerFilter
