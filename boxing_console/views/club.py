@@ -28,6 +28,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
         self.del_club_and_location(club)
         self.del_club_boxer_location(club)
         self.close_club_courses(club)
+        self.close_boxer_accept_order_status(club)
         return Response({"message": "拳馆已关闭"}, status=status.HTTP_204_NO_CONTENT)
 
     @atomic
@@ -51,6 +52,13 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
     @staticmethod
     def close_club_courses(club):
         Course.objects.filter(club=club.id).update(is_open=False)
+
+    @staticmethod
+    def close_boxer_accept_order_status(club):
+        courses = Course.objects.filter(club=club.id).select_related('boxer')
+        for course in courses:
+            course.boxer.is_accept_order = False
+            course.boxer.save()
 
     @staticmethod
     def open_club_and_record_location(club):
