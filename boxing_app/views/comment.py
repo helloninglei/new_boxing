@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Avg
-from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 from rest_framework import status, permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -19,10 +19,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     @property
     def content_object(self):
         object_class = get_model_class_by_name(self.kwargs['object_type'])
-        query_set = object_class.objects.all()
+        query_set = object_class.objects.filter(pk=self.kwargs['object_id'])
         if hasattr(object_class, 'is_show'):
             query_set = query_set.filter(is_show=True)
-        return get_object_or_404(query_set, pk=self.kwargs['object_id'])
+        if not query_set.exists():
+            raise NotFound("数据跑偏了，刷新试试～")
+        return query_set.first()
 
     def get_queryset(self):
         return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')
