@@ -14,7 +14,7 @@ app.autodiscover_tasks()
 if settings.ENVIRONMENT != settings.PRODUCTION:
     everyday_crontab = {}
 else:
-    everyday_crontab = {"minute": 0, "hour": 0}
+    everyday_crontab = {"minute": 1, "hour": 0}
 
 app.conf.beat_schedule = {
     'add-every-monday-morning': {
