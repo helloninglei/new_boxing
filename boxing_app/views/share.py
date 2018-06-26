@@ -74,14 +74,8 @@ def share_view(request, object_type, object_id):
         user = obj.operator
         url = f'{h5_base_url}game_news/{object_id}/0'  # 0 不在app内打开
     else:
-        title = '我在拳城出击约了一个拳击教练，竟然还是个体育明星，快来看看他是谁！'
-        course_name_list = list(Course.objects.filter(boxer_id=obj.id, is_open=True).values_list('course_name',
-                                                                                                  flat=True))
-        has_more_than_one_course = len(course_name_list) > 1
-        conjunction_str = '和' if has_more_than_one_course else ''
-        last_course_name = course_name_list[-1:] if has_more_than_one_course else ""
-        course_str = f'{"、".join(course_name_list[:-1])}{conjunction_str}{last_course_name}'
-        sub_title = f'{obj.real_name}：我在拳城出击开设了{course_str}课程，等你来约。'
+        title = '我在拳城出击发现了一个很棒的拳击教练，一起去约课吧～'
+        sub_title = '上拳城，玩转拳击'
         picture = get_share_img_url(UserProfile.objects.filter(user_id=obj.id).only('avatar').first().avatar)
         user = obj
 
