@@ -9,7 +9,7 @@ from boxing_console.serializers import BoxingClubSerializer
 
 class BoxingClubVewSet(viewsets.ModelViewSet):
     serializer_class = BoxingClubSerializer
-    queryset = BoxingClub.objects.all().order_by('-id')
+    queryset = BoxingClub.all_objects.all().order_by('-id')
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name',)
 
@@ -30,6 +30,7 @@ class BoxingClubVewSet(viewsets.ModelViewSet):
         self.close_club_courses(club)
         return Response({"message": "拳馆已关闭"}, status=status.HTTP_204_NO_CONTENT)
 
+    @atomic
     def open_club(self):
         club = BoxingClub.all_objects.get(id=self.kwargs['pk'])
         self.open_club_and_record_location(club)

@@ -55,7 +55,7 @@ class CityTestCase(APITestCase):
             'course_name': 'BOXING',
             'price': 1234,
             'duration': 120,
-            'validity': "2018-01-11",
+            'validity': "2118-01-11",
             'is_open': True,
             'price': 120,
             'duration': 365,

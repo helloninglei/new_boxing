@@ -398,7 +398,6 @@ class CourseOrder(models.Model):
     @atomic
     def set_overdue(self):
         self.status = constants.COURSE_PAYMENT_STATUS_OVERDUE
-        self.pay_order.save()
         self.save()
 
 
