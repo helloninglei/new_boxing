@@ -90,9 +90,9 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
 
     @staticmethod
     def create_settle_order(course_order):
-        CourseSettleOrder.objects.get_or_create(course=course_order.course,
-                                                order=course_order.pay_order,
-                                                course_order=course_order)
+        CourseSettleOrder.objects.create(course=course_order.course,
+                                         order=course_order.pay_order,
+                                         course_order=course_order)
 
 
 class CourseOrderCommentViewSet(viewsets.ModelViewSet):
