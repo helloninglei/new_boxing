@@ -6,7 +6,7 @@
                 <el-col :span="9">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                         <el-form-item label="拳馆名称" prop="name">
-                            <el-input v-model="ruleForm.name"></el-input>
+                            <el-input v-model="ruleForm.name" :maxlength="20" placeholder='最多输入20个字'></el-input>
                         </el-form-item>
                         <el-form-item label="宣传图" prop="avatar">
                             <el-row>
@@ -27,9 +27,9 @@
                         </el-form-item>
                         <el-form-item label="地址" prop="address">
                             <span style='position:absolute;z-index:1;'><el-button class="button" icon="el-icon-location" circle @click='openMap'></el-button></span>
-                            <el-input  v-model="ruleForm.address" class="myAddress"></el-input>
+                            <el-input  v-model="ruleForm.address" class="myAddress" :maxlength="30" placeholder='最多输入30个字'></el-input>
                         </el-form-item>
-                        <el-form-item label="电话" prop="phone">
+                        <el-form-item label="手机号" prop="phone">
                             <el-input v-model="ruleForm.phone"></el-input>
                         </el-form-item>
                         <el-form-item label="营业时间" prop="startTime">
@@ -39,7 +39,9 @@
                                     placeholder="营业开始时间"
                                     v-model="ruleForm.startTime"
                                     :picker-options="{
+                                      start: '00:00',
                                       step: '00:15',
+                                      end: '24:00'
                                     }">
                                     </el-time-select>
                                 </el-form-item>
@@ -51,7 +53,9 @@
                                     placeholder="营业结束时间"
                                     v-model="ruleForm.endTime"
                                     :picker-options="{
+                                      start: '00:00',
                                       step: '00:15',
+                                      end: '24:00',
                                       minTime: ruleForm.startTime
                                     }">
                                     </el-time-select>

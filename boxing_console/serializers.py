@@ -247,7 +247,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     boxer_id = serializers.IntegerField(source='boxer.pk', read_only=True)
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
-    boxer_mobile = serializers.CharField(source='boxer.mobile', read_only=True)
+    boxer_mobile = serializers.CharField(source='boxer.user.mobile', read_only=True)
     club_name = serializers.CharField(source='club.name', read_only=True)
     out_trade_no = serializers.IntegerField(source='pay_order.out_trade_no', read_only=True)
     payment_type = serializers.IntegerField(source='pay_order.payment_type', read_only=True)
@@ -466,6 +466,10 @@ class WithdrawLogSerializer(serializers.ModelSerializer):
 class MoneyBalanceChangeLogSerializer(serializers.ModelSerializer):
     change_type = serializers.CharField(source="get_change_type_display")
     remarks = serializers.SerializerMethodField()
+    change_amount = serializers.SerializerMethodField()
+
+    def get_change_amount(self, instance):
+        return "+" + str(instance.change_amount) if instance.change_amount > 0 else str(instance.change_amount)
 
     def get_remarks(self, instance):
         if instance.change_type == MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE:

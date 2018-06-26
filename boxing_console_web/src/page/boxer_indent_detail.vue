@@ -72,7 +72,7 @@
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="1">
-                    <div class='detail_title'>所事拳馆</div>
+                    <div class='detail_title'>所属拳馆</div>
                 </el-col>
                 <el-col :span="23">
                     <div class='detail_content margin_lf'>{{result.club}}</div>
@@ -93,16 +93,16 @@
             <el-row class='detail_item_sub'>
                 <div class='detail_title_lf detail_title' style='width:176px'>参赛、获奖及执教经历</div>
             </el-row>
-            <el-row class='detail_item_sub'>
-                <div class='detail_content_p detail_content'>{{result.experience?result.experience:'无'}}</div>
+            <el-row class='detail_item_sub' v-show='result.experience'>
+                <div class='detail_content_p detail_content'>{{result.experience}}</div>
             </el-row>
         </div>
-        <div class="detail_item" v-show='result.honor_certificate_images&&result.honor_certificate_images.length>0'>
+        <div class="detail_item">
             <el-row class='detail_item_sub'>
                 <div class='detail_title_lf detail_title'>荣誉证明</div>
             </el-row>
             <el-row class='detail_item_sub'>
-                <div class='detail_content_p detail_content'>
+                <div class='detail_content_p detail_content' v-show='result.honor_certificate_images&&result.honor_certificate_images.length>0'>
                     <div class='addImage' v-for="item in result.honor_certificate_images">
                         <img :src="config.baseUrl+item" alt="" width='100%' height='100%' style="cursor:pointer;" @click='clickImg(item)'>
                     </div>
@@ -110,12 +110,12 @@
                 </div>
             </el-row>
         </div>
-        <div class="detail_item" v-show='result.competition_video'>
+        <div class="detail_item" >
             <el-row class='detail_item_sub'>
                 <div class='detail_title_lf detail_title'>参赛视频</div>
             </el-row>
             <el-row class='detail_item_sub'>
-                <div class='detail_content_p detail_content'>
+                <div class='detail_content_p detail_content' v-show='result.competition_video'>
                     <div style='width:193px;height:132px;border:1px solid #ccc'>
                         <!-- {{result.competition_video}} -->
                         <video :src="config.baseUrl+result.competition_video" controls="controls" width="100%" height="100%">
