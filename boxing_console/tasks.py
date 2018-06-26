@@ -27,8 +27,9 @@ def order_tear_finished_after_boxer_confirmed():
     course_sets = CourseOrder.objects.filter(confirm_status=constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED,
                                              boxer_confirm_time__lt=datetime.now() - DELAY_SEVEN_DAYS)
     for course_order in course_sets:
-        CourseSettleOrder.objects.create(course=course_order.course, order=course_order.pay_order,
-                                         course_order=course_order)
+        CourseSettleOrder.objects.get_or_create(course=course_order.course,
+                                                order=course_order.pay_order,
+                                                course_order=course_order)
     course_sets.update(status=constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT)
 
 
