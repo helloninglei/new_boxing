@@ -301,7 +301,7 @@
                         // 用户确认默认时间
                         $this.result.user_moren_time = new Date($this.result.boxer_confirm_time)
                         $this.result.user_moren_time.setDate($this.result.user_moren_time.getDate()+7)
-                        $this.result.user_moren_time = $this.result.user_moren_time.Format("yyyy-MM-dd hh:mm:ss")
+                        $this.result.user_moren_time = $this.result.user_moren_time.Format("yyyy-MM-dd HH:mm:ss")
                         // if($this.result.course_name=='BOXING'){
                         //     $this.result.course_name='拳击'
                         // }else if($this.result.course_name=='THAI_BOXING'){

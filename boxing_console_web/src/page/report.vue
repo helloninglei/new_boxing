@@ -113,7 +113,7 @@
                     </el-table-column>
                     <el-table-column
                     label="处理时间"
-                    prop="created_time"
+                    prop="updated_time"
                     width="200"
                     >
                     </el-table-column>
