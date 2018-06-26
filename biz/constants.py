@@ -1,3 +1,7 @@
+from datetime import timedelta
+
+from django.conf import settings
+
 MESSAGE_TYPE_ONLY_TEXT = 'only_text'
 MESSAGE_TYPE_HAS_IMAGE = 'has_image'
 MESSAGE_TYPE_HAS_VIDEO = 'has_video'
@@ -259,5 +263,9 @@ OFFICIAL_ACCOUNT_CHANGE_TYPE_CHOICE = (
     (OFFICIAL_ACCOUNT_CHANGE_TYPE_BUY_VIDEO, "热门视频")
 )
 
-OVERDUE_ORDER_REFUND_DAYS = 7
-ORDER_AUTO_CONFIRMED_DAYS = 7
+
+if settings.ENVIRONMENT != settings.DEVELOPMENT:
+    DELAY_SEVEN_DAYS = timedelta(minutes=5)
+else:
+    DELAY_SEVEN_DAYS = timedelta(days=7)
+
