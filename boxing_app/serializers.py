@@ -387,8 +387,9 @@ class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
     identity_number = serializers.SerializerMethodField()
 
     def get_identity_number(self, instance):
-        if instance.identity_number:
-            return instance.identity_number[:4] + "******" + instance.identity_number[-5:]
+        if instance.user == self.context['request'].user:
+            return instance.identity_number
+        return ""
 
     class Meta:
         model = models.BoxerIdentification
@@ -429,7 +430,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance.user.mobile
 
     def get_boxer_info(self, instance):
-        return BoxerInfoReadOnlySerializer(models.BoxerIdentification.objects.filter(user=instance.user).first()).data
+        boxer = models.BoxerIdentification.objects.filter(user=instance.user).first()
+        return BoxerInfoReadOnlySerializer(boxer, context=self.context).data
 
     def validate(self, attrs):
         if attrs.get("nick_name"):

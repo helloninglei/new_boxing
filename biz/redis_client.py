@@ -41,7 +41,7 @@ def is_following(current_user_id, follower_id):
 
 
 def follower_list(current_user_id, page=1):
-    return redis_client.zrevrange(f'follower_{current_user_id}', PAGE_SIZE * (page - 1), PAGE_SIZE * page)
+    return redis_client.zrevrange(f'follower_{current_user_id}', PAGE_SIZE * (page - 1), PAGE_SIZE * page - 1)
 
 
 def follower_list_all(current_user_id):
@@ -49,7 +49,7 @@ def follower_list_all(current_user_id):
 
 
 def following_list(current_user_id, page=1):
-    return redis_client.zrevrange(f'following_{current_user_id}', PAGE_SIZE * (page - 1), PAGE_SIZE * page)
+    return redis_client.zrevrange(f'following_{current_user_id}', PAGE_SIZE * (page - 1), PAGE_SIZE * page - 1)
 
 
 def following_list_all(current_user_id):
