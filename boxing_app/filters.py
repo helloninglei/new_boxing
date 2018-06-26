@@ -8,7 +8,7 @@ class NearbyBoxerFilter(django_filters.FilterSet):
     min_price = django_filters.NumberFilter(name='m_price', lookup_expr='gt')
     max_price = django_filters.NumberFilter(name='m_price', lookup_expr='lte')
     course_name = django_filters.CharFilter(method='filter_course_name')
-    city = django_filters.CharFilter('course__club__city')
+    city = django_filters.CharFilter(name='course__club__city')
 
     def filter_course_name(self, qs, name, value):
         courses_qs = Course.objects.filter(course_name=value, is_open=True).select_related('boxer')
