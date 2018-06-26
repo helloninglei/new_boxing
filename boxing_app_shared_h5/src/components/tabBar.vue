@@ -28,6 +28,7 @@
                                 {{replay.content}}
                             </template>
                             <template v-else>：</template>
+                            {{replay.content}}
                         </div>
                         <div class="replay_count" v-if="item.replies.count > 2" @click="openApp">共{{item.replies.count}}条回复 ></div>
                     </div>
