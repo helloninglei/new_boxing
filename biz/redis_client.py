@@ -18,7 +18,7 @@ def _get_timestamp():
 
 
 def follow_user(current_user_id, follower_id):
-    if not is_following(current_user_id, follower_id):
+    if not is_following(current_user_id, follower_id) and current_user_id != follower_id:
         p = redis_client.pipeline()
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
         p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
