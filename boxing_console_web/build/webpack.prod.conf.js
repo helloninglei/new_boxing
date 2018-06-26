@@ -7,7 +7,7 @@ var baseWebpackConfig = require('./webpack.base.conf')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var env = config.build.env
-
+let path = require('path') // 增加
 var webpackConfig = merge(baseWebpackConfig, {
     module: {
         rules: utils.styleLoaders({
@@ -73,7 +73,13 @@ var webpackConfig = merge(baseWebpackConfig, {
         new webpack.optimize.CommonsChunkPlugin({
             name: 'manifest',
             chunks: ['vendor']
-        })
+        }),
+        new HtmlWebpackPlugin({
+          filename: 'index.html',
+          template: 'index.html',
+          inject: true,
+          favicon: path.resolve('static/img/mylogo.ico') // 增加
+        }),
     ]
 })
 

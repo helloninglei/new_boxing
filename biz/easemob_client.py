@@ -12,7 +12,8 @@ class EaseMobClient:
     client_secret = settings.EASEMOB_CONF['client_secret']
     domain = settings.EASEMOB_CONF['url'] if settings.EASEMOB_CONF['url'].endswith("/") else \
         f"{settings.EASEMOB_CONF['url']}/"
-    user_password = f"{org_name}pass"
+    user_password = "123456"
+    get_users_limit = 1000
 
     @classmethod
     def _get_token(cls):
@@ -45,3 +46,18 @@ class EaseMobClient:
         json_data = {"target_type": "users", "target": target, "msg": {"type": "txt", "msg": msg},
                      "from": sender}
         return requests.post(url=url, json=json_data, headers={"Authorization": f"Bearer {token}"})
+
+    @classmethod
+    def get_users(cls):
+        token = cls._get_token()
+        url = f"{cls.domain}{cls.org_name}/{cls.app_name}/users?limit={cls.get_users_limit}"
+        resp = requests.get(url=url, headers={"Authorization": f"Bearer {token}"})
+        return [user['username'] for user in resp.json()['entities']]
+
+    @classmethod
+    def reset_user_password(cls):
+        token = cls._get_token()
+        usernames = cls.get_users()
+        return [requests.put(url=f"{cls.domain}{cls.org_name}/{cls.app_name}/users/{username}/password",
+                             json={"newpassword": cls.user_password}, headers={"Authorization": f"Bearer {token}"})
+                for username in usernames]

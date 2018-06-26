@@ -161,7 +161,7 @@
             let query     = this.$route.query
             this.id = query.id
             this.ruleForm.name    = query.name;
-            this.ruleForm.price_int   = parseInt(query.price_amount);
+            this.ruleForm.price_int   = parseInt(query.price);
             this.ruleForm.description = query.description;
             let tsurl = query.url
             this.tsurl=query.url

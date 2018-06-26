@@ -39,6 +39,9 @@
           index:{
             type : [String,Number],
             default:"",
+          },
+          is_deleted:{
+            type : Boolean,
           }
         },
         watch:{
@@ -58,7 +61,7 @@
         },
         methods: {
             confirm(){
-            	this.$emit('confirm',this.id,this.index)
+            	this.$emit('confirm',this.id,this.index,this.is_deleted)
             },
             close(){
               this.$emit('cancel',false)
