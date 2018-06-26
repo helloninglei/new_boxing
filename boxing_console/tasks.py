@@ -1,15 +1,16 @@
 from celery import shared_task
-from datetime import datetime, timedelta
+from datetime import datetime
+
 
 from biz import constants
-from biz.constants import MONEY_CHANGE_TYPE_INCREASE_ORDER_OVERDUE, OVERDUE_ORDER_REFUND_DAYS, ORDER_AUTO_CONFIRMED_DAYS
+from biz.constants import MONEY_CHANGE_TYPE_INCREASE_ORDER_OVERDUE, DELAY_SEVEN_DAYS
 from biz.models import CourseSettleOrder, CourseOrder
 from biz.services.money_balance_service import change_money
 
 
 @shared_task()
 def settle_order_task():
-    for order in CourseSettleOrder.objects.filter(settled=False, created_time__lt=datetime.now() - timedelta(days=7)):
+    for order in CourseSettleOrder.objects.filter(settled=False, created_time__lt=datetime.now() - DELAY_SEVEN_DAYS):
         order.settle_order()
 
 
@@ -24,8 +25,7 @@ def set_course_order_overdue():
 @shared_task()
 def order_tear_finished_after_boxer_confirmed():
     course_sets = CourseOrder.objects.filter(confirm_status=constants.COURSE_ORDER_STATUS_BOXER_CONFIRMED,
-                                             boxer_confirm_time__lt=datetime.now() - timedelta(
-                                                 days=ORDER_AUTO_CONFIRMED_DAYS))
+                                             boxer_confirm_time__lt=datetime.now() - DELAY_SEVEN_DAYS)
     for course_order in course_sets:
         CourseSettleOrder.objects.create(course=course_order.course, order=course_order.pay_order,
                                          course_order=course_order)
@@ -35,8 +35,7 @@ def order_tear_finished_after_boxer_confirmed():
 @shared_task()
 def refund_after_order_overdue():
     should_refund_orders = CourseOrder.objects.filter(status=constants.COURSE_PAYMENT_STATUS_OVERDUE,
-                                                      course_validity__lt=datetime.now() - timedelta(
-                                                          days=OVERDUE_ORDER_REFUND_DAYS),
+                                                      course_validity__lt=datetime.now() - DELAY_SEVEN_DAYS,
                                                       refund_record__isnull=True)
     for course_order in should_refund_orders:
         insurance_amount = course_order.insurance_amount or 0
