@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from django.db.models import Case, When, Count, Min, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins, permissions
@@ -52,6 +54,7 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = BoxerIdentification.objects.filter(course__is_open=True,
                                                   course__is_deleted=False,
+                                                  course__validity__gte=datetime.today(),
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                                                   is_locked=False).prefetch_related('course__club') \

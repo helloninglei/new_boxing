@@ -113,7 +113,7 @@ class NearbyBoxerTestCase(APITestCase):
             'is_open': True,
             'price': 122,
             'duration': 367,
-            "validity": "2018-04-25",
+            "validity": "2118-04-25",
             "course_name": constants.BOXER_ALLOWED_COURSES_BOXING
         }
 
