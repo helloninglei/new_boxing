@@ -446,6 +446,7 @@ class Report(BaseAuditModel):
     remark = models.CharField(max_length=20, null=True, blank=True)
     status = models.SmallIntegerField(choices=constants.REPORT_STATUS_CHOICES,
                                       default=constants.REPORT_STATUS_NOT_PROCESSED)
+    updated_time = models.DateTimeField(null=True)
 
     class Meta:
         db_table = 'report'
