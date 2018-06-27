@@ -171,7 +171,7 @@
             },
             toDetail(row){
                 // console.log(row)
-                this.$router.push({path: '/orderdetail', query:{id:row.id}});
+                this.$router.push({path: '/orderdetail', query:{id:row.course_order}});
 
             },
             filter(){
