@@ -99,7 +99,7 @@
                     <div class='detail_content margin_lf'>{{result.club_name}}</div>
                 </el-col>
             </el-row>
-            <el-row class='detail_item_sub' v-if="result.status>1">
+            <el-row class='detail_item_sub' v-if="result.status==2">
                 <el-col :span="1">
                     <div class='detail_title'>保险</div>
                 </el-col>
@@ -109,6 +109,14 @@
                     </div>
                 </el-col>
                 <el-col :span="23" v-else>
+                    <div class='detail_content margin_lf'>{{(result.insurance_amount/100).toFixed(2)}}元</div>
+                </el-col>
+            </el-row>
+            <el-row class='detail_item_sub' v-if="result.status>2&&!(result.insurance_amount==0||result.insurance_amount>0? false : true)">
+                <el-col :span="1">
+                    <div class='detail_title'>保险</div>
+                </el-col>
+                <el-col :span="23">
                     <div class='detail_content margin_lf'>{{(result.insurance_amount/100).toFixed(2)}}元</div>
                 </el-col>
             </el-row>
