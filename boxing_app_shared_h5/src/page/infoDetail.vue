@@ -28,6 +28,10 @@
         video
             width 100%
             margin-bottom .5rem
+    .ql-editor {
+        width 17.25rem!important
+        margin 0 auto
+    }
     .infoDetail
         margin 0 auto
         width 17.25rem
