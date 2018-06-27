@@ -22,7 +22,7 @@
             </template>
             <template v-else>
                 <div class="pic_wrapper" :class="getClass">
-                    <img :src="item" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>
+                    <img :src="item + `${compressPic}`" v-for="(item, index) in info.images" :key="index" class="pic" @click="showZoomImage(index) "/>
                 </div>
             </template>
         </div>
@@ -42,7 +42,7 @@
         </div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="info.images" :slideIndex="slideIndex"></ZoomImage>
+        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
 
 </template>
@@ -167,7 +167,10 @@
                 avatar_default: require('../assets/images/portrait_default.png'),
                 info: {},
                 dataObj: '',
-                wx: ''
+                wx: '',
+                compressPic: '',
+                thumbnail: '',
+                bigPicArr: []
             }
         },
 
@@ -177,6 +180,14 @@
                 this.getData();
                 this.sharePage();
             }
+        },
+
+        mounted(){
+            setTimeout(() => {
+                let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                let thumbnail = this.thumbnail = 5 * baseSize;
+                this.compressPic = `?x-oss-process=image/resize,w_${thumbnail}/quality,q_80`;
+            },0)
         },
 
         components: {
@@ -194,6 +205,23 @@
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
+                        let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                        let picArrSize = this.playerInfo.honor_certificate_images.length;
+                        let thumbnail_swiper = 18.75 * baseSize;
+                        if (picArrSize === 1) {
+                            this.compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_80`
+                        }
+                        else if (picArrSize > 1 && picArrSize < 5) {
+                            this.compressPic = `?x-oss-process=image/resize,w_${8 * baseSize}/quality,q_80`
+                        }
+                        else if (picArrSize > 5) {
+                            this.compressPic = `?x-oss-process=image/resize,w_${5 * baseSize}/quality,q_80`
+                        }
+                        let compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_80`;
+                        this.info.images.forEach((item) => {
+                            let item_pic = item + compressPic;
+                            this.bigPicArr.push(item_pic);
+                        })
                     }
                 },(err) => {
                     if(err&&err.response){
