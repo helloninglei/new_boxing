@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from boxing_app.serializers import ReportSerializer
@@ -17,9 +18,11 @@ class ReportViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         object_class = get_model_class_by_name(self.kwargs['object_type'])
+        logging.log(level='error', msg=f"{type(self.request.data), {self.request.data}}")
         content_object = object_class.objects.get(id=self.request.data['object_id'])
         kwargs = {
             'user': self.request.user,
             'content_object': content_object
         }
+
         serializer.save(**kwargs)
