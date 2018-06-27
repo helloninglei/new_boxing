@@ -15,7 +15,7 @@ from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
-from biz.redis_client import is_following, get_object_location
+from biz.redis_client import is_following, get_object_location, set_user_title
 from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
@@ -38,6 +38,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
     avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
     course_order_count = serializers.SerializerMethodField()
+    title = serializers.CharField(max_length=16)
 
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
@@ -48,6 +49,11 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         validated_data['is_accept_order'] = False
         Course.objects.filter(boxer=instance).update(is_open=False)
         return super().update(instance, validated_data)
+
+    def validate(self, attrs):
+        user = self.context['user']
+        title = attrs.pop('title')
+        set_user_title(user, title)
 
     class Meta:
         model = models.BoxerIdentification
