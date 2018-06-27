@@ -1,6 +1,7 @@
 from celery import shared_task
 from datetime import datetime
 
+from django.db.models import Q
 
 from biz import constants
 from biz.constants import MONEY_CHANGE_TYPE_INCREASE_ORDER_OVERDUE, DELAY_SEVEN_DAYS
@@ -16,8 +17,9 @@ def settle_order_task():
 
 @shared_task()
 def set_course_order_overdue():
-    overdue_orders = CourseOrder.objects.filter(course_validity__lt=datetime.today(),
-                                                confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
+    overdue_orders = CourseOrder.objects.filter(Q(course_validity__lt=datetime.today(),
+                                                confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED) &
+                                                ~Q(status=constants.COURSE_PAYMENT_STATUS_UNPAID,))
     for course_order in overdue_orders:
         course_order.set_overdue()
 
