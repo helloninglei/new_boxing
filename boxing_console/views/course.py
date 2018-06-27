@@ -39,4 +39,4 @@ class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_class = CourseSettleOrderFilter
     queryset = CourseSettleOrder.objects.all().prefetch_related('course', 'order', 'order__user', 'course__boxer',
-                                                                'course_order')
+                                                                'course_order', 'course__boxer__user')
