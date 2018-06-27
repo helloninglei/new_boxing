@@ -26,5 +26,6 @@ class LikeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         try:
             serializer.save(user=self.request.user, message=self._get_message_instance())
-        except IntegrityError:
-            pass
+        except IntegrityError as e:
+            if 'Duplicate entry' not in str(e):
+                raise e
