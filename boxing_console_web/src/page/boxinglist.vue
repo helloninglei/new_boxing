@@ -32,7 +32,7 @@
                       fixed="right"
                       label="操作">
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click="openConfirm(scope.row.id,scope.$index)">停用</el-button>
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click="openConfirm(scope.row.id,scope.$index,scope.row)">{{scope.row.is_deleted?'启用':'停用'}}</el-button>
                             <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='goTodetail(scope.row)'>修改</el-button>                         
                         </template>
                     </el-table-column>
@@ -42,7 +42,7 @@
         <footer v-show='total>10'>
             <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
         </footer>
-        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index' :row='confirmData.row'></Confirm>
     </div>
 </template>
 
@@ -71,6 +71,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
+                    row   :{},
                     content:'停用后，拳手将不能选择，确认停用拳馆？'
                 },
                 tableData : [
@@ -142,35 +143,62 @@
                 this.$router.push({path: '/addboxing', query:row});
 
             },
-            openConfirm(id,index){
+            openConfirm(id,index,row){
                 this.confirmData.id=id
                 this.confirmData.index=index
+                if(row.is_deleted){
+                    this.confirmData.content='是否确定开启此拳馆'
+                }else{
+                    this.confirmData.content='停用后，拳手将不能选择，确认停用拳馆？'
+                }
+                
+                this.confirmData.row=row
                 this.confirmData.isshow=true
             },
-            conform1(id,index){
-                this.deleteClub(id,index)
+            conform1(id,index,row){
+                this.deleteClub(id,index,row)
             },
             cancel1(val){
                 this.confirmData.isshow=val;
             },
-            deleteClub(id,index){
+            deleteClub(id,index,row){
                 //停用的接口
                 let $this = this;
-                this.ajax('/club/'+id+'/close','post').then(function(res){
-                    if(res&&res.status==204){
-                        $this.tableData.splice(index,1)
-                        $this.confirmData.isshow=false;
-                    }
+                if(row.is_deleted){
+                    this.ajax('/club/'+id+'/open','post').then(function(res){
+                        if(res&&res.status==204){
+                            row.is_deleted = false ;
+                            console.log(row)
+                            $this.confirmData.isshow=false;
+                        }
 
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
+                    },function(err){
+                        if(err&&err.response){
+                            let errors=err.response.data
+                            for(var key in errors){
+                                console.log(errors[key])
+                                // return
+                            } 
                         } 
-                    } 
-                })
+                    })
+                }else{
+                    this.ajax('/club/'+id+'/close','post').then(function(res){
+                        if(res&&res.status==204){
+                            row.is_deleted = true ;
+                            $this.confirmData.isshow=false;
+                        }
+
+                    },function(err){
+                        if(err&&err.response){
+                            let errors=err.response.data
+                            for(var key in errors){
+                                console.log(errors[key])
+                                // return
+                            } 
+                        } 
+                    })
+                }
+                
             }
         },
     }

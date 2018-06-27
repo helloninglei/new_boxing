@@ -8,7 +8,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
 from biz import constants, sms_client
-from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder
+from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder, CourseSettleOrder
 from biz.services.pay_service import PayService
 from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission, \
     IsBoxerPermission
@@ -85,7 +85,14 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
         course_order.status = constants.COURSE_PAYMENT_STATUS_WAIT_COMMENT
         course_order.user_confirm_time = datetime.now()
         course_order.save()
+        self.create_settle_order(course_order)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
+    def create_settle_order(course_order):
+        CourseSettleOrder.objects.create(course=course_order.course,
+                                         order=course_order.pay_order,
+                                         course_order=course_order)
 
 
 class CourseOrderCommentViewSet(viewsets.ModelViewSet):

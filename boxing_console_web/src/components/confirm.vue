@@ -39,6 +39,12 @@
           index:{
             type : [String,Number],
             default:"",
+          },
+          row:{
+            type :Object,
+            default: function (value) {
+                return value
+            }
           }
         },
         watch:{
@@ -58,7 +64,7 @@
         },
         methods: {
             confirm(){
-            	this.$emit('confirm',this.id,this.index)
+            	this.$emit('confirm',this.id,this.index,this.row)
             },
             close(){
               this.$emit('cancel',false)
