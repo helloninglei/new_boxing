@@ -82,7 +82,8 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
         return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
 
     def get_course_min_price(self, instance):
-        return Course.objects.filter(boxer=instance, is_deleted=False, is_open=True).aggregate(min_price=Min('price'))['min_price']
+        return Course.objects.filter(boxer=instance, is_deleted=False, is_open=True).aggregate(min_price=Min('price'))[
+            'min_price']
 
     @staticmethod
     def get_boxer_loacation(obj):
@@ -544,7 +545,8 @@ class MoneyChangeLogReadOnlySerializer(serializers.ModelSerializer):
 
     def get_change_amount(self, instance):
         change_amount = instance.change_amount
-        return "+" + str(change_amount) if change_amount > 0 else str(change_amount)
+        # 此处返回结果金额单位，元
+        return f"+{change_amount/100:.2f}" if change_amount > 0 else f"{change_amount/100:.2f}"
 
     class Meta:
         model = models.MoneyChangeLog
