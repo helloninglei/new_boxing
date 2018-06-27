@@ -255,8 +255,10 @@
                         $this.tableData = res.data.results
                         for(var i=0;i<$this.tableData.length;i++){
                             $this.tableData[i].content_type=$this.tableData[i].content_type=='comment'?'评论':'动态';
-                            if($this.tableData[i].remark){
+                            if($this.tableData[i].remark&&$this.tableData[i].remark!==null){
                                 $this.tableData[i].remark = '--'+$this.tableData[i].remark
+                            }else{
+                                $this.tableData[i].remark = '';
                             }
                             $this.tableData[i].reason_content=$this.tableData[i].reason+$this.tableData[i].remark;
                         }
