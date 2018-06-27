@@ -2,7 +2,7 @@
     <div>
         <div class="tab_bar">
         <span class="item comment" :class="{active: checked === 'comment'}" @click="tab('comment')">
-            评论 {{comments.length}}
+            评论 {{commentNum}}
             <span class="underline"></span>
         </span>
         <span class="item praise" :class="{active: checked === 'praise'}" @click="tab('praise')" v-if="ifShowPraise">
@@ -117,7 +117,8 @@
             return {
                 checked: 'comment',
                 comments: [],
-                praises: []
+                praises: [],
+                commentNum: ''
             }
         },
         props: {
@@ -152,6 +153,7 @@
                 this.ajax(`/${this.commentType}/${this.id}/comments`,'get').then((res) => {
                     if (res && res.data) {
                         this.comments = res.data.results;
+                        this.commentNum = res.data.comment_count;
                     }
                 },(err) => {
                     if(err&&err.response){

@@ -206,18 +206,18 @@
                     if (res && res.data) {
                         this.info = res.data;
                         let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                        let picArrSize = this.playerInfo.honor_certificate_images.length;
+                        let picArrSize = this.info.images.length;
                         let thumbnail_swiper = 18.75 * baseSize;
                         if (picArrSize === 1) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_80`
+                            this.compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`
                         }
                         else if (picArrSize > 1 && picArrSize < 5) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${8 * baseSize}/quality,q_80`
+                            this.compressPic = `?x-oss-process=image/resize,w_${8 * baseSize}/quality,q_90`
                         }
                         else if (picArrSize > 5) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${5 * baseSize}/quality,q_80`
+                            this.compressPic = `?x-oss-process=image/resize,w_${5 * baseSize}/quality,q_90`
                         }
-                        let compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_80`;
+                        let compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`;
                         this.info.images.forEach((item) => {
                             let item_pic = item + compressPic;
                             this.bigPicArr.push(item_pic);
