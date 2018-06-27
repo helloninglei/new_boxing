@@ -268,3 +268,13 @@ if settings.ENVIRONMENT != settings.PRODUCTION:
     DELAY_SEVEN_DAYS = timedelta(minutes=5)
 else:
     DELAY_SEVEN_DAYS = timedelta(days=7)
+
+# user type
+USER_TYPE_BOXER = 1
+USER_TYPE_CELEBRITY = 2
+USER_TYPE_MEDIA = 3
+USER_TYPE_CHOICE = (
+    (USER_TYPE_BOXER, "拳手"),
+    (USER_TYPE_CELEBRITY, "名人"),
+    (USER_TYPE_MEDIA, "自媒体")
+)
