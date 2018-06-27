@@ -428,7 +428,7 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CourseSettleOrder
-        exclude = ('order', 'course', 'course_order', 'created_time')
+        exclude = ('order', 'course', 'created_time')
 
 
 class WithdrawLogSerializer(serializers.ModelSerializer):
