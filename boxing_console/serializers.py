@@ -263,7 +263,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
     def get_comment_time(self, instance):
         comment = self.get_comment(instance)
-        return comment.created_time if comment else None
+        return comment.created_time.strftime(datetime_format) if comment else None
 
     def get_comment_content(self, instance):
         comment = self.get_comment(instance)
@@ -426,7 +426,7 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
     order_id = serializers.IntegerField(source='order.id')
     course_name = serializers.CharField(source='course.get_course_name_display')
     boxer_name = serializers.CharField(source='course.boxer.real_name')
-    boxer_mobile = serializers.CharField(source='course.boxer.mobile')
+    boxer_mobile = serializers.CharField(source='course.boxer.user.mobile')
     course_amount = serializers.IntegerField(source='course_order.course_price')
     buyer_mobile = serializers.CharField(source='order.user.mobile')
     predicted_settle_date = serializers.SerializerMethodField()
