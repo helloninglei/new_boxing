@@ -428,11 +428,12 @@ class GameNews(BaseAuditModel):
     app_content = models.TextField()
     share_content = models.TextField(null=True, blank=True)
     created_time = models.DateTimeField(default=timezone.now)
+    updated_time = models.DateTimeField(default=timezone.now, db_index=True)
     comments = GenericRelation('Comment')
 
     class Meta:
         db_table = 'game_news'
-        ordering = ('-stay_top', '-created_time',)
+        ordering = ('-stay_top', '-updated_time',)
         verbose_name = '赛事资讯'
 
 

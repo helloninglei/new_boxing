@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -9,6 +8,7 @@ from biz.models import Message
 from boxing_app.serializers import MessageSerializer
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from biz.redis_client import following_list_all, blocked_user_list
+from biz.utils import comment_count_condition
 
 
 class MessageViewSet(viewsets.ModelViewSet):
@@ -31,11 +31,8 @@ class MessageViewSet(viewsets.ModelViewSet):
         user_id = self.request.user.id
         blocked_user_id_list = blocked_user_list(user_id)
         is_like = Count('likes', filter=Q(likes__user_id=user_id), distinct=True)
-        comment_count = Count('comments', filter=Q(comments__is_deleted=False) & (
-                Q(comments__ancestor__is_deleted=False) | Q(comments__ancestor__isnull=True)),
-                              distinct=True)
         return Message.objects.exclude(user_id__in=blocked_user_id_list).annotate(
-            like_count=Count('likes', distinct=True), comment_count=comment_count,
+            like_count=Count('likes', distinct=True), comment_count=comment_count_condition,
             is_like=is_like).select_related('user__boxer_identification',
                                             'user__user_profile')
 

@@ -466,9 +466,10 @@ class NewsSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField()
     content = serializers.SerializerMethodField()
     read_count = serializers.SerializerMethodField()
+    pub_time = serializers.DateTimeField(source='updated_time', read_only=True)
 
     def get_content(self, obj):
-        if self.context['request'].query_params.get('in_app'):
+        if self.context['request'].query_params.get('in_app') == '1':
             return obj.app_content
         return obj.share_content or obj.app_content
 
@@ -477,9 +478,8 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.GameNews
-        fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'created_time', 'read_count', 'picture',
-                  'stay_top')
-        read_only_fields = ('created_time',)
+        fields = ('id', 'title', 'sub_title', 'content', 'comment_count', 'read_count', 'picture',
+                  'stay_top', 'pub_time')
 
 
 class BlockedUserSerializer(serializers.BaseSerializer):

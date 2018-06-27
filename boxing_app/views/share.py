@@ -1,13 +1,11 @@
 # coding=utf-8
 from django.conf import settings
-from django.shortcuts import get_object_or_404
 from rest_framework import permissions
-from rest_framework.decorators import api_view
-from rest_framework.decorators import permission_classes, authentication_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo, GameNews, Course, UserProfile
+from biz.models import Message, HotVideo, GameNews, UserProfile
 from biz.redis_client import incr_number_of_share
-from biz.utils import get_model_class_by_name, get_share_img_url
+from biz.utils import get_model_class_by_name, get_share_img_url, get_object_or_404
 from biz.weixin_public_client import Sign
 
 '''
@@ -44,7 +42,7 @@ def _truncate_text(s, length):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
-def share_view(request, object_type, object_id):
+def share_view(_, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
     obj = get_object_or_404(model_class, pk=object_id)
     sub_title = picture = ''
