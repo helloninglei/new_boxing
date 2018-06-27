@@ -17,7 +17,7 @@ class GameNewsTestCase(APITestCase):
             "initial_views_count": 666,
             "picture": "/uploads/aa/67/959ce5a33a6984b10e1d44c965b03c84230f.jpg",
             "stay_top": True,
-            "push_news": True,
+            "push_news": False,
             "start_time": datetime.now() + timedelta(days=1),
             "end_time": datetime.now() + timedelta(days=2),
             "app_content": "分享人生经验",
