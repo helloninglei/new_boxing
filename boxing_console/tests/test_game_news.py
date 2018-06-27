@@ -40,6 +40,7 @@ class GameNewsTestCase(APITestCase):
 
     def test_created_failed(self):
         self.data['start_time'] = datetime.now() - timedelta(days=1)
+        self.data['push_news'] = True
         res = self.client.post('/game_news', self.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data['message'][0], '开始时间必须是以后的时间')
