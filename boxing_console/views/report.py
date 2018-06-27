@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils import timezone
 from django.db.transaction import atomic
 from rest_framework import status
 from rest_framework.response import Response
@@ -29,7 +30,7 @@ def _get_object(pk):
 
 @api_view(['POST'])
 def proved_false(request, pk):
-    _get_object(pk).update(status=REPORT_STATUS_PROVED_FALSE, operator=request.user)
+    _get_object(pk).update(status=REPORT_STATUS_PROVED_FALSE, operator=request.user, updated_time=timezone.now())
     return Response(status=status.HTTP_200_OK)
 
 
@@ -38,7 +39,7 @@ def proved_false(request, pk):
 def do_delete(request, pk):
     report_obj = _get_object(pk)
     obj = report_obj.first().content_object
-    report_obj.update(status=REPORT_STATUS_DELETED, operator=request.user)
+    report_obj.update(status=REPORT_STATUS_DELETED, operator=request.user, updated_time=timezone.now())
     if hasattr(obj, 'is_deleted'):
         obj.soft_delete()
     elif hasattr(obj, 'is_show'):
