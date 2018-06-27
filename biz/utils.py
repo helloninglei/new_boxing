@@ -3,6 +3,7 @@ from django.conf import settings
 from pypinyin import pinyin, Style
 from rest_framework.exceptions import NotFound
 from django.db.models.query import QuerySet
+from django.db.models import Count, Q
 from biz import models
 from biz.constants import DEVICE_PLATFORM_IOS, DEVICE_PLATFORM_ANDROID
 
@@ -58,3 +59,8 @@ def get_object_or_404(queryset, message='数据跑偏了，刷新试试～', **k
     if not queryset.exists():
         raise NotFound(message)
     return queryset.first()
+
+
+comment_count_condition = Count('comments', filter=Q(comments__is_deleted=False) & (
+        Q(comments__ancestor__is_deleted=False) | Q(comments__ancestor__isnull=True)),
+                                distinct=True)
