@@ -185,6 +185,7 @@
                     this.ajax('/club/'+id+'/close','post').then(function(res){
                         if(res&&res.status==204){
                             row.is_deleted = true ;
+                            console.log(row)
                             $this.confirmData.isshow=false;
                         }
 
