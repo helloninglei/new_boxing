@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+from django.db.utils import IntegrityError
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from biz.models import Like
-from biz.models import Message
+from biz.utils import get_object_or_404
+from biz.models import Like, Message
 from boxing_app.serializers import LikeSerializer
 
 
@@ -24,4 +24,8 @@ class LikeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, message=self._get_message_instance())
+        try:
+            serializer.save(user=self.request.user, message=self._get_message_instance())
+        except IntegrityError as e:
+            if 'Duplicate entry' not in str(e):
+                raise e

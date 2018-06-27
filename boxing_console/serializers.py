@@ -290,6 +290,7 @@ class NewsSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     author = serializers.CharField(source='operator.user_profile.nick_name', read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
+    pub_time = serializers.DateTimeField(source='updated_time', read_only=True)
 
     def validate(self, attrs):
         if attrs.get('push_news'):
@@ -308,7 +309,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.GameNews
-        exclude = ('updated_time',)
+        exclude = ('created_time', 'updated_time')
         read_only_fields = ('views_count',)
 
 
@@ -336,12 +337,20 @@ class AdminSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     reason = serializers.CharField(source='get_reason_display')
-    reported_user = serializers.IntegerField(source='content_object.user.id')
-    content_type = serializers.CharField(source='content_object._meta.verbose_name')
+    reported_user = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
     operator = serializers.SerializerMethodField()
     result = serializers.SerializerMethodField()
+
+    def get_content_type(selfs, instance):
+        if instance.content_object:
+            return instance.content_object._meta.verbose_name
+
+    def get_reported_user(self, instance):
+        if instance.content_object:
+            return instance.content_object.user.id
 
     def get_operator(self, instance):
         return instance.operator.user_profile.nick_name if instance.operator and instance.operator.user_profile else None
@@ -357,10 +366,13 @@ class ReportSerializer(serializers.ModelSerializer):
 
     def get_content(self, instance):
         obj = instance.content_object
+        if not obj:
+            return {}
         user = obj.user
         created_time = obj.created_time
         video = None
         pictures = []
+
         if isinstance(obj, Message):
             content = obj.content
             pictures = obj.images
@@ -425,7 +437,7 @@ class CourseSettleOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CourseSettleOrder
-        exclude = ('order', 'course', 'course_order', 'created_time')
+        exclude = ('order', 'course', 'created_time')
 
 
 class WithdrawLogSerializer(serializers.ModelSerializer):

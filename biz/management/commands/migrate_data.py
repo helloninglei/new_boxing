@@ -173,6 +173,7 @@ def replace_article_img(html):
 
 def move_article_worker(article):
     try:
+        createtime = article.createtime.replace(tzinfo=get_default_timezone())
         GameNews.objects.get_or_create(
             id=article.id,
             defaults=dict(
@@ -184,7 +185,9 @@ def move_article_worker(article):
                 picture=move_image(article.cover),
                 stay_top=article.istotop,
                 app_content=replace_article_img(article.contenthtml),
-                created_time=article.createtime.replace(tzinfo=get_default_timezone()),
+                created_time=createtime,
+                updated_time=article.updatetime.replace(
+                    tzinfo=get_default_timezone()) if article.updatetime else createtime,
                 push_news=article.is_push,
                 start_time=article.push_start_time.replace(
                     tzinfo=get_default_timezone()) if article.push_start_time else None,
