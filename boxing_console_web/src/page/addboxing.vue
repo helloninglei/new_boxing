@@ -3,7 +3,7 @@
         <TopBar v-if="isShowTop" firstTitle_name="拳馆管理" firstTitle_path="/boxinglist" :secondTitle_name="secondTitle_name"></TopBar>
         <div class='container'>
             <el-row> 
-                <el-col :span="9">
+                <el-col :span="12">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                         <el-form-item label="拳馆名称" prop="name">
                             <el-input v-model="ruleForm.name" :maxlength="20" placeholder='最多输入20个字'></el-input>
@@ -156,10 +156,13 @@
         color: #000000;
     }
     #addBoxing .el-form-item{margin-bottom:30px;}
-    #addBoxing .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
+    #addBoxing .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;border-radius:0px;}
     #addBoxing .myAddress input{padding-left:50px;}
 </style>
 <style scope>
+    #addBoxing .el-dialog{
+        width:690px;
+    }
     #addBoxing .el-dialog__body{padding-top:0px;}
     #addBoxing .el-dialog__header{font-family:"PingFangSC-Regular";
         font-size: 16px;
@@ -185,8 +188,9 @@
       cursor:pointer;  
     } 
     #addBoxing .el-date-editor.el-input,#addBoxing  .el-date-editor.el-input__inner{
-        width:136px;
+        width:100%;
     }
+    #addBoxing .line{text-align: center}
 </style>
 <script>
     import TopBar  from 'components/topBar';
