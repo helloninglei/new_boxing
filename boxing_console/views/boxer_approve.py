@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 
 
 from biz import constants, sms_client
-from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE
+from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE, USER_TYPE_BOXER
 from biz.models import BoxerIdentification, Course
 from biz.services.operation_log_service import log_boxer_identification_operation
 from boxing_console.serializers import BoxerIdentificationSerializer, CourseSerializer
@@ -43,6 +43,8 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
             allowed_courses = [course_dict.get(key) for key in content]
             self.create_course(boxer=boxer, allowed_courses=content)
+            boxer.user.user_type = USER_TYPE_BOXER
+            boxer.user.save()
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
         else:
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
