@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Avg
-from rest_framework.exceptions import NotFound
 from rest_framework import status, permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
 from biz.models import OrderComment
-from biz.utils import get_model_class_by_name
+from biz.utils import get_model_class_by_name, get_object_or_404
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
 
@@ -19,12 +18,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     @property
     def content_object(self):
         object_class = get_model_class_by_name(self.kwargs['object_type'])
-        query_set = object_class.objects.filter(pk=self.kwargs['object_id'])
+        query_set = object_class.objects.all()
         if hasattr(object_class, 'is_show'):
             query_set = query_set.filter(is_show=True)
-        if not query_set.exists():
-            raise NotFound("数据跑偏了，刷新试试～")
-        return query_set.first()
+        return get_object_or_404(query_set, pk=self.kwargs['object_id'])
 
     def get_queryset(self):
         return self.content_object.comments.filter(parent=None).prefetch_related('user', 'user__boxer_identification')

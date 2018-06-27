@@ -32,7 +32,7 @@
                       fixed="right"
                       label="操作">
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click="openConfirm(scope.row.id,scope.$index,scope.row.is_deleted)">{{scope.row.is_deleted?'启用':'停用'}}</el-button>
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click="openConfirm(scope.row.id,scope.$index,scope.row)">{{scope.row.is_deleted?'启用':'停用'}}</el-button>
                             <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='goTodetail(scope.row)'>修改</el-button>                         
                         </template>
                     </el-table-column>
@@ -42,7 +42,7 @@
         <footer v-show='total>10'>
             <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
         </footer>
-        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index' :is_deleted='confirmData.is_deleted'></Confirm>
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index' :row='confirmData.row'></Confirm>
     </div>
 </template>
 
@@ -71,7 +71,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    is_deleted:'',
+                    row   :{},
                     content:'停用后，拳手将不能选择，确认停用拳馆？'
                 },
                 tableData : [
@@ -143,31 +143,32 @@
                 this.$router.push({path: '/addboxing', query:row});
 
             },
-            openConfirm(id,index,is_deleted){
+            openConfirm(id,index,row){
                 this.confirmData.id=id
                 this.confirmData.index=index
-                if(is_deleted){
+                if(row.is_deleted){
                     this.confirmData.content='是否确定开启此拳馆'
                 }else{
                     this.confirmData.content='停用后，拳手将不能选择，确认停用拳馆？'
                 }
                 
-                this.confirmData.is_deleted=is_deleted
+                this.confirmData.row=row
                 this.confirmData.isshow=true
             },
-            conform1(id,index,is_deleted){
-                this.deleteClub(id,index,is_deleted)
+            conform1(id,index,row){
+                this.deleteClub(id,index,row)
             },
             cancel1(val){
                 this.confirmData.isshow=val;
             },
-            deleteClub(id,index,is_deleted){
+            deleteClub(id,index,row){
                 //停用的接口
                 let $this = this;
-                if(is_deleted){
+                if(row.is_deleted){
                     this.ajax('/club/'+id+'/open','post').then(function(res){
                         if(res&&res.status==204){
-                            $this.tableData[index].is_deleted = false ;
+                            row.is_deleted = false ;
+                            console.log(row)
                             $this.confirmData.isshow=false;
                         }
 
@@ -183,7 +184,8 @@
                 }else{
                     this.ajax('/club/'+id+'/close','post').then(function(res){
                         if(res&&res.status==204){
-                            $this.tableData[index].is_deleted = true ;
+                            row.is_deleted = true ;
+                            console.log(row)
                             $this.confirmData.isshow=false;
                         }
 

@@ -40,8 +40,11 @@
             type : [String,Number],
             default:"",
           },
-          is_deleted:{
-            type : Boolean,
+          row:{
+            type :Object,
+            default: function (value) {
+                return value
+            }
           }
         },
         watch:{
@@ -61,7 +64,7 @@
         },
         methods: {
             confirm(){
-            	this.$emit('confirm',this.id,this.index,this.is_deleted)
+            	this.$emit('confirm',this.id,this.index,this.row)
             },
             close(){
               this.$emit('cancel',false)
