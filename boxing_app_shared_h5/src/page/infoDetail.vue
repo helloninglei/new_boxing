@@ -2,7 +2,7 @@
     <div class="infoDetail_container" :class="{hasClose: ifClose}">
         <div class="infoDetail">
             <h1 class="title">{{info.title}}</h1>
-            <div class="created_time">{{info.created_time}}</div>
+            <div class="created_time">{{info.pub_time}}</div>
             <!--<img v-if="info.picture" class="picture" :src="`${config.baseUrl}` + info.picture"/>-->
             <!--<div class="content">{{info.content}}</div>-->
         </div>
@@ -102,7 +102,7 @@
                 return str
             },
             getData() {
-                this.ajax(`/game_news/${this.id}?inApp=${this.inApp}`,'get').then((res) => {
+                this.ajax(`/game_news/${this.id}?in_app=${this.inApp}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
                         this.str = this.getSrc(res.data.content);

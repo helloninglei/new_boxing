@@ -290,6 +290,7 @@ class NewsSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     author = serializers.CharField(source='operator.user_profile.nick_name', read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
+    pub_time = serializers.DateTimeField(source='updated_time', read_only=True)
 
     def validate(self, attrs):
         if attrs.get('push_news'):
@@ -308,7 +309,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.GameNews
-        exclude = ('updated_time',)
+        exclude = ('created_time', 'updated_time')
         read_only_fields = ('views_count',)
 
 
@@ -361,6 +362,8 @@ class ReportSerializer(serializers.ModelSerializer):
         created_time = obj.created_time
         video = None
         pictures = []
+        if not obj:
+            return {}
         if isinstance(obj, Message):
             content = obj.content
             pictures = obj.images

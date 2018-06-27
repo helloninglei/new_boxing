@@ -1,7 +1,8 @@
 # coding=utf-8
 from django.conf import settings
 from pypinyin import pinyin, Style
-
+from rest_framework.exceptions import NotFound
+from django.db.models import Model
 from biz import models
 from biz.constants import DEVICE_PLATFORM_IOS, DEVICE_PLATFORM_ANDROID
 
@@ -48,3 +49,12 @@ def hans_to_initial(hans):
     first_hans = hans[0]
     first_letter = pinyin(first_hans, style=Style.FIRST_LETTER)
     return first_letter[0][0].upper()
+
+
+def get_object_or_404(queryset, message='数据跑偏了，刷新试试～', **kwargs):
+    if issubclass(queryset, Model):
+        queryset = queryset.objects.all()
+    queryset = queryset.filter(**kwargs)
+    if not queryset.exists():
+        raise NotFound(message)
+    return queryset.first()
