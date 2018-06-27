@@ -114,7 +114,7 @@ nav{min-height: 528px}
                 ],
                 tableColumn:[
                     // {title:'order_time',  name :'下单时间',  width:'155'},
-                    {title:'out_trade_no',  name :'订单号',    width:'120'},
+                    {title:'id',  name :'订单号',    width:'120'},
                     {title:'user_nickname',  name :'用户昵称',   width:''},
                     {title:'user_mobile',name :'用户手机号', width:'95'},
                     {title:'course_name',name :'购买课程',   width:''},
