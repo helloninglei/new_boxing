@@ -1,7 +1,9 @@
 # coding=utf-8
 from django.conf import settings
 from pypinyin import pinyin, Style
-
+from rest_framework.exceptions import NotFound
+from django.db.models.query import QuerySet
+from django.db.models import Count, Q
 from biz import models
 from biz.constants import DEVICE_PLATFORM_IOS, DEVICE_PLATFORM_ANDROID
 
@@ -48,3 +50,17 @@ def hans_to_initial(hans):
     first_hans = hans[0]
     first_letter = pinyin(first_hans, style=Style.FIRST_LETTER)
     return first_letter[0][0].upper()
+
+
+def get_object_or_404(queryset, message='数据跑偏了，刷新试试～', **kwargs):
+    if not isinstance(queryset, QuerySet):
+        queryset = queryset.objects.all()
+    queryset = queryset.filter(**kwargs)
+    if not queryset.exists():
+        raise NotFound(message)
+    return queryset.first()
+
+
+comment_count_condition = Count('comments', filter=Q(comments__is_deleted=False) & (
+        Q(comments__ancestor__is_deleted=False) | Q(comments__ancestor__isnull=True)),
+                                distinct=True)

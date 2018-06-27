@@ -57,7 +57,7 @@
                             label="是否置顶">
                     </el-table-column>
                     <el-table-column
-                            prop="start_time"
+                            prop="pub_time"
                             label="发布时间"
                             width="170">
                     </el-table-column>

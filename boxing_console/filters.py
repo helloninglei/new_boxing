@@ -50,8 +50,8 @@ class HotVideoFilter(CommonFilter):
 
 
 class GameNewsFilter(django_filters.FilterSet):
-    start_date = django_filters.DateFilter(name='created_time', lookup_expr='gte')
-    end_date = django_filters.DateFilter(name='created_time', lookup_expr='lte')
+    start_date = django_filters.DateFilter(name='updated_time', lookup_expr='gte')
+    end_date = django_filters.DateFilter(name='updated_time', lookup_expr='lte')
     stay_top = django_filters.CharFilter(method='filter_stay_top')
 
     def filter_stay_top(self, qs, name, value):
