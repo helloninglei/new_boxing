@@ -58,8 +58,8 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                                                   is_locked=False).prefetch_related('course__club') \
-        .annotate(od_count=Count('course__course_orders',  distinct=True,
-                                 filter=Q(course__course_orders__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
+        .annotate(od_count=Count('boxer_course_order', distinct=True,
+                                 filter=Q(boxer_course_order__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
                   m_price=Min('course__price', filter=Q(course__is_deleted=False, course__is_open=True)))\
         .distinct()
     filter_backends = (DjangoFilterBackend,)
