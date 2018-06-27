@@ -5,8 +5,9 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes, authentication_classes
-from django.db.models import Count, F
+from django.db.models import F
 from biz import models
+from biz.utils import comment_count_condition
 from boxing_app import serializers
 
 h5_base_url = settings.SHARE_H5_BASE_URL
@@ -23,7 +24,7 @@ class NewsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.NewsSerializer
     permission_classes = (AllowAny,)
     authentication_classes = ()
-    queryset = models.GameNews.objects.annotate(comment_count=Count('comments'))
+    queryset = models.GameNews.objects.annotate(comment_count=comment_count_condition)
 
     def retrieve(self, request, *args, **kwargs):
         news_id = self.kwargs['pk']

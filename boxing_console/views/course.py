@@ -38,4 +38,5 @@ class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSettleOrderSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = CourseSettleOrderFilter
-    queryset = CourseSettleOrder.objects.all().prefetch_related('course', 'order', 'order__user', 'course__boxer')
+    queryset = CourseSettleOrder.objects.all().prefetch_related('course', 'order', 'order__user', 'course__boxer',
+                                                                'course_order')
