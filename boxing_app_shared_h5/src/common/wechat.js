@@ -8,7 +8,7 @@ let check = false;
 let url = window.location.href;
 
 function wxConfig(obj) {
-    axios.get(config.baseUrl  + "/second_share_signatur", {
+    axios.get(config.baseUrl  + "/second_share_signature", {
         params: {
             url: encodeURIComponent(url)
         }
