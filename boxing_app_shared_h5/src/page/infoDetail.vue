@@ -131,7 +131,7 @@
                 })
             },
             openApp() {
-                this.showModal = true;
+                this.showModal = true; 
             },
             modalEv(ifShow) {
                 ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
