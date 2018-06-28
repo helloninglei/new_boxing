@@ -19,7 +19,6 @@
         &.hasClose
             padding-bottom 0
         p
-            margin-top .5rem!important
             line-height 1rem!important
             color #fff!important
             img
