@@ -24,6 +24,9 @@
             img
                 width 17.25rem!important
                 margin 0 auto
+        span {
+            color #fff!important
+        }
         video
             width 100%
             margin-bottom .5rem
