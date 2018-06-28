@@ -107,7 +107,9 @@
                 if (arr) {
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
-                        str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                        if (src.indexOf('http') == -1 && src.indexOf('https') > -1) {
+                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                        }
                     }
                 }
                 if (imgArr) {
@@ -124,8 +126,8 @@
                 this.ajax(`/game_news/${this.id}?in_app=${this.inApp}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
-//                        this.str = this.getSrc(res.data.content);
-                        this.str = res.data.content;
+                        this.str = this.getSrc(res.data.content);
+//                        this.str = res.data.content;
                     }
                 },(err) => {
                     if(err&&err.response){
