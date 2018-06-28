@@ -44,7 +44,8 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
             allowed_courses = [course_dict.get(key) for key in content]
             self.create_course(boxer=boxer, allowed_courses=content)
-            self.set_user_title(boxer.user)
+            title = redis_client.get_user_title(boxer.user)
+            boxer.user.title = title
             boxer.user.user_type = USER_TYPE_BOXER
             boxer.user.save()
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
@@ -66,8 +67,3 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
 
-    @staticmethod
-    def set_user_title(user):
-        title = redis_client.get_user_title(user)
-        user.title = title
-        user.save()
