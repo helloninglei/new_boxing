@@ -58,13 +58,13 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     longitude = serializers.SerializerMethodField()
     latitude = serializers.SerializerMethodField()
-    course_min_price = serializers.IntegerField(source='m_price')
+    course_min_price = serializers.IntegerField(source='min_price')
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
     allowed_course = serializers.ListField(read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     city = serializers.SerializerMethodField()
-    order_count = serializers.IntegerField(source='od_count')
+    order_count = serializers.IntegerField()
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
