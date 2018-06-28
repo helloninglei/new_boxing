@@ -61,7 +61,7 @@
             </el-row>
             <el-row class='detail_item_sub'>
                 <el-col :span="1">
-                    <div class='detail_title'>订单号</div>
+                    <div class='detail_title'>支付订单号</div>
                 </el-col>
                 <el-col :span="23">
                     <div class='detail_content margin_lf'>{{result.out_trade_no}}  (约单有效期至{{result.course_validity}})</div>

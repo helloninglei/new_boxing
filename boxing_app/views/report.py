@@ -22,4 +22,5 @@ class ReportViewSet(ModelViewSet):
             'user': self.request.user,
             'content_object': content_object
         }
+
         serializer.save(**kwargs)

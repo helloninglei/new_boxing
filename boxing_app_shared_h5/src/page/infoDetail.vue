@@ -29,8 +29,11 @@
             width 100%
             margin-bottom .5rem
     .ql-editor {
-        width 17.25rem!important
-        margin 0 auto
+        /*padding 0!important;*/
+        img {
+            width 17.25rem!important
+            margin 0 auto
+        }
     }
     .infoDetail
         margin 0 auto
@@ -93,13 +96,22 @@
         },
         methods: {
             getSrc(str) {
-                var imgReg = /<iframe.*?(?:>|\/>)/gi;
+                var iframeReg = /<iframe.*?(?:>|\/>)/gi;
+                var imgReg = /<img.*?(?:>|\/>)/gi;
                 var srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i;
-                var arr = str.match(imgReg);
+                var arr = str.match(iframeReg);
+                var imgArr = str.match(imgReg);
                 if (arr) {
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
                         str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                    }
+                }
+                if (imgArr) {
+                    var baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                    for (var i = 0; i < imgArr.length; i++) {
+                        var src = imgArr[i].match(srcReg);
+                        str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${baseSize * 17.25}/quality,q_90"/>`)
                     }
                 }
 

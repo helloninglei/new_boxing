@@ -2,7 +2,7 @@
     <div class="course_detail" :class="{hasClose: ifClose}">
         <div class="boxer_container">
             <template>
-                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar : avatar_default" @click="openApp" />
+                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
                 <div class="boxer_info">
                     <div class="boxerName">{{playerInfo.real_name}}<span :class="playerInfo.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
@@ -54,7 +54,7 @@
         <div class="award_experience_pic">
             <div class="title">参赛、获奖及执教经历</div>
             <div class="pic_wrapper" :class="getClass">
-                <img :src="item" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
+                <img :src="item + `${compressPic}`" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
             </div>
         </div>
         <div class="match_video" v-if="playerInfo.competition_video">
@@ -71,7 +71,7 @@
         <div class="go_order" @click="openApp">去下单</div>
         <DownloadTip @closeEv="closeEv"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="playerInfo.honor_certificate_images" :slideIndex="slideIndex"></ZoomImage>
+        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
 
 </template>
@@ -283,7 +283,10 @@
                 dataObj: {},
                 wx: '',
                 playerInfo: {},
-
+                compressPic: '',
+                thumbnail: '',
+                portraitQuery: '',
+                bigPicArr: []
             }
         },
 
@@ -294,6 +297,13 @@
                 this.getPlayerData();
                 this.sharePage();
             }
+        },
+
+        mounted(){
+            setTimeout(() => {
+                let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize * 2.5}/quality,q_80`;
+            },0)
         },
 
         components: {
@@ -323,6 +333,23 @@
                 this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
                     if (res && res.data) {
                         this.playerInfo = res.data.results;
+                        let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                        let picArrSize = this.playerInfo.honor_certificate_images.length;
+                        let thumbnail_swiper = 18.75 * baseSize;
+                        if (picArrSize === 1) {
+                            this.compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`
+                        }
+                        else if (picArrSize > 1 && picArrSize < 5) {
+                            this.compressPic = `?x-oss-process=image/resize,w_${8 * baseSize}/quality,q_90`
+                        }
+                        else if (picArrSize > 5) {
+                            this.compressPic = `?x-oss-process=image/resize,w_${5 * baseSize}/quality,q_90`
+                        }
+                        let compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`;
+                        this.playerInfo.honor_certificate_images.forEach((item) => {
+                            let item_pic = item + compressPic;
+                            this.bigPicArr.push(item_pic);
+                        })
                     }
                 },(err) => {
                     if(err&&err.response){
