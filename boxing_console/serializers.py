@@ -263,7 +263,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
     def get_comment_time(self, instance):
         comment = self.get_comment(instance)
-        return comment.created_time.strftime(datetime_format) if comment else None
+        return (comment.created_time + timedelta(hours=8)).strftime(datetime_format) if comment else None
 
     def get_comment_content(self, instance):
         comment = self.get_comment(instance)
