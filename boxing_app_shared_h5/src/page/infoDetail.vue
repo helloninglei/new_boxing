@@ -120,7 +120,8 @@
                 this.ajax(`/game_news/${this.id}?in_app=${this.inApp}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
-                        this.str = this.getSrc(res.data.content);
+//                        this.str = this.getSrc(res.data.content);
+                        this.str = res.data.content;
                     }
                 },(err) => {
                     if(err&&err.response){
