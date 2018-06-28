@@ -24,7 +24,7 @@ web_share(){
 }
 
 filter(){
-    echo $(docker ps --filter "name=new_boxing" --all --quiet)
+    echo $(docker ps --filter "name=new_boxing_" --all --quiet)
 }
 
 filter_web(){
