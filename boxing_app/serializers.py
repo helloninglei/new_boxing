@@ -32,8 +32,6 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
     competition_video = serializers.CharField(required=False)
-    height = serializers.IntegerField(max_value=250, min_value=100)
-    weight = serializers.IntegerField(max_value=999)
     allowed_course = serializers.ListField(child=serializers.CharField(), required=False)
     gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
     avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
