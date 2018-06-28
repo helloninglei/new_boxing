@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework.test import APITestCase
 
 from biz import constants, redis_client
@@ -180,7 +182,7 @@ class NearbyBoxerTestCase(APITestCase):
         # 为boxer5的课程创建一个订单,再次比较排序(此时位置相同时，boxer5应该排在boxer1位置之前）
         self.client1.post('/course/order', data={'id': course5.id})
         CourseOrder.objects.filter(course=course5.id, user=self.user1).update(
-            status=constants.COURSE_PAYMENT_STATUS_FINISHED)
+            status=constants.COURSE_PAYMENT_STATUS_FINISHED, pay_time=datetime.now())
         for index, boxer_id in enumerate(boxer_id_list):
             if int(boxer_id) == boxer1.id:
                 boxer1_index = index
