@@ -1,23 +1,22 @@
 import re
-import gevent
 import requests
 from io import BytesIO
-from json import load
+from json import loads
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.db.utils import IntegrityError
 from django.utils.timezone import get_default_timezone
-from gevent import queue
 from biz.services.file_service import save_upload_file
 from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
 from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
-from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID
+from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID, HOT_VIDEO_USER_ID
 from biz.redis_client import follow_user
 from biz.utils import hans_to_initial
+from celery import shared_task
 
 city_dict = {}
-with open('old_boxing/citys.txt', 'r') as fp:
-    for i in load(fp):
+with open('old_boxing/citys.txt', 'rb') as fp:
+    for i in loads(fp.read().decode('utf-8')):
         city_dict[i['id']] = i['name']
 
 resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
@@ -25,18 +24,6 @@ resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
 re_resource_base_url = re.compile('\'?\"?(http:\/\/boxing-1251438677\.cossh\.myqcloud\.com.*?)\'?\"\s')
 
 http_client = requests.Session()
-
-q = queue.Queue(maxsize=20)
-
-
-def worker():
-    while 1:
-        try:
-            task = q.get(timeout=10)
-            func, obj = task
-            func(obj)
-        except queue.Empty:
-            break
 
 
 def move_image(url: str):
@@ -65,7 +52,9 @@ important_user_fields = (
 )
 
 
-def move_user_worker(u):
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def move_user_worker(uid):
+    u = OldUser.objects.get(uid=uid)
     valid_fields = 0
     for field in important_user_fields:
         if getattr(u, field):
@@ -127,8 +116,8 @@ def move_user_worker(u):
 
 
 def move_user():
-    for u in OldUser.objects.all().order_by('-uid'):
-        q.put((move_user_worker, u))
+    for u in OldUser.objects.all().order_by('-uid').only('uid'):
+        move_user_worker.delay(u.uid)
 
 
 #
@@ -171,8 +160,10 @@ def replace_article_img(html):
     return html
 
 
-def move_article_worker(article):
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def move_article_worker(article_id):
     try:
+        article = Article.objects.get(id=article_id)
         createtime = article.createtime.replace(tzinfo=get_default_timezone())
         GameNews.objects.get_or_create(
             id=article.id,
@@ -196,17 +187,19 @@ def move_article_worker(article):
             )
         )
     except IntegrityError as e:
-        print(article.id, e)
+        print(article_id, e)
 
 
 def move_article():
     global boxing_user
     boxing_user = User.objects.get(mobile=15801087215)
-    for article in Article.objects.filter(contenttype=1, isdel=0).order_by('id'):
-        q.put((move_article_worker, article))
+    for article in Article.objects.filter(contenttype=1, isdel=0).only('id').order_by('id'):
+        move_article_worker.delay(article.id)
 
 
-def move_comment_worker(comment):
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def move_comment_worker(comment_id):
+    comment = ArticleComment.objects.get(id=comment_id)
     news = GameNews.objects.filter(id=comment.aid).first()
     if news:
         try:
@@ -225,24 +218,23 @@ def move_comment_worker(comment):
 
 
 def move_comment():
-    for c in ArticleComment.objects.filter(isdel=1):
-        q.put((move_comment_worker, c))
+    for c in ArticleComment.objects.filter(isdel=1).only('id'):
+        move_comment_worker.delay(c.id)
 
 
 def follow_official_user():
     for u in User.objects.all():
         follow_user(u.id, FRIDAY_USER_ID)
         follow_user(u.id, BOXING_USER_ID)
+        follow_user(u.id, HOT_VIDEO_USER_ID)
 
 
 class Command(BaseCommand):
     help = '迁移数据'
 
     def handle(self, *args, **options):
-        workers = [gevent.spawn(worker) for _ in range(20)]
         move_user()
         set_admin_user()
         follow_official_user()
         move_article()
         move_comment()
-        gevent.joinall(workers)
