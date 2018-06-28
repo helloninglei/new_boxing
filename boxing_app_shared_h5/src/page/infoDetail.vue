@@ -23,7 +23,7 @@
             color #fff!important
             img
                 width 17.25rem!important
-                margin 0 auto
+                margin .5rem auto auto auto!important
         span {
             color #fff!important
         }
@@ -31,10 +31,10 @@
             width 100%
             margin-bottom .5rem
     .ql-editor {
-        /*padding 0!important;*/
+        white-space: inherit!important
         img {
             width 17.25rem!important
-            margin 0 auto
+            margin .5rem auto auto auto!important
         }
         iframe {
             width 100%!important
