@@ -2,7 +2,7 @@
     <div>
         <div class="trends_container_head">
             <template v-if="info.user">
-                <img class="portrait" :src="info.user.avatar ? info.user.avatar : avatar_default" />
+                <img class="portrait" :src="info.user.avatar ? info.user.avatar + `${portraitQuery}` : avatar_default" />
                 <span class="userName">{{info.user.nick_name}}</span>
                 <span class="is_following" @click="followEv">
                     <template v-if="info.user.is_following">
@@ -105,7 +105,7 @@
             margin auto auto .5rem .835rem
             width 5rem
 .bottom_bar
-    margin-bottom 3.5rem
+    padding-bottom 3.5rem
     width 100%
     height 2.4rem
     line-height 2.4rem
@@ -113,7 +113,7 @@
     color #fff
     background: #31313B;
     &.hasClose
-        margin-bottom 0
+        padding-bottom 0
     .bar_container
         display -webkit-flex
         display flex
@@ -170,6 +170,7 @@
                 wx: '',
                 compressPic: '',
                 thumbnail: '',
+                portraitQuery: '',
                 bigPicArr: []
             }
         },
@@ -185,8 +186,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                let thumbnail = this.thumbnail = 5 * baseSize;
-                this.compressPic = `?x-oss-process=image/resize,w_${thumbnail}/quality,q_80`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize}/quality,q_80`;
             },0)
         },
 
