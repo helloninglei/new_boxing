@@ -41,6 +41,8 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
                 serializer = CourseAllowNullDataSerializer(instance=course, data=course_data)
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
+        boxer.is_accept_order = False
+        boxer.save()
         redis_client.record_object_location(boxer, club.longitude, club.latitude)
         return Response(status=status.HTTP_204_NO_CONTENT)
 

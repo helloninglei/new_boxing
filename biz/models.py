@@ -9,7 +9,7 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.db.transaction import atomic
 
 from biz import validator, constants
-from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER
+from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -63,6 +63,8 @@ class User(AbstractUser):
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)
     money_balance = models.IntegerField(default=0)  # unit, 分
+    user_type = models.IntegerField(choices=USER_TYPE_CHOICE, null=True, blank=True)
+    title = models.CharField(null=True, blank=True, max_length=56)
 
     @property
     def identity(self):
@@ -446,6 +448,7 @@ class Report(BaseAuditModel):
     remark = models.CharField(max_length=20, null=True, blank=True)
     status = models.SmallIntegerField(choices=constants.REPORT_STATUS_CHOICES,
                                       default=constants.REPORT_STATUS_NOT_PROCESSED)
+    updated_time = models.DateTimeField(null=True)
 
     class Meta:
         db_table = 'report'

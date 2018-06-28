@@ -56,7 +56,7 @@ class PayService:
 
     @classmethod
     def generate_name(cls, obj):
-        return f'{obj.__class__._meta.verbose_name} {obj.id}'
+        return f'{obj.__class__._meta.verbose_name}'
 
     @classmethod
     def create_order(cls, user, obj, payment_type, device, ip, amount=None):  # amount 单位分
