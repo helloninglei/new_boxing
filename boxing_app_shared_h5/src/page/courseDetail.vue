@@ -52,7 +52,7 @@
             <div class="desc">{{playerInfo.experience}}</div>
         </div>
         <div class="award_experience_pic">
-            <div class="title">参赛、获奖及执教经历</div>
+            <div class="title">荣誉证明</div>
             <div class="pic_wrapper" :class="getClass">
                 <img :src="item + `${compressPic}`" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
             </div>
@@ -302,7 +302,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize * 2.5}/quality,q_80`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2.5)}/quality,q_80`;
             },0)
         },
 
