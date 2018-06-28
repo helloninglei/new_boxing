@@ -10,6 +10,7 @@ let url = window.location.href;
 function wxConfig(obj) {
     axios.get(config.baseUrl  + "/second_share_signature?url=" + encodeURIComponent(url))
         .then(function (msg) {
+            console.log('成功了')
             debug = msg.debug;
             appId = msg.app_id
             signature = msg.signature;
