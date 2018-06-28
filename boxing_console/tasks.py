@@ -18,8 +18,8 @@ def settle_order_task():
 @shared_task()
 def set_course_order_overdue():
     overdue_orders = CourseOrder.objects.filter(Q(course_validity__lt=datetime.today(),
-                                                confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED) &
-                                                ~Q(status=constants.COURSE_PAYMENT_STATUS_UNPAID,))
+                                                confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
+                                                )
     for course_order in overdue_orders:
         course_order.set_overdue()
 
