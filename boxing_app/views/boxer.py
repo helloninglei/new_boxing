@@ -60,7 +60,7 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
                                                   is_locked=False).prefetch_related('course__club') \
         .annotate(order_count=Count('boxer_course_order', distinct=True,
                                     filter=Q(boxer_course_order__status__gt=COURSE_PAYMENT_STATUS_UNPAID,
-                                             boxer_course_order__pay_time__isnull=False)),
+                                             boxer_course_order__is_deleted=False)),
                   min_price=Min('course__price', filter=Q(course__is_deleted=False, course__is_open=True)))\
         .distinct()
     filter_backends = (DjangoFilterBackend,)

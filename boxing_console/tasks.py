@@ -16,6 +16,7 @@ def settle_order_task():
 @shared_task()
 def set_course_order_overdue():
     overdue_orders = CourseOrder.objects.filter(course_validity__lt=datetime.today(),
+                                                is_deleted=False,
                                                 confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
     for course_order in overdue_orders:
         if course_order.status != constants.COURSE_PAYMENT_STATUS_UNPAID:
@@ -40,7 +41,6 @@ def order_tear_finished_after_boxer_confirmed():
 def refund_after_order_overdue():
     should_refund_orders = CourseOrder.objects.filter(status=constants.COURSE_PAYMENT_STATUS_OVERDUE,
                                                       course_validity__lt=datetime.now() - DELAY_SEVEN_DAYS,
-                                                      pay_time__isnull=False,
                                                       refund_record__isnull=True)
     for course_order in should_refund_orders:
         insurance_amount = course_order.insurance_amount or 0
