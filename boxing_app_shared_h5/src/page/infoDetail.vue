@@ -51,7 +51,7 @@
             height 10rem
             margin 0 auto
         .content
-            line-height 1rem
+            line-height 1.5rem
             font-size .75rem
             color #E9E9EA
 
