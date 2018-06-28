@@ -29,7 +29,7 @@
             width 100%
             margin-bottom .5rem
     .ql-editor {
-        padding 0!important;
+        /*padding 0!important;*/
         img {
             width 17.25rem!important
             margin 0 auto
