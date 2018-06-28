@@ -52,7 +52,7 @@
             <div class="desc">{{playerInfo.experience}}</div>
         </div>
         <div class="award_experience_pic">
-            <div class="title">参赛、获奖及执教经历</div>
+            <div class="title">参赛、获奖及荣誉证书</div>
             <div class="pic_wrapper" :class="getClass">
                 <img :src="item + `${compressPic}`" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
             </div>
