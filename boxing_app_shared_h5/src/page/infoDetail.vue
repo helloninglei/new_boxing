@@ -33,6 +33,10 @@
             width 17.25rem!important
             margin 0 auto
         }
+        iframe {
+            width 100%
+            height 10rem
+        }
     }
     .infoDetail
         margin 0 auto
