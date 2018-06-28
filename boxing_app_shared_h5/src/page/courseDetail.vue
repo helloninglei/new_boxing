@@ -2,7 +2,7 @@
     <div class="course_detail" :class="{hasClose: ifClose}">
         <div class="boxer_container">
             <template>
-                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar : avatar_default" @click="openApp" />
+                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
                 <div class="boxer_info">
                     <div class="boxerName">{{playerInfo.real_name}}<span :class="playerInfo.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
@@ -285,6 +285,7 @@
                 playerInfo: {},
                 compressPic: '',
                 thumbnail: '',
+                portraitQuery: '',
                 bigPicArr: []
             }
         },
@@ -300,7 +301,8 @@
 
         mounted(){
             setTimeout(() => {
-
+                let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize * 2.5}/quality,q_80`;
             },0)
         },
 
