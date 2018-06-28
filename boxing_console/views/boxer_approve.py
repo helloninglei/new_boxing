@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 
-from biz import, redis_client
+from biz import redis_client
 from biz import constants, sms_client
 from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE, USER_TYPE_BOXER
 from biz.models import BoxerIdentification, Course

@@ -38,7 +38,12 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
     avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
     course_order_count = serializers.SerializerMethodField()
-    title = serializers.CharField(max_length=16)
+    title = serializers.CharField(max_length=16, write_only=True)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['title'] = instance.user.title
+        return ret
 
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
@@ -50,10 +55,11 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         Course.objects.filter(boxer=instance).update(is_open=False)
         return super().update(instance, validated_data)
 
-    def validate(self, attrs):
-        user = self.context['user']
-        title = attrs.pop('title')
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        title = self.validated_data.pop('title')
         set_user_title(user, title)
+        return super().save(**kwargs)
 
     class Meta:
         model = models.BoxerIdentification
@@ -71,6 +77,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     city = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
+    title = serializers.CharField(source='user.title')
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
@@ -96,9 +103,9 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
-                  'allowed_course', 'city', 'user_id']
+                  'allowed_course', 'city', 'user_id', 'title']
         read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
-                            'real_name', 'allowed_course', 'city']
+                            'real_name', 'allowed_course', 'city', 'title']
 
 
 class DiscoverUserField(serializers.RelatedField):
