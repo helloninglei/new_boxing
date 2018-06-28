@@ -56,7 +56,9 @@ class PayService:
 
     @classmethod
     def generate_name(cls, obj):
-        return f'{obj.__class__._meta.verbose_name}'
+        if not isinstance(obj, User):
+            return f'{obj.__class__._meta.verbose_name}'
+        return '充值'
 
     @classmethod
     def create_order(cls, user, obj, payment_type, device, ip, amount=None):  # amount 单位分
