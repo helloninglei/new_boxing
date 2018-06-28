@@ -1,4 +1,6 @@
 # coding=utf-8
+from datetime import datetime
+
 from django.conf import settings
 from pypinyin import pinyin, Style
 from rest_framework.exceptions import NotFound
@@ -69,3 +71,11 @@ comment_count_condition = Count('comments', filter=Q(comments__is_deleted=False)
 class Round(Func):
     function = 'ROUND'
     template = '%(function)s(%(expressions)s, 1)'
+
+
+def utc2local(utc_dtm):
+    # UTC 时间转本地时间（ +8:00 ）
+    local_tm = datetime.fromtimestamp(0)
+    utc_tm = datetime.utcfromtimestamp(0)
+    offset = local_tm - utc_tm
+    return utc_dtm + offset

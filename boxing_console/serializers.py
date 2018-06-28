@@ -13,7 +13,7 @@ from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Cours
     Message, Comment, OrderComment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
-from biz.utils import get_model_class_by_name, hans_to_initial
+from biz.utils import get_model_class_by_name, hans_to_initial, utc2local
 from biz.validator import validate_mobile
 from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
@@ -263,7 +263,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
     def get_comment_time(self, instance):
         comment = self.get_comment(instance)
-        return (comment.created_time + timedelta(hours=8)).strftime(datetime_format) if comment else None
+        return utc2local(comment.created_time) if comment else None
 
     def get_comment_content(self, instance):
         comment = self.get_comment(instance)
