@@ -19,7 +19,7 @@
         &.hasClose
             padding-bottom 0
         p
-            line-height 1rem!important
+            line-height 1.5rem!important
             color #fff!important
             img
                 width 17.25rem!important
