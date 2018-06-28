@@ -110,7 +110,7 @@
                     
                 ],
                 tableColumn:[
-                    {title:'order_id',      name :'订单号',    width:'50'},
+                    {title:'course_order',      name :'订单号',    width:'50'},
                     {title:'course_name',      name :'课程',      width:''},
                     {title:'boxer_name',       name :'拳手姓名',   width:''},
                     {title:'boxer_mobile',           name :'拳手手机号', width:'95'},
@@ -171,7 +171,7 @@
             },
             toDetail(row){
                 // console.log(row)
-                this.$router.push({path: '/orderdetail', query:{id:row.id}});
+                this.$router.push({path: '/orderdetail', query:{id:row.course_order}});
 
             },
             filter(){

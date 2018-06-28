@@ -2,7 +2,7 @@
     <div>
         <div class="tab_bar">
         <span class="item comment" :class="{active: checked === 'comment'}" @click="tab('comment')">
-            评论 {{comments.length}}
+            评论 {{commentNum}}
             <span class="underline"></span>
         </span>
         <span class="item praise" :class="{active: checked === 'praise'}" @click="tab('praise')" v-if="ifShowPraise">
@@ -14,7 +14,7 @@
             <template v-if="checked === 'comment'">
                 <div class="comments_container" v-for="(item, index) in comments" :key="index">
                     <template v-if="item.user">
-                        <img class="portrait" :src="item.user.avatar ? `${config.baseUrl}/` + item.user.avatar : avatar_default" />
+                        <img class="portrait" :src="item.user.avatar ? `${config.baseUrl}/` + item.user.avatar + `${portraitQuery}` : avatar_default" />
                         <span class="userName">{{item.user.nick_name}}</span>
                     </template>
                     <GetTime :createTime="item.created_time"></GetTime>
@@ -38,7 +38,7 @@
             <template v-else-if="checked === 'praise'">
                 <div class="praises_container" v-for="(item, index) in praises" :key="index">
                     <template v-if="item.user">
-                        <img class="portrait" :src="item.user.avatar ? `${config.baseUrl}/` + item.user.avatar : avatar_default" />
+                        <img class="portrait" :src="item.user.avatar ? `${config.baseUrl}/` + item.user.avatar + `${portraitQuery}` : avatar_default" />
                         <span class="userName">{{item.user.nick_name}}</span>
                     </template>
                 </div>
@@ -117,7 +117,9 @@
             return {
                 checked: 'comment',
                 comments: [],
-                praises: []
+                praises: [],
+                commentNum: '',
+                portraitQuery: ''
             }
         },
         props: {
@@ -140,6 +142,12 @@
                 this.getPraises();
             }
         },
+        mounted(){
+            setTimeout(() => {
+                let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
+                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize * 1.1}`;
+            },0)
+        },
         methods: {
             tab(val) {
                 if (this.checked !== val) {
@@ -152,6 +160,7 @@
                 this.ajax(`/${this.commentType}/${this.id}/comments`,'get').then((res) => {
                     if (res && res.data) {
                         this.comments = res.data.results;
+                        this.commentNum = res.data.comment_count;
                     }
                 },(err) => {
                     if(err&&err.response){

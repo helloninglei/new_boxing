@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from biz import constants
-from biz.constants import BOXER_ALLOWED_COURSES_CHOICE
+from biz.constants import BOXER_ALLOWED_COURSES_CHOICE, USER_TYPE_BOXER
 from biz.models import User, BoxerIdentification, UserProfile, OperationLog, Course, SmsLog
 from biz.sms_client import SMS_TEMPLATES
 
@@ -118,6 +118,9 @@ class BoxerIdentificationTestCase(TestCase):
         allowed_courses = [course_dict.get(key) for key in data['allowed_course']]
         courses = '、'.join(allowed_courses)
         self.assertEqual(approve_message_log.content, (SMS_TEMPLATES['boxerApproved']["text"]).format(courses=courses))
+
+        self.fake_user1.refresh_from_db()
+        self.assertEqual(self.fake_user1.user_type, USER_TYPE_BOXER)
 
     def test_boxer_identification_approve_failed_without_course(self):
         identification_data = {

@@ -351,7 +351,11 @@
                 }
                 this.form.push_news = this.query.push_news;
                 // this.form.share_content = this.form.share_content.replace(/src="/g,'src="'+this.config.baseUrl)
-                this.dateArr=[this.query.start_time?this.query.start_time:'',this.query.end_time?this.query.end_time:'']
+                let startDate = new Date();
+                let endDate   = new Date();
+                startDate.setMinutes(startDate.getMinutes()+5);
+                endDate.setDate(endDate.getDate()+1);
+                this.dateArr=[this.query.start_time?this.query.start_time:startDate.Format("yyyy-MM-dd hh:mm:ss"),this.query.end_time?this.query.end_time:endDate.Format("yyyy-MM-dd hh:mm:ss")]
                 this.imgUrl = this.form.picture ;
                 this.confirmText = '修改'
             }else{

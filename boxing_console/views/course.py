@@ -24,7 +24,7 @@ class CourseOrderViewSet(viewsets.ModelViewSet):
     filter_class = CourseOrderFilter
 
     def get_queryset(self):
-        return CourseOrder.objects.all().select_related('boxer', 'user', 'club', 'user__user_profile')
+        return CourseOrder.all_objects.all().select_related('boxer', 'user', 'club', 'user__user_profile')
 
     def mark_insurance(self, request, *args, **kwargs):
         serializer = CourseOrderInsuranceSerializer(data=request.data, context={'order': self.get_object()})
@@ -39,4 +39,4 @@ class CourseSettleOrderViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filter_class = CourseSettleOrderFilter
     queryset = CourseSettleOrder.objects.all().prefetch_related('course', 'order', 'order__user', 'course__boxer',
-                                                                'course_order')
+                                                                'course_order', 'course__boxer__user')
