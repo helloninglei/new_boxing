@@ -18,7 +18,11 @@ def set_course_order_overdue():
     overdue_orders = CourseOrder.objects.filter(course_validity__lt=datetime.today(),
                                                 confirm_status=constants.COURSE_ORDER_STATUS_NOT_CONFIRMED)
     for course_order in overdue_orders:
-        course_order.set_overdue()
+        if course_order.status != constants.COURSE_PAYMENT_STATUS_UNPAID:
+            course_order.set_overdue()
+        else:
+            course_order.is_deleted = True
+            course_order.save()
 
 
 @shared_task()

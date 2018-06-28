@@ -364,7 +364,7 @@ class PayOrder(models.Model):
         db_table = 'pay_order'
 
 
-class CourseOrder(models.Model):
+class CourseOrder(SoftDeleteModel):
     pay_order = models.OneToOneField(PayOrder, on_delete=models.PROTECT, null=True, related_name='business_order')
     boxer = models.ForeignKey(BoxerIdentification, on_delete=models.PROTECT, related_name='boxer_course_order')
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user_course_order')
@@ -389,6 +389,7 @@ class CourseOrder(models.Model):
     insurance_amount = models.PositiveIntegerField(null=True)  #保险金额
     refund_record = models.ForeignKey(MoneyChangeLog, null=True, on_delete=models.PROTECT,
                                       related_name='+', db_index=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'course_order'
