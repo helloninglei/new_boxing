@@ -14,7 +14,7 @@
             <template v-if="checked === 'comment'">
                 <div class="comments_container" v-for="(item, index) in comments" :key="index">
                     <template v-if="item.user">
-                        <img class="portrait" :src="item.user.avatar ? `${config.baseUrl}/` + item.user.avatar : avatar_default" />
+                        <img class="portrait" :src="item.user.avatar ? `${config.baseUrl}/` + item.user.avatar + `${portraitQuery}` : avatar_default" />
                         <span class="userName">{{item.user.nick_name}}</span>
                     </template>
                     <GetTime :createTime="item.created_time"></GetTime>
