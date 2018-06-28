@@ -34,8 +34,8 @@
             margin 0 auto
         }
         iframe {
-            width 100%
-            height 10rem
+            width 100%!important
+            height 10rem!important
         }
     }
     .infoDetail
