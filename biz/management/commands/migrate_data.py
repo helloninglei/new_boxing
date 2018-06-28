@@ -1,7 +1,7 @@
 import re
 import requests
 from io import BytesIO
-from json import load
+from json import loads
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.db.utils import IntegrityError
@@ -15,8 +15,8 @@ from biz.utils import hans_to_initial
 from celery import shared_task
 
 city_dict = {}
-with open('old_boxing/citys.txt', 'r') as fp:
-    for i in load(fp):
+with open('old_boxing/citys.txt', 'rb') as fp:
+    for i in loads(fp.read().decode('utf-8')):
         city_dict[i['id']] = i['name']
 
 resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
