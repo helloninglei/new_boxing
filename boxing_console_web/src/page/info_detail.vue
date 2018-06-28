@@ -243,6 +243,8 @@
     .v-modal.addIndex{z-index:-1!important}
     .v-modal.addIndex.removeIndex{z-index:2001!important}
     #prevShow.addIndex{z-index:2002!important}
+    .ql-video{width:100%;height:220px;}
+    #priv_content iframe{width:100%;height:220px;}
 </style>
 <script>
     import TopBar   from 'components/topBar';
@@ -535,7 +537,7 @@
             preview(type){
                 // console.log(this.form)
                 this.type = type
-                
+                console.log(this.form.app_content)
                 $('.dialog-modal').removeClass('indexNone')
                 
                 if(type==1){

@@ -60,7 +60,7 @@
     max-width: 100%;
     display: block;
     height:600px;
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     margin: auto;
