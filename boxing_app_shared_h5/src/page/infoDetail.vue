@@ -111,7 +111,7 @@
                     var baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
                     for (var i = 0; i < imgArr.length; i++) {
                         var src = imgArr[i].match(srcReg);
-                        str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${baseSize * 17.25}/quality,q_90"/>`)
+                        str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 17.25)}/quality,q_90"/>`)
                     }
                 }
 
