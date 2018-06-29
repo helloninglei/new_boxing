@@ -32,7 +32,8 @@
             background none!important
         }
         video
-            width 100%
+            width 100%!important
+            height 10rem!important
             margin-bottom .5rem
     .ql-editor {
         white-space: inherit!important
