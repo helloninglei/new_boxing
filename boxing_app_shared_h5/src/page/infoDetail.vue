@@ -15,6 +15,8 @@
 
 <style lang="stylus" type="text/stylus">
     .infoDetail_container
+        margin 0 auto
+        width 17.25rem
         padding-bottom  3.5rem
         &.hasClose
             padding-bottom 0
@@ -22,6 +24,7 @@
             line-height 1.5rem!important
             color #fff!important
             img
+                display block
                 width 17.25rem!important
                 margin .5rem auto auto auto!important
         span {
@@ -35,6 +38,7 @@
         img {
             width 17.25rem!important
             margin .5rem auto auto auto!important
+            display block
         }
         iframe {
             width 100%!important
