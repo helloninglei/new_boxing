@@ -12,6 +12,7 @@
 <style scoped lang="stylus" type="text/stylus">
     .download_app_container {
         position: fixed;
+        left -.125rem
         bottom: 0;
         width: 100%;
         height: 3.5rem;
