@@ -6,7 +6,8 @@
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
-
+    video
+        object-fit: fill
 </style>
 
 <script type="text/ecmascript-6">
