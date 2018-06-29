@@ -103,7 +103,7 @@
                     course      : '',
                     status      : ''
                 },
-                total     : 1000,
+                total     : 0,
                 issearch  : false,
                 page      : 1,
                 tableData : [
