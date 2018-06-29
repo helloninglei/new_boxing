@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from datetime import datetime, timedelta
+from time import timezone
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -24,7 +25,7 @@ from biz import redis_const
 from biz.redis_client import redis_client
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
-from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial, utc2local
+from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
 from biz.constants import WITHDRAW_MIN_CONFINE
 from biz.services.money_balance_service import change_money
 
@@ -351,7 +352,7 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
 
     def get_comment_time(self, instance):
         comment = self.get_comment(instance)
-        return utc2local(comment.created_time) if comment else None
+        return timezone.localtime(comment.created_time).strftime(datetime_format) if comment else None
 
     def get_comment_content(self, instance):
         comment = self.get_comment(instance)
