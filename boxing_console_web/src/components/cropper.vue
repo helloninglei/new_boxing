@@ -455,9 +455,9 @@
           }  
           // Crop  
           if(this.imgId=='img1'){
-            croppedCanvas = this.cropper.getCroppedCanvas(); 
+            croppedCanvas = this.cropper.getCroppedCanvas({width:200,height:200}); 
           }else{
-            croppedCanvas = this.cropper2.getCroppedCanvas(); 
+            croppedCanvas = this.cropper2.getCroppedCanvas({width:this.width,height:this.height}); 
           }
             
           // 改成圆形图片Round  
@@ -465,6 +465,7 @@
 
           this.headerImage = croppedCanvas.toDataURL(); 
           let file=this.dataURLtoFile (this.headerImage, 'file') 
+
           this.postImg(file)  
 
       },  
