@@ -29,6 +29,7 @@
                 margin .5rem auto auto auto!important
         span {
             color #fff!important
+            background-color none!important
         }
         video
             width 100%
