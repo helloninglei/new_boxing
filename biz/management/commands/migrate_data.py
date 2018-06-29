@@ -11,7 +11,7 @@ from django.contrib.auth.hashers import make_password
 from biz.services.file_service import save_upload_file
 from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
 from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
-from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID, HOT_VIDEO_USER_ID, FAMOUS_USER_DICT, USER_IDENTITY_DICT
+from biz.constants import BOXING_USER_ID, FAMOUS_USER_DICT, USER_IDENTITY_DICT
 from biz.redis_client import follow_user
 from biz.utils import hans_to_initial
 from celery import shared_task
@@ -182,9 +182,6 @@ def set_admin_user():
         )
 
 
-boxing_user = None
-
-
 def replace_article_img(html):
     for url in re_resource_base_url.findall(html):
         new_url = move_image(url)
@@ -202,7 +199,7 @@ def move_article_worker(article_id):
             defaults=dict(
                 title=article.title[:50],
                 sub_title=article.subtitle[:50],
-                operator=boxing_user,
+                operator_id=BOXING_USER_ID,
                 views_count=article.realreadnum,
                 initial_views_count=article.basereadnum,
                 picture=move_image(article.cover),
@@ -223,8 +220,6 @@ def move_article_worker(article_id):
 
 
 def move_article():
-    global boxing_user
-    boxing_user = User.objects.get(mobile=15801087215)
     for article in Article.objects.filter(contenttype=1, isdel=0).only('id').order_by('id'):
         move_article_worker.delay(article.id)
 
