@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import timezone
 
 from django.conf import settings

@@ -1,5 +1,4 @@
 # coding=utf-8
-from datetime import datetime
 
 from django.conf import settings
 from pypinyin import pinyin, Style
