@@ -21,8 +21,6 @@ DEVELOPMENT = 'development'
 
 ENVIRONMENT = DEVELOPMENT
 
-if len(sys.argv) > 1 and sys.argv[1] == 'test':
-    ENVIRONMENT = TEST
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -40,17 +38,16 @@ DB_MYSQL_DATABASE_OLD = 'old_boxing'
 DB_MYSQL_USER_OLD = DB_MYSQL_USER
 DB_MYSQL_PASSWORD_OLD = DB_MYSQL_PASSWORD
 
+# redis conf
 REDIS_HOST = '192.168.33.10'
 REDIS_PORT = 6379
 REDIS_DB = 5
+REDIS_MAX_CONNECTIONS = 200
 
 # base url
 BASE_URL = ""
 
 SHARE_H5_BASE_URL = 'http://qa.bituquanguan.com/share/#/'
-
-if ENVIRONMENT == TEST:
-    REDIS_DB = 15  # 用于单元测试，每次会被清空
 
 UPLOAD_URL_PATH = '/uploads/'
 
@@ -217,13 +214,6 @@ DATABASES = {
             'CHARSET': 'utf8mb4',
         }
     }
-}
-
-REDIS_CONFIG = {
-    'host': REDIS_HOST,
-    'port': REDIS_PORT,
-    'db': REDIS_DB,
-    "max_connections": 200
 }
 
 # Password validation
