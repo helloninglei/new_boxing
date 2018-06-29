@@ -130,7 +130,8 @@
                 type: Boolean
             },
             commentType: {
-                type: String
+                type: String,
+                default: 'message'
             }
         },
         components: {
@@ -139,7 +140,9 @@
         created() {
             if (this.id) {
                 this.getComments();
-                this.getPraises();
+                if (this.commentType == 'message') {
+                    this.getPraises();
+                }
             }
         },
         mounted(){

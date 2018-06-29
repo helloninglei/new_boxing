@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 import re
 from datetime import datetime
+
+from django.utils import timezone
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Min
 from django.db.transaction import atomic
 from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
-from biz.models import OrderComment, BoxingClub, User, Course, CourseOrder
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count
@@ -26,6 +28,8 @@ from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
 from biz.constants import WITHDRAW_MIN_CONFINE
 from biz.services.money_balance_service import change_money
+
+datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -348,7 +352,7 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
 
     def get_comment_time(self, instance):
         comment = self.get_comment(instance)
-        return comment.created_time if comment else None
+        return timezone.localtime(comment.created_time).strftime(datetime_format) if comment else None
 
     def get_comment_content(self, instance):
         comment = self.get_comment(instance)
