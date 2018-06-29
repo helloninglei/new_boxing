@@ -6,11 +6,9 @@
                 <div class="close_btn" @click="closePayTipEv"></div>
             </div>
             <div class="video_info_wrapper">
-                <template v-show="showVideo">
-                    <div v-if="videoObj.try_url || videoObj.url" class="video">
-                        <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem"></Video>
-                    </div>
-                </template>
+                <div v-if="videoObj.try_url || videoObj.url" class="video">
+                    <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem" v-show="showVideo"></Video>
+                </div>
                 <div class="text">
                     <h2 class="title">{{videoObj.name}}</h2>
                     <div class="desc">{{videoObj.description}}</div>
