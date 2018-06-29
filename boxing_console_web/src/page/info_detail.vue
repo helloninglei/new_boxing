@@ -539,7 +539,7 @@
             preview(type){
                 // console.log(this.form)
                 this.type = type
-                console.log(this.form.app_content)
+                // console.log(this.form.app_content)
                 $('.dialog-modal').removeClass('indexNone')
                 
                 if(type==1){
