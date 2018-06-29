@@ -10,4 +10,4 @@ class BoxingMD5PasswordHasher(MD5PasswordHasher):
         assert password is not None
         assert salt and '$' not in salt
         hash = hashlib.md5(force_bytes(f'{password}{{{salt}}}')).hexdigest()
-        return "%s$%s$%s" % (self.algorithm, hash, salt)
+        return "%s$%s$%s" % (self.algorithm, salt, hash)

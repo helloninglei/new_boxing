@@ -78,7 +78,7 @@ def move_user_worker(uid):
         mobile=u.phone,
         defaults=dict(
             id=u.uid,
-            password=f'boxing${u.pass_field}${u.salt}',
+            password=f'boxing${u.salt}${u.pass_field}',
             weibo_openid=weibo_openid,
             wechat_openid=wechat_openid,
             is_active=not u.isdel,
