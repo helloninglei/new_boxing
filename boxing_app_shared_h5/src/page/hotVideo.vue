@@ -6,9 +6,11 @@
                 <div class="close_btn" @click="closePayTipEv"></div>
             </div>
             <div class="video_info_wrapper">
-                <div v-if="videoObj.try_url || videoObj.url" class="video">
-                    <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem"></Video>
-                </div>
+                <template v-show="showVideo">
+                    <div v-if="videoObj.try_url || videoObj.url" class="video">
+                        <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem"></Video>
+                    </div>
+                </template>
                 <div class="text">
                     <h2 class="title">{{videoObj.name}}</h2>
                     <div class="desc">{{videoObj.description}}</div>
@@ -90,7 +92,8 @@
                 showModal: false,
                 videoObj: {},
                 wx: '',
-                dataObj: ''
+                dataObj: '',
+                showVideo: true
             }
         },
         components: {
@@ -128,7 +131,13 @@
                 })
             },
             modalEv(ifShow) {
-                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+                if (ifShow) {
+                    this.$router.push({path: '/download'})
+                }
+                else {
+                    this.showModal = false
+                    this.showVideo = true;
+                }
             },
             closePayTipEv() {
                 this.showPayTip = false;
@@ -138,6 +147,7 @@
             },
             openApp() {
                 this.showModal = true;
+                this.showVideo = false;
             },
             commonShare() {
                 this.ajax(`/hot_videos/${this.id}/share`,'get').then((res) => {
