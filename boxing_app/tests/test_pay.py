@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 from biz import constants
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
-from biz.constants import DEVICE_PLATFORM_IOS, PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_UNPAID
+from biz.constants import DEVICE_PLATFORM_IOS, PAYMENT_TYPE_ALIPAY, PAYMENT_STATUS_UNPAID, PAYMENT_STATUS_PAID
 from django.contrib.contenttypes.fields import ContentType
 from biz.redis_client import redis_client
 
@@ -64,6 +64,10 @@ class PaymentTestCase(APITestCase):
             payment_type=PAYMENT_TYPE_ALIPAY,
         )
 
+        res = self.client1.get('/pay_status', {'order_id': order.out_trade_no})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        PayOrder.objects.filter(out_trade_no=order.out_trade_no).update(status=PAYMENT_STATUS_PAID)
         res = self.client1.get('/pay_status', {'order_id': order.out_trade_no})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         result = res.data['result']
