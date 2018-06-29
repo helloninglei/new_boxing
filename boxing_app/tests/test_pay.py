@@ -71,7 +71,7 @@ class PaymentTestCase(APITestCase):
         res = self.client1.get('/pay_status', {'order_id': order.out_trade_no})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         result = res.data['result']
-        self.assertEqual(result['status'], 'unpaid')
+        self.assertEqual(result['status'], 'paid')
         self.assertEqual(result['amount'], self.data['price'])
         self.assertEqual(result['name'], f'视频（{self.data["name"]}）')
 
