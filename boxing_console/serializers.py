@@ -122,6 +122,10 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     allowed_course = serializers.ListField(child=serializers.CharField())
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     mobile = serializers.CharField(source='user.mobile')
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, instance):
+        return redis_client.get_user_title(instance.user) or instance.user.title
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
