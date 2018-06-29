@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from datetime import datetime
-from time import timezone
+from django.utils import timezone
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
