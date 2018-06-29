@@ -76,7 +76,7 @@ def move_user_worker(uid):
         id=u.uid,
         defaults=dict(
             mobile=u.phone,
-            password=f'boxing${u.pass_field}${u.salt}',
+            password=f'boxing${u.pass_field}${{{u.salt}}}',
             weibo_openid=weibo_openid,
             wechat_openid=wechat_openid,
             is_active=not u.isdel,
@@ -133,6 +133,10 @@ OFFICIAL_USERS = {
     13800138000: '客服账号',
 }
 
+
+FAMOUS_USERS = {
+
+}
 
 def set_admin_user():
     for mobile in OFFICIAL_USERS.keys():

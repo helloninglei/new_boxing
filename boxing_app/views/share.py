@@ -9,7 +9,7 @@ from biz.utils import get_model_class_by_name, get_share_img_url, get_object_or_
 from biz.weixin_public_client import Sign
 
 '''
-带图片（头像）、主标题（取动态文字）、副标题为 “来自xx的拳民出击”，xx为用户昵称。
+带图片（头像）、主标题（取动态文字）、副标题为 “来自xx的拳城出击”，xx为用户昵称。
 主标题最多2行展示，文字过多时，以...结束。
 如只有图片、视频，主标题默认为“分享XX动态“。XX为用户昵称。
 
@@ -17,7 +17,7 @@ from biz.weixin_public_client import Sign
 
 如视频已付费，分享出去还是未付费的分享页。视频是不完整视频。
 击xx元观看完整视频”按钮和“打开app”相同，ios打开appstore页。安卓打开下载提示页。“
-热门视频分享，主标题 ：视频名称、图片 展示图片 ，副标题 拳民出击。
+热门视频分享，主标题 ：视频名称、图片 展示图片 ，副标题 拳城出击。
 
 
 
@@ -55,14 +55,14 @@ def share_view(_, object_type, object_id):
             profile = user.user_profile
             if not title:
                 title = f'分享{profile.nick_name}动态'
-            sub_title = f'来自{profile.nick_name}的拳民出击'
+            sub_title = f'来自{profile.nick_name}的拳城出击'
             picture = get_share_img_url(profile.avatar)
         title = _truncate_text(title, 14)
         sub_title = _truncate_text(sub_title, 20)
     elif isinstance(obj, HotVideo):
         user = obj.user
         title = obj.name
-        sub_title = '拳民出击'
+        sub_title = '拳城出击'
         picture = get_share_img_url(obj.try_url, is_video=True)
         url = f'{h5_base_url}hot_videos/{user.id}/{object_id}'
     elif isinstance(obj, GameNews):
@@ -83,7 +83,8 @@ def share_view(_, object_type, object_id):
         'picture': picture,
         'url': url,
     }
-    incr_number_of_share(user.id)
+    if user:
+        incr_number_of_share(user.id)
     return Response(data)
 
 

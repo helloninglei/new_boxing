@@ -40,7 +40,7 @@ SMS_TEMPLATES = {
     },
     "boxerConfirmedOrder": {
         "code": "SMS_137410094",
-        "text": "你预定的{duration}分钟{name}课程已经消费，请尽快登录拳民出击app进行确认。"
+        "text": "你预定的{duration}分钟{name}课程已经消费，请尽快登录拳城出击app进行确认。"
     }
 }
 
