@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
+from django.utils import timezone
 
 import requests
 from django.conf import settings
@@ -267,7 +268,7 @@ class CourseOrderSerializer(serializers.ModelSerializer):
 
     def get_comment_time(self, instance):
         comment = self.get_comment(instance)
-        return comment.created_time.strftime(datetime_format) if comment else None
+        return timezone.localtime(comment.created_time).strftime(datetime_format) if comment else None
 
     def get_comment_content(self, instance):
         comment = self.get_comment(instance)

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="trends_container" :class="{hasClose: ifClose}">
         <div class="trends_container_head">
             <template v-if="info.user">
                 <img class="portrait" :src="info.user.avatar ? info.user.avatar + `${portraitQuery}` : avatar_default" />
@@ -27,7 +27,7 @@
             </template>
         </div>
         <TabBar :id="id" :ifShowPraise=true commentType="message" @openApp="openApp"></TabBar>
-        <div class="bottom_bar" :class="{hasClose: ifClose}">
+        <div class="bottom_bar">
             <div class="bar_container">
                 <div class="comment_btn" @click="openApp">
                     <div class="comment_icon"></div>
@@ -48,6 +48,10 @@
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
+.trends_container
+    padding-bottom  3.5rem
+    &.hasClose
+        padding-bottom 0
 .portrait
     width 1.1rem
     height 1.1rem
@@ -105,15 +109,12 @@
             margin auto auto .5rem .835rem
             width 5rem
 .bottom_bar
-    padding-bottom 3.5rem
     width 100%
     height 2.4rem
     line-height 2.4rem
     font-size .7rem
     color #fff
     background: #31313B;
-    &.hasClose
-        padding-bottom 0
     .bar_container
         display -webkit-flex
         display flex
@@ -209,15 +210,15 @@
                         let picArrSize = this.info.images.length;
                         let thumbnail_swiper = 18.75 * baseSize;
                         if (picArrSize === 1) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(thumbnail_swiper)}`
                         }
                         else if (picArrSize > 1 && picArrSize < 5) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${8 * baseSize}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize)}`
                         }
                         else if (picArrSize > 5) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${5 * baseSize}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize)}`
                         }
-                        let compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`;
+                        let compressPic = `?x-oss-process=image/resize,w_${parseInt(thumbnail_swiper)}/quality,q_90`;
                         this.info.images.forEach((item) => {
                             let item_pic = item + compressPic;
                             this.bigPicArr.push(item_pic);
