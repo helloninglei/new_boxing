@@ -244,6 +244,8 @@
     .v-modal.addIndex.removeIndex{z-index:2001!important}
     #prevShow.addIndex{z-index:2002!important}
     .ql-video{width:100%;height:220px;}
+    .ql-align-center{text-align: center}
+    .ql-align-right{text-align: right}
     #priv_content iframe{width:100%;height:220px;}
 </style>
 <script>
@@ -537,7 +539,7 @@
             preview(type){
                 // console.log(this.form)
                 this.type = type
-                // console.log(this.form.app_content)
+                console.log(this.form.app_content)
                 $('.dialog-modal').removeClass('indexNone')
                 
                 if(type==1){

@@ -98,7 +98,7 @@ nav{min-height: 528px}
                 ],
                 tableColumn:[
                     {title:'id',              name :'申请编号',   width:''},
-                    {title:'created_time',    name :'申请时间', width:'200'},
+                    {title:'updated_time',    name :'申请时间', width:'200'},
                     {title:'nick_name',       name :'昵称',   width:''},
                     {title:'real_name',       name :'姓名',   width:''},
                     {title:'mobile',          name :'手机号', width:''},
