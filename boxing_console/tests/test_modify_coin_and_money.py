@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from biz import constants
-from biz.models import User, CoinChangeLog, MoneyChangeLog
+from biz.models import User, CoinChangeLog
 
 
 class CoinAndMoneyTestCase(TestCase):
@@ -38,29 +38,3 @@ class CoinAndMoneyTestCase(TestCase):
                                            'change_type':constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE})
         self.assertEqual(responst2.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsNot(self,CoinChangeLog.objects.filter(user=self.fake_user1).exists())
-
-    def test_add_money_success(self):
-        responst = self.client.post(reverse('money_change'),
-                                    data={'change_amount':100,
-                                          'user':self.fake_user2.pk,
-                                          'change_type':constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE})
-
-        self.assertEqual(responst.status_code, status.HTTP_201_CREATED)
-
-        money_log = MoneyChangeLog.objects.filter(user=self.fake_user2.pk).first()
-        self.assertEqual(money_log.last_amount, 0)
-        self.assertEqual(money_log.change_amount, 100)
-        self.assertEqual(money_log.remain_amount, 100)
-        self.assertEqual(money_log.operator, self.fake_user1)
-        self.assertEqual(money_log.change_type, constants.MONEY_CHANGE_TYPE_INCREASE_RECHARGE)
-
-    def test_add_money_failed(self):
-        responst1 = self.client.post(reverse('money_change'),
-                                     data={
-                                         'user': self.fake_user2.pk,
-                                         'change_type': constants.COIN_CHANGE_TYPE_INCREASE_RECHARGE})
-        self.assertEqual(responst1.status_code, status.HTTP_400_BAD_REQUEST)
-
-        responst2 = self.client.post(reverse('money_change'),
-                                     data={'change_amount': 100,'change_type':'hhh'})
-        self.assertEqual(responst2.status_code, status.HTTP_400_BAD_REQUEST)

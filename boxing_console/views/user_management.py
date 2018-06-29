@@ -2,7 +2,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from biz.models import User, MoneyChangeLog
 from rest_framework import viewsets, filters, mixins
-from boxing_console.serializers import UserSerializer, MoneyBalanceChangeLogSerializer
+from boxing_console.serializers import UserSerializer, MoneyBalanceChangeLogSerializer, EditUserInfoSerializer
 from boxing_console.filters import UserFilter, MoneyChangeLogFilter
 
 
@@ -16,10 +16,17 @@ class UserManagementViewSet(viewsets.ModelViewSet):
 
 class MoneyBalanceChangeLogViewSet(viewsets.GenericViewSet,
                                    mixins.ListModelMixin):
-
     serializer_class = MoneyBalanceChangeLogSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = MoneyChangeLogFilter
 
     def get_queryset(self):
         return MoneyChangeLog.objects.filter(user=self.kwargs['pk'])
+
+
+class EditUserInfo(viewsets.GenericViewSet,
+                   mixins.UpdateModelMixin):
+    serializer_class = EditUserInfoSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(pk=self.kwargs['pk'])
