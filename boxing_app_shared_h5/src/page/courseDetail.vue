@@ -30,7 +30,7 @@
             <div class="course_item" v-for="(item, index) in courseInfo.results" :key="index">
                 <div class="item_title">
                     <span class="course_name">{{item.course_name}}</span>
-                    <span class="evaluate">（{{item.order_count}}个人约过 {{item.score}}分)</span>
+                    <span class="evaluate">（{{item.order_count}}个人约过 {{item.score ? item.score : '0'}}分)</span>
                 </div>
                 <div class="item_time">
                     <span class="name">课程时长</span>
@@ -59,7 +59,7 @@
         </div>
         <div class="match_video" v-if="playerInfo.competition_video">
             <div class="title">参赛视频</div>
-            <Video :url="playerInfo.competition_video"></Video>
+            <Video :url="playerInfo.competition_video" v-show="showVideo"></Video>
         </div>
         <div class="comments_container">
             <span class="comments">评论</span>
@@ -286,7 +286,8 @@
                 compressPic: '',
                 thumbnail: '',
                 portraitQuery: '',
-                bigPicArr: []
+                bigPicArr: [],
+                showVideo: true
             }
         },
 
@@ -393,9 +394,11 @@
             showZoomImage(index) {
                 this.slideIndex = index;
                 this.showSwiper = true;
+                this.showVideo = false;
             },
 
             hideSwiper() {
+                this.showVideo = true;
                 this.showSwiper = false;
             },
 
