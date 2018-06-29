@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from biz import redis_client
 from biz.constants import COURSE_PAYMENT_STATUS_UNPAID
 from biz.models import Course, BoxerIdentification, BoxingClub, CourseOrder, OrderComment
+from biz.utils import Round
 from boxing_app.permissions import IsBoxerPermission
 from boxing_app.serializers import CourseAllowNullDataSerializer, CourseFullDataSerializer
 
@@ -20,7 +21,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         return Course.objects.filter(boxer__user=self.request.user)\
             .annotate(order_count=Count('course_orders',
                                         filter=Q(course_orders__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
-                      score=Avg('course_orders__comment__score'))\
+                      score=Round(Avg('course_orders__comment__score')))\
             .select_related('club', 'boxer')
 
     @transaction.atomic
@@ -74,7 +75,7 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
         dict['order_count'] = CourseOrder.objects.filter(boxer=boxer, status__gt=COURSE_PAYMENT_STATUS_UNPAID).count()
         dict['allowed_course'] = boxer.allowed_course
         comment_count_and_avg_score = OrderComment.objects.filter(order__boxer=boxer) \
-            .aggregate(comments_count=Count('id'), avg_score=Avg('score'))
+            .aggregate(comments_count=Count('id'), avg_score=Round(Avg('score')))
         dict.update(comment_count_and_avg_score)
         return dict
 
@@ -87,7 +88,7 @@ class GetBoxerCourseByAnyOneViewSet(viewsets.ReadOnlyModelViewSet):
         return Course.objects.filter(boxer__id=self.kwargs['boxer_id'], is_open=True)\
             .annotate(order_count=Count('course_orders',
                                         filter=Q(course_orders__status__gt=COURSE_PAYMENT_STATUS_UNPAID)),
-                      score=Avg('course_orders__comment__score'))\
+                      score=Round(Avg('course_orders__comment__score')))\
             .select_related('club', 'boxer')
 
     def opened_courses_list(self, request, *args, **kwargs):
