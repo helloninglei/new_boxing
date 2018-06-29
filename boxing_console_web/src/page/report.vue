@@ -278,7 +278,7 @@
             },
             openContent(val){
                 // console.log(val)
-                val.pictures1 = {};
+                val.pictures1 = [];
                 if(val.pictures&&val.pictures.length>0){
                     for (var i=0;i<val.pictures.length;i++){
                         val.pictures1[i] = this.config.baseUrl + val.pictures[i]
