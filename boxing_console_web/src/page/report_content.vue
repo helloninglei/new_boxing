@@ -4,8 +4,8 @@
         <h3 style='color:#909399'>用户昵称：{{getData.nick_name}}</h3>
         <p class="detail_title text_lf">发布时间：{{getData.created_time}}</p>
         <p style='font-size:14px'>{{getData.content}}</p>
-        <div class='imgs' v-if='getData.pictures'>
-          <img :src="value" alt="" v-for='value in getData.pictures' width='100%'>
+        <div class='imgs' v-if='getData.pictures1'>
+          <img :src="value" alt="" v-for='value in getData.pictures1' width='100%'>
         </div>
         <div class='imgs' v-if='getData.video'>
           <video :src="config.baseUrl+getData.video" controls="controls" width='100%'>
