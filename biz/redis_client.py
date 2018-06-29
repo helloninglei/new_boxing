@@ -130,3 +130,7 @@ def set_user_title(user, title):
 
 def get_user_title(user):
     return redis_client.get(f'user_{user.id}_title')
+
+
+def del_user_title(user):
+    return redis_client.delete(f'user_{user.id}_title')

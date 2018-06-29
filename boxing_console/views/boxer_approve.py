@@ -45,6 +45,7 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             allowed_courses = [course_dict.get(key) for key in content]
             self.create_course(boxer=boxer, allowed_courses=content)
             title = redis_client.get_user_title(boxer.user)
+            redis_client.del_user_title(boxer.user)
             boxer.user.title = title
             boxer.user.user_type = USER_TYPE_BOXER
             boxer.user.save()

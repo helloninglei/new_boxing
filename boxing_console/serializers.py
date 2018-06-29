@@ -125,7 +125,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        return redis_client.get_user_title(instance.user)
+        return redis_client.get_user_title(instance.user) or instance.user.title
 
     def validate(self, attrs):
         if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \

@@ -93,16 +93,16 @@ class BoxerIdentificationTestCase(TestCase):
             "competition_video": 'https://baidu.com'
         }
         title = "最牛的拳手"
-        redis_client.set_user_title(user=self.fake_user1, title=title)
         identification = BoxerIdentification.objects.create(**identification_data)
-
+        redis_client.set_user_title(identification.user, title)
         self.assertEqual(self.fake_user1.boxer_identification.authentication_state,
                          constants.BOXER_AUTHENTICATION_STATE_WAITING)
         data = {'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED,
                 'allowed_course': [constants.BOXER_ALLOWED_COURSES_THAI_BOXING, constants.BOXER_ALLOWED_COURSES_BOXING]}
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data=json.dumps(data), content_type='application/json')
-        identification = BoxerIdentification.objects.get(user=self.fake_user1)
+        identification.refresh_from_db()
+        identification.user.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
         self.assertEqual(identification.allowed_course, data['allowed_course'])
