@@ -15,6 +15,8 @@
 
 <style lang="stylus" type="text/stylus">
     .infoDetail_container
+        margin 0 auto
+        width 17.25rem
         padding-bottom  3.5rem
         &.hasClose
             padding-bottom 0
@@ -22,19 +24,23 @@
             line-height 1.5rem!important
             color #fff!important
             img
+                display block
                 width 17.25rem!important
                 margin .5rem auto auto auto!important
         span {
             color #fff!important
+            background none!important
         }
         video
-            width 100%
+            width 100%!important
+            height 10rem!important
             margin-bottom .5rem
     .ql-editor {
         white-space: inherit!important
         img {
-            width 17.25rem!important
-            margin .5rem auto auto auto!important
+            /*width 17.25rem!important*/
+            /*margin .5rem auto auto auto!important*/
+            /*display block*/
         }
         iframe {
             width 100%!important
@@ -99,8 +105,6 @@
                 this.getData();
                 this.sharePage();
             };
-//            let a = '<p><img src="http://39.105.73.10:8000/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png"></p><iframe class="ql-video" frameborder="0" allowfullscreen="true" src="/uploads/b9/a2/8434d87433ef41280821942a1c70783df2a6.mp4"></iframe><p><br></p><p><br></p><p><br></p><p>按揭房拉丝机发发龙卷风拉上解放啦否</p><p>快圣诞节疯狂了世界国家</p>'
-//            this.getSrc(a)
         },
         methods: {
             getSrc(str) {
@@ -121,7 +125,9 @@
                     var baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
                     for (var i = 0; i < imgArr.length; i++) {
                         var src = imgArr[i].match(srcReg);
-                        str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 17.25)}/quality,q_90"/>`)
+                        if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
+                            str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 17.25)}"/>`)
+                        }
                     }
                 }
 
@@ -132,7 +138,6 @@
                     if (res && res.data) {
                         this.info = res.data;
                         this.str = this.getSrc(res.data.content);
-//                        this.str = res.data.content;
                     }
                 },(err) => {
                     if(err&&err.response){
