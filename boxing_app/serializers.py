@@ -191,8 +191,11 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     def validate(self, data):
-        if data['reason'] == REPORT_OTHER_REASON and not data.get('remark'):
-            raise ValidationError({'remark': ['举报理由是必填项']})
+        if data['reason'] != REPORT_OTHER_REASON:
+            data['remark'] = None
+        else:
+            if not data.get('remark'):
+                raise ValidationError({'remark': ['举报理由是必填项']})
         return data
 
     class Meta:

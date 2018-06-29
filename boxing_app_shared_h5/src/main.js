@@ -5,19 +5,19 @@ import App from './App';
 import axios from './common/axios'
 import config from './common/my_config'
 import routes from './router/index.js';
-import VueQuillEditor from 'vue-quill-editor'
-import layer from 'vue-layer'
+// import VueQuillEditor from 'vue-quill-editor'
+// import layer from 'vue-layer'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.css'
 
-Vue.prototype.$layer = layer(Vue);
+// Vue.prototype.$layer = layer(Vue);
 
 // require styles
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+// import 'quill/dist/quill.core.css'
+// import 'quill/dist/quill.snow.css'
+// import 'quill/dist/quill.bubble.css'
 
-Vue.use(VueQuillEditor);
+// Vue.use(VueQuillEditor);
 Vue.use(VueRouter);
 Vue.use(VueResoure);
 Vue.use(VueAwesomeSwiper);

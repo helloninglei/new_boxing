@@ -15,17 +15,17 @@ exit_code=0
 
 ut(){
     echo "test app"
-    python manage.py test --settings boxing_app.app_settings boxing_app.tests
+    pytest --ds=boxing_app.app_settings boxing_app/tests --no-migrations --disable-warnings
     exit_code1=$?
     echo "app test result: $exit_code1"
 
     echo "test biz"
-    python manage.py test --settings boxing_app.app_settings biz.tests
+    pytest --ds=boxing_app.app_settings biz/tests --no-migrations --disable-warnings
     exit_code2=$?
     echo "biz test result: $exit_code2"
 
     echo "test console"
-    python manage.py test --settings boxing_console.console_settings boxing_console.tests
+    pytest --ds=boxing_console.console_settings boxing_console/tests --no-migrations --disable-warnings
     exit_code3=$?
     echo "console test result: $exit_code3"
 

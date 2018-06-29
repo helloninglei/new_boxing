@@ -5,7 +5,7 @@
 		  	<input id="where" name="where" type="text" :maxlength="30" placeholder="请输入搜索的地址" v-model='address' @blur="onblur()"  @focus="onfocus()">
 			<!-- <button type="button" @click="sear();">查找</button> -->
 			<el-button type="danger" class='myColor_red myButton_20' style='width:40px' @click="sear();">查找</el-button>
-		  	<label style="margin-left:118px">经纬度：</label>
+		  	<label style="margin-left:20px">经纬度：</label>
 		  	<input id="lonlat" name="lonlat" type="text" readonly="readonly" placeholder="点击地图地点获取经纬度">
 		  	<!-- <button class="mapSure">确定</button> -->
 		 </div>
@@ -21,6 +21,7 @@
     	height:30px;
     	border-radius: 5px;
     	padding-left:5px;
+    	width:246px;
     } 
     #lonlat{width:200px;}
     label{
