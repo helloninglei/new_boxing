@@ -303,7 +303,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2.5)}/quality,q_80`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2.5)}`;
             },0)
         },
 
@@ -338,15 +338,15 @@
                         let picArrSize = this.playerInfo.honor_certificate_images.length;
                         let thumbnail_swiper = 18.75 * baseSize;
                         if (picArrSize === 1) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(thumbnail_swiper)}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(thumbnail_swiper)}`
                         }
                         else if (picArrSize > 1 && picArrSize < 5) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize)}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize)}`
                         }
                         else if (picArrSize > 5) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize)}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize)}`
                         }
-                        let compressPic = `?x-oss-process=image/resize,w_${parseInt(thumbnail_swiper)}/quality,q_90`;
+                        let compressPic = `?x-oss-process=image/resize,w_${parseInt(thumbnail_swiper)}`;
                         this.playerInfo.honor_certificate_images.forEach((item) => {
                             let item_pic = item + compressPic;
                             this.bigPicArr.push(item_pic);
