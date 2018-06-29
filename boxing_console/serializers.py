@@ -9,8 +9,7 @@ from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, \
-    Message, Comment, OrderComment
+from biz.models import CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, OrderComment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -19,9 +18,9 @@ from biz.redis_client import get_number_of_share
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
-    HOT_VIDEO_USER_ID
+    HOT_VIDEO_USER_ID, USER_TYPE_MAP
 from biz.services.official_account_service import create_official_account_change_log
-from biz.constants import USER_TYPE_CHOICE, USER_TYPE_BOXER
+from biz.constants import  USER_TYPE_BOXER
 
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -528,8 +527,7 @@ class EditUserInfoSerializer(serializers.ModelSerializer):
     user_type = serializers.CharField(source="get_user_type_display")
 
     def validate(self, attrs):
-        attrs['user_type'] = dict(zip(dict(USER_TYPE_CHOICE).values(), dict(USER_TYPE_CHOICE).keys())).get(
-            attrs['get_user_type_display'])
+        attrs['user_type'] = dict(zip(USER_TYPE_MAP.values(), USER_TYPE_MAP.keys())).get(attrs['get_user_type_display'])
         if attrs['user_type'] == USER_TYPE_BOXER:
             raise ValidationError("不能编辑用户为拳手！")
         attrs['money_balance'] = self.instance.money_balance + attrs['change_amount']
