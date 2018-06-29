@@ -52,7 +52,7 @@
             <div class="desc">{{playerInfo.experience}}</div>
         </div>
         <div class="award_experience_pic">
-            <div class="title">参赛、获奖及执教经历</div>
+            <div class="title">荣誉证明</div>
             <div class="pic_wrapper" :class="getClass">
                 <img :src="item + `${compressPic}`" v-for="(item, index) in playerInfo.honor_certificate_images" :key="index" class="pic" @click="showZoomImage(index)" />
             </div>
@@ -302,7 +302,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize * 2.5}/quality,q_80`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2.5)}/quality,q_80`;
             },0)
         },
 
@@ -337,15 +337,15 @@
                         let picArrSize = this.playerInfo.honor_certificate_images.length;
                         let thumbnail_swiper = 18.75 * baseSize;
                         if (picArrSize === 1) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(thumbnail_swiper)}/quality,q_90`
                         }
                         else if (picArrSize > 1 && picArrSize < 5) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${8 * baseSize}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize)}/quality,q_90`
                         }
                         else if (picArrSize > 5) {
-                            this.compressPic = `?x-oss-process=image/resize,w_${5 * baseSize}/quality,q_90`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize)}/quality,q_90`
                         }
-                        let compressPic = `?x-oss-process=image/resize,w_${thumbnail_swiper}/quality,q_90`;
+                        let compressPic = `?x-oss-process=image/resize,w_${parseInt(thumbnail_swiper)}/quality,q_90`;
                         this.playerInfo.honor_certificate_images.forEach((item) => {
                             let item_pic = item + compressPic;
                             this.bigPicArr.push(item_pic);

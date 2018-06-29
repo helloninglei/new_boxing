@@ -130,7 +130,8 @@
                 type: Boolean
             },
             commentType: {
-                type: String
+                type: String,
+                default: 'message'
             }
         },
         components: {
@@ -139,13 +140,15 @@
         created() {
             if (this.id) {
                 this.getComments();
-                this.getPraises();
+                if (this.commentType == 'message') {
+                    this.getPraises();
+                }
             }
         },
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize * 1.1}`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 1.1)}`;
             },0)
         },
         methods: {
