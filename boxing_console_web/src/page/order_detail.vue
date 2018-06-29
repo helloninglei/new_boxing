@@ -305,7 +305,7 @@
                 this.ajax('/course/order/'+id,'get',{},{}).then(function(res){
                     if(res&&res.data){
                         $this.result=res.data;
-                        $this.starValue = res.data.comment_score;
+                        $this.starValue = res.data.comment_score/2;
                         // 用户确认默认时间
                         $this.result.user_moren_time = new Date($this.result.boxer_confirm_time)
                         $this.result.user_moren_time.setDate($this.result.user_moren_time.getDate()+7)

@@ -19,19 +19,22 @@
         &.hasClose
             padding-bottom 0
         p
-            line-height 1rem!important
+            line-height 1.5rem!important
             color #fff!important
             img
                 width 17.25rem!important
-                margin 0 auto
+                margin .5rem auto auto auto!important
+        span {
+            color #fff!important
+        }
         video
             width 100%
             margin-bottom .5rem
     .ql-editor {
-        /*padding 0!important;*/
+        white-space: inherit!important
         img {
             width 17.25rem!important
-            margin 0 auto
+            margin .5rem auto auto auto!important
         }
         iframe {
             width 100%!important
@@ -95,7 +98,9 @@
             if (this.id) {
                 this.getData();
                 this.sharePage();
-            }
+            };
+//            let a = '<p><img src="http://39.105.73.10:8000/uploads/65/56/1af070dca4c5a6acc00307361fea887e2f3d.png"></p><iframe class="ql-video" frameborder="0" allowfullscreen="true" src="/uploads/b9/a2/8434d87433ef41280821942a1c70783df2a6.mp4"></iframe><p><br></p><p><br></p><p><br></p><p>按揭房拉丝机发发龙卷风拉上解放啦否</p><p>快圣诞节疯狂了世界国家</p>'
+//            this.getSrc(a)
         },
         methods: {
             getSrc(str) {
@@ -107,7 +112,7 @@
                 if (arr) {
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
-                        if (src.indexOf('http') == -1 && src.indexOf('https') > -1) {
+                        if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
                             str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                         }
                     }
