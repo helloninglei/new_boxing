@@ -164,7 +164,7 @@
         data() {
             return {
                 isShowTop : true,
-                total     : 1000,
+                total     : 0,
                 issearch  :false,
                 sendData  :{
                     search:'',
