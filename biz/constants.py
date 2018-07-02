@@ -278,3 +278,7 @@ USER_TYPE_CHOICE = (
     (USER_TYPE_CELEBRITY, "名人"),
     (USER_TYPE_MEDIA, "自媒体")
 )
+
+# user default bio
+DEFAULT_BIO_OF_MEN = "小哥哥好懒哦，什么都没留下～"
+DEFAULT_BIO_OF_WOMEN = "小姐姐好懒哦，什么都没留下～"
