@@ -123,7 +123,7 @@ class CourseOrderTestCase(APITestCase):
         self.assertEqual(search_user_mobile_res.data['count'], 0)
 
         # 通过拳手手机号搜索
-        search_user_mobile_res = self.client.get('/course/orders', {"search": self.boxer_data['mobile']})
+        search_user_mobile_res = self.client.get('/course/orders', {"search": self.user1.mobile})
         self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"search": 12222222222})
         self.assertEqual(search_user_mobile_res.data['count'], 0)
@@ -306,7 +306,7 @@ class CourseOrderTestCase(APITestCase):
         res = self.client.get('/course/settle_orders', {'boxer': boxer.real_name})
         self.assertEqual(res.data['count'], 3)
 
-        res = self.client.get('/course/settle_orders', {'boxer': boxer.mobile})
+        res = self.client.get('/course/settle_orders', {'boxer': boxer.user.mobile})
         self.assertEqual(res.data['count'], 3)
 
         res = self.client.get('/course/settle_orders', {'course': 'mmb'})
