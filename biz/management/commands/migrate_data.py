@@ -9,10 +9,10 @@ from django.core.files import File
 from django.db.utils import IntegrityError
 from django.utils.timezone import get_default_timezone
 from django.contrib.auth.hashers import make_password
-from biz.services.file_service import save_upload_file, generate_file_name, storage
-from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
-from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
-from biz.constants import BOXING_USER_ID, FAMOUS_USER_DICT, USER_IDENTITY_DICT
+from biz.services.file_service import generate_file_name, storage
+from old_boxing.models import User as OldUser, Article, ArticleComment
+from biz.models import User, UserProfile, GameNews, Comment
+from biz.constants import USER_IDENTITY_DICT
 from biz.redis_client import follow_user
 from biz.utils import hans_to_initial
 from celery import shared_task
@@ -72,7 +72,7 @@ def move_image(url: str):
         file_path = generate_file_name(f)
         url_path = f'{settings.OSS_BASE_URL}{settings.UPLOAD_URL_PATH}{file_path}'
         if http_client.head(url_path).status_code == 200:
-            return url_path
+            return f'{settings.UPLOAD_URL_PATH}{file_path}'
         return storage.save(file_path, f)
 
 
@@ -239,5 +239,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         set_preset_user()
         move_user()
-        # move_article()
-        # move_comment()
+        move_article()
+        move_comment()
