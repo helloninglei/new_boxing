@@ -133,6 +133,21 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
                             'honor_certificate_images', 'competition_video')
 
 
+class BoxerApproveSerializer(serializers.Serializer):
+    allowed_course = serializers.ListField()
+    title = serializers.CharField(max_length=16)
+
+    class Meta:
+        fields = ('allowed_course', 'title')
+
+
+class BoxerRefuseSerializer(serializers.Serializer):
+    refuse_reason = serializers.CharField(max_length=100)
+
+    class Meta:
+        fields = ('refuse_reason',)
+
+
 class CourseSerializer(serializers.ModelSerializer):
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
     mobile = serializers.CharField(source='boxer.user.mobile', read_only=True)
