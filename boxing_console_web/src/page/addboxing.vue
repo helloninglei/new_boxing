@@ -10,7 +10,7 @@
                         </el-form-item>
                         <el-form-item label="宣传图" prop="avatar">
                             <el-row>
-                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='160' :height='90'></Cropper>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
                                 <div>  
                                     <div class='show' >  
                                       <img :src="src_avatar" alt="" width='100%' id='img1'> 
@@ -86,7 +86,7 @@
                         <el-form-item label="展示图" prop="images">
                             <div style='width:200%'>
                                 <el-row>
-                                    <el-col :span="6">
+                                    <div style='float:left;margin-right:10px'>
                                        <div class='show1' @click="addImg('inputId2','img2')">  
                                           <img :src="images['img2']" alt="" width='100%' id='img2' > 
                                         </div>
@@ -94,8 +94,8 @@
                                           <input type="file" id="inputId2" style='display:none' accept="image" @change="change">  
                                           <label for="inputId2"></label>  
                                         </div> 
-                                    </el-col>
-                                    <el-col :span="6">
+                                    </div>
+                                    <div style='float:left;margin-right:10px'>
                                         <div class='show1' @click="addImg('inputId3','img3')">  
                                           <img :src="images['img3']" alt="" width='100%' id='img3' > 
                                         </div>
@@ -103,8 +103,8 @@
                                           <input type="file" id="inputId3" style='display:none' accept="image" @change="change">  
                                           <label for="inputId3"></label>  
                                         </div> 
-                                    </el-col>
-                                    <el-col :span="6">
+                                    </div>
+                                    <div style='float:left;margin-right:10px'>
                                         <div class='show1' @click="addImg('inputId4','img4')">  
                                           <img :src="images['img4']" alt="" width='100%' id='img4' > 
                                         </div>
@@ -112,8 +112,8 @@
                                           <input type="file" id="inputId4" style='display:none' accept="image" @change="change">  
                                           <label for="inputId4"></label>  
                                         </div> 
-                                    </el-col>
-                                    <el-col :span="6">
+                                    </div>
+                                    <div style='float:left;margin-right:10px'>
                                         <div class='show1' @click="addImg('inputId5','img5')">  
                                           <img :src="images['img5']" alt="" width='100%' id='img5' > 
                                         </div>
@@ -121,7 +121,7 @@
                                           <input type="file" id="inputId5" style='display:none' accept="image" @change="change">  
                                           <label for="inputId5"></label>  
                                         </div> 
-                                    </el-col>
+                                    </div>
                                 </el-row>
                                 <div class='el-form-item__error'>{{sendErr}}</div>
                             </div>
@@ -179,8 +179,8 @@
       border: 1px solid #d5d5d5;  
     } 
     #addBoxing .show1 {  
-      width: 160px;  
-      height: 90px;  
+      width: 150px;  
+      height: 80px;  
       overflow: hidden;  
       position: relative;  
       /*border-radius: 50%;  */

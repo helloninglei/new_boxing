@@ -5,11 +5,11 @@ from datetime import datetime
 from django.conf import settings
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
-_config = settings.REDIS_CONFIG
-redis_client = redis.StrictRedis(host=_config['host'],
-                                 port=_config['port'],
-                                 db=_config['db'],
-                                 max_connections=_config['max_connections'],
+
+redis_client = redis.StrictRedis(host=settings.REDIS_HOST,
+                                 port=settings.REDIS_PORT,
+                                 db=settings.REDIS_DB,
+                                 max_connections=settings.REDIS_MAX_CONNECTIONS,
                                  decode_responses=True)
 
 
@@ -122,3 +122,15 @@ def get_order_no_serial():
     if order_incr == 1:
         redis_client.expire(key, 3600 * 24)
     return str(order_incr).rjust(5, '0')
+
+
+def set_user_title(user, title):
+    return redis_client.set(f'user_{user.id}_title', title)
+
+
+def get_user_title(user):
+    return redis_client.get(f'user_{user.id}_title')
+
+
+def del_user_title(user):
+    return redis_client.delete(f'user_{user.id}_title')

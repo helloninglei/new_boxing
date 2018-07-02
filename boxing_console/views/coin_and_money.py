@@ -1,19 +1,9 @@
 # -*- coding: utf-8 -*-
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
-
-from biz.models import CoinChangeLog, MoneyChangeLog
+from biz.models import CoinChangeLog
 from boxing_console.filters import CoinChangLogListFilter
-from boxing_console.serializers import MoneyLogSerializer, CoinLogSerializer
-
-
-class MoneyChangeLogViewSet(mixins.CreateModelMixin,
-                            GenericViewSet):
-    serializer_class = MoneyLogSerializer
-    queryset = MoneyChangeLog.objects.all()
-
-    def perform_create(self, serializer):
-        serializer.save(operator=self.request.user)
+from boxing_console.serializers import CoinLogSerializer
 
 
 class CoinChangLogViewSet(mixins.CreateModelMixin,

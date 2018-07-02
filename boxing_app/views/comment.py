@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz import models
 from biz.models import OrderComment
-from biz.utils import get_model_class_by_name, get_object_or_404
+from biz.utils import get_model_class_by_name, get_object_or_404, Round
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
 
@@ -75,6 +75,6 @@ class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        count_and_avg_score = self.get_queryset().aggregate(count=Count('*'), avg_score=Avg("score"))
+        count_and_avg_score = self.get_queryset().aggregate(count=Count('*'), avg_score=Round(Avg("score")))
         response.data.update(count_and_avg_score)
         return response

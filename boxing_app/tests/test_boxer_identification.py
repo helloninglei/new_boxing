@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from biz import constants
+from biz import constants, redis_client
 from biz.models import User, BoxerIdentification
 
 
@@ -48,6 +48,7 @@ class BoxerIdentificationTestCase(APITestCase):
                     "is_professional_boxer": True,
                     "club": "131ef2f3",
                     "job": 'hhh',
+                    "title": "最牛的拳王",
                     "introduction": "beautiful",
                     "experience": '',
                     "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
@@ -62,6 +63,8 @@ class BoxerIdentificationTestCase(APITestCase):
         for key in post_data:
             if key == 'birthday':
                 self.assertEqual(getattr(identification, key).strftime(format("%Y-%m-%d")), post_data[key])
+            elif key == 'title':
+                self.assertEqual(post_data[key], redis_client.get_user_title(self.fake_user))
             else:
                 self.assertEqual(getattr(identification, key), post_data[key])
 
@@ -78,6 +81,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "job": 'hhh',
             "introduction": "beautiful",
             "experience": '',
+            "title": "最牛的拳王",
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
             "competition_video": 'https://baidu.com'
         }
@@ -100,6 +104,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "job": 'hhh',
             "introduction": "beautiful",
             "experience": '',
+            "title": "最牛的拳王",
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
             "competition_video": 'https://baidu.com'
         }
@@ -113,6 +118,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "is_professional_boxer": True,
             "club": "131ef2f3",
             "job": 'hhh',
+            "title": "最牛的拳王",
             "introduction": "beautiful",
             "experience": '',
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
@@ -136,6 +142,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "is_professional_boxer": True,
             "club": "131ef2f3",
             "job": 'hhh',
+            "title": "最牛的拳王",
             "introduction": "beautiful",
             "experience": '',
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
@@ -200,6 +207,7 @@ class BoxerIdentificationTestCase(APITestCase):
             "is_professional_boxer": True,
             "club": "c444444",
             "job": "j4444444",
+            "title": "最牛的拳王",
             "introduction": "beautiful",
             "experience": '',
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
@@ -223,7 +231,8 @@ class BoxerIdentificationTestCase(APITestCase):
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), datetime.date(2018, 4, 25))
             elif key == 'authentication_state':
                 self.assertEqual(response.data['authentication_state'], constants.BOXER_AUTHENTICATION_STATE_WAITING)
-
+            elif key == 'title':
+                self.assertEqual(update_data[key], redis_client.get_user_title(self.fake_user))
             else:
                 self.assertEqual(getattr(self.fake_user.boxer_identification, key), update_data[key])
 

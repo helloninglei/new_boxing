@@ -18,7 +18,7 @@
             <GetTime :createTime="info.created_time"></GetTime>
             <div class="content">{{info.content}}</div>
             <template v-if="info.video">
-                <Video :url="info.video"></Video>
+                <Video :url="info.video" v-show="showVideo"></Video>
             </template>
             <template v-else>
                 <div class="pic_wrapper" :class="getClass">
@@ -172,7 +172,8 @@
                 compressPic: '',
                 thumbnail: '',
                 portraitQuery: '',
-                bigPicArr: []
+                bigPicArr: [],
+                showVideo: true
             }
         },
 
@@ -187,7 +188,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${baseSize}/quality,q_80`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize)}/quality,q_80`;
             },0)
         },
 
@@ -233,11 +234,18 @@
             },
 
             openApp() {
+                this.showVideo = false;
                 this.showModal = true;
             },
 
             modalEv(ifShow) {
-                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+                if (ifShow) {
+                    this.$router.push({path: '/download'})
+                }
+                else {
+                    this.showModal = false;
+                    this.showVideo = true;
+                }
             },
 
             followEv() {

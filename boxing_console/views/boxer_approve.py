@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 
+from biz import redis_client
 from biz import constants, sms_client
 from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE, USER_TYPE_BOXER
 from biz.models import BoxerIdentification, Course
@@ -13,7 +14,7 @@ from boxing_console.serializers import BoxerIdentificationSerializer, CourseSeri
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
-    queryset = BoxerIdentification.objects.all().order_by('-id')
+    queryset = BoxerIdentification.objects.all().order_by('-updated_time')
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('is_professional_boxer', 'authentication_state', 'is_locked')
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
@@ -43,6 +44,9 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
             allowed_courses = [course_dict.get(key) for key in content]
             self.create_course(boxer=boxer, allowed_courses=content)
+            title = redis_client.get_user_title(boxer.user)
+            redis_client.del_user_title(boxer.user)
+            boxer.user.title = title
             boxer.user.user_type = USER_TYPE_BOXER
             boxer.user.save()
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
@@ -63,3 +67,4 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             serializer = CourseSerializer(data={"course_name": course_name})
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
+

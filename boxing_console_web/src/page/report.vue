@@ -164,7 +164,7 @@
         data() {
             return {
                 isShowTop : true,
-                total     : 1000,
+                total     : 0,
                 issearch  :false,
                 sendData  :{
                     search:'',
@@ -277,10 +277,11 @@
                 })
             },
             openContent(val){
-                console.log(val)
+                // console.log(val)
+                val.pictures1 = [];
                 if(val.pictures&&val.pictures.length>0){
                     for (var i=0;i<val.pictures.length;i++){
-                        val.pictures[i] = this.config.baseUrl + val.pictures[i]
+                        val.pictures1[i] = this.config.baseUrl + val.pictures[i]
                     }
                 }
                 this.detailData.allData = val;
