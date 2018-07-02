@@ -249,7 +249,7 @@
         margin-top .6rem
         .pic
             width 100%
-            height 10rem
+            /*height 10rem*/
     .pic_wrapper2
         margin .6rem auto -.4rem -.75rem
         .pic
