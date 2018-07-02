@@ -125,6 +125,7 @@ PHONE_DICT = {
 }
 
 PRESET_PHONE_LIST = PHONE_DICT.values()
+PRESET_ID_LIST = PHONE_DICT.keys()
 
 NAME_DICT = {
     10: '热门视频',
@@ -180,7 +181,7 @@ def move_article_worker(article_id):
             defaults=dict(
                 title=article.title[:50],
                 sub_title=article.subtitle[:50],
-                operator_id=BOXING_USER_ID,
+                # operator_id=BOXING_USER_ID,
                 views_count=article.realreadnum,
                 initial_views_count=article.basereadnum,
                 picture=move_image(article.cover),
@@ -232,8 +233,7 @@ def move_comment():
 
 def follow_official_user():
     for u in User.objects.only('id'):
-        [follow_user(u.id, i) for i in USER_IDENTITY_DICT.values()]
-        [follow_user(u.id, i) for i in FAMOUS_USER_DICT.values()]
+        [follow_user(u.id, user_id) for user_id in PRESET_ID_LIST]
 
 
 class Command(BaseCommand):
@@ -243,5 +243,5 @@ class Command(BaseCommand):
         set_preset_user()
         move_user()
         follow_official_user()
-        # move_article()
-        # move_comment()
+        move_article()
+        move_comment()
