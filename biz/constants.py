@@ -287,5 +287,6 @@ USER_TYPE_CHOICE = (
 USER_TYPE_MAP = dict(USER_TYPE_CHOICE)
 
 # user default bio
-DEFAULT_BIO_OF_MEN = "小哥哥好懒哦，什么都没留下～"
-DEFAULT_BIO_OF_WOMEN = "小姐姐好懒哦，什么都没留下～"
+DEFAULT_BIO = "{}好懒哦，什么都没留下～"
+DEFAULT_BIO_OF_MEN = DEFAULT_BIO.format("小哥哥")
+DEFAULT_BIO_OF_WOMEN = DEFAULT_BIO.format("小姐姐")
