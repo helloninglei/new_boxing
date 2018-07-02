@@ -28,6 +28,36 @@ re_resource_base_url = re.compile('\'?\"?(http:\/\/boxing-1251438677\.cossh\.myq
 
 http_client = requests.Session()
 
+PHONE_DICT = {
+    10: 16619770891,  # '热门视频'
+    11: 15210750150,  # 'Friday'
+    12: 15801087215,  # '拳城出击'
+    13: 13800138000,  # '客服账号'
+
+    14: 13261843166,  # '跑酷',
+    15: 17611655266,  # '熊呈呈',
+    16: 13501224847,  # '徐晓冬',
+    17: 13810578320,  # '吴紫龙',
+    18: 18888888888,  # '拳城出击——中华武术大会',
+}
+
+PRESET_PHONE_LIST = PHONE_DICT.values()
+PRESET_ID_LIST = PHONE_DICT.keys()
+
+NAME_DICT = {
+    10: '热门视频',
+    11: 'Friday',
+    12: '拳城出击',
+    13: '客服账号',
+
+    14: '跑酷',
+    15: '熊呈呈',
+    16: '徐晓冬',
+    17: '吴紫龙',
+    18: '拳城出击——中华武术大会',
+}
+DEFAULT_PASSWORD = '1qaz1qaz1qaZ'
+
 
 def move_image(url: str):
     if not url:
@@ -79,6 +109,9 @@ def move_user_worker(uid):
     if u.source == 3:
         weibo_openid = u.uuid
 
+    [follow_user(uid, user_id) for user_id in PRESET_ID_LIST]
+    print(f'{uid} follow {user_id}')
+
     new_user, created = User.objects.get_or_create(
         id=uid,
         defaults=dict(
@@ -109,37 +142,6 @@ def move_user():
     for u in OldUser.objects.all().order_by('-uid').only('uid', 'phone'):
         if u.phone not in PRESET_PHONE_LIST:
             move_user_worker.delay(u.uid)
-
-
-PHONE_DICT = {
-    10: 16619770891,  # '热门视频'
-    11: 15210750150,  # 'Friday'
-    12: 15801087215,  # '拳城出击'
-    13: 13800138000,  # '客服账号'
-
-    14: 13261843166,  # '跑酷',
-    15: 17611655266,  # '熊呈呈',
-    16: 13501224847,  # '徐晓冬',
-    17: 13810578320,  # '吴紫龙',
-    18: 18888888888,  # '拳城出击——中华武术大会',
-}
-
-PRESET_PHONE_LIST = PHONE_DICT.values()
-PRESET_ID_LIST = PHONE_DICT.keys()
-
-NAME_DICT = {
-    10: '热门视频',
-    11: 'Friday',
-    12: '拳城出击',
-    13: '客服账号',
-
-    14: '跑酷',
-    15: '熊呈呈',
-    16: '徐晓冬',
-    17: '吴紫龙',
-    18: '拳城出击——中华武术大会',
-}
-DEFAULT_PASSWORD = '1qaz1qaz1qaZ'
 
 
 def set_preset_user():
@@ -231,17 +233,11 @@ def move_comment():
         move_comment_worker.delay(c.id)
 
 
-def follow_official_user():
-    for u in User.objects.only('id'):
-        [follow_user(u.id, user_id) for user_id in PRESET_ID_LIST]
-
-
 class Command(BaseCommand):
     help = '迁移数据'
 
     def handle(self, *args, **options):
         set_preset_user()
         move_user()
-        follow_official_user()
-        move_article()
-        move_comment()
+        # move_article()
+        # move_comment()
