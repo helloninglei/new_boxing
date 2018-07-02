@@ -131,7 +131,7 @@ class CourseSettleOrderFilter(django_filters.FilterSet):
         return qs
 
     def boxer_filter(self, qs, name, value):
-        return qs.filter(Q(course__boxer__real_name=value) | Q(course__boxer__mobile=value))
+        return qs.filter(Q(course__boxer__real_name=value) | Q(course__boxer__user__mobile=value))
 
     class Meta:
         model = models.CourseSettleOrder

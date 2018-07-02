@@ -131,7 +131,7 @@ class CourseTestCase(APITestCase):
         self.assertEqual(res.data['count'], 1)
 
         # 通过boxer__mobile搜索
-        res = self.client.get('/courses?search={}'.format(identification_list[1].mobile))
+        res = self.client.get('/courses?search={}'.format(identification_list[1].user.mobile))
         self.assertEqual(res.data['count'], 1)
 
     def test_get_course_detail(self):
