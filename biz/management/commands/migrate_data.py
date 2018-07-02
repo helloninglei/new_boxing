@@ -110,7 +110,6 @@ def move_user_worker(uid):
         weibo_openid = u.uuid
 
     [follow_user(uid, user_id) for user_id in PRESET_ID_LIST]
-    print(f'{uid} follow {user_id}')
 
     new_user, created = User.objects.get_or_create(
         id=uid,
