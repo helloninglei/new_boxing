@@ -107,7 +107,7 @@
                 },
                 userTotal : 1000000,//付费人数
                 moneyTotal : 1000000,//付费金额
-                total     : 1000,//数据的总条数
+                total     : 0,//数据的总条数
                 tableData : [
                     
                 ],
@@ -167,7 +167,8 @@
             },
             changePage(val){
                 // 要看第几页
-                console.log(val)
+                this.page=val
+                this.getTableData(val) ;
             },
             filter(){
                 this.issearch=true;

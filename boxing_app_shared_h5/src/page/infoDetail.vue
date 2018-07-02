@@ -27,10 +27,9 @@
                 display block
                 width 17.25rem!important
                 margin .5rem auto auto auto!important
-        span {
+        span
             color #fff!important
             background none!important
-        }
         video
             width 100%!important
             height 10rem!important

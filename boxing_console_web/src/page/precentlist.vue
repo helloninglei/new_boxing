@@ -111,7 +111,7 @@
         data() {
             return {
                 isShowTop : true,
-                total     : 1000,
+                total     : 0,
                 issearch  :false,
                 page      :1,
                 sendData  :{

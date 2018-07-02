@@ -362,10 +362,17 @@
 
             openApp() {
                 this.showModal = true;
+                this.showVideo = false;
             },
 
             modalEv(ifShow) {
-                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+                if (ifShow) {
+                    this.$router.push({path: '/download'})
+                }
+                else {
+                    this.showModal = false;
+                    this.showVideo = true;
+                }
             },
 
             closeEv(val) {

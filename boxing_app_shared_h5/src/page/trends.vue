@@ -18,7 +18,7 @@
             <GetTime :createTime="info.created_time"></GetTime>
             <div class="content">{{info.content}}</div>
             <template v-if="info.video">
-                <Video :url="info.video"></Video>
+                <Video :url="info.video" v-show="showVideo"></Video>
             </template>
             <template v-else>
                 <div class="pic_wrapper" :class="getClass">
@@ -172,7 +172,8 @@
                 compressPic: '',
                 thumbnail: '',
                 portraitQuery: '',
-                bigPicArr: []
+                bigPicArr: [],
+                showVideo: true
             }
         },
 
@@ -233,11 +234,18 @@
             },
 
             openApp() {
+                this.showVideo = false;
                 this.showModal = true;
             },
 
             modalEv(ifShow) {
-                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+                if (ifShow) {
+                    this.$router.push({path: '/download'})
+                }
+                else {
+                    this.showModal = false;
+                    this.showVideo = true;
+                }
             },
 
             followEv() {
