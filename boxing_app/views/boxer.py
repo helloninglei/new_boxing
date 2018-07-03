@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
+from django.conf import settings
 from django.db.models import Case, When, Count, Min, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, mixins, permissions
@@ -10,7 +11,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import get_object_or_404
 from biz import constants, redis_client
 from biz.constants import COURSE_PAYMENT_STATUS_UNPAID
-from biz.models import BoxerIdentification
+from biz.models import BoxerIdentification, User
 from boxing_app.filters import NearbyBoxerFilter
 from boxing_app.permissions import IsBoxerPermission
 from boxing_app.serializers import BoxerIdentificationSerializer, NearbyBoxerIdentificationSerializer

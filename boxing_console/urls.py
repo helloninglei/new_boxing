@@ -8,7 +8,7 @@ from django.conf import settings
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
-from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
+from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet
@@ -18,7 +18,7 @@ from biz.views import upload_file, captcha_image
 from boxing_console.views.financial_management import WithdrawLogViewSet, PayOrdersViewSet
 from boxing_console.views import admin, report
 from rest_framework.routers import SimpleRouter
-from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet
+from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, EditUserInfo
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
 from boxing_console.views.message import MessageViewSet
 
@@ -99,10 +99,10 @@ financial_management_urls = [
 
 user_management_urls = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
-    path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
     path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
     path("users", UserManagementViewSet.as_view({"get": "list"})),
-    path("money_change_logs/<int:pk>", MoneyBalanceChangeLogViewSet.as_view({"get": "list"}))
+    path("money_change_logs/<int:pk>", MoneyBalanceChangeLogViewSet.as_view({"get": "list"})),
+    path("edit_user/<int:pk>", EditUserInfo.as_view({"put": "update"}))
 ]
 
 official_account_change_logs_urls = [
