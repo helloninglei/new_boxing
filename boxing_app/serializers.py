@@ -10,7 +10,7 @@ from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
-from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
 from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
@@ -426,6 +426,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
     identity = serializers.CharField(source="user.identity", read_only=True)
     is_following = serializers.SerializerMethodField(read_only=True)
+    bio = serializers.SerializerMethodField()
+    title = serializers.CharField(source="user.title", read_only=True)
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+
+    def get_bio(self, instance):
+        if instance.bio:
+            return instance.bio
+        if instance.gender:
+            return DEFAULT_BIO_OF_MEN
+        return DEFAULT_BIO_OF_WOMEN
 
     def get_is_following(self, instance):
         return bool(is_following(self.context['request'].user.id, instance.user.id))

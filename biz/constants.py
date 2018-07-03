@@ -284,5 +284,9 @@ USER_TYPE_CHOICE = (
     (USER_TYPE_CELEBRITY, "名人"),
     (USER_TYPE_MEDIA, "自媒体")
 )
-
 USER_TYPE_MAP = dict(USER_TYPE_CHOICE)
+
+# user default bio
+DEFAULT_BIO_FORMAT = "{}好懒哦，什么都没留下～"
+DEFAULT_BIO_OF_MEN = DEFAULT_BIO_FORMAT.format("小哥哥")
+DEFAULT_BIO_OF_WOMEN = DEFAULT_BIO_FORMAT.format("小姐姐")
