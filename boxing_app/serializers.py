@@ -20,7 +20,7 @@ from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
-from biz.redis_client import redis_client
+from biz.redis_client import redis_client, get_message_forward_count
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
@@ -122,10 +122,18 @@ class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
     video = serializers.CharField(max_length=200, required=False)
     user = DiscoverUserField(read_only=True)
-    like_count = serializers.IntegerField(read_only=True)
+    like_count = serializers.SerializerMethodField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     is_like = serializers.BooleanField(read_only=True)
     msg_type = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField(read_only=True)
+
+    def get_like_count(self, instance):
+        if hasattr(instance, 'like_count'):
+            return instance.like_count + instance.initial_like_count
+
+    def get_forward_count(self, instance):
+        return get_message_forward_count(instance.id) + instance.initial_forward_count
 
     def get_msg_type(self, obj):
         if obj.video:
@@ -144,7 +152,7 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'msg_type', 'created_time', 'user', 'like_count', 'comment_count',
-                  'is_like']
+                  'forward_count', 'is_like']
 
 
 class BasicReplySerializer(serializers.ModelSerializer):
