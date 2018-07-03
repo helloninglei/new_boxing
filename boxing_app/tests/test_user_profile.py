@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from biz.constants import DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
+from biz.constants import DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, USER_TYPE_CELEBRITY
 from biz.models import UserProfile, User
 from . import APILoginTestCase
 
@@ -26,7 +26,8 @@ class UserProfileTestCase(APILoginTestCase):
         self.assertEqual(response.data['bio'], self.user_profile_data['bio'])
 
     def test_user_profile_bio_is_none(self):
-        user = User.objects.create_user(mobile="18877778888", password="password", user_type=2, title="我是大名人")
+        user = User.objects.create_user(mobile="18877778888", password="password", user_type=USER_TYPE_CELEBRITY,
+                                        title="我是大名人")
         response = self.client.get(path=f"/user_profile/{user.id}")
         self.assertEqual(response.data['bio'], DEFAULT_BIO_OF_MEN)
         self.assertEqual(response.data['user_type'], user.get_user_type_display())
