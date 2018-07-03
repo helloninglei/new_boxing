@@ -1,8 +1,8 @@
+from django.db.models import When, Case, Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters, status
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
 
 from biz import redis_client
 from biz import constants, sms_client
@@ -15,10 +15,14 @@ from boxing_console.serializers import BoxerIdentificationSerializer, CourseSeri
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
-    queryset = BoxerIdentification.objects.all().order_by('-updated_time')
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('is_professional_boxer', 'authentication_state', 'is_locked')
     search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
+
+    def get_queryset(self):
+        sort_by_status = Case(When(authentication_state=constants.BOXER_AUTHENTICATION_STATE_WAITING, then=1),
+                              default=2)
+        return BoxerIdentification.objects.all().order_by(sort_by_status, '-updated_time')
 
     def change_lock_state(self, request, *args, **kwargs):
         instance = self.get_object()
