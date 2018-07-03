@@ -1,23 +1,25 @@
 import re
-import gevent
 import requests
 from io import BytesIO
-from json import load
+from json import loads
+import secrets
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.db.utils import IntegrityError
 from django.utils.timezone import get_default_timezone
-from gevent import queue
-from biz.services.file_service import save_upload_file
-from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
-from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
-from biz.constants import FRIDAY_USER_ID, BOXING_USER_ID
+from django.contrib.auth.hashers import make_password
+from biz.services.file_service import generate_file_name, storage
+from old_boxing.models import User as OldUser, Article, ArticleComment
+from biz.models import User, UserProfile, GameNews, Comment
+from biz.constants import USER_IDENTITY_DICT
 from biz.redis_client import follow_user
 from biz.utils import hans_to_initial
+from celery import shared_task
 
 city_dict = {}
-with open('old_boxing/citys.txt', 'r') as fp:
-    for i in load(fp):
+with open('old_boxing/citys.txt', 'rb') as fp:
+    for i in loads(fp.read().decode('utf-8')):
         city_dict[i['id']] = i['name']
 
 resource_base_url = 'http://boxing-1251438677.cossh.myqcloud.com'
@@ -26,17 +28,35 @@ re_resource_base_url = re.compile('\'?\"?(http:\/\/boxing-1251438677\.cossh\.myq
 
 http_client = requests.Session()
 
-q = queue.Queue(maxsize=20)
+PHONE_DICT = {
+    10: 16619770891,  # '热门视频'
+    11: 15210750150,  # 'Friday'
+    12: 15801087215,  # '拳城出击'
+    13: 13800138000,  # '客服账号'
 
+    14: 13261843166,  # '跑酷',
+    15: 17611655266,  # '熊呈呈',
+    16: 13501224847,  # '徐晓冬',
+    17: 13810578320,  # '吴紫龙',
+    18: 18888888888,  # '拳城出击——中华武术大会',
+}
 
-def worker():
-    while 1:
-        try:
-            task = q.get(timeout=10)
-            func, obj = task
-            func(obj)
-        except queue.Empty:
-            break
+PRESET_PHONE_LIST = PHONE_DICT.values()
+PRESET_ID_LIST = PHONE_DICT.keys()
+
+NAME_DICT = {
+    10: '热门视频',
+    11: 'Friday',
+    12: '拳城出击',
+    13: '客服账号',
+
+    14: '跑酷',
+    15: '熊呈呈',
+    16: '徐晓冬',
+    17: '吴紫龙',
+    18: '拳城出击——中华武术大会',
+}
+DEFAULT_PASSWORD = '1qaz1qaz1qaZ'
 
 
 def move_image(url: str):
@@ -48,8 +68,12 @@ def move_image(url: str):
         url = f'{resource_base_url}{url}'
     res = http_client.get(url)
     if res.status_code == 200:
-        f = File(BytesIO(res.content), 'avatar.jpg')
-        return save_upload_file(f)
+        f = File(BytesIO(res.content), url.split('/')[-1])
+        file_path = generate_file_name(f)
+        url_path = f'{settings.OSS_BASE_URL}{settings.UPLOAD_URL_PATH}{file_path}'
+        if http_client.head(url_path).status_code == 200:
+            return f'{settings.UPLOAD_URL_PATH}{file_path}'
+        return storage.save(file_path, f)
 
 
 important_user_fields = (
@@ -65,7 +89,9 @@ important_user_fields = (
 )
 
 
-def move_user_worker(u):
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def move_user_worker(uid):
+    u = OldUser.objects.get(uid=uid)
     valid_fields = 0
     for field in important_user_fields:
         if getattr(u, field):
@@ -74,7 +100,7 @@ def move_user_worker(u):
         return
 
     if not u.phone:
-        u.phone = f'{u.uid}'.rjust(11, '0')
+        u.phone = f'{uid}'.rjust(11, '0')
 
     weibo_openid = wechat_openid = None
 
@@ -83,22 +109,24 @@ def move_user_worker(u):
     if u.source == 3:
         weibo_openid = u.uuid
 
-    User.objects.get_or_create(
-        id=u.uid,
+    [follow_user(uid, user_id) for user_id in PRESET_ID_LIST]
+
+    new_user, created = User.objects.get_or_create(
+        id=uid,
         defaults=dict(
             mobile=u.phone,
-            password=f'boxing${u.pass_field}${u.salt}',
+            password=f'boxing${u.salt}${u.pass_field}',
             weibo_openid=weibo_openid,
             wechat_openid=wechat_openid,
             is_active=not u.isdel,
             date_joined=u.createtime.replace(tzinfo=get_default_timezone()),
         )
     )
-    if not UserProfile.objects.filter(user_id=u.uid).exists():
+    if not UserProfile.objects.filter(user_id=new_user.id).exists():
         nick_name_index_letter = hans_to_initial(u.nickname)
         avatar = move_image(u.avatar or u.uicon)
         UserProfile.objects.create(
-            user_id=u.uid,
+            user_id=uid,
             nick_name=u.nickname[:30] if u.nickname else None,
             nick_name_index_letter=nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#",
             gender=1 if u.gender != 2 else 0,
@@ -107,61 +135,34 @@ def move_user_worker(u):
             address=city_dict.get(u.city),
             avatar=avatar,
         )
-    if not BoxerIdentification.objects.filter(user_id=u.uid).exists():
-        u = UserInfo.objects.filter(uid=u.uid).first()
-        if u:
-            BoxerIdentification.objects.create(
-                id=u.uid,
-                user_id=u.uid,
-                real_name=u.name,
-                identity_number=u.idcard,
-                height=u.stature,
-                weight=u.weight,
-                job=u.occupation,
-                club=u.club,
-                is_professional_boxer=u.playertype == 2,
-                created_time=u.createtime,
-                updated_time=u.updatetime,
-                birthday=u.birthday,
-            )
 
 
 def move_user():
-    for u in OldUser.objects.all().order_by('-uid'):
-        q.put((move_user_worker, u))
+    for u in OldUser.objects.all().order_by('-uid').only('uid', 'phone'):
+        if u.phone not in PRESET_PHONE_LIST:
+            move_user_worker.delay(u.uid)
 
 
-#
-# 拳城出击账号： 15801087215 密码：1qaz1qaz1qaZ
-# friday账号： 15210750150 密码：1qaz1qaz1qaZ
-# app客服账号： 16619770891 密码：1qaz1qaz1qaZ
-
-
-OFFICIAL_USERS = {
-    15801087215: '拳城出击',
-    15210750150: 'Friday',
-    16619770891: '热门视频',
-    13800138000: '客服账号',
-}
-
-
-def set_admin_user():
-    for mobile in OFFICIAL_USERS.keys():
-        u, _ = User.objects.get_or_create(
-            mobile=mobile,
-        )
-        u.set_password('1qaz1qaz1qaZ')
-        u.is_staff = True
-        u.save()
-        profile, _ = UserProfile.objects.get_or_create(
-            user_id=u.id,
+def set_preset_user():
+    for user_id, phone in PHONE_DICT.items():
+        User.objects.get_or_create(
+            id=user_id,
             defaults=dict(
-                nick_name=OFFICIAL_USERS[mobile]
+                mobile=phone,
+                password=make_password(DEFAULT_PASSWORD, secrets.token_hex(32), 'boxing'),
+                is_staff=user_id in USER_IDENTITY_DICT.values(),
             )
         )
-
-
-boxing_user = None
+        nick_name = NAME_DICT[user_id]
+        nick_name_index_letter = hans_to_initial(nick_name)
+        nick_name_index_letter = nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#"
+        UserProfile.objects.get_or_create(
+            user_id=user_id,
+            defaults=dict(
+                nick_name=nick_name,
+                nick_name_index_letter=nick_name_index_letter,
+            )
+        )
 
 
 def replace_article_img(html):
@@ -171,15 +172,25 @@ def replace_article_img(html):
     return html
 
 
-def move_article_worker(article):
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def fix_news_content_worker(id):
+    news = GameNews.objects.get(id=id)
+    article = Article.objects.get(id=id)
+    news.app_content = replace_article_img(article.contenthtml)
+    news.save()
+
+
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def move_article_worker(article_id):
     try:
+        article = Article.objects.get(id=article_id)
         createtime = article.createtime.replace(tzinfo=get_default_timezone())
         GameNews.objects.get_or_create(
             id=article.id,
             defaults=dict(
                 title=article.title[:50],
                 sub_title=article.subtitle[:50],
-                operator=boxing_user,
+                # operator_id=BOXING_USER_ID,
                 views_count=article.realreadnum,
                 initial_views_count=article.basereadnum,
                 picture=move_image(article.cover),
@@ -196,17 +207,17 @@ def move_article_worker(article):
             )
         )
     except IntegrityError as e:
-        print(article.id, e)
+        print(article_id, e)
 
 
 def move_article():
-    global boxing_user
-    boxing_user = User.objects.get(mobile=15801087215)
-    for article in Article.objects.filter(contenttype=1, isdel=0).order_by('id'):
-        q.put((move_article_worker, article))
+    for article in Article.objects.filter(contenttype=1, isdel=0).only('id').order_by('id'):
+        move_article_worker.delay(article.id)
 
 
-def move_comment_worker(comment):
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def move_comment_worker(comment_id):
+    comment = ArticleComment.objects.get(id=comment_id)
     news = GameNews.objects.filter(id=comment.aid).first()
     if news:
         try:
@@ -225,24 +236,21 @@ def move_comment_worker(comment):
 
 
 def move_comment():
-    for c in ArticleComment.objects.filter(isdel=1):
-        q.put((move_comment_worker, c))
+    for c in ArticleComment.objects.filter(isdel=1).only('id'):
+        move_comment_worker.delay(c.id)
 
 
-def follow_official_user():
-    for u in User.objects.all():
-        follow_user(u.id, FRIDAY_USER_ID)
-        follow_user(u.id, BOXING_USER_ID)
+def fix_news_content():
+    for i in GameNews.objects.filter(app_content__contains='https://api.bitu').filter(app_content__contains='video'):
+        fix_news_content_worker.delay(i.id)
 
 
 class Command(BaseCommand):
     help = '迁移数据'
 
     def handle(self, *args, **options):
-        workers = [gevent.spawn(worker) for _ in range(20)]
-        move_user()
-        set_admin_user()
-        follow_official_user()
-        move_article()
-        move_comment()
-        gevent.joinall(workers)
+        # set_preset_user()
+        # move_user()
+        # move_article()
+        # move_comment()
+        fix_news_content()

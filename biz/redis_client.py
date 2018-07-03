@@ -5,11 +5,11 @@ from datetime import datetime
 from django.conf import settings
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
-_config = settings.REDIS_CONFIG
-redis_client = redis.StrictRedis(host=_config['host'],
-                                 port=_config['port'],
-                                 db=_config['db'],
-                                 max_connections=_config['max_connections'],
+
+redis_client = redis.StrictRedis(host=settings.REDIS_HOST,
+                                 port=settings.REDIS_PORT,
+                                 db=settings.REDIS_DB,
+                                 max_connections=settings.REDIS_MAX_CONNECTIONS,
                                  decode_responses=True)
 
 

@@ -13,10 +13,10 @@ from boxing_console.serializers import BoxerIdentificationSerializer, CourseSeri
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     serializer_class = BoxerIdentificationSerializer
-    queryset = BoxerIdentification.objects.all().order_by('-id')
+    queryset = BoxerIdentification.objects.all().order_by('-updated_time')
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('is_professional_boxer', 'authentication_state', 'is_locked')
-    search_fields = ('mobile', 'real_name', 'user__user_profile__nick_name')
+    search_fields = ('user__mobile', 'real_name', 'user__user_profile__nick_name')
 
     def change_lock_state(self, request, *args, **kwargs):
         instance = self.get_object()

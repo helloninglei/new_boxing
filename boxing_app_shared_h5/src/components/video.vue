@@ -6,7 +6,6 @@
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
-
 </style>
 
 <script type="text/ecmascript-6">

@@ -1,9 +1,11 @@
 import unittest
+import pytest
 from captcha.models import CaptchaStore
 from biz.services.captcha_service import get_captcha, check_captcha
 
 
 # 该单元测试使用boxing_app.app_settings 或者 boxing_console.console_settings
+@pytest.mark.django_db
 class CaptchaTEstCase(unittest.TestCase):
     def setUp(self):
         self.captcha_key = get_captcha()['captcha_hash']

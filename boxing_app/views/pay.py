@@ -51,5 +51,7 @@ def pay_status(request):
     order_id = request.query_params.get('order_id')
     info = PayService.get_payment_status_info(order_id, request.user)
     if info:
-        return Response({'result': info})
+        if info['status'] == 'paid':
+            return Response({'result': info})
+        return Response(data={'message': ['支付失败了，请稍后重试']}, status=status.HTTP_400_BAD_REQUEST)
     return Response({'message': '订单不存在'}, status=status.HTTP_404_NOT_FOUND)
