@@ -55,7 +55,7 @@ class UserProfileTestCase(APILoginTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         user_profile = UserProfile.objects.get(pk=self.user.user_profile.id)
         self.assertEqual(user_profile.nick_name, data['nick_name'])
-        self.assertEqual(user_profile.nick_name_index_letter, '##')
+        self.assertEqual(user_profile.nick_name_index_letter, '#')
 
     def test_update_user_profile(self):
         data = {
