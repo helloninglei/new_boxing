@@ -3,15 +3,16 @@ import requests
 from io import BytesIO
 from json import loads
 import secrets
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.db.utils import IntegrityError
 from django.utils.timezone import get_default_timezone
 from django.contrib.auth.hashers import make_password
-from biz.services.file_service import save_upload_file
-from old_boxing.models import User as OldUser, UserInfo, Article, ArticleComment
-from biz.models import User, UserProfile, BoxerIdentification, GameNews, Comment
-from biz.constants import BOXING_USER_ID, FAMOUS_USER_DICT, USER_IDENTITY_DICT
+from biz.services.file_service import generate_file_name, storage
+from old_boxing.models import User as OldUser, Article, ArticleComment
+from biz.models import User, UserProfile, GameNews, Comment
+from biz.constants import USER_IDENTITY_DICT
 from biz.redis_client import follow_user
 from biz.utils import hans_to_initial
 from celery import shared_task
@@ -27,6 +28,36 @@ re_resource_base_url = re.compile('\'?\"?(http:\/\/boxing-1251438677\.cossh\.myq
 
 http_client = requests.Session()
 
+PHONE_DICT = {
+    10: 16619770891,  # '热门视频'
+    11: 15210750150,  # 'Friday'
+    12: 15801087215,  # '拳城出击'
+    13: 13800138000,  # '客服账号'
+
+    14: 13261843166,  # '跑酷',
+    15: 17611655266,  # '熊呈呈',
+    16: 13501224847,  # '徐晓冬',
+    17: 13810578320,  # '吴紫龙',
+    18: 18888888888,  # '拳城出击——中华武术大会',
+}
+
+PRESET_PHONE_LIST = PHONE_DICT.values()
+PRESET_ID_LIST = PHONE_DICT.keys()
+
+NAME_DICT = {
+    10: '热门视频',
+    11: 'Friday',
+    12: '拳城出击',
+    13: '客服账号',
+
+    14: '跑酷',
+    15: '熊呈呈',
+    16: '徐晓冬',
+    17: '吴紫龙',
+    18: '拳城出击——中华武术大会',
+}
+DEFAULT_PASSWORD = '1qaz1qaz1qaZ'
+
 
 def move_image(url: str):
     if not url:
@@ -38,7 +69,11 @@ def move_image(url: str):
     res = http_client.get(url)
     if res.status_code == 200:
         f = File(BytesIO(res.content), 'avatar.jpg')
-        return save_upload_file(f)
+        file_path = generate_file_name(f)
+        url_path = f'{settings.OSS_BASE_URL}{settings.UPLOAD_URL_PATH}{file_path}'
+        if http_client.head(url_path).status_code == 200:
+            return f'{settings.UPLOAD_URL_PATH}{file_path}'
+        return storage.save(file_path, f)
 
 
 important_user_fields = (
@@ -65,7 +100,7 @@ def move_user_worker(uid):
         return
 
     if not u.phone:
-        u.phone = f'{u.uid}'.rjust(11, '0')
+        u.phone = f'{uid}'.rjust(11, '0')
 
     weibo_openid = wechat_openid = None
 
@@ -74,10 +109,12 @@ def move_user_worker(uid):
     if u.source == 3:
         weibo_openid = u.uuid
 
+    [follow_user(uid, user_id) for user_id in PRESET_ID_LIST]
+
     new_user, created = User.objects.get_or_create(
-        mobile=u.phone,
+        id=uid,
         defaults=dict(
-            id=u.uid,
+            mobile=u.phone,
             password=f'boxing${u.salt}${u.pass_field}',
             weibo_openid=weibo_openid,
             wechat_openid=wechat_openid,
@@ -89,7 +126,7 @@ def move_user_worker(uid):
         nick_name_index_letter = hans_to_initial(u.nickname)
         avatar = move_image(u.avatar or u.uicon)
         UserProfile.objects.create(
-            user_id=u.uid,
+            user_id=uid,
             nick_name=u.nickname[:30] if u.nickname else None,
             nick_name_index_letter=nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#",
             gender=1 if u.gender != 2 else 0,
@@ -98,63 +135,25 @@ def move_user_worker(uid):
             address=city_dict.get(u.city),
             avatar=avatar,
         )
-    if not BoxerIdentification.objects.filter(user_id=new_user.id).exists():
-        u = UserInfo.objects.filter(uid=u.uid).first()
-        if u:
-            BoxerIdentification.objects.create(
-                id=new_user.id,
-                user_id=new_user.id,
-                real_name=u.name,
-                identity_number=u.idcard,
-                height=u.stature,
-                weight=u.weight,
-                job=u.occupation,
-                club=u.club,
-                is_professional_boxer=u.playertype == 2,
-                created_time=u.createtime,
-                updated_time=u.updatetime,
-                birthday=u.birthday,
-            )
 
 
 def move_user():
-    for u in OldUser.objects.all().order_by('-uid').only('uid'):
-        move_user_worker.delay(u.uid)
+    for u in OldUser.objects.all().order_by('-uid').only('uid', 'phone'):
+        if u.phone not in PRESET_PHONE_LIST:
+            move_user_worker.delay(u.uid)
 
 
-#
-# 拳城出击账号： 15801087215 密码：1qaz1qaz1qaZ
-# friday账号： 15210750150 密码：1qaz1qaz1qaZ
-# app客服账号： 16619770891 密码：1qaz1qaz1qaZ
-
-
-OFFICIAL_USERS = {
-    15801087215: '拳城出击',
-    15210750150: 'Friday',
-    16619770891: '热门视频',
-    13800138000: '客服账号',
-}
-
-FAMOUS_USER_NAME_DICT = {
-    13261843166: '跑酷',
-    17611655266: '熊呈呈',
-    13501224847: '徐晓冬',
-    13810578320: '吴紫龙',
-}
-
-DEFAULT_PASSWORD = '1qaz1qaz1qaZ'
-
-
-def set_famous_user():
-    for phone, user_id in FAMOUS_USER_DICT.items():
+def set_preset_user():
+    for user_id, phone in PHONE_DICT.items():
         User.objects.get_or_create(
             id=user_id,
             defaults=dict(
                 mobile=phone,
-                password=make_password(DEFAULT_PASSWORD, secrets.token_hex(32), 'boxing')
+                password=make_password(DEFAULT_PASSWORD, secrets.token_hex(32), 'boxing'),
+                is_staff=user_id in USER_IDENTITY_DICT.values(),
             )
         )
-        nick_name = FAMOUS_USER_NAME_DICT[phone]
+        nick_name = NAME_DICT[user_id]
         nick_name_index_letter = hans_to_initial(nick_name)
         nick_name_index_letter = nick_name_index_letter if re.match(r"[a-zA-Z]", nick_name_index_letter) else "#"
         UserProfile.objects.get_or_create(
@@ -162,22 +161,6 @@ def set_famous_user():
             defaults=dict(
                 nick_name=nick_name,
                 nick_name_index_letter=nick_name_index_letter,
-            )
-        )
-
-
-def set_admin_user():
-    for mobile in OFFICIAL_USERS.keys():
-        u, _ = User.objects.get_or_create(
-            mobile=mobile,
-        )
-        u.set_password(DEFAULT_PASSWORD)
-        u.is_staff = True
-        u.save()
-        profile, _ = UserProfile.objects.get_or_create(
-            user_id=u.id,
-            defaults=dict(
-                nick_name=OFFICIAL_USERS[mobile]
             )
         )
 
@@ -199,7 +182,7 @@ def move_article_worker(article_id):
             defaults=dict(
                 title=article.title[:50],
                 sub_title=article.subtitle[:50],
-                operator_id=BOXING_USER_ID,
+                # operator_id=BOXING_USER_ID,
                 views_count=article.realreadnum,
                 initial_views_count=article.basereadnum,
                 picture=move_image(article.cover),
@@ -249,19 +232,11 @@ def move_comment():
         move_comment_worker.delay(c.id)
 
 
-def follow_official_user():
-    for u in User.objects.only('id'):
-        [follow_user(u.id, i) for i in USER_IDENTITY_DICT.values()]
-        [follow_user(u.id, i) for i in FAMOUS_USER_DICT.values()]
-
-
 class Command(BaseCommand):
     help = '迁移数据'
 
     def handle(self, *args, **options):
-        set_famous_user()
+        set_preset_user()
         move_user()
-        set_admin_user()
-        follow_official_user()
-        # move_article()
-        # move_comment()
+        move_article()
+        move_comment()
