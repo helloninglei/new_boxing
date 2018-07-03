@@ -68,7 +68,7 @@ def move_image(url: str):
         url = f'{resource_base_url}{url}'
     res = http_client.get(url)
     if res.status_code == 200:
-        f = File(BytesIO(res.content), 'avatar.jpg')
+        f = File(BytesIO(res.content), url.split('/')[-1])
         file_path = generate_file_name(f)
         url_path = f'{settings.OSS_BASE_URL}{settings.UPLOAD_URL_PATH}{file_path}'
         if http_client.head(url_path).status_code == 200:
