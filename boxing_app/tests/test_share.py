@@ -69,7 +69,7 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.assertEqual(data['title'], self.msg.content)
-        self.assertEqual(data['sub_title'], f'来自{self.nick_name}的拳城出击')
+        self.assertEqual(data['sub_title'], f'来自拳城出击的{self.nick_name}')
         self.assertIsNone(data['picture'])
 
         self.assertEqual(data['url'], f'{h5_base_url}messages/{self.msg.id}')
