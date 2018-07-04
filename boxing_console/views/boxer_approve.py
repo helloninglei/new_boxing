@@ -9,7 +9,8 @@ from biz import constants, sms_client
 from biz.constants import OperationType, BOXER_ALLOWED_COURSES_CHOICE, USER_TYPE_BOXER
 from biz.models import BoxerIdentification, Course
 from biz.services.operation_log_service import log_boxer_identification_operation
-from boxing_console.serializers import BoxerIdentificationSerializer, CourseSerializer
+from boxing_console.serializers import BoxerIdentificationSerializer, CourseSerializer, BoxerApproveSerializer, \
+    BoxerRefuseSerializer
 
 
 class BoxerIdentificationViewSet(viewsets.ModelViewSet):
@@ -43,21 +44,21 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         super().partial_update(request, *args, **kwargs)
         boxer = self.get_object()
         if is_approve:
+            serializer = BoxerApproveSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
             operation_type = OperationType.BOXER_AUTHENTICATION_APPROVED
-            content = request.data.get('allowed_course')
-            course_dict = dict(BOXER_ALLOWED_COURSES_CHOICE)
-            allowed_courses = [course_dict.get(key) for key in content]
-            self.create_course(boxer=boxer, allowed_courses=content)
-            title = redis_client.get_user_title(boxer.user)
+            content = allowed_courses = serializer.validated_data['allowed_course']
+            title = serializer.validated_data['title']
+            self.create_course(boxer=boxer, allowed_courses=allowed_courses)
+            self.alter_user_info(user=boxer.user, title=title)
             redis_client.del_user_title(boxer.user)
-            boxer.user.title = title
-            boxer.user.user_type = USER_TYPE_BOXER
-            boxer.user.save()
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
         else:
+            serializer = BoxerRefuseSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
-            content = request.data.get('refuse_reason')
-            sms_client.send_boxer_refuse_message(boxer.mobile, refuse_reason=content)
+            content = refuse_reason = serializer.validated_data['refuse_reason']
+            sms_client.send_boxer_refuse_message(boxer.mobile, refuse_reason=refuse_reason)
         log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,
                                            operation_type=operation_type,
@@ -71,3 +72,10 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
             serializer = CourseSerializer(data={"course_name": course_name})
             serializer.is_valid(raise_exception=True)
             serializer.save(boxer=boxer)
+
+    @staticmethod
+    def alter_user_info(user, title):
+        user.title = title
+        user.user_type = USER_TYPE_BOXER
+        user.save()
+
