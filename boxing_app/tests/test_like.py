@@ -29,7 +29,7 @@ class LikeTestCase(APITestCase):
 
     def test_create_like(self):
         self.prepare()
-        res = self.client1.post('/messages/' % self.message_id2)
+        res = self.client1.post(f'/messages/{self.message_id2}/like')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         response = self.client1.get('/messages')
 
