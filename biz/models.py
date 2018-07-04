@@ -340,6 +340,7 @@ class HotVideo(BaseAuditModel):
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
     reports = GenericRelation('Report')
+    cover = models.CharField(max_length=200)
 
     class Meta:
         db_table = 'hot_video'

@@ -28,7 +28,8 @@ class HotVideoTestCase(APITestCase):
             'description': 'test video1',
             'price': 111,
             'url': '/videos/111',
-            'try_url': '/videos/222'
+            'try_url': '/videos/222',
+            'cover': '/videos/333'
         }
 
     def test_create(self):

@@ -240,7 +240,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = HotVideo
         fields = ('id', 'user_id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time')
+                  'operator', 'is_show', 'created_time', 'cover')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
