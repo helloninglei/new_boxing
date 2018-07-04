@@ -35,29 +35,29 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def approve(self, request, *args, **kwargs):
+        serializer = BoxerApproveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         return self.approved_or_refuse(request, True, *args, **kwargs)
 
     def refuse(self, request, *args, **kwargs):
+        serializer = BoxerRefuseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         return self.approved_or_refuse(request, False, *args, **kwargs)
 
     def approved_or_refuse(self, request, is_approve, *args, **kwargs):
         super().partial_update(request, *args, **kwargs)
         boxer = self.get_object()
         if is_approve:
-            serializer = BoxerApproveSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
             operation_type = OperationType.BOXER_AUTHENTICATION_APPROVED
-            content = allowed_courses = serializer.validated_data['allowed_course']
-            title = serializer.validated_data['title']
+            content = allowed_courses = request.data.get('allowed_course')
+            title = request.data.get('title')
             self.create_course(boxer=boxer, allowed_courses=allowed_courses)
             self.alter_user_info(user=boxer.user, title=title)
             redis_client.del_user_title(boxer.user)
             sms_client.send_boxer_approved_message(boxer.mobile, allowed_courses='、'.join(allowed_courses))
         else:
-            serializer = BoxerRefuseSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
             operation_type = OperationType.BOXER_AUTHENTICATION_REFUSE
-            content = refuse_reason = serializer.validated_data['refuse_reason']
+            content = refuse_reason = request.data.get('refuse_reason')
             sms_client.send_boxer_refuse_message(boxer.mobile, refuse_reason=refuse_reason)
         log_boxer_identification_operation(identification_id=self.get_object().pk,
                                            operator=request.user,

@@ -115,14 +115,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         return redis_client.get_user_title(instance.user) or instance.user.title
 
     def validate(self, attrs):
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
-                not attrs.get('refuse_reason'):
-            raise ValidationError({'refuse_reason': ['驳回理由是必填项']})
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED:
-            if not attrs.get('allowed_course'):
-                raise ValidationError({'allowed_course': ['可开通的课程类型是必填项']})
-            else:
-                attrs['is_locked'] = False
+        attrs['is_locked'] = False
         return attrs
 
     class Meta:
