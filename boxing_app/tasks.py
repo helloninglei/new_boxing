@@ -1,3 +1,5 @@
+import biz.management.commands.migrate_data
+
 from celery import shared_task
 from biz.easemob_client import EaseMobClient
 from biz.constants import SERVICE_USER_ID

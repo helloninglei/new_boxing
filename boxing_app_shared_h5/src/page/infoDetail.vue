@@ -37,9 +37,9 @@
     .ql-editor {
         white-space: inherit!important
         img {
-            /*width 17.25rem!important*/
-            /*margin .5rem auto auto auto!important*/
-            /*display block*/
+            width 17.25rem!important
+            margin .5rem auto auto auto!important
+            display block
         }
         iframe {
             width 100%!important

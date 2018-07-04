@@ -13,13 +13,13 @@ class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filter_class = CourseFilter
-    search_fields = ('boxer__real_name', 'boxer__mobile')
+    search_fields = ('boxer__real_name', 'boxer__user__mobile')
 
 
 class CourseOrderViewSet(viewsets.ModelViewSet):
     serializer_class = CourseOrderSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    search_fields = ('user__mobile', 'course__boxer__real_name', 'course__boxer__mobile', 'user__user_profile__name',
+    search_fields = ('user__mobile', 'course__boxer__real_name', 'course__boxer__user__mobile', 'user__user_profile__name',
                      'user__user_profile__nick_name')
     filter_class = CourseOrderFilter
 
