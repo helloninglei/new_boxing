@@ -530,7 +530,7 @@ class CourseOrderInsuranceSerializer(serializers.Serializer):
 class MessageSerializer(serializers.ModelSerializer):
     like_count = serializers.IntegerField(read_only=True)
     user_id = serializers.IntegerField(read_only=True)
-    forward_count = serializers.SerializerMethodField(read_only=True)
+    forward_count = serializers.SerializerMethodField()
 
     def get_forward_count(self, instance):
         return get_message_forward_count(instance.id)
