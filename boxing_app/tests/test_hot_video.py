@@ -26,6 +26,7 @@ class HotVideoTestCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator_id': self.test_superuser.id,
+            'cover': '/videos/333'
         }
 
     def test_video_payment(self):
