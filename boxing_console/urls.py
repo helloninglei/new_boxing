@@ -20,6 +20,7 @@ from boxing_console.views import admin, report
 from rest_framework.routers import SimpleRouter
 from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, EditUserInfo
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
+from boxing_console.views.message import MessageViewSet
 
 router = SimpleRouter()
 
@@ -91,7 +92,8 @@ banner_urls = [
 
 financial_management_urls = [
     path("withdraw_logs", WithdrawLogViewSet.as_view({"get": "list"})),
-    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$", WithdrawLogViewSet.as_view({"put": "update"})),
+    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$",
+            WithdrawLogViewSet.as_view({"put": "update"})),
     path("pay_orders", PayOrdersViewSet.as_view({"get": "list"}))
 ]
 
@@ -105,6 +107,11 @@ user_management_urls = [
 
 official_account_change_logs_urls = [
     path("official_account_change_logs", OfficialAccountChangeLogsViewSet.as_view({"get": "list"}))
+]
+
+message_urls = [
+    path('messages', MessageViewSet.as_view({'get': 'list'}), name='message'),
+    path('messages/<int:pk>', MessageViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='message'),
 ]
 
 urlpatterns = router.urls
@@ -121,6 +128,7 @@ urlpatterns += banner_urls
 urlpatterns += financial_management_urls
 urlpatterns += user_management_urls
 urlpatterns += official_account_change_logs_urls
+urlpatterns += message_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

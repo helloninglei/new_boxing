@@ -191,6 +191,8 @@ class Message(SoftDeleteModel):
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
+    initial_like_count = models.PositiveIntegerField(default=0)  # 后台设置的点赞数
+    initial_forward_count = models.PositiveIntegerField(default=0)  # 后台设置的转发数
     comments = GenericRelation('Comment')
     reports = GenericRelation('Report')
 

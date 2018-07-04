@@ -15,13 +15,13 @@ from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
 from biz.validator import validate_mobile
-from biz.redis_client import get_number_of_share
+from biz.redis_client import get_number_of_share, get_message_forward_count
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
     HOT_VIDEO_USER_ID, USER_TYPE_MAP
 from biz.services.official_account_service import create_official_account_change_log
-from biz.constants import  USER_TYPE_BOXER
+from biz.constants import USER_TYPE_BOXER
 
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -533,6 +533,20 @@ class CourseOrderInsuranceSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('insurance_amount',)
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    like_count = serializers.IntegerField(read_only=True)
+    user_id = serializers.IntegerField(read_only=True)
+    forward_count = serializers.SerializerMethodField()
+
+    def get_forward_count(self, instance):
+        return get_message_forward_count(instance.id)
+
+    class Meta:
+        model = models.Message
+        exclude = ('is_deleted', 'user')
+        read_only_fields = ('content', 'images', 'video', 'is_deleted', 'created_time')
 
 
 class EditUserInfoSerializer(serializers.ModelSerializer):
