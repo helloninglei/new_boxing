@@ -147,7 +147,6 @@ class BoxerIdentificationTestCase(TestCase):
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['allowed_course'][0], "可开通的课程类型是必填项")
 
     def test_boxer_identification_refuse_success(self):
         identification_data = {
@@ -206,7 +205,6 @@ class BoxerIdentificationTestCase(TestCase):
         res = self.client.post(reverse('identification_refuse', kwargs={'pk': identification.pk}),
                                data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_REFUSE})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['refuse_reason'][0], '驳回理由是必填项')
 
     def test_get_boxer_identification_detail(self):
         identification_data = {
