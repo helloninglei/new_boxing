@@ -3,6 +3,7 @@ import json
 from django.conf import settings
 from biz import redis_const
 from biz.redis_client import redis_client
+from biz.constants import CHAT_ROOM_MAXUSERS
 
 
 class EaseMobClient:
@@ -61,3 +62,11 @@ class EaseMobClient:
         return [requests.put(url=f"{cls.domain}{cls.org_name}/{cls.app_name}/users/{username}/password",
                              json={"newpassword": cls.user_password}, headers={"Authorization": f"Bearer {token}"})
                 for username in usernames]
+
+    @classmethod
+    def create_chatrooms(cls, name, description, owner, maxusers=CHAT_ROOM_MAXUSERS):
+        token = cls._get_token()
+        response = requests.post(url=f"{cls.domain}{cls.org_name}/{cls.app_name}/chatrooms",
+                                 json={"name": name, "description": description, "owner": owner, "maxusers": maxusers,
+                                       "members": []}, headers={"Authorization": f"Bearer {token}"})
+        return response.json()
