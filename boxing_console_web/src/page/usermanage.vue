@@ -77,10 +77,17 @@
                         </el-table-column>
                         <el-table-column
                         label="用户类别"
-                        width="150">
+                        width="70">
                             <template slot-scope="scope">
                                 <span class='colorFont' v-if="scope.row.is_boxer" @click='checkIdent(scope.row.boxer_id)'>认证拳手</span>
-                                <span class='colorFont' v-else @click='goUserDetail(scope.row)'>普通用户</span>
+                                <span class='colorFont' v-else @click='goUserDetail(scope.row)'>{{scope.row.user_type}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                        label="认证称号"
+                        width="100">
+                            <template slot-scope="scope">
+                                <span>{{scope.row.title?scope.row.title:'--'}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -94,7 +101,7 @@
                           width='120'>
                             <template slot-scope="scope">
                                 <div style='margin-bottom:9px'> 
-                                    <el-button  class='myBtnHover_red myButton_20 ' @click="addCount(scope.row.id,'addCount',scope.$index)">增加用户余额</el-button>
+                                    <el-button  class='myBtnHover_red myButton_20 ' @click="addCount(scope.row,scope.$index)">编辑</el-button>
                                 </div>
                                 <!-- <div> 
                                     <el-button class='myBtnHover_red myButton_20 ' @click="addCount(scope.row.id,'addBean',scope.$index)">增加用户拳豆</el-button>
@@ -108,7 +115,7 @@
                 <Pagination :total="total" @changePage="changePage" :page='page'></Pagination>
             </footer>
         </div>
-        <DialogLabel :isshow="dialog_label_data.isshow" @confirm="confirm" @cancel="cancel3()" :content_title="dialog_label_data.content_title" :content_foot="dialog_label_data.content_foot" :type="'number'"></DialogLabel>
+        <DialogLabel :isshow="dialog_label_data.isshow" @confirm="confirm" @cancel="cancel3()" :nick_name="dialog_label_data.nick_name" :row="addData.row" :index='addData.index'></DialogLabel>
     </div>
 </template>
 <style scoped>
@@ -122,7 +129,7 @@
     import TopBar from 'components/topBar';
     import Table  from 'components/table';
     import Pagination  from 'components/pagination';
-    import DialogLabel from "components/dialog_label"
+    import DialogLabel from "components/dialog_manage"
     export default {
         data() {
             return {
@@ -136,65 +143,98 @@
                 },
                 dialog_label_data:{
                     isshow:false,
-                    content_title:"",
+                    nick_name:"",
                 },
                 addData :{
-                    addType:''
+                    row:{},
+                    index:''
                 },
                 page:1,
                 userTotal : 1000000,//注册人数
                 total     : 1000,//数据的总条数
                 tableData : [
                     {
-                        "id": 1, 
-                        "mobile": "111111111111", 
-                        "date_joined": "2018-01-01 10-11-11", 
+                        "id": 1,  // 用户id
+                        "mobile": "19990000000",  //手机号
+                        "following_count": 0,  // 关注数
+                        "follower_count": 0,  // 粉丝数
+                        "share_count": 0,  // 分享数
+                        "money_balance": 0,  // 钱包余额
+                        "is_boxer": false,  // 是否认证拳手  true，拳手，false，普通用户
                         "user_basic_info": {
-                            "name": "王毅", 
-                            "weight": "120kg", 
-                            "nick_name": "小王", 
-                            "gender": '男', 
-                            "profession": "计算机", 
-                            "nation": "", 
-                            "birthday": "1996-2-4", 
-                            "address": "上海市普陀区金沙江路 1518 弄", 
-                            "height": "188",
-                            "is_boxer":true,//模拟数据用户类型
-                            "following_count":100,//模拟数据关注数
-                            "follower_count":100,//模拟数据粉丝数
-                            "share_count":100,//模拟数据分享数
-                        }
-                    }, 
+                            "nick_name": "我是是个汉子哈哈哈哈",  // 昵称
+                            "gender": true,    // 性别   true，男，false，女
+                            "address": null,  // 地址
+                            "name": "哈哈",// 姓名
+                            "nation": "汉子",  //民族
+                            "birthday": "2018-09-09",// 生日
+                            "height": 170,  // 身高
+                            "weight": 45,  // 体重
+                            "profession": "医生" // 职业
+                        },
+                        user_type:'普通用户',
+                        title:'北京拳首',
+                        "date_joined": "2018-05-11 16-49-10",  // 注册时间
+                        "boxer_id": null  // 拳手id
+                    },
                     {
-                        "id": 2, 
-                        "mobile": "111111111111", 
-                        "date_joined": "2018-01-01 10-11-11", 
+                        "id": 2,  // 用户id
+                        "mobile": "19990000000",  //手机号
+                        "following_count": 0,  // 关注数
+                        "follower_count": 0,  // 粉丝数
+                        "share_count": 0,  // 分享数
+                        "money_balance": 0,  // 钱包余额
+                        "is_boxer": false,  // 是否认证拳手  true，拳手，false，普通用户
                         "user_basic_info": {
-                            "name": "王毅", 
-                            "weight": "120kg", 
-                            "nick_name": "小王", 
-                            "gender": '男', 
-                            "profession": "计算机", 
-                            "nation": "", 
-                            "birthday": "1996-2-4", 
-                            "address": "上海市普陀区金沙江路 1518 弄", 
-                            "height": "188",
-                            "is_boxer":false,//模拟数据用户类型
-                            "following_count":100,//模拟数据关注数
-                            "follower_count":100,//模拟数据粉丝数
-                            "share_count":100,//模拟数据分享数
-                        }
-                    }
+                            "nick_name": "我是是个汉子哈哈哈哈",  // 昵称
+                            "gender": true,    // 性别   true，男，false，女
+                            "address": null,  // 地址
+                            "name": "哈哈",// 姓名
+                            "nation": "汉子",  //民族
+                            "birthday": "2018-09-09",// 生日
+                            "height": 170,  // 身高
+                            "weight": 45,  // 体重
+                            "profession": "医生" // 职业
+                        },
+                        user_type:'认证拳手',
+                        title:'北京拳首',
+                        "date_joined": "2018-05-11 16-49-10",  // 注册时间
+                        "boxer_id": null  // 拳手id
+                    },
+                    {
+                        "id": 3,  // 用户id
+                        "mobile": "19990000000",  //手机号
+                        "following_count": 0,  // 关注数
+                        "follower_count": 0,  // 粉丝数
+                        "share_count": 0,  // 分享数
+                        "money_balance": 0,  // 钱包余额
+                        "is_boxer": false,  // 是否认证拳手  true，拳手，false，普通用户
+                        "user_basic_info": {
+                            "nick_name": "我是是个汉子哈哈哈哈",  // 昵称
+                            "gender": true,    // 性别   true，男，false，女
+                            "address": null,  // 地址
+                            "name": "哈哈",// 姓名
+                            "nation": "汉子",  //民族
+                            "birthday": "2018-09-09",// 生日
+                            "height": 170,  // 身高
+                            "weight": 45,  // 体重
+                            "profession": "医生" // 职业
+                        },
+                        user_type:'自媒体',
+                        title:'北京拳首',
+                        "date_joined": "2018-05-11 16-49-10",  // 注册时间
+                        "boxer_id": null  // 拳手id
+                    },
                 ],
                 tableColumn:[
-                    {title:'id',    name :'用户ID',   width: '80'},
+                    {title:'id',    name :'用户ID',   width: '45'},
                     {title:'mobile',name :'用户手机号',width: '120'},
-                    {title:'user_basic_info.gender',   name :'性别'    ,width: '80'},
+                    {title:'user_basic_info.gender',   name :'性别'    ,width: '30'},
                     {title:'user_basic_info.nick_name',name :'用户昵称' ,width: '100'},
                     {title:'user_basic_info.address',  name :'居住地'   ,width: ''},
-                    {title:'following_count',name :'关注数' ,width: '90'},
-                    {title:'follower_count',  name :'粉丝数' ,width: '90'},
-                    {title:'share_count',name :'分享数' ,width: '90'},
+                    {title:'following_count',name :'关注数' ,width: '60'},
+                    {title:'follower_count',  name :'粉丝数' ,width: '60'},
+                    {title:'share_count',name :'分享数' ,width: '60'},
                 ],
             }
         },
@@ -209,6 +249,12 @@
         },
         methods: {
             getTableData(page) {
+                for(var i=0;i<this.tableData.length;i++){
+                    this.tableData[i].user_basic_info=this.tableData[i].user_basic_info?this.tableData[i].user_basic_info:{}
+                    this.tableData[i].user_basic_info.gender=this.tableData[i].user_basic_info.gender?'男':'女'
+                }
+
+
                 //获取data数据
                 let $this   = this
                 let sendData={}
@@ -219,37 +265,31 @@
                     sendData.page=page
                 }
                 
-                this.ajax('/users','get',{},sendData).then(function(res){
-                    if(res&&res.data){
-                        console.log(res.data)
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].user_basic_info=res.data.results[i].user_basic_info?res.data.results[i].user_basic_info:{}
-                            res.data.results[i].user_basic_info.gender=res.data.results[i].user_basic_info.gender?'男':'女'
-                        }
-                        $this.tableData=res.data.results;//后台没数据先不用
-                        $this.total = res.data.count;
-                    }
+                // this.ajax('/users','get',{},sendData).then(function(res){
+                //     if(res&&res.data){
+                //         for(var i=0;i<res.data.results.length;i++){
+                //             res.data.results[i].user_basic_info=res.data.results[i].user_basic_info?res.data.results[i].user_basic_info:{}
+                //             res.data.results[i].user_basic_info.gender=res.data.results[i].user_basic_info.gender?'男':'女'
+                //         }
+                //         $this.tableData=res.data.results;//后台没数据先不用
+                //         $this.total = res.data.count;
+                //     }
 
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            console.log(errors[key])
-                            // return
-                        } 
-                    } 
-                })
+                // },function(err){
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             console.log(errors[key])
+                //             // return
+                //         } 
+                //     } 
+                // })
             },
-            addCount(id,addType,index){
-                this.addData.addType=addType
-                this.addData.user=id
-                this.addData.index=index
-                if(addType=='addBean'){
-                    this.dialog_label_data.content_title='增加拳豆余额'
-                }else{
-                    this.dialog_label_data.content_title='增加钱包余额'
-                }
-                
+            addCount(row,index){
+                // console.log(row)
+                this.addData.row = row
+                this.addData.index = index
+                this.dialog_label_data.nick_name=row.user_basic_info.nick_name
                 this.dialog_label_data.isshow=true
             },
 
@@ -278,7 +318,7 @@
             goUserDetail(row){
                 //去普通用户列表
                 console.log(row.user_basic_info)
-                this.$router.push({path: '/userdetail', query:row.user_basic_info});
+                this.$router.push({path: '/userdetail', query:row});
             },
             checkIdent(id){
                 // console.log('查看认证信息'+id)
@@ -293,47 +333,22 @@
             },
             confirm(val){
                 let $this = this;
-                if(this.addData.addType=='addBean'){
-                    //增加拳豆
-                    this.addData.change_amount=val;
-                    this.addData.change_type='INCREASE_COIN_OFFICIAL_RECHARGE';
+                // console.log(val)
+                // this.ajax('','post',this.addData).then(function(res){
+                //     if(res&&res.data){
+                //         $this.tableData[$this.addData.index].coin_balance = res.data.remain_amount
+                //         $this.dialog_label_data.isshow=false;
+                //     }
 
-                    this.ajax('/coin/change','post',this.addData).then(function(res){
-                        if(res&&res.data){
-                            $this.tableData[$this.addData.index].coin_balance = res.data.remain_amount
-                            $this.dialog_label_data.isshow=false;
-                        }
-
-                    },function(err){
-                        if(err&&err.response){
-                            let errors=err.response.data
-                            for(var key in errors){
-                                console.log(errors[key])
-                                // return
-                            } 
-                        } 
-                    })
-                }else{
-                    //增加钱包余额
-                    this.addData.change_amount=val*100;
-                    this.addData.change_type='INCREASE_MONEY_OFFICIAL_RECHARGE';
-                    this.ajax('/money/change','post',this.addData).then(function(res){
-                        if(res&&res.data){
-                            $this.tableData[$this.addData.index].money_balance = res.data.remain_amount
-                            $this.dialog_label_data.isshow=false;
-                            
-                        }
-
-                    },function(err){
-                        if(err&&err.response){
-                            let errors=err.response.data
-                            for(var key in errors){
-                                console.log(errors[key])
-                                // return
-                            } 
-                        } 
-                    })
-                }
+                // },function(err){
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             console.log(errors[key])
+                //             // return
+                //         } 
+                //     } 
+                // })
 
             },
         },

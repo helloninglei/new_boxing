@@ -9,6 +9,16 @@
               </el-form-item>
             </el-form>
           </div>
+          <div class="dialog_content" style='margin-top:20px' v-else-if="type=='forward'">
+            <el-form ref="form3" :model="form3" label-width="105px" :rules="rules3">
+              <el-form-item label="初始转发量" prop="forward_num">
+                <el-input v-model="form3.forward_num" placeholder="请输入" ></el-input>
+              </el-form-item>
+              <el-form-item label="初始点赞数" prop="thumbs_up_num">
+                <el-input v-model="form3.thumbs_up_num" placeholder="请输入" ></el-input>
+              </el-form-item>
+            </el-form>
+          </div>
           <div class="dialog_content" style='margin-top:20px' v-else>
             <el-form ref="form2" :model="form2" label-width="70px" :rules="rules2">
               <el-form-item  prop="balance" label-width="0px">
@@ -66,6 +76,10 @@
                 form2 :{
                   balance :'',
                 },
+                form3:{
+                  forward_num:'',
+                  thumbs_up_num:'',
+                },
                 rules1:{
                   mobile: [
                     { validator: validatePhone, trigger: 'blur' }
@@ -74,6 +88,34 @@
                 rules2:{
                   balance: [
                     { validator: validateBalace, trigger: 'blur' }
+                  ],
+                },
+                rules3:{
+                  forward_num: [
+                    { validator: (rule, value, callback) => {
+                        var reg=/^[0-9]*$/;
+                        if(value==''){
+                            callback(new Error('请输入初始阅读量'));
+                        }else if (!reg.test(value)) {
+                            callback(new Error('请输入数字'));
+                        } else {
+                        
+                            callback();
+                        }
+                      }, trigger: 'blur' ,required:true}
+                  ],
+                  thumbs_up_num: [
+                    { validator: (rule, value, callback) => {
+                        var reg=/^[0-9]*$/;
+                        if(value==''){
+                            callback(new Error('请输入初始点赞数'));
+                        }else if (!reg.test(value)) {
+                            callback(new Error('请输入数字'));
+                        } else {
+                        
+                            callback();
+                        }
+                      }, trigger: 'blur' ,required:true}
                   ],
                 }
             }
@@ -128,6 +170,15 @@
                     return false;
                   }
                 });
+              }else if(this.type=='forward'){
+                this.$refs['form3'].validate((valid) => {
+                  if (valid) {
+                    this.$emit('confirm',this.form3)
+                  } else {
+                    console.log('error submit!!');
+                    return false;
+                  }
+                });
               }else{
                 this.$refs['form2'].validate((valid) => {
                   if (valid) {
@@ -143,7 +194,9 @@
             resetForm(form) {
               if(this.type=='phone'){
                 this.$refs['form1'].resetFields();
-              }else{
+              }else if(this.type=='forward'){
+                this.$refs['form3'].resetFields();
+              } else{
                 this.$refs['form2'].resetFields();
               } 
             },

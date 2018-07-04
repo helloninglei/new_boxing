@@ -5,9 +5,15 @@
             <el-row> 
                 <el-col :span="12">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-                        <!-- <el-form-item label="用户ID" prop="user_id">
+<!--                         <el-form-item label="用户ID" prop="user_id">
                             <el-input v-model="ruleForm.user_id" placeholder='必须为有效的用户ID'></el-input>
                         </el-form-item> -->
+                        <el-form-item label="用户ID" prop="user_id">
+                            <el-select v-model="ruleForm.user_id" placeholder="请选择用户ID">
+                              <el-option label="用户ID1" value="111"></el-option>
+                              <el-option label="用户ID2" value="222"></el-option>
+                            </el-select>
+                        </el-form-item>
                         <el-form-item label="视频名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
@@ -17,12 +23,23 @@
                         <el-form-item label="付费金额" prop="price_int">
                             <el-input v-model="ruleForm.price_int" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <!-- <el-form-item label="完整视频" prop="tsurl" style='display: none'>
-                            
-                        </el-form-item> -->
-                        <!-- <el-form-item label="不完整视频" prop="try_ts_url" style='display: none'>
-                            
-                        </el-form-item> -->
+                        <el-form-item label="视频宣传图" prop="avatar">
+                            <el-row>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
+                                <div>  
+                                    <div class='show' >  
+                                      <img :src="src_avatar" alt="" width='100%' id='img1'> 
+                                    </div>
+                                    <div style="margin-top:63px;float:left;margin-left:20px">  
+                                      <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('inputId1','img1',144,144)">上传</el-button>
+                                      <input type="file" id="inputId1" style='display:none' accept="image" @change="change">  
+                                      <label for="inputId1"></label>  
+                                    </div>  
+
+                                </div> 
+                            </el-row>
+                            <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
+                        </el-form-item>
                         <el-form-item label="完整视频" prop="tsurl">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red'  @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
                             <p v-if="(tsurl)">
@@ -78,6 +95,7 @@
     import TopBar from 'components/topBar';
     import $      from 'jquery' 
     import { Loading } from 'element-ui';
+    import Cropper from 'components/cropper';
     export default {
         data() {
             var validateUrl = (rule, value, callback) => {
@@ -105,7 +123,7 @@
                 id          :'',
                 btn_name    : '发布',
                 ruleForm: {
-                    user_id : 1,
+                    user_id : '',
                     name    : '',
                     description: '',
                     price_int  : '',
@@ -114,9 +132,9 @@
                     try_ts_url: '',
                 },
                 rules:{
-                    // user_id:[
-                    //     { required:true,message:'请输入用户id', trigger:'blur' }
-                    // ],
+                    user_id:[
+                        { required:true,message:'请选择用户id', trigger:'blur' }
+                    ],
                     name:[
                         { required:true,message:'请输入视频名称', trigger:'blur' }
                     ],
@@ -150,12 +168,17 @@
                     ]
                 },
                 loadingInstance:'',
-                
+                inputId:'',
+                url_f:'',
+                changeUrl:false,
+                imgId :'',
+                src_avatar:'',
             }
         },
         components: {
             TopBar,
-            Loading
+            Loading,
+            Cropper
         },
         created() {
             let query     = this.$route.query
@@ -178,9 +201,6 @@
             // console.log(query)
         },
         methods: {
-            getData(){
-
-            },
             getFullVideo(){
                 var _this=this
                 var file=event.target.files;
@@ -298,6 +318,38 @@
             deleteTryUrl(){
                 this.try_ts_url=''
                 this.ruleForm.try_ts_url=''
+            },
+            //宣传图
+            getUrl(url,imgId){
+                this.changeUrl=false
+                
+                if(imgId=='img1'){
+                    this.src_avatar = this.config.baseUrl+url
+                    this.ruleForm.cover = url
+                }
+            },
+            addImg(ele,imgId){
+                this.imgId=imgId;
+                $("#"+ele).click();
+            },
+            change(e){
+                let files = e.target.files || e.dataTransfer.files;  
+                if (!files.length) return;  
+                let picValue = files[0];  
+                this.url_f = this.getObjectURL(picValue); 
+                this.changeUrl=true
+                console.log(this.url_f)
+            },
+            getObjectURL (file) {  
+                var url = null ;   
+                if (window.createObjectURL!=undefined) { // basic  
+                  url = window.createObjectURL(file) ;  
+                } else if (window.URL!=undefined) { // mozilla(firefox)  
+                  url = window.URL.createObjectURL(file) ;  
+                } else if (window.webkitURL!=undefined) { // webkit or chrome  
+                  url = window.webkitURL.createObjectURL(file) ;  
+                }  
+                return url ;  
             },
         },
     }

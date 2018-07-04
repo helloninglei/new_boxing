@@ -1,22 +1,50 @@
 <template>
     <div id='report'>
-        <TopBar v-if="isShowTop" firstTitle_name="动态管理" firstTitle_path="/dynamic" secondTitle_name="举报处理" secondTitle_path="/report"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="动态管理" firstTitle_path="/dynamic" secondTitle_name="动态列表" secondTitle_path="/dynamic"></TopBar>
         <header style='padding:30px'>
-            <div style='margin:20px 0 40px 0'>
-                <!-- <el-row>
-                    <el-col :span="3" class='header_tab active' @click="changeTab()">未处理</el-col>
-                    <el-col :span="3" class='header_tab' @click="changeTab()">已处理</el-col>
-                </el-row>   -->
-                <template>
-                    <el-radio-group v-model="sendData.status">
-                        <el-radio-button label="unprocessed">未处理</el-radio-button>
-                        <el-radio-button label="processed">已处理</el-radio-button>
-                    </el-radio-group>
-                </template>
-            </div>
             <div class="inline_item">
-                <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID' style='width:18rem'></el-input>
-                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
+                <el-row>
+                    <el-col :span="4" style='width:280px'>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='请输入用户昵称/手机号' style='width:250px'></el-input>
+                    </el-col>
+                    <el-col :span="4" style='width:280px'>
+                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='请输入关键字' style='width:250px'></el-input>
+                    </el-col>  
+                    <el-col :span="7" style='width:500px'>
+                        <el-date-picker
+                        v-model="sendData.start_time"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        :default-value= "new Date()"
+                        placeholder="起始时间" style='width:220px' class="margin_rt25 margin_tp_30">
+                        </el-date-picker>
+                        <el-date-picker
+                        v-model="sendData.end_time"
+                        type="datetime"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+
+                        :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
+                        placeholder="结束时间" style='width:220px' class="margin_rt25">
+                        </el-date-picker>
+                    </el-col> 
+                </el-row> 
+                <el-row> 
+                    <el-col :span="2">
+                        <div class="inlimeLabel margin_tp30">用户类别</div>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-select v-model="sendData.is_boxer" class="margin_tp30">
+                            <el-option value="" label="全部">全部</el-option>
+                            <el-option :value="false" label="普通用户">普通用户</el-option>
+                            <el-option :value="true" label="认证拳手">认证拳手</el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70 margin_tp30' @click="filter()">查询</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='reset()'>重置</el-button>
+                    </el-col> 
+                </el-row>
+                <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button> -->
             </div>
         </header>
         <nav v-show="sendData.status=='unprocessed'">
@@ -59,8 +87,7 @@
                       width='200'
                       label="操作" >
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='openConfirm(scope.row.id,false)'>核实为假</el-button>
-                            <el-button class='myColor_red myButton_20' style='margin-right:20px' @click='openConfirm(scope.row.id,true)'>删除内容</el-button>                         
+                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='openConfirm(scope.row.id,false)'>编辑</el-button>                         
                         </template>
                     </el-table-column>
                 </el-table>
@@ -124,7 +151,7 @@
             <Pagination :total="total" @changePage="changePage"></Pagination>
         </footer>
         <ReportContent :getData="detailData.allData" :isshow="detailData.isshow" @cancel="cancel"></ReportContent>
-        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id'></Confirm>
+        <DialogLabel :isshow="confirmData.isshow" @confirm="confirm1" @cancel="cancel1"  :type="'forward'"></DialogLabel> 
     </div>
 </template>
 
@@ -132,7 +159,12 @@
     .myColor_red{color:#fff;border-color:#F95862;}
     .header_tab{border:1px solid #F0F2F5;height:36px;line-height:36px;text-align: center;cursor:pointer;}
     .header_tab.active{background:#F0F2F5;}
-    
+    .inlimeLabel{font-family: PingFangSC-Regular;font-size: 16px;color: #000000;padding-right:15px;height:40px;line-height:40px;width:100px;}
+    @media screen and (max-width: 1349px){
+        .margin_tp_30{
+            margin-top:30px;
+        }
+    }
 </style>
 <style>
     #report .el-radio-group .el-radio-button__orig-radio:checked+.el-radio-button__inner{
@@ -156,10 +188,10 @@
     }
 </style>
 <script >
-    import TopBar  from 'components/topBar';
+    import TopBar        from 'components/topBar';
     import Pagination    from 'components/pagination';
-    import ReportContent from 'page/report_content'
-    import Confirm       from "components/confirm"
+    import ReportContent from 'page/dynamic_detail';
+    import DialogLabel   from "components/dialog_label"
     export default {
         data() {
             return {
@@ -232,7 +264,7 @@
             TopBar,
             Pagination,
             ReportContent,
-            Confirm
+            DialogLabel
         },
         watch:{
            'sendData.status'(val){
@@ -331,51 +363,9 @@
                     }
                 } 
             },
-            conform1(id){
-                console.log(id,this.confirmData.isDel)
+            confirm1(data){
+                console.log(data)
                 let $this=this;
-                if(this.confirmData.isDel){
-                    //删除
-                    this.ajax('/report/'+id+'/do_delete','post').then(function(res){
-                        if(res&&res.status==200){
-                            // alert('删除成功')
-                            $this.update(id);
-                        }else{
-                          console.log(res)  
-                        }
-
-                    },function(err){
-                        console.log(err.response.status)
-                        if(err&&err.response){
-                            let errors=err.response.data
-                            for(var key in errors){
-                                console.log(errors[key])
-                                // return
-                            } 
-                        } 
-                    })
-                }else{
-                    //核实为假
-                    this.ajax('/report/'+id+'/proved_false','post').then(function(res){
-                        if(res&&res.status==200){
-                            // alert('核实为假')
-                            $this.update(id);
-                        }else{
-                          console.log(res)  
-                        }
-
-                    },function(err){
-                        console.log(err.response.status)
-                        if(err&&err.response){
-                            let errors=err.response.data
-                            for(var key in errors){
-                                console.log(errors[key])
-                                // return
-                            } 
-                        } 
-                    })
-                }
-                
             },
         },
     }

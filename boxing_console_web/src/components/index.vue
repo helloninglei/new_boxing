@@ -57,9 +57,15 @@
                             <div class="menu-item-inner" ><div class='_hr'></div>查看报名</div>
                         </el-menu-item> -->
                     </el-submenu>
-                    <el-menu-item index="/report" :disabled="disabled">
-                        <div class='menu-item-inner'>举报处理</div>
-                    </el-menu-item>
+                    <el-submenu index='5'>
+                        <template slot="title" ><div class='mySubMenu'>动态管理</div></template>
+                        <el-menu-item index="/dynamic" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>动态列表</div>
+                        </el-menu-item>
+                        <el-menu-item index="/report" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>举报处理</div>
+                        </el-menu-item>
+                    </el-submenu>
                     <el-menu-item index="/admin" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
                     </el-menu-item>
