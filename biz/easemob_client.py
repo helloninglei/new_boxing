@@ -15,6 +15,8 @@ class EaseMobClient:
         f"{settings.EASEMOB_CONF['url']}/"
     user_password = "123456"
     get_users_limit = 1000
+    chat_rooms_page_num = 1  # 环信获取聊天室，page num ，目前满足现有业务，业务不满足时，可更改
+    chat_rooms_page_size = 10  # 环信获取聊天室，page size ，目前满足现有业务，业务不满足时，可更改
 
     @classmethod
     def _get_token(cls):
@@ -70,3 +72,17 @@ class EaseMobClient:
                                  json={"name": name, "description": description, "owner": owner, "maxusers": maxusers,
                                        "members": []}, headers={"Authorization": f"Bearer {token}"})
         return response.json()
+
+    @classmethod
+    def get_chatrooms(cls):
+        chat_rooms_info = redis_client.get(redis_const.EASEMOB_CHAT_ROOMS_INFO)
+        if chat_rooms_info:
+            return json.loads(chat_rooms_info)
+        token = cls._get_token()
+        response = requests.get(
+            url=f"{cls.domain}{cls.org_name}/{cls.app_name}/chatrooms?pagenum={cls.chat_rooms_page_num}&pagesize={cls.chat_rooms_page_size}",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        chat_rooms_info = response.json()['data']
+        redis_client.set(redis_const.EASEMOB_CHAT_ROOMS_INFO, json.dumps(chat_rooms_info))
+        return chat_rooms_info

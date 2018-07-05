@@ -10,7 +10,7 @@ class WordFilterTestCase(APITestCase):
         self.client.login(username=self.user.mobile, password="password")
 
     def test_list(self):
-        WordFilter.objects.bulk_create([WordFilter(sensitive_word="_word") for _ in range(11)])
+        WordFilter.objects.bulk_create([WordFilter(sensitive_word=f"_word{i}") for i in range(11)])
         response = self.client.get(path="/word_filters/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 11)
