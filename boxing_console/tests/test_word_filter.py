@@ -10,12 +10,19 @@ class WordFilterTestCase(APITestCase):
         self.client.login(username=self.user.mobile, password="password")
 
     def test_list(self):
-        [WordFilter.objects.create(sensitive_word="_word") for _ in range(11)]
+        WordFilter.objects.bulk_create([WordFilter(sensitive_word="_word") for _ in range(11)])
         response = self.client.get(path="/word_filters/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 11)
         self.assertEqual(response.data['next'], "http://testserver/word_filters/?page=2")
         self.assertEqual(len(response.data['results']), 10)
+
+        WordFilter.objects.create(sensitive_word="name")
+        response = self.client.get(path="/word_filters/", data={"search": "na"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 1)
+        self.assertEqual(len(response.data['results']), 1)
+        self.assertEqual(response.data['results'][0]['sensitive_word'], "name")
 
     def test_create_word_filter(self):
         response = self.client.post(path="/word_filters/", data={"sensitive_word": "hello"}, format="json")
