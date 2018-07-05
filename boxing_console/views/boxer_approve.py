@@ -22,7 +22,8 @@ class BoxerIdentificationViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         sort_by_status = Case(When(authentication_state=constants.BOXER_AUTHENTICATION_STATE_WAITING, then=1),
                               default=2)
-        return BoxerIdentification.objects.all().order_by(sort_by_status, '-updated_time')
+        return BoxerIdentification.objects.all().order_by(sort_by_status, '-updated_time')\
+            .select_related('user', 'user__user_profile')
 
     def change_lock_state(self, request, *args, **kwargs):
         instance = self.get_object()

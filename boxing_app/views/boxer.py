@@ -58,7 +58,9 @@ class NearbyBoxerListViewSet(mixins.ListModelMixin, GenericViewSet):
                                                   course__validity__gte=datetime.today(),
                                                   is_accept_order=True,
                                                   authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                                                  is_locked=False).prefetch_related('course__club') \
+                                                  is_locked=False)\
+        .prefetch_related('course__club')\
+        .select_related('user', 'user__user_profile') \
         .annotate(order_count=Count('boxer_course_order', distinct=True,
                                     filter=Q(boxer_course_order__status__gt=COURSE_PAYMENT_STATUS_UNPAID,
                                              boxer_course_order__is_deleted=False)),
