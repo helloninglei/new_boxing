@@ -539,13 +539,20 @@ class MessageSerializer(serializers.ModelSerializer):
     like_count = serializers.IntegerField(read_only=True)
     user_id = serializers.IntegerField(read_only=True)
     forward_count = serializers.SerializerMethodField()
+    images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
+    nick_name = serializers.CharField(source='user.user_profile.nick_name')
+    user_type = serializers.SerializerMethodField()
+    mobile = serializers.CharField(source='user.mobile')
+
+    def get_user_type(self, instance):
+        return instance.user.get_user_type_display() or '普通用户'
 
     def get_forward_count(self, instance):
         return get_message_forward_count(instance.id)
 
     class Meta:
         model = models.Message
-        exclude = ('is_deleted', 'user')
+        exclude = ('is_deleted', 'user', 'updated_time')
         read_only_fields = ('content', 'images', 'video', 'is_deleted', 'created_time')
 
 

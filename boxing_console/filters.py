@@ -7,7 +7,7 @@ from django.db.models import Q
 from biz import models
 from biz.models import Course
 from biz import constants
-from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID
+from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID, USER_TYPE_CHOICE
 
 
 class CommonFilter(django_filters.FilterSet):
@@ -184,3 +184,14 @@ class PayOrderFilter(django_filters.FilterSet):
     class Meta:
         model = models.PayOrder
         fields = ["device", "payment_type", "status"]
+
+
+class MessageFilter(django_filters.FilterSet):
+    start_date = django_filters.DateFilter(field_name='created_time', lookup_expr='gte')
+    end_date = django_filters.DateFilter(field_name='created_time', lookup_expr='lte')
+    content = django_filters.CharFilter(field_name='content', lookup_expr='icontains')
+    user_type = django_filters.ChoiceFilter(choices=USER_TYPE_CHOICE, field_name='user__user_type')
+
+    class Meta:
+        model = models.Message
+        fields = ('start_date', 'end_date', 'content', 'user_type')
