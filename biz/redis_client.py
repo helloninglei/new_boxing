@@ -129,7 +129,7 @@ def forward_message(message_id):
 
 
 def get_message_forward_count(message_id):
-    return redis_client.hget('msg_forward', message_id) or 0
+    return int(redis_client.hget('msg_forward', message_id) or 0)
 
 
 def set_user_title(user, title):
