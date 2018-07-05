@@ -521,3 +521,11 @@ class OfficialAccountChangeLog(models.Model):
     class Meta:
         db_table = "official_account_change_log"
         ordering = ("-created_time",)
+
+
+class WordFilter(BaseModel):
+    sensitive_word = models.CharField(max_length=20, db_index=True)
+
+    class Meta:
+        db_table = "word_filter"
+        ordering = ("-updated_time",)

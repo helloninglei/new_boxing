@@ -573,3 +573,9 @@ class EditUserInfoSerializer(serializers.ModelSerializer):
         model = models.User
         fields = ('title', "user_type", "money_balance", "change_amount")
         read_only_fields = ("money_balance",)
+
+
+class WordFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WordFilter
+        fields = ['id', "sensitive_word"]

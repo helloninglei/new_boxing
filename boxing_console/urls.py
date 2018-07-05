@@ -21,6 +21,7 @@ from rest_framework.routers import SimpleRouter
 from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, EditUserInfo
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
 from boxing_console.views.message import MessageViewSet
+from boxing_console.views.word_filter import WordFilterViewSet
 
 router = SimpleRouter()
 
@@ -113,6 +114,7 @@ message_urls = [
     path('messages', MessageViewSet.as_view({'get': 'list'}), name='message'),
     path('messages/<int:pk>', MessageViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='message'),
 ]
+router.register(r"word_filters", WordFilterViewSet)
 
 urlpatterns = router.urls
 urlpatterns += boxer_url
