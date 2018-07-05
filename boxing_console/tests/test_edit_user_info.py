@@ -12,11 +12,7 @@ class EditUserInfo(APITestCase):
 
     def test_edit_user(self):
         update_data = {"title": "我是大名人", "user_type": "拳手", "change_amount": 10000}
-        response = self.client.put(path=f"/edit_user/{self.user2.id}", data=update_data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['message'][0], "不能编辑用户为拳手！")
 
-        update_data['user_type'] = "名人"
         response = self.client.put(path=f"/edit_user/{self.user2.id}", data=update_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], update_data['title'])

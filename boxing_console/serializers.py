@@ -63,7 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         fields = [
             "id", "mobile", "following_count", "follower_count", "share_count", "money_balance", "is_boxer",
-            "user_basic_info", "date_joined", "boxer_id", "coin_balance"
+            "user_basic_info", "date_joined", "boxer_id", "coin_balance", "user_type", "title"
         ]
 
 
@@ -555,8 +555,6 @@ class EditUserInfoSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs['user_type'] = dict(zip(USER_TYPE_MAP.values(), USER_TYPE_MAP.keys())).get(attrs['get_user_type_display'])
-        if attrs['user_type'] == USER_TYPE_BOXER:
-            raise ValidationError("不能编辑用户为拳手！")
         attrs['money_balance'] = self.instance.money_balance + attrs['change_amount']
         return attrs
 
