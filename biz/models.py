@@ -524,7 +524,7 @@ class OfficialAccountChangeLog(models.Model):
 
 
 class WordFilter(BaseModel):
-    sensitive_word = models.CharField(max_length=20, db_index=True)
+    sensitive_word = models.CharField(max_length=20, db_index=True, unique=True)
 
     class Meta:
         db_table = "word_filter"
