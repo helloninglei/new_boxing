@@ -69,7 +69,7 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.assertEqual(data['title'], self.msg.content)
-        self.assertEqual(data['sub_title'], f'来自{self.nick_name}的拳城出击')
+        self.assertEqual(data['sub_title'], f'来自拳城出击的{self.nick_name}')
         self.assertIsNone(data['picture'])
 
         self.assertEqual(data['url'], f'{h5_base_url}messages/{self.msg.id}')
@@ -79,7 +79,7 @@ class ShareTestCase(APITestCase):
         self.test_user.user_profile.save()
         data = self.client.get(f'/messages/{self.msg.id}/share').data
         self.test_user.refresh_from_db()
-        self.assertEqual(data['sub_title'], '来自lerry的拳城出击')
+        self.assertEqual(data['sub_title'], '来自拳城出击的lerry')
         self.assertEqual(data['picture'], f'{oss_base_url}{self.test_user.user_profile.avatar}{img_prefix}')
 
     def test_title_content(self):

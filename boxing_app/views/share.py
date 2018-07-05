@@ -55,7 +55,7 @@ def share_view(_, object_type, object_id):
             profile = user.user_profile
             if not title:
                 title = f'分享{profile.nick_name}动态'
-            sub_title = f'来自{profile.nick_name}的拳城出击'
+            sub_title = f'来自拳城出击的{profile.nick_name}'
             picture = get_share_img_url(profile.avatar)
         title = _truncate_text(title, 14)
         sub_title = _truncate_text(sub_title, 20)
