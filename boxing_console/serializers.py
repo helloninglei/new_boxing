@@ -163,12 +163,12 @@ class BoxingClubSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(max_length=128, required=True)
     province = serializers.CharField(max_length=10, required=False)
     city = serializers.CharField(max_length=10, required=False)
-    address = serializers.CharField(max_length=30, required=False)
+    address = serializers.CharField(max_length=30, required=True)
 
     def validate(self, attrs):
         longitude = attrs['longitude']
         latitude = attrs['latitude']
-        attrs['province'], attrs['city'], attrs['address'] = self.get_location_info(longitude, latitude)
+        attrs['province'], attrs['city'], _ = self.get_location_info(longitude, latitude)
         attrs['city_index_letter'] = hans_to_initial(attrs['city'])
         return attrs
 
