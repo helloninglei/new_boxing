@@ -14,7 +14,7 @@ from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN
 from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
-from biz.redis_client import follower_count, following_count
+from biz.redis_client import follower_count, following_count, get_user_title
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
 from biz.redis_client import is_following, get_object_location, set_user_title
@@ -44,7 +44,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        ret['title'] = instance.user.title
+        ret['title'] = get_user_title(instance.user) or instance.user.title
         return ret
 
     def get_course_order_count(self, instance):
