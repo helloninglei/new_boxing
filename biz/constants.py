@@ -24,6 +24,7 @@ FAMOUS_USER_DICT = {
     13501224847: 16,  # '徐晓冬'
     13810578320: 17,  # '吴紫龙'
     18888888888: 18,  # '拳城出击——中华武术大会'
+    13636843135: 1082,  # 庞祥
 }
 
 BOXER_AUTHENTICATION_STATE_WAITING = "WAITING"
