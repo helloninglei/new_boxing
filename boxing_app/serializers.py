@@ -489,7 +489,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
         exclude = ["created_time", "id", "updated_time", "user"]
-        read_only_fields = ["alipay_account", "gender", "nick_name", "boxer_info", "mobile"]
+        read_only_fields = ["alipay_account", "nick_name", "boxer_info", "mobile"]
 
 
 class ChangeMobileSerializer(serializers.Serializer):

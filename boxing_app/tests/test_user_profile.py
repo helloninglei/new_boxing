@@ -26,7 +26,7 @@ class UserProfileTestCase(APILoginTestCase):
         self.assertEqual(response.data['avatar'], self.user_profile_data['avatar'])
         self.assertEqual(response.data['bio'], self.user_profile_data['bio'])
 
-        user  = User.objects.create_user(mobile="19900000002", password="p")
+        user = User.objects.create_user(mobile="19900000002", password="p")
         response = self.client.get(path=f"/user_profile/{user.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['nick_name'], DEFAULT_NICKNAME_FORMAT.format(user.id))
@@ -64,7 +64,14 @@ class UserProfileTestCase(APILoginTestCase):
         self.assertEqual(user_profile.nick_name, data['nick_name'])
         self.assertEqual(user_profile.nick_name_index_letter, '#')
 
+    def test_gender_should_change(self):
+        data = {"gender": not self.user_profile_data['gender']}
+        response = self.client.put(path="/user_profile_patch", data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIs(UserProfile.objects.get(user=self.user).gender, data['gender'])
+
     def test_update_user_profile(self):
+        self.assertFalse(UserProfile.objects.get(user=self.user).gender)
         data = {
             "birthday": "2018-05-17", "height": "190", "name": "改名字", "nation": "民族", "profession": "医生",
             "weight": "90"
@@ -73,6 +80,7 @@ class UserProfileTestCase(APILoginTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(UserProfile.objects.get(id=self.user.user_profile.id).name, data['name'])
         self.assertEqual(UserProfile.objects.get(id=self.user.user_profile.id).profession, data['profession'])
+        self.assertFalse(UserProfile.objects.get(user=self.user).gender)
 
         data.pop("weight")
         response = self.client.put(path="/user_profile", data=data, format="json")
