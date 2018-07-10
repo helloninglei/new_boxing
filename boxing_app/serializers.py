@@ -26,7 +26,7 @@ from biz.redis_client import redis_client, get_message_forward_count
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
-from biz.constants import WITHDRAW_MIN_CONFINE
+from biz.constants import WITHDRAW_MIN_CONFINE, DEFAULT_NICKNAME_FORMAT, DEFAULT_AVATAR
 from biz.services.money_balance_service import change_money
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -41,6 +41,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
     course_order_count = serializers.SerializerMethodField()
     title = serializers.CharField(max_length=16, write_only=True)
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -118,6 +119,7 @@ class DiscoverUserField(serializers.RelatedField):
             'is_following': bool(is_following(self.context['request'].user.id, user.id)),
             'nick_name': None,
             'avatar': None,
+            "user_type": user.get_user_type_display()
         }
 
         if hasattr(user, 'user_profile'):
@@ -220,13 +222,17 @@ class FollowUserSerializer(serializers.Serializer):
     gender = serializers.BooleanField(source='user_profile.gender')
     identity = serializers.CharField()
     is_following = serializers.SerializerMethodField()
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, user):
+        return user.get_user_type_display()
 
     def get_is_following(self, user):
         current_user_id = self.context['current_user_id']
         return bool(is_following(current_user_id, user.id))
 
     class Meta:
-        fields = ['id', 'gender', 'avatar', 'nick_name', 'address', 'bio', 'is_follow', 'identity']
+        fields = ['id', 'gender', 'avatar', 'nick_name', 'address', 'bio', 'is_follow', 'identity', "user_type"]
         read_only_fields = '__all__'
 
 
@@ -365,6 +371,7 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     user_gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     user_avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     identity = serializers.CharField(source='user.identity', read_only=True)
     comment_score = serializers.SerializerMethodField()
     comment_time = serializers.SerializerMethodField()
@@ -438,6 +445,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
     bio = serializers.SerializerMethodField()
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+
+    def to_representation(self, instance):
+        data = super(UserProfileSerializer, self).to_representation(instance)
+        data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
+        data['avatar'] = instance.avatar or DEFAULT_AVATAR
+        return data
 
     def get_bio(self, instance):
         if instance.bio:
@@ -515,7 +528,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
 class BlockedUserSerializer(serializers.BaseSerializer):
     def to_representation(self, user):
-        representation_dict = {"id": user.id}
+        representation_dict = {"id": user.id, "user_type": user.get_user_type_display()}
         if hasattr(user, "user_profile"):
             representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
         return representation_dict
@@ -662,7 +675,11 @@ class ContactSerializer(serializers.ModelSerializer):
     nick_name = serializers.CharField(source="user_profile.nick_name")
     avatar = serializers.CharField(source="user_profile.avatar")
     index_letter = serializers.CharField(source="user_profile.nick_name_index_letter")
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, user):
+        return user.get_user_type_display()
 
     class Meta:
         model = models.User
-        fields = ['id', "nick_name", "avatar", "index_letter"]
+        fields = ['id', "nick_name", "avatar", "index_letter", "user_type"]

@@ -297,3 +297,7 @@ DEFAULT_BIO_OF_WOMEN = DEFAULT_BIO_FORMAT.format("小姐姐")
 CHAT_ROOM_NAME = "拳城BB"
 CHAT_ROOM_DESCRIPTION = "拳城出击聊天室"
 CHAT_ROOM_MAXUSERS = 10000  # 聊天室最大用户数量
+
+# user default nickname、avatar
+DEFAULT_NICKNAME_FORMAT = "拳城{}"
+DEFAULT_AVATAR = ""
