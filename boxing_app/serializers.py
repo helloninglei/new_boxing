@@ -448,8 +448,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
-        data['nick_name'] = DEFAULT_NICKNAME_FORMAT.format(instance.user.id) if not instance.nick_name else instance.nick_name
-        data['avatar'] = DEFAULT_AVATAR if not instance.avatar else instance.avatar
+        data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
+        data['avatar'] = instance.avatar or DEFAULT_AVATAR
         return data
 
     def get_bio(self, instance):
