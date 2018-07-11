@@ -25,6 +25,7 @@ deploy(){
         pkill -o -HUP gunicorn
     else
         /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
+    fi
 }
 
 cd /work && clear_cache && install && migrate && deploy

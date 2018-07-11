@@ -74,10 +74,10 @@ deploy(){
     if [ "$running_container" ]; then
         for container in $running_container
         do
-            docker exec -it $running_container /work/deploy/run.sh
+            docker exec -it $container /work/deploy/run.sh
         done
     elif [ "$stopped_container" ]; then
-        docker start $stopped_container
+        docker start ${stopped_container}
     elif [ "$has_images" ]; then
         api && console
     else
@@ -87,7 +87,7 @@ deploy(){
 
 build(){
     running_web=$(docker ps --filter "name=web_" --quiet)
-    stopped_web=$(docker ps --filter "name=web_" --filter "status=exited"  --quiet)
+    stopped_web=$(docker ps --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
     web_images=$(docker images --filter "reference=web_*" --quiet)
     if [ "$running_web" ]; then
         for container in $running_web
