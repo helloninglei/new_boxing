@@ -3,7 +3,7 @@ from datetime import datetime
 
 from biz import constants
 from biz.constants import MONEY_CHANGE_TYPE_INCREASE_ORDER_OVERDUE, DELAY_SEVEN_DAYS
-from biz.models import CourseSettleOrder, CourseOrder
+from biz.models import CourseSettleOrder, CourseOrder, Course
 from biz.services.money_balance_service import change_money
 
 
@@ -12,6 +12,9 @@ def settle_order_task():
     for order in CourseSettleOrder.objects.filter(settled=False, created_time__lt=datetime.now() - DELAY_SEVEN_DAYS):
         order.settle_order()
 
+@shared_task()
+def set_course_overdue():
+    Course.objects.filter(validity__lt=datetime.today()).update(is_open=False)
 
 @shared_task()
 def set_course_order_overdue():
