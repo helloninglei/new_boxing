@@ -69,7 +69,7 @@ init_web(){
 
 deploy(){
     running_container=$(docker ps --filter "name=new_boxing_" --quiet)
-    stopped_container=$(docker ps --filter "name=new_boxing_, status=exited"--quiet)
+    stopped_container=$(docker ps --filter "name=new_boxing_" --filter "status=exited" --quiet)
     has_images=$(docker images --filter "reference=new_boxing_*" --quiet)
     if [ "$running_container" ]; then
         for container in $running_container
@@ -87,7 +87,7 @@ deploy(){
 
 build(){
     running_web=$(docker ps --filter "name=web_" --quiet)
-    stopped_web=$(docker ps --filter "name=web_, status=exited"--quiet)
+    stopped_web=$(docker ps --filter "name=web_" --filter "status=exited"  --quiet)
     web_images=$(docker images --filter "reference=web_*" --quiet)
     if [ "$running_web" ]; then
         for container in $running_web
