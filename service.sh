@@ -68,18 +68,38 @@ init_web(){
 }
 
 deploy(){
-    if [ ! "$(filter)" ]; then
-        build_image  && init $@
+    running_container=$(docker ps --filter "name=new_boxing_" --quiet)
+    stopped_container=$(docker ps --filter "name=new_boxing_, status=exited"--quiet)
+    has_images=$(docker images --filter "reference=new_boxing_*" --quiet)
+    if [ "$running_container" ]; then
+        for container in $running_container
+        do
+            docker exec -it $running_container /work/deploy/run.sh
+        done
+    elif [ "$stopped_container" ]; then
+        docker start $stopped_container
+    elif [ "$has_images" ]; then
+        api && console
     else
-        restart_api
+        build_image  && init $@
     fi
 }
 
 build(){
-    if [ ! "$(filter_web)" ]; then
-        build_image  && init_web $@
+    running_web=$(docker ps --filter "name=web_" --quiet)
+    stopped_web=$(docker ps --filter "name=web_, status=exited"--quiet)
+    web_images=$(docker images --filter "reference=web_*" --quiet)
+    if [ "$running_web" ]; then
+        for container in $running_web
+        do
+            docker exec -it $container /work/deploy/run.sh
+        done
+    elif [ "stopped_web" ]; then
+        docker start $stopped_web
+    elif [ "web_images" ]; then
+        web_console && web_share
     else
-        restart_web
+        build_image  && init_web $@
     fi
 }
 
