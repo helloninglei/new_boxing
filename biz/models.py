@@ -332,7 +332,7 @@ class BaseAuditModel(BaseModel):
 
 
 class HotVideo(BaseAuditModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hot_videos')
+    users = models.ManyToManyField(User, related_name='hot_videos', db_table='hot_video_user_rel')
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=140)
     url = models.CharField(max_length=200)
