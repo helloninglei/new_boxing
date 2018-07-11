@@ -23,33 +23,6 @@ web_share(){
     docker run --name web_share_new_boxing -v `pwd`:/work -d -it new_boxing_node_image /bin/bash /work/deploy/web.sh boxing_app_shared_h5
 }
 
-filter(){
-    echo $(docker ps --filter "name=new_boxing_" --all --quiet)
-}
-
-filter_web(){
-    echo $(docker ps --filter "name=web_" --all --quiet)
-}
-
-reset(){
-    docker stop $(filter)
-    docker rm $(filter)
-}
-
-reset_web(){
-    docker stop $(filter_web)
-    docker rm $(filter_web)
-}
-
-
-restart_api(){
-    docker restart $(filter)
-}
-
-restart_web(){
-    docker restart $(filter_web)
-}
-
 init(){
     mkdir -p $LOG_PATH
     if [[ -n $2 ]]; then
@@ -94,9 +67,9 @@ build(){
         do
             docker exec -it $container /work/deploy/run.sh
         done
-    elif [ "stopped_web" ]; then
+    elif [ "$stopped_web" ]; then
         docker start $stopped_web
-    elif [ "web_images" ]; then
+    elif [ "$web_images" ]; then
         web_console && web_share
     else
         build_image  && init_web $@

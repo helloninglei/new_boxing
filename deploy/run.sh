@@ -21,7 +21,8 @@ deploy(){
     mkdir -p /var/log/new_boxing
     rm -f /var/run/celery.pid
     /etc/init.d/supervisord restart
-    if [ $(ps -a | grep gunicorn) ]; then
+    if [ "$(pgrep gunicorn)" ]
+    then
         pkill -o -HUP gunicorn
     else
         /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
