@@ -12,9 +12,11 @@ def settle_order_task():
     for order in CourseSettleOrder.objects.filter(settled=False, created_time__lt=datetime.now() - DELAY_SEVEN_DAYS):
         order.settle_order()
 
+
 @shared_task()
 def set_course_overdue():
     Course.objects.filter(validity__lt=datetime.today()).update(is_open=False)
+
 
 @shared_task()
 def set_course_order_overdue():

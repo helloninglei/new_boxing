@@ -36,6 +36,10 @@ app.conf.beat_schedule = {
         'task': 'boxing_console.tasks.refund_after_order_overdue',
         'schedule': crontab(**everyday_crontab),
         'args': []
+    },
+    'set-course-overdue': {
+        'task': 'boxing_console.tasks.set_course_overdue',
+        'schedule': crontab(**everyday_crontab),
+        'args': []
     }
-
 }
