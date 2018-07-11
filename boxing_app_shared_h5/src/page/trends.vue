@@ -188,7 +188,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize)}/quality,q_80`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize)}`;
             },0)
         },
 
