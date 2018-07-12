@@ -17,12 +17,10 @@ class ReportViewSet(ModelViewSet):
     serializer_class = ReportSerializer
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = ReportFilter
-    search_fields = ('user__id',)
+    search_fields = ('user__id', )
 
     def get_queryset(self):
-        return models.Report.objects.all().prefetch_related('user', 'content_object',
-                                                            'content_object__users__user_profile',
-                                                            'operator__user_profile')
+        return models.Report.objects.all().prefetch_related('user', 'content_object', 'operator__user_profile')
 
 
 def _get_object(pk):
