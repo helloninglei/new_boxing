@@ -1,4 +1,4 @@
-FROM python:3.6-stretch
+FROM python:3-stretch
 
 COPY debain9.sources.list /etc/apt/sources.list
 COPY supervisord /etc/init.d/supervisord

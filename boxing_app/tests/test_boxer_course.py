@@ -75,7 +75,7 @@ class CourseTestCase(APITestCase):
             'duration': 367,
         }
         update_course_data = {
-            "validity": "2018-04-25",
+            "validity": "2088-04-25",
             "club": my_club.pk,
             "course_list": [{**course1_data}, {**course2_data}]}
 
@@ -84,8 +84,15 @@ class CourseTestCase(APITestCase):
                                        content_type='application/json')
         self.assertEqual(update_res.status_code, status.HTTP_204_NO_CONTENT)
 
-        # 修改开通课程，需要校验数据（数据不合法，校验失败）
+        # 修改开通课程，需要校验数据（价格为空，数据不合法，校验失败）
         course3_data['price'] = ''
+        update_course_data["course_list"] = [{**course1_data}, {**course2_data}, {**course3_data}]
+        update_res = self.client1.post('/boxer/course', data=json.dumps(update_course_data),
+                                       content_type='application/json')
+        self.assertEqual(update_res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # 修改开通课程，需要校验数据（有效期小于今天，数据不合法，校验失败）
+        update_course_data['validity'] = "2008-04-25"
         update_course_data["course_list"] = [{**course1_data}, {**course2_data}, {**course3_data}]
         update_res = self.client1.post('/boxer/course', data=json.dumps(update_course_data),
                                        content_type='application/json')
@@ -93,6 +100,7 @@ class CourseTestCase(APITestCase):
 
         # 修改开通课程，需要校验数据（数据合法，校验成功）
         course3_data['price'] = 120
+        update_course_data['validity'] = "2088-04-25"
         update_course_data["course_list"] = [{**course1_data}, {**course2_data}, {**course3_data}]
         update_res = self.client1.post('/boxer/course', data=json.dumps(update_course_data),
                                        content_type='application/json')

@@ -21,7 +21,12 @@ deploy(){
     mkdir -p /var/log/new_boxing
     rm -f /var/run/celery.pid
     /etc/init.d/supervisord restart
-    /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
+    if [ "$(pgrep gunicorn)" ]
+    then
+        pkill -o -HUP gunicorn
+    else
+        /usr/local/bin/gunicorn $APP.wsgi:application -c /work/deploy/config.py
+    fi
 }
 
 cd /work && clear_cache && install && migrate && deploy
