@@ -78,20 +78,11 @@ deploy(){
 }
 
 build(){
-    running_web=$(docker ps --filter "name=web_" --quiet)
-    stopped_web=$(docker ps -a --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
-    web_images=$(docker images --filter "reference=web_*" --quiet)
-    if [ "$running_web" ]; then
-        for container in $running_web
-        do
-            docker exec -i $container /bin/bash /work/deploy/run.sh
-        done
-    elif [ "$stopped_web" ]; then
-        docker start $stopped_web
-    elif [ "$web_images" ]; then
-        web_console && web_share
-    else
+    web_container=$(docker ps -a --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
+    if [ ! "$web_container" ]; then
         build_image  && init_web $@
+    else
+        restart_web
     fi
 }
 
