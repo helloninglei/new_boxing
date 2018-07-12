@@ -343,10 +343,11 @@ class HotVideo(BaseAuditModel):
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
     reports = GenericRelation('Report')
     cover = models.CharField(max_length=200)
+    stay_top = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'hot_video'
-        ordering = ("-created_time",)
+        ordering = ("stay_top", "-created_time",)
         verbose_name = '热门视频'
 
 

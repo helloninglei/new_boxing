@@ -10,7 +10,8 @@ from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, OrderComment
+from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
+    OrderComment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -19,9 +20,8 @@ from biz.redis_client import get_number_of_share, get_message_forward_count
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
-    HOT_VIDEO_USER_ID, USER_TYPE_MAP
+    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT
 from biz.services.official_account_service import create_official_account_change_log
-from biz.constants import USER_TYPE_BOXER
 
 url_validator = URLValidator()
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
@@ -217,23 +217,36 @@ class BoxingClubSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class HotVideoUserSerializer(serializers.ModelSerializer):
+    nick_name = serializers.CharField(source='user_profile.nick_name')
+    avatar = serializers.CharField(source='user_profile.avatar')
+
+    class Meta:
+        model = User
+        fields = ('id', 'nick_name', 'avatar')
+
+
 class HotVideoSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(required=False)
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     sales_count = serializers.IntegerField(read_only=True)
     price_amount = serializers.IntegerField(read_only=True)
+    user_list = serializers.SerializerMethodField()
+    users = serializers.ListField(child=serializers.IntegerField(), write_only=True)
 
-    def validate(self, data):
-        data['user_id'] = HOT_VIDEO_USER_ID  # 固定由"热门视频"用户发布
-        # user_id = data['user_id']
-        # if not models.User.objects.filter(pk=user_id).exists():
-        #     raise ValidationError({'user_id': [f'用户 {user_id} 不存在']})
-        return data
+    def get_user_list(self, instance):
+        return HotVideoUserSerializer(instance.users, many=True).data
+
+    def validate(self, attrs):
+        if len(attrs['users']) > MAX_HOT_VIDEO_BIND_USER_COUNT:
+            raise ValidationError({'message': [f'最多关联{MAX_HOT_VIDEO_BIND_USER_COUNT}个用户']})
+        if not User.objects.filter(id__in=attrs['users']).exists():
+            raise ValidationError({'message': ['用户不存在']})
+        return attrs
 
     class Meta:
         model = HotVideo
-        fields = ('id', 'user_id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time', 'cover')
+        fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
+                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
@@ -349,8 +362,11 @@ class ReportSerializer(serializers.ModelSerializer):
             return instance.content_object._meta.verbose_name
 
     def get_reported_user(self, instance):
-        if instance.content_object:
-            return instance.content_object.user.id
+        obj = instance.content_object
+        if obj:
+            if not isinstance(obj, HotVideo):
+                return obj.user.id
+            return obj.users.first().id
 
     def get_operator(self, instance):
         return instance.operator.user_profile.nick_name if instance.operator and instance.operator.user_profile else None

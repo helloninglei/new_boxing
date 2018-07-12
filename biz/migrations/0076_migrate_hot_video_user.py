@@ -6,9 +6,10 @@ from django.db import migrations, models
 
 def migrate_hot_video(apps, schema_editor):
     HotVideo = apps.get_model('biz', 'HotVideo')
-    hot_video_user = apps.get_model('biz', 'User').objects.get(id=HOT_VIDEO_USER_ID)
-    for hot_video in HotVideo.objects.all():
-        hot_video.users.add(hot_video_user)
+    if HotVideo.objects.exists():
+        hot_video_user = apps.get_model('biz', 'User').objects.get(id=HOT_VIDEO_USER_ID)
+        for hot_video in HotVideo.objects.all():
+            hot_video.users.add(hot_video_user)
 
 
 class Migration(migrations.Migration):

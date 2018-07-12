@@ -44,9 +44,16 @@ class CourseFilter(django_filters.FilterSet):
 
 
 class HotVideoFilter(CommonFilter):
+    search = django_filters.CharFilter(method='search_filter')
+
+    def search_filter(self, qs, name, value):
+        if value.isdigit():
+            return qs.filter(Q(name__icontains=value) | Q(users__id=value))
+        return qs.filter(name__icontains=value)
+
     class Meta:
         model = models.HotVideo
-        fields = ('created_time',)
+        fields = ('start_time', 'end_time', 'search')
 
 
 class GameNewsFilter(django_filters.FilterSet):
