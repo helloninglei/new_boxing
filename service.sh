@@ -42,12 +42,12 @@ init_web(){
 
 reset_api(){
     docker stop $(docker ps  --filter "name=new_boxing_" --quiet)
-    docker rm $(docker ps --all --filter "name=new_boxing_" --quiet)
+    docker rm $(docker ps -a --filter "name=new_boxing_" --quiet)
 }
 
 reset_web(){
     docker stop $(docker ps --filter "name=web_" --quiet)
-    docker rm $(docker ps --all --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
+    docker rm $(docker ps -a --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
 }
 
 
@@ -61,7 +61,7 @@ restart_web(){
 
 deploy(){
     running_container=$(docker ps --filter "name=new_boxing_" --quiet)
-    stopped_container=$(docker ps --all --filter "name=new_boxing_" --filter "status=exited" --filter "status=created" --quiet)
+    stopped_container=$(docker ps -a --filter "name=new_boxing_" --filter "status=exited" --filter "status=created" --quiet)
     has_images=$(docker images --filter "reference=new_boxing_*" --quiet)
     if [ "$running_container" ]; then
         for container in $running_container
@@ -79,7 +79,7 @@ deploy(){
 
 build(){
     running_web=$(docker ps --filter "name=web_" --quiet)
-    stopped_web=$(docker ps --all --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
+    stopped_web=$(docker ps -a --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
     web_images=$(docker images --filter "reference=web_*" --quiet)
     if [ "$running_web" ]; then
         for container in $running_web
