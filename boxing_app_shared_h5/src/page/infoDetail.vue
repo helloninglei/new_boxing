@@ -105,13 +105,6 @@
                 this.sharePage();
             };
         },
-        mounted() {
-            setTimeout(function () {
-                this.$refs.video.addEventListener('play', function () {
-                    alert(1)
-                });
-            }, 1000)
-        },
         methods: {
             getSrc(str) {
                 var iframeReg = /<iframe.*?(?:>|\/>)/gi;
@@ -123,7 +116,7 @@
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(arr[i],'<div class="video_container"><video ref="video" class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                         }
                     }
                 }
