@@ -52,11 +52,11 @@ reset_web(){
 
 
 restart_api(){
-    docker restart $(docker ps --filter "name=new_boxing_" --quiet)
+    docker restart $(docker ps --all --filter "name=new_boxing_" --quiet)
 }
 
 restart_web(){
-    docker restart $(docker ps --filter "name=web_" --quiet)
+    docker restart $(docker ps --all --filter "name=web_" --quiet)
 }
 
 deploy(){
