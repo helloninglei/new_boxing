@@ -47,7 +47,7 @@ deploy(){
     if [ "$running_container" ]; then
         for container in $running_container
         do
-            docker exec -it $container /work/deploy/run.sh
+            docker exec -it $container /bin/bash /work/deploy/run.sh
         done
     elif [ "$stopped_container" ]; then
         docker start ${stopped_container}
@@ -65,7 +65,7 @@ build(){
     if [ "$running_web" ]; then
         for container in $running_web
         do
-            docker exec -it $container /work/deploy/run.sh
+            docker exec -it $container /bin/bash /work/deploy/run.sh
         done
     elif [ "$stopped_web" ]; then
         docker start $stopped_web
