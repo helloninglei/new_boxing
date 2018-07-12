@@ -384,7 +384,7 @@ class ReportSerializer(serializers.ModelSerializer):
         obj = instance.content_object
         if not obj:
             return {}
-        user = obj.user
+        user = self.get_reported_user(instance)
         created_time = obj.created_time
         video = None
         pictures = []
