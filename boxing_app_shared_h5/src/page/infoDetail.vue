@@ -66,7 +66,7 @@
             line-height 1.5rem
             font-size .75rem
             color #E9E9EA
-
+    video::-internal-media-controls-download-button{display:none;}
 </style>
 
 <script>
