@@ -518,6 +518,8 @@ class CourseFullDataSerializer(CourseAllowNullDataSerializer):
     def validate(self, attrs):
         if not attrs['club']:
             raise serializers.ValidationError('拳馆不存在')
+        if attrs.get('validity') < datetime.date(datetime.today()):
+            raise serializers.ValidationError('有效期不能选择今天之前的日期')
         return attrs
 
 
