@@ -40,6 +40,25 @@ init_web(){
     fi
 }
 
+reset_api(){
+    docker stop $(docker ps --filter "name=new_boxing_" --quiet)
+    docker rm $(docker ps --filter "name=new_boxing_" --quiet)
+}
+
+reset_web(){
+    docker stop $(docker ps --filter "name=web_" --quiet)
+    docker rm $(docker ps --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
+}
+
+
+restart_api(){
+    docker restart $(docker ps --filter "name=new_boxing_" --quiet)
+}
+
+restart_web(){
+    docker restart $(docker ps --filter "name=web_" --quiet)
+}
+
 deploy(){
     running_container=$(docker ps --filter "name=new_boxing_" --quiet)
     stopped_container=$(docker ps --filter "name=new_boxing_" --filter "status=exited" --filter "status=created" --quiet)
