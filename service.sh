@@ -47,7 +47,7 @@ deploy(){
     if [ "$running_container" ]; then
         for container in $running_container
         do
-            docker exec -it $container /work/deploy/run.sh
+            docker exec -i $container /work/deploy/run.sh
         done
     elif [ "$stopped_container" ]; then
         docker start ${stopped_container}
