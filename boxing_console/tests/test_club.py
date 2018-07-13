@@ -20,7 +20,8 @@ class BoxingClubTestCase(TestCase):
                     "opening_hours": "10:00--20:00",
                     "images": ["www.baidu.com", "www.sina.com.cn"],
                     "introduction": "最牛逼的拳馆",
-                    "avatar": "club_avatar"
+                    "avatar": "club_avatar",
+                    "address": "北京市丰台区"
                     }
         self.boxer_data = {
             "user": self.test_user1,
@@ -58,7 +59,6 @@ class BoxingClubTestCase(TestCase):
         # 已知通过百度api实际请求到（116.405994, 39.916042）的province、city、address信息分别为北京市、北京市、北京市东城区东长安街
         self.assertEqual(res.data['province'], '北京市')
         self.assertEqual(res.data['city'], '北京市')
-        self.assertEqual(res.data['address'], '北京市东城区东长安街')
         self.assertEqual(res.data['city_index_letter'], 'B')
 
     def test_get_club_detail(self):
@@ -71,7 +71,6 @@ class BoxingClubTestCase(TestCase):
                 self.assertEqual(detail_res.data[key], self.data.get(key))
         self.assertEqual(detail_res.data['province'], '北京市')
         self.assertEqual(detail_res.data['city'], '北京市')
-        self.assertEqual(detail_res.data['address'], '北京市东城区东长安街')
 
     def test_create_fail_with_repetition_club_name(self):
         self.client.post('/club', self.data)
@@ -94,7 +93,6 @@ class BoxingClubTestCase(TestCase):
         # 判断更新后的位置信息，已知(116.317457,39.999664)province、city、address分别为广东省、广州市、广东省广州市越秀区建设大马路2号
         self.assertEqual(update_res.data['province'], '广东省')
         self.assertEqual(update_res.data['city'], '广州市')
-        self.assertEqual(update_res.data['address'], '广东省广州市越秀区建设大马路2号')
 
         club = BoxingClub.objects.get(id=update_res.data['id'])
         redis_location_record = redis_client.get_object_location(club)

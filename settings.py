@@ -21,7 +21,6 @@ DEVELOPMENT = 'development'
 
 ENVIRONMENT = DEVELOPMENT
 
-
 ALLOWED_HOSTS = [
     '127.0.0.1',
     '39.105.73.10',  # qa1

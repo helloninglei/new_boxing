@@ -68,7 +68,7 @@ def move_image(url: str):
         url = f'{resource_base_url}{url}'
     res = http_client.get(url)
     if res.status_code == 200:
-        f = File(BytesIO(res.content), 'avatar.jpg')
+        f = File(BytesIO(res.content), url.split('/')[-1])
         file_path = generate_file_name(f)
         url_path = f'{settings.OSS_BASE_URL}{settings.UPLOAD_URL_PATH}{file_path}'
         if http_client.head(url_path).status_code == 200:
@@ -173,6 +173,14 @@ def replace_article_img(html):
 
 
 @shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
+def fix_news_content_worker(id):
+    news = GameNews.objects.get(id=id)
+    article = Article.objects.get(id=id)
+    news.app_content = replace_article_img(article.contenthtml)
+    news.save()
+
+
+@shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3})
 def move_article_worker(article_id):
     try:
         article = Article.objects.get(id=article_id)
@@ -232,11 +240,17 @@ def move_comment():
         move_comment_worker.delay(c.id)
 
 
+def fix_news_content():
+    for i in GameNews.objects.filter(app_content__contains='https://api.bitu').filter(app_content__contains='video'):
+        fix_news_content_worker.delay(i.id)
+
+
 class Command(BaseCommand):
     help = '迁移数据'
 
     def handle(self, *args, **options):
-        set_preset_user()
-        move_user()
-        move_article()
-        move_comment()
+        # set_preset_user()
+        # move_user()
+        # move_article()
+        # move_comment()
+        fix_news_content()

@@ -7,7 +7,7 @@ from boxing_console.filters import WithdrawLogFilter, PayOrderFilter
 
 
 class WithdrawLogViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.UpdateModelMixin):
-    queryset = WithdrawLog.objects.all().select_related("user")
+    queryset = WithdrawLog.objects.all().select_related("user", "user__user_profile")
     serializer_class = WithdrawLogSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ["order_number", "user__id", "user__user_profile__nick_name", "user__mobile"]

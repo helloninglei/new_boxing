@@ -23,33 +23,6 @@ web_share(){
     docker run --name web_share_new_boxing -v `pwd`:/work -d -it new_boxing_node_image /bin/bash /work/deploy/web.sh boxing_app_shared_h5
 }
 
-filter(){
-    echo $(docker ps --filter "name=new_boxing_" --all --quiet)
-}
-
-filter_web(){
-    echo $(docker ps --filter "name=web_" --all --quiet)
-}
-
-reset(){
-    docker stop $(filter)
-    docker rm $(filter)
-}
-
-reset_web(){
-    docker stop $(filter_web)
-    docker rm $(filter_web)
-}
-
-
-restart_api(){
-    docker restart $(filter)
-}
-
-restart_web(){
-    docker restart $(filter_web)
-}
-
 init(){
     mkdir -p $LOG_PATH
     if [[ -n $2 ]]; then
@@ -67,16 +40,46 @@ init_web(){
     fi
 }
 
+reset_api(){
+    docker stop $(docker ps  --filter "name=new_boxing_" --quiet)
+    docker rm $(docker ps -a --filter "name=new_boxing_" --quiet)
+}
+
+reset_web(){
+    docker stop $(docker ps --filter "name=web_" --quiet)
+    docker rm $(docker ps -a --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
+}
+
+
+restart_api(){
+    docker restart $(docker ps --all --filter "name=new_boxing_" --quiet)
+}
+
+restart_web(){
+    docker restart $(docker ps --all --filter "name=web_" --quiet)
+}
+
 deploy(){
-    if [ ! "$(filter)" ]; then
-        build_image  && init $@
+    running_container=$(docker ps --filter "name=new_boxing_" --quiet)
+    stopped_container=$(docker ps -a --filter "name=new_boxing_" --filter "status=exited" --filter "status=created" --quiet)
+    has_images=$(docker images --filter "reference=new_boxing_*" --quiet)
+    if [ "$running_container" ]; then
+        for container in $running_container
+        do
+            docker exec -i $container /bin/bash /work/deploy/run.sh
+        done
+    elif [ "$stopped_container" ]; then
+        docker start ${stopped_container}
+    elif [ "$has_images" ]; then
+        api && console
     else
-        restart_api
+        build_image  && init $@
     fi
 }
 
 build(){
-    if [ ! "$(filter_web)" ]; then
+    web_container=$(docker ps -a --filter "name=web_" --filter "status=exited" --filter "status=created"  --quiet)
+    if [ ! "$web_container" ]; then
         build_image  && init_web $@
     else
         restart_web

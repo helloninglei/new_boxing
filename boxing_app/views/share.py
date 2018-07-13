@@ -4,7 +4,7 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from biz.models import Message, HotVideo, GameNews, UserProfile
-from biz.redis_client import incr_number_of_share
+from biz.redis_client import incr_number_of_share, forward_message
 from biz.utils import get_model_class_by_name, get_share_img_url, get_object_or_404
 from biz.weixin_public_client import Sign
 
@@ -55,10 +55,11 @@ def share_view(_, object_type, object_id):
             profile = user.user_profile
             if not title:
                 title = f'分享{profile.nick_name}动态'
-            sub_title = f'来自{profile.nick_name}的拳城出击'
+            sub_title = f'来自拳城出击的{profile.nick_name}'
             picture = get_share_img_url(profile.avatar)
         title = _truncate_text(title, 14)
         sub_title = _truncate_text(sub_title, 20)
+        forward_message(object_id)
     elif isinstance(obj, HotVideo):
         user = obj.user
         title = obj.name

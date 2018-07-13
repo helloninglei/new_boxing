@@ -14,6 +14,7 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.chat_rooms_info import chat_rooms_info
 from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
@@ -213,6 +214,10 @@ official_accounts_urls = [
     path("get_official_accounts_info", get_official_accounts_info)
 ]
 
+chat_rooms_info_urls = [
+    path("chat_rooms_info", chat_rooms_info)
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -239,6 +244,7 @@ urlpatterns += city_url
 urlpatterns += version_urls
 urlpatterns += social_login_urls
 urlpatterns += official_accounts_urls
+urlpatterns += chat_rooms_info_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

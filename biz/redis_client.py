@@ -122,3 +122,23 @@ def get_order_no_serial():
     if order_incr == 1:
         redis_client.expire(key, 3600 * 24)
     return str(order_incr).rjust(5, '0')
+
+
+def forward_message(message_id):
+    redis_client.hincrby('msg_forward', message_id, 1)
+
+
+def get_message_forward_count(message_id):
+    return int(redis_client.hget('msg_forward', message_id) or 0)
+
+
+def set_user_title(user, title):
+    return redis_client.set(f'user_{user.id}_title', title)
+
+
+def get_user_title(user):
+    return redis_client.get(f'user_{user.id}_title')
+
+
+def del_user_title(user):
+    return redis_client.delete(f'user_{user.id}_title')

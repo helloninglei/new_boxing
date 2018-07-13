@@ -10,7 +10,7 @@ from boxing_console.serializers import CourseSerializer, CourseOrderSerializer, 
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().select_related('boxer', 'boxer__user')
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filter_class = CourseFilter
     search_fields = ('boxer__real_name', 'boxer__user__mobile')

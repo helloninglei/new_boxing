@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os
 import sys
 
 if __name__ == "__main__":
@@ -12,7 +11,6 @@ if __name__ == "__main__":
     """)
         exit(1)
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", sys.argv[3])
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
