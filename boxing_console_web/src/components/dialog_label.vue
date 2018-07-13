@@ -2,10 +2,13 @@
   <div id="dialog_label">
     <el-dialog  :visible.sync="showDialog">
           <div class="dialog_title">{{content_title}}</div>
-          <div class="dialog_content" style='margin-top:40px' v-if="type=='phone'">
+          <div class="dialog_content" style='margin-top:40px' v-if="type=='phone'||type=='sensitive'">
             <el-form ref="form1" :model="form1" label-width="70px" :rules="rules1">
-              <el-form-item label="手机号" prop="mobile">
+              <el-form-item label="手机号" prop="mobile" v-if="type=='phone'">
                 <el-input v-model="form1.mobile" placeholder="请输入注册手机号" ></el-input>
+              </el-form-item>
+              <el-form-item label="敏感词" prop="sensitive" v-if="type=='sensitive'">
+                <el-input v-model="form1.sensitive" placeholder="请输入敏感词" ></el-input>
               </el-form-item>
             </el-form>
           </div>
@@ -47,6 +50,9 @@
     export default {
         data() {
             var validatePhone = (rule, value, callback) => {
+              if(this.type=='sensitive'){
+                callback();
+              }else
               if (value === '') {
                 callback(new Error('请输入手机号'));
               } else {
@@ -54,6 +60,16 @@
                 if (!reg.test(value) ){
                   callback(new Error('请输入合法的手机号'));
                 }
+                callback();
+              }
+            };
+            var validateSensitive = (rule, value, callback) => {
+              if(this.type=='phone'){
+                callback();
+              }else
+              if (value === '') {
+                callback(new Error('请输入敏感词'));
+              } else {
                 callback();
               }
             };
@@ -72,6 +88,7 @@
               showDialog:false,
                 form1 :{
                   mobile:'',
+                  sensitive:''
                 },
                 form2 :{
                   balance :'',
@@ -83,6 +100,9 @@
                 rules1:{
                   mobile: [
                     { validator: validatePhone, trigger: 'blur' }
+                  ],
+                  sensitive: [
+                    { validator: validateSensitive, trigger: 'blur' }
                   ],
                 },
                 rules2:{
@@ -135,8 +155,12 @@
           },
           type:{
             type : String,
-            default:1,
-          }
+            default:'',
+          },
+          sensitive_name:{
+            type : String,
+            default:"",
+          },
         },
         watch:{
           isshow(newval,oldval){
@@ -150,6 +174,9 @@
           },
           'form.class_name'(val){
             // console.log(val)
+          },
+          sensitive_name(val){
+            this.form1.sensitive = val
           }
 
         },
@@ -167,6 +194,15 @@
                     this.$emit('confirm',this.form1.mobile)
                   } else {
                     // console.log('error submit!!');
+                    return false;
+                  }
+                });
+              }else if(this.type=='sensitive'){
+                this.$refs['form1'].validate((valid) => {
+                  if (valid) {
+                    this.$emit('confirm',this.form1.sensitive)
+                  } else {
+                    console.log('error submit!!');
                     return false;
                   }
                 });
@@ -192,7 +228,7 @@
               
             },
             resetForm(form) {
-              if(this.type=='phone'){
+              if(this.type=='phone'||this.type=='sensitive'){
                 this.$refs['form1'].resetFields();
               }else if(this.type=='forward'){
                 this.$refs['form3'].resetFields();

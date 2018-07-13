@@ -23,23 +23,6 @@
                         <el-form-item label="付费金额" prop="price_int">
                             <el-input v-model="ruleForm.price_int" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频宣传图" prop="avatar">
-                            <el-row>
-                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
-                                <div>  
-                                    <div class='show' >  
-                                      <img :src="src_avatar" alt="" width='100%' id='img1'> 
-                                    </div>
-                                    <div style="margin-top:63px;float:left;margin-left:20px">  
-                                      <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('inputId1','img1',144,144)">上传</el-button>
-                                      <input type="file" id="inputId1" style='display:none' accept="image" @change="change">  
-                                      <label for="inputId1"></label>  
-                                    </div>  
-
-                                </div> 
-                            </el-row>
-                            <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
-                        </el-form-item>
                         <el-form-item label="完整视频" prop="tsurl">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red'  @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
                             <p v-if="(tsurl)">
@@ -55,6 +38,27 @@
                                 <span ><i class="el-icon-error" style='cursor:pointer' @click='deleteUrl(2)'></i></span>
                             </p>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
+                        </el-form-item>
+                        <el-form-item label="视频封面" prop="avatar">
+                            <el-row>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='360' :height='249'></Cropper>
+                                <div>  
+                                    <div class='showImg' @click="addImg('inputId3','src_avatar')">  
+                                      <img :src="src_avatar" alt="" width='100%' id='src_avatar'> 
+                                      <div class='noImg' v-if="!src_avatar"> 
+                                          <p>添加视频封面</p>
+                                          <p>360*249</p>
+                                      </div>
+                                    </div>
+                                    <div style="margin-top:63px;float:left;margin-left:20px">  
+                                      <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('inputId1','img1',144,144)">上传</el-button> -->
+                                      <input type="file" id="inputId3" style='display:none' accept="image" @change="change">  
+                                      <label for="inputId1"></label>  
+                                    </div>  
+
+                                </div> 
+                            </el-row>
+                            <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -89,6 +93,20 @@
         white-space:nowrap;
         overflow:auto;
         /*text-overflow:ellipse;*/
+    }
+    .showImg{
+        width:360px;
+        height:249px;
+        overflow: hidden;
+        position: relative;
+        float: left;
+        /* border-radius: 50%; */
+        border: 1px solid #d5d5d5;
+    }
+    .noImg{
+        text-align: center;
+        line-height: 25px;
+        margin:50px auto;
     }
 </style>
 <script>
@@ -322,11 +340,8 @@
             //宣传图
             getUrl(url,imgId){
                 this.changeUrl=false
-                
-                if(imgId=='img1'){
-                    this.src_avatar = this.config.baseUrl+url
-                    this.ruleForm.cover = url
-                }
+                this.src_avatar = this.config.baseUrl+url
+                this.ruleForm.cover = url
             },
             addImg(ele,imgId){
                 this.imgId=imgId;
