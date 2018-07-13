@@ -32,4 +32,4 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
         ).annotate(
             is_paid=Count('orders', filter=_filter),
             comment_count=comment_count_condition,
-        ).order_by('-created_time')
+        )
