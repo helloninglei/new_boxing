@@ -14,7 +14,6 @@ class ReportTestCase(APITestCase):
 
         self.message = models.Message.objects.create(user=self.test_user, content='test content')
         video_data = {
-            'user_id': self.test_user.id,
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
@@ -23,6 +22,7 @@ class ReportTestCase(APITestCase):
             'operator': self.test_user,
         }
         self.hot_video = models.HotVideo.objects.create(**video_data)
+        self.hot_video.users.add(self.test_user)
         self.report1 = models.Report.objects.create(user=self.test_user, content_object=self.message,
                                                     reason=REPORT_REASON_CHOICES[0][0])
         self.report2 = models.Report.objects.create(user=self.test_user, content_object=self.message,

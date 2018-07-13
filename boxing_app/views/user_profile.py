@@ -31,7 +31,7 @@ def bind_alipay_account(request):
 
 class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.all()
+    queryset = UserProfile.objects.prefetch_related("user", "user__hot_videos")
 
     def get_object(self):
         return get_object_or_404(self.queryset, user=self.request.user)
@@ -62,7 +62,7 @@ class BlackListViewSet(viewsets.GenericViewSet):
 
 class UserProfileNoLoginViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.prefetch_related("user")
+    queryset = UserProfile.objects.prefetch_related("user", "user__hot_videos")
     permission_classes = (permissions.AllowAny,)
 
     def get_object(self):

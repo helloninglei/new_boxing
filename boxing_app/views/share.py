@@ -61,7 +61,7 @@ def share_view(_, object_type, object_id):
         sub_title = _truncate_text(sub_title, 20)
         forward_message(object_id)
     elif isinstance(obj, HotVideo):
-        user = obj.user
+        user = obj.users.first()
         title = obj.name
         sub_title = '拳城出击'
         picture = get_share_img_url(obj.try_url, is_video=True)

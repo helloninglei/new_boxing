@@ -27,7 +27,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
         _filter = Q(orders__status=PAYMENT_STATUS_PAID, orders__user_id=self.request.user.id)
         pk = self.kwargs['user_id']
         return models.HotVideo.objects.filter(
-            user=models.User.objects.get(pk=pk),
+            users__in=[pk],
             is_show=True,
         ).annotate(
             is_paid=Count('orders', filter=_filter),

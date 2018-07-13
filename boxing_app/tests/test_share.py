@@ -40,7 +40,6 @@ class ShareTestCase(APITestCase):
         self.msg2 = models.Message.objects.create(**msg_data)
 
         video_data = {
-            'user_id': self.test_user.id,
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
@@ -50,6 +49,7 @@ class ShareTestCase(APITestCase):
         }
 
         self.video = models.HotVideo.objects.create(**video_data)
+        self.video.users.add(self.test_user)
 
     def test_share_content(self):
         img_prefix = '?x-oss-process=image/resize,w_120,h_120'

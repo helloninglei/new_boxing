@@ -445,6 +445,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     bio = serializers.SerializerMethodField()
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+    has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
