@@ -84,22 +84,20 @@ class CourseOrderFilter(CommonFilter):
 
 
 class UserFilter(django_filters.FilterSet):
-    is_boxer = django_filters.CharFilter(method="filter_user_type")
+    user_type = django_filters.CharFilter(method="filter_user_type")
     start_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="gte")
     end_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="lte")
 
     def filter_user_type(self, qs, name, value):
-
-        if value == "true":
-            return qs.filter(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
-        if value == "false":
-            return qs.filter(
-                ~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
-        return qs
+        if not value:
+            return qs
+        if value == "4":
+            return qs.filter(user_type__isnull=True)
+        return qs.filter(user_type=value)
 
     class Meta:
         model = models.User
-        fields = ["is_boxer", "start_time", "end_time"]
+        fields = ["user_type", "start_time", "end_time"]
 
 
 class ReportFilter(django_filters.FilterSet):
