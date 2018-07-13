@@ -43,6 +43,12 @@ class HotVideoTestCase(APITestCase):
         res = self.client2.post('/hot_videos', self.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+        self.data['users'] = [self.test_user.id]
+        self.data['push_to_hotvideo'] = True
+        res = self.client2.post('/hot_videos', self.data)
+        self.assertEqual(len(res.data['user_list']), 2)
+        self.assertIn(HOT_VIDEO_USER_ID, [i['id'] for i in res.data['user_list']])
+
     def test_update(self):
         res = self.client2.post('/hot_videos', self.data)
         video_id = res.data['id']

@@ -20,7 +20,7 @@ from biz.redis_client import get_number_of_share, get_message_forward_count
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
-    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT
+    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT, HOT_VIDEO_USER_ID
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -232,6 +232,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     price_amount = serializers.IntegerField(read_only=True)
     user_list = serializers.SerializerMethodField()
     users = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)
 
     def get_user_list(self, instance):
         return HotVideoUserSerializer(instance.users, many=True).data
@@ -241,12 +242,14 @@ class HotVideoSerializer(serializers.ModelSerializer):
             raise ValidationError({'message': [f'最多关联{MAX_HOT_VIDEO_BIND_USER_COUNT}个用户']})
         if not User.objects.filter(id__in=attrs['users']).exists():
             raise ValidationError({'message': ['用户不存在']})
+        if attrs.pop('push_to_hotvideo'):
+            attrs['users'].append(HOT_VIDEO_USER_ID)
         return attrs
 
     class Meta:
         model = HotVideo
         fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list')
+                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list', 'push_to_hotvideo')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
