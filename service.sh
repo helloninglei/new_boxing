@@ -49,9 +49,6 @@ filter_container(){
     elif [ $filter_by_status = 'stopped' ]
     then
       echo $(docker ps -a --filter "name=new_boxing_$filter_by_name" --filter "status=exited" --filter "status=created" --quiet)
-    elif [ $filter_by_status = 'has_image' ]
-    then
-      echo $(docker images --filter "reference=new_boxing_$filter_by_name" --quiet)
     else
         :
     fi
