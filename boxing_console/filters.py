@@ -11,7 +11,7 @@ from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID
 
 
 class CommonFilter(django_filters.FilterSet):
-    start_time = django_filters.DateTimeFilter(name='created_time', lookup_expr='gte')
+    start_time = django_filters.DateTimeFilter(field_name='created_time', lookup_expr='gte')
     end_time = django_filters.DateTimeFilter(method='filter_end_time')
 
     def filter_end_time(self, qs, name, value):
@@ -29,8 +29,8 @@ class CoinChangLogListFilter(CommonFilter):
 
 
 class CourseFilter(django_filters.FilterSet):
-    price_min = django_filters.NumberFilter(name='price', lookup_expr='gte')
-    price_max = django_filters.NumberFilter(name='price', lookup_expr='lte')
+    price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte')
+    price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte')
     is_accept_order = django_filters.CharFilter(method='filter_is_accept_order')
 
     def filter_is_accept_order(self, qs, name, value):
@@ -50,8 +50,8 @@ class HotVideoFilter(CommonFilter):
 
 
 class GameNewsFilter(django_filters.FilterSet):
-    start_date = django_filters.DateFilter(name='updated_time', lookup_expr='gte')
-    end_date = django_filters.DateFilter(name='updated_time', lookup_expr='lte')
+    start_date = django_filters.DateFilter(field_name='updated_time', lookup_expr='gte')
+    end_date = django_filters.DateFilter(field_name='updated_time', lookup_expr='lte')
     stay_top = django_filters.CharFilter(method='filter_stay_top')
 
     def filter_stay_top(self, qs, name, value):
@@ -68,8 +68,8 @@ class GameNewsFilter(django_filters.FilterSet):
 
 
 class CourseOrderFilter(CommonFilter):
-    pay_time_start = django_filters.DateTimeFilter(name='pay_time', lookup_expr='gte')
-    pay_time_end = django_filters.DateTimeFilter(name='pay_time', lookup_expr='lte')
+    pay_time_start = django_filters.DateTimeFilter(field_name='pay_time', lookup_expr='gte')
+    pay_time_end = django_filters.DateTimeFilter(field_name='pay_time', lookup_expr='lte')
 
     class Meta:
         model = models.CourseOrder
@@ -78,8 +78,8 @@ class CourseOrderFilter(CommonFilter):
 
 class UserFilter(django_filters.FilterSet):
     is_boxer = django_filters.CharFilter(method="filter_user_type")
-    start_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="gte")
-    end_time = django_filters.DateTimeFilter(name="date_joined", lookup_expr="lte")
+    start_time = django_filters.DateTimeFilter(field_name="date_joined", lookup_expr="gte")
+    end_time = django_filters.DateTimeFilter(field_name="date_joined", lookup_expr="lte")
 
     def filter_user_type(self, qs, name, value):
 
@@ -109,10 +109,10 @@ class ReportFilter(django_filters.FilterSet):
 
 
 class CourseSettleOrderFilter(django_filters.FilterSet):
-    buyer = django_filters.CharFilter(name='order__user__mobile')
+    buyer = django_filters.CharFilter(field_name='order__user__mobile')
     boxer = django_filters.CharFilter(method='boxer_filter')
-    start_date = django_filters.DateFilter(name='settled_date', lookup_expr='gte')
-    end_date = django_filters.DateFilter(name='settled_date', lookup_expr='lte')
+    start_date = django_filters.DateFilter(field_name='settled_date', lookup_expr='gte')
+    end_date = django_filters.DateFilter(field_name='settled_date', lookup_expr='lte')
     course = django_filters.CharFilter(method='course_filter')
     status = django_filters.CharFilter(method='status_filter')
 
@@ -159,8 +159,8 @@ class WithdrawLogFilter(django_filters.FilterSet):
 
 
 class MoneyChangeLogFilter(django_filters.FilterSet):
-    start_time = django_filters.DateTimeFilter(name="created_time", lookup_expr="gte")
-    end_time = django_filters.DateTimeFilter(name="created_time", lookup_expr="lte")
+    start_time = django_filters.DateTimeFilter(field_name="created_time", lookup_expr="gte")
+    end_time = django_filters.DateTimeFilter(field_name="created_time", lookup_expr="lte")
 
     class Meta:
         model = models.MoneyChangeLog
@@ -168,8 +168,8 @@ class MoneyChangeLogFilter(django_filters.FilterSet):
 
 
 class PayOrderFilter(django_filters.FilterSet):
-    device = django_filters.CharFilter(name="device")
-    payment_type = django_filters.CharFilter(name="payment_type")
+    device = django_filters.CharFilter(field_name="device")
+    payment_type = django_filters.CharFilter(field_name="payment_type")
     status = django_filters.CharFilter(method="status_filter")
 
     def status_filter(self, qs, name, value):
