@@ -1,5 +1,3 @@
-import json
-from collections import Iterable
 from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 from rest_framework import viewsets, mixins, status, permissions
@@ -8,7 +6,6 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes, authentication_classes
 from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer, BlockedUserSerializer
-# BatchUserProfileSerializer
 from biz.models import UserProfile, User
 from biz import redis_client
 from biz.constants import USER_IDENTITY_DICT
