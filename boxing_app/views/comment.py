@@ -28,11 +28,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        comment_count = 0
-        for comment in response.data['results']:
-            comment_count += 1
-            comment_count += comment['replies']['count']
-        response.data['comment_count'] = comment_count
+        response.data['comment_count'] = self.get_queryset().count()
         return response
 
     def perform_create(self, serializer):
