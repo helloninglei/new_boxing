@@ -557,6 +557,7 @@ class CourseOrderInsuranceSerializer(serializers.Serializer):
 class MessageSerializer(serializers.ModelSerializer):
     like_count = serializers.IntegerField(read_only=True)
     user_id = serializers.IntegerField(read_only=True)
+    avatar = serializers.CharField(source='user.user_profile.avatar')
     forward_count = serializers.SerializerMethodField()
     images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
     nick_name = serializers.CharField(source='user.user_profile.nick_name')
