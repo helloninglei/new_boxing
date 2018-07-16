@@ -1,19 +1,10 @@
 <template>
-    <div id="addBoxing">
-        <TopBar v-if="isShowTop" firstTitle_name="热门视频" firstTitle_path="/hotvideo" :secondTitle_name="secondTitle_name" ></TopBar>
+    <div id="addHotvideo">
+        <TopBar v-if="isShowTop" firstTitle_name="视频管理" firstTitle_path="/hotvideo" :secondTitle_name="secondTitle_name" ></TopBar>
         <div class='container'>
             <el-row> 
                 <el-col :span="12">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-<!--                         <el-form-item label="用户ID" prop="user_id">
-                            <el-input v-model="ruleForm.user_id" placeholder='必须为有效的用户ID'></el-input>
-                        </el-form-item> -->
-                        <el-form-item label="用户ID" prop="user_id">
-                            <el-select v-model="ruleForm.user_id" placeholder="请选择用户ID">
-                              <el-option label="用户ID1" value="111"></el-option>
-                              <el-option label="用户ID2" value="222"></el-option>
-                            </el-select>
-                        </el-form-item>
                         <el-form-item label="视频名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
@@ -41,17 +32,16 @@
                         </el-form-item>
                         <el-form-item label="视频封面" prop="avatar">
                             <el-row>
-                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='360' :height='249'></Cropper>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
                                 <div>  
                                     <div class='showImg' @click="addImg('inputId3','src_avatar')">  
                                       <img :src="src_avatar" alt="" width='100%' id='src_avatar'> 
                                       <div class='noImg' v-if="!src_avatar"> 
                                           <p>添加视频封面</p>
-                                          <p>360*249</p>
+                                          <p>750*400</p>
                                       </div>
                                     </div>
                                     <div style="margin-top:63px;float:left;margin-left:20px">  
-                                      <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="addImg('inputId1','img1',144,144)">上传</el-button> -->
                                       <input type="file" id="inputId3" style='display:none' accept="image" @change="change">  
                                       <label for="inputId1"></label>  
                                     </div>  
@@ -59,6 +49,23 @@
                                 </div> 
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
+                        </el-form-item>
+                        <el-form-item label="关联用户">
+                            <ul>
+                                <li class='lf'>
+                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px'>
+                                        <img src="/static/img/edit_user_img.png" alt="" width="100%">
+                                    </p>
+                                    <p style='text-align: center'>编辑关联用户</p>
+                                </li>
+                                <li class='lf' v-for="item in userImgIds" style='width:80px'>
+                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px'>
+                                        <!-- <img :src="config.baseUrl+item.avatar" alt="" style='border:1px solid #ccc;border-radius: 50%;width:50px;height:50px'> -->
+                                        <img src="/static/img/edit_user_img.png" alt="" width="100%">
+                                    </p>
+                                    <p style='text-align: center'>{{item.nick_name}}</p>
+                                </li>
+                            </ul>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -69,20 +76,46 @@
                 </el-col>
             </el-row>
         </div>
+        <el-dialog  :visible.sync="showChangeUser" class='myDialog' title="编辑关联用户">
+          <!-- <div class="dialog_title">编辑关联用户</div> -->
+          <div class="dialog_content myUser" >
+            <template>
+              <el-transfer 
+                filterable
+                :filter-method="filterMethod"
+                filter-placeholder="请输入用户名称"
+                :titles="['待选择', '已选择']"
+                :props="{
+                  key: 'id',
+                  label: 'nick_name',
+
+                }"
+                v-model="ruleForm.users" 
+                :data="userIds"></el-transfer>
+            </template>
+          </div>
+          <div slot="footer" class="dialog-footer" style='text-align:center'>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 border_raduis_100' @click="confirm()">确定</el-button>
+            <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">取消</el-button>
+          </div>
+        </el-dialog>
     </div>
 </template>
 
 <style>
-#addBoxing .el-form-item__label{
-    font-family: "PingFangSC-Regular";
-    font-size: 16px;
-    color: #000000;
-}
-#addBoxing .el-form-item{margin-bottom:30px;}
-#addBoxing .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
-#addBoxing .myAddress input{padding-left:50px;}
+    #addHotvideo .el-form-item__label{
+        font-family: "PingFangSC-Regular";
+        font-size: 16px;
+        color: #000000;
+    }
+    #addHotvideo .el-form-item{margin-bottom:30px;}
+    #addHotvideo .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
+    #addHotvideo .myAddress input{padding-left:50px;}
 </style>
 <style scope>
+    .myDialog .el-dialog{position:fixed;left:50%;margin-left:-302px;width:604px;}
+    .myUser .el-checkbox:first-child{margin-left:0px!important;}
+    .myDialog .el-dialog__body{padding-top:10px;}
     .image{height:140px;width:140px;border:1px solid #ccc;vertical-align: middle}
     .image img{height:100%;}
     .video_name{
@@ -95,8 +128,8 @@
         /*text-overflow:ellipse;*/
     }
     .showImg{
-        width:360px;
-        height:249px;
+        width:150px;
+        height:104px;
         overflow: hidden;
         position: relative;
         float: left;
@@ -105,8 +138,9 @@
     }
     .noImg{
         text-align: center;
+        font-size: 14px;
         line-height: 25px;
-        margin:50px auto;
+        margin:-17px auto;
     }
 </style>
 <script>
@@ -140,8 +174,33 @@
                 secondTitle_name:'添加视频',
                 id          :'',
                 btn_name    : '发布',
+                userIds     : [],
+                userHash    : [],
+                userImgIds  : [
+                    {
+                        "id": 1374,
+                        "nick_name": "阿拉蕾汐亚",
+                        "avatar": "/uploads/02/2e/60bf8ecc8742f14b61aa30ebcd183985c8b5.jpg"
+                    },
+                    {
+                        "id": 1082,
+                        "nick_name": "庞祥",
+                        "avatar": "/uploads/17/58/27063b949c18f58eadb8d874611bcd271f11.jpg"
+                    },
+                    {
+                        "id": 17,
+                        "nick_name": "MMA吴紫龙",
+                        "avatar": "/uploads/7f/d6/3b0282a98a73114fb3f8aa7204ffa995ef43.jpg"
+                    },
+                    {
+                        "id": 15,
+                        "nick_name": "熊呈呈",
+                        "avatar": "/uploads/e7/30/3c917a2c3f3879c6189ab0b71ba72213b00c.jpg"
+                    }
+                ],
+                showChangeUser:false,
                 ruleForm: {
-                    user_id : '',
+                    users   : [],
                     name    : '',
                     description: '',
                     price_int  : '',
@@ -150,7 +209,7 @@
                     try_ts_url: '',
                 },
                 rules:{
-                    user_id:[
+                    users:[
                         { required:true,message:'请选择用户id', trigger:'blur' }
                     ],
                     name:[
@@ -214,7 +273,7 @@
                 this.secondTitle_name = '修改视频'
                 this.btn_name = '修改'
             }
-            
+            this.getUserIds();
             // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
             // console.log(query)
         },
@@ -227,6 +286,38 @@
                     $this.loadingInstance.close();
                     $this.tsurl = url
                 });
+            },
+            getUserIds(){
+                let $this = this;
+                this.ajax('/hot_videos/users','get').then(function(res){
+                    if(res&&res.data){
+                        console.log(res.data)
+                        res.data.forEach((val, index) => {
+                          $this.userHash[val.id]={ label: val.nick_name,
+                                                    key: val.id,
+                                                    image:val.avatar
+                                                }
+                        });
+                        $this.userIds = res.data
+                        console.log($this.userIds)
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        $this.loadingInstance.close();
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
+            filterMethod(query, item){
+                return item.nick_name.indexOf(query) > -1;
+
             },
             getLittleVideo(){
                 var _this=this
@@ -260,6 +351,18 @@
                         } 
                     } 
                 })
+            },
+            close(){
+                this.showChangeUser = false;
+            },
+            confirm(){
+                this.showChangeUser = false;
+                console.log(this.ruleForm.users)
+
+                for(var i=0;i<this.ruleForm.users.length;i++){
+                    this.userImgIds.push(this.userHash[this.ruleForm.users[i]])
+                }
+                console.log(this.userImgIds)
             },
             submitForm(formName) {
                 let $this = this

@@ -2,15 +2,17 @@
 	<div id="report_content">
 		<el-dialog  :visible.sync="showDialog">
       <ul class='clearfix dynamic_title'>
-        <li>hahahhah</li>
-        <li>
+        <li style='border:1px solid #ccc;border-radius: 50%;width:60px;height:60px;margin-top:-5px'>
+          <img :src="getData.nick_name" alt="">
+        </li>
+        <li style='margin-top:5px'>
           <h3 style='color:#000'>{{getData.nick_name}}</h3>
           <p class="detail_title text_lf">{{getData.created_time}}</p>
         </li>
       </ul>
       <p style='font-size:14px'>{{getData.content}}</p>
-      <div class='imgs' v-if='getData.pictures1'>
-        <img :src="value" alt="" v-for='value in getData.pictures1' width='100%'>
+      <div class='imgs' v-if='getData.images'>
+        <img :src="value" alt="" v-for='value in getData.images' width='100%'>
       </div>
       <div class='imgs' v-if='getData.video'>
         <video :src="config.baseUrl+getData.video" controls="controls" height='205'>

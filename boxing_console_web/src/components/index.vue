@@ -22,7 +22,7 @@
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
                     <el-menu-item index="/hotvideo" :disabled="disabled">
-                        <div class='menu-item-inner'>热门视频</div>
+                        <div class='menu-item-inner'>视频管理</div>
                     </el-menu-item>
                     <el-submenu index='2'>
                         <template slot="title" ><div class='mySubMenu'>约单管理</div></template>

@@ -30,10 +30,12 @@
                         <div class="inlimeLabel margin_tp30">用户类别</div>
                     </el-col>
                     <el-col :span="5">
-                        <el-select v-model="sendData.is_boxer" class="margin_tp30">
+                        <el-select v-model="sendData.user_type" class="margin_tp30">
                             <el-option value="" label="全部">全部</el-option>
-                            <el-option :value="false" label="普通用户">普通用户</el-option>
-                            <el-option :value="true" label="认证拳手">认证拳手</el-option>
+                            <el-option value="4" label="普通用户">普通用户</el-option>
+                            <el-option value="1" label="认证拳手">认证拳手</el-option>
+                            <el-option value="2" label="普通用户">名人</el-option>
+                            <el-option value="3" label="认证拳手">自媒体</el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="5">
@@ -139,7 +141,7 @@
                     start_time : '',
                     end_time   : '',
                     search  : '',
-                    is_boxer  : '',
+                    user_type  : '',
                 },
                 dialog_label_data:{
                     isshow:false,
@@ -249,10 +251,10 @@
         },
         methods: {
             getTableData(page) {
-                for(var i=0;i<this.tableData.length;i++){
-                    this.tableData[i].user_basic_info=this.tableData[i].user_basic_info?this.tableData[i].user_basic_info:{}
-                    this.tableData[i].user_basic_info.gender=this.tableData[i].user_basic_info.gender?'男':'女'
-                }
+                // for(var i=0;i<this.tableData.length;i++){
+                //     this.tableData[i].user_basic_info=this.tableData[i].user_basic_info?this.tableData[i].user_basic_info:{}
+                //     this.tableData[i].user_basic_info.gender=this.tableData[i].user_basic_info.gender?'男':'女'
+                // }
 
 
                 //获取data数据
@@ -265,25 +267,25 @@
                     sendData.page=page
                 }
                 
-                // this.ajax('/users','get',{},sendData).then(function(res){
-                //     if(res&&res.data){
-                //         for(var i=0;i<res.data.results.length;i++){
-                //             res.data.results[i].user_basic_info=res.data.results[i].user_basic_info?res.data.results[i].user_basic_info:{}
-                //             res.data.results[i].user_basic_info.gender=res.data.results[i].user_basic_info.gender?'男':'女'
-                //         }
-                //         $this.tableData=res.data.results;//后台没数据先不用
-                //         $this.total = res.data.count;
-                //     }
+                this.ajax('/users','get',{},sendData).then(function(res){
+                    if(res&&res.data){
+                        for(var i=0;i<res.data.results.length;i++){
+                            res.data.results[i].user_basic_info=res.data.results[i].user_basic_info?res.data.results[i].user_basic_info:{}
+                            res.data.results[i].user_basic_info.gender=res.data.results[i].user_basic_info.gender?'男':'女'
+                        }
+                        $this.tableData=res.data.results;//后台没数据先不用
+                        $this.total = res.data.count;
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             addCount(row,index){
                 // console.log(row)
@@ -332,23 +334,8 @@
                 this.dialog_label_data.isshow=val;
             },
             confirm(val){
-                let $this = this;
-                // console.log(val)
-                // this.ajax('','post',this.addData).then(function(res){
-                //     if(res&&res.data){
-                //         $this.tableData[$this.addData.index].coin_balance = res.data.remain_amount
-                //         $this.dialog_label_data.isshow=false;
-                //     }
-
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                
+                this.dialog_label_data.isshow=false
 
             },
         },

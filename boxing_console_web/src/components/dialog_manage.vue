@@ -170,7 +170,7 @@
                 row:this.row,
                 index:this.index,
               }
-              console.log(sendData)
+              let $this = this
               this.$refs['form3'].validate((valid) => {
                   if (valid) {
                     this.form3.change_amount = this.form3.change_amount*100
@@ -185,7 +185,7 @@
                               sendData.row.title = res.data.title
                               sendData.row.user_type = res.data.user_type
                               sendData.row.money_balance = res.data.money_balance
-                              // this.$emit('confirm',this.sendData)
+                              $this.$emit('confirm')
                           }
 
                       },function(err){

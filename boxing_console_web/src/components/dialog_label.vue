@@ -14,11 +14,11 @@
           </div>
           <div class="dialog_content" style='margin-top:20px' v-else-if="type=='forward'">
             <el-form ref="form3" :model="form3" label-width="105px" :rules="rules3">
-              <el-form-item label="初始转发量" prop="forward_num">
-                <el-input v-model="form3.forward_num" placeholder="请输入" ></el-input>
+              <el-form-item label="初始转发量" prop="initial_forward_count">
+                <el-input v-model="form3.initial_forward_count" placeholder="请输入" ></el-input>
               </el-form-item>
-              <el-form-item label="初始点赞数" prop="thumbs_up_num">
-                <el-input v-model="form3.thumbs_up_num" placeholder="请输入" ></el-input>
+              <el-form-item label="初始点赞数" prop="initial_like_count">
+                <el-input v-model="form3.initial_like_count" placeholder="请输入" ></el-input>
               </el-form-item>
             </el-form>
           </div>
@@ -94,8 +94,8 @@
                   balance :'',
                 },
                 form3:{
-                  forward_num:'',
-                  thumbs_up_num:'',
+                  initial_forward_count:'',
+                  initial_like_count:'',
                 },
                 rules1:{
                   mobile: [
@@ -111,7 +111,7 @@
                   ],
                 },
                 rules3:{
-                  forward_num: [
+                  initial_forward_count: [
                     { validator: (rule, value, callback) => {
                         var reg=/^[0-9]*$/;
                         if(value==''){
@@ -124,7 +124,7 @@
                         }
                       }, trigger: 'blur' ,required:true}
                   ],
-                  thumbs_up_num: [
+                  initial_like_count: [
                     { validator: (rule, value, callback) => {
                         var reg=/^[0-9]*$/;
                         if(value==''){
@@ -161,6 +161,12 @@
             type : String,
             default:"",
           },
+          row:{
+            type:Object,
+            default:function(val){
+              return val
+            }
+          }
         },
         watch:{
           isshow(newval,oldval){
@@ -177,12 +183,17 @@
           },
           sensitive_name(val){
             this.form1.sensitive = val
+          },
+          row(row){
+            this.form3.initial_forward_count = row.initial_forward_count
+            this.form3.initial_like_count = row.initial_like_count
           }
 
         },
         components: {
         },
         created() {
+          
         },
         methods: {
             confirm(){
@@ -209,7 +220,7 @@
               }else if(this.type=='forward'){
                 this.$refs['form3'].validate((valid) => {
                   if (valid) {
-                    this.$emit('confirm',this.form3)
+                    this.confirm1(this.form3,this.row)
                   } else {
                     console.log('error submit!!');
                     return false;
@@ -226,6 +237,25 @@
                 });
               }
               
+            },
+            confirm1(data,row){
+                let $this=this;
+                this.ajax('/messages/'+row.id,'patch',data).then(function(res){
+                    if(res&&res.data){
+                        row.initial_forward_count = res.data.initial_forward_count
+                        row.initial_like_count = res.data.initial_like_count
+                        $this.$emit('cancel',false)
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             resetForm(form) {
               if(this.type=='phone'||this.type=='sensitive'){

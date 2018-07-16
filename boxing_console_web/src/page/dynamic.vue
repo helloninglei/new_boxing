@@ -8,18 +8,18 @@
                         <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='请输入用户昵称/手机号' style='width:250px'></el-input>
                     </el-col>
                     <el-col :span="4" style='width:280px'>
-                        <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='请输入关键字' style='width:250px'></el-input>
+                        <el-input v-model="sendData.content"  class='myInput_40 margin_rt25' placeholder='请输入关键字' style='width:250px'></el-input>
                     </el-col>  
                     <el-col :span="7" style='width:500px'>
                         <el-date-picker
-                        v-model="sendData.start_time"
+                        v-model="sendData.start_date"
                         type="datetime"
                         value-format="yyyy-MM-dd HH:mm:ss"
                         :default-value= "new Date()"
                         placeholder="起始时间" style='width:220px' class="margin_rt25 margin_tp_30">
                         </el-date-picker>
                         <el-date-picker
-                        v-model="sendData.end_time"
+                        v-model="sendData.end_date"
                         type="datetime"
                         value-format="yyyy-MM-dd HH:mm:ss"
 
@@ -33,10 +33,10 @@
                         <div class="inlimeLabel margin_tp30">用户类别</div>
                     </el-col>
                     <el-col :span="5">
-                        <el-select v-model="sendData.is_boxer" class="margin_tp30">
-                            <el-option value="" label="全部">全部</el-option>
-                            <el-option :value="false" label="普通用户">普通用户</el-option>
-                            <el-option :value="true" label="认证拳手">认证拳手</el-option>
+                        <el-select v-model="sendData.user_type" class="margin_tp30">
+                            <el-option value="1" label="认证拳手">认证拳手</el-option>
+                            <el-option value="2" label="普通用户">名人</el-option>
+                            <el-option value="3" label="认证拳手">自媒体</el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="8">
@@ -47,102 +47,38 @@
                 <!-- <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button> -->
             </div>
         </header>
-        <nav v-show="sendData.status=='unprocessed'">
+        <nav>
             <template>
                 <el-table
                   :data="tableData"
                   style="width: 100%"
                   :highlight-current-row="true">
                     <el-table-column
+                    label="ID"
+                    prop="id"
+                    width="80"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                    label="内容"
+                    width="90">
+                        <template slot-scope="scope">
+                            <span class='colorFont' @click='openContent(scope.row.id)'>查看内容</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                     :prop="value.title"
                     :label="value.name"
                     :width="value.width"
                     v-for="value in tableColumn">
                     </el-table-column>
-                    <el-table-column
-                    label="举报内容"
-                    width="90">
-                        <template slot-scope="scope">
-                            <span class='colorFont' @click='openContent(scope.row.content)'>查看</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                    label="内容类型"
-                    prop="content_type"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="举报时间"
-                    prop="created_time"
-                    width="200"
-                    >
-                    </el-table-column>
-                    <!-- <el-table-column
-                    label="状态"
-                    prop="status"
-                    >
-                    </el-table-column> -->
                     <el-table-column
                       fixed="right"
                       width='200'
                       label="操作" >
                         <template slot-scope="scope">
-                            <el-button class='myBtnHover_red myButton_20' style='margin-right:20px' @click='openConfirm(scope.row.id,false)'>编辑</el-button>                         
+                            <el-button class='myBtnHover_red myButton_20'  @click='openConfirm(scope.row)'>编辑</el-button>                         
                         </template>
-                    </el-table-column>
-                </el-table>
-            </template>
-        </nav>
-        <nav v-show="sendData.status=='processed'">
-            <template>
-                <el-table
-                  :data="tableData"
-                  style="width: 100%"
-                  :highlight-current-row="true">
-                    <el-table-column
-                    :prop="value.title"
-                    :label="value.name"
-                    :width="value.width"
-                    v-for="value in tableColumn">
-                    </el-table-column>
-                    <el-table-column
-                    label="举报内容"
-                    width="90">
-                        <template slot-scope="scope">
-                            <span class='colorFont' @click='openContent(scope.row.content)'>查看</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                    label="内容类型"
-                    prop="content_type"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="举报时间"
-                    prop="created_time"
-                    width="200"
-                    >
-                    </el-table-column>
-                    <!-- <el-table-column
-                    label="状态"
-                    prop="status"
-                    >
-                    </el-table-column> -->
-                    <el-table-column
-                    label="处理结果"
-                    prop="result"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="处理人"
-                    prop="operator"
-                    >
-                    </el-table-column>
-                    <el-table-column
-                    label="处理时间"
-                    prop="updated_time"
-                    width="200"
-                    >
                     </el-table-column>
                 </el-table>
             </template>
@@ -151,7 +87,7 @@
             <Pagination :total="total" @changePage="changePage"></Pagination>
         </footer>
         <ReportContent :getData="detailData.allData" :isshow="detailData.isshow" @cancel="cancel"></ReportContent>
-        <DialogLabel :isshow="confirmData.isshow" @confirm="confirm1" @cancel="cancel1"  :type="'forward'"></DialogLabel> 
+        <DialogLabel :isshow="confirmData.isshow" @confirm="confirm1" @cancel="cancel1"  :type="'forward'" :row='confirmData.row'></DialogLabel> 
     </div>
 </template>
 
@@ -197,10 +133,14 @@
             return {
                 isShowTop : true,
                 total     : 0,
-                issearch  :false,
+                issearch  : false,
+                page      : 1,
                 sendData  :{
                     search:'',
-                    status:'unprocessed',
+                    content:'',
+                    start_date:'',
+                    end_date:'',
+                    user_type:'',
                 },
                 detailData:{
                     allData:{},
@@ -208,55 +148,58 @@
                 },
                 confirmData:{
                     isshow: false,
+                    row:{},
                     id    :'',
                     content:'',
                     isDel :true,
                 },
                 tableData : [
                     {
-                        "id": 1,
-                        "reason": "淫秽色情",
-                        "reported_user": 1000008,
-                        "content_type": "动态",
-                        "status": "未处理",
-                        "content": {
-                            "id": 1,
-                            "user": 1000001,
-                            "content": "动态1234",
-                            "images": [],
-                            "video": null,
-                            "is_deleted": true
-                        },
-                        "created_time": "2018-05-21 15:18:21",
-                        "object_id": 1,
-                        "remark": null,
-                        "user": 1000001
+                        "id": 157,
+                        "like_count": 1,   // 真实点赞数
+                        "user_id": 1181,  
+                        "forward_count": 0,  // 真实转发数
+                        "images": [
+                            "/uploads/1a/38/78ecb0a6ac4f9509fdcef35f2691b1a7105b.jpg",
+                            "/uploads/71/a1/5f60610897faa8319c90410a4f733caef765.jpg"
+                        ],
+                        "nick_name": "5553扣扣了",  // 用户昵称
+                        "user_type": "普通用户", // 用户类型
+                        "mobile": "13260125553",
+                        "content": "",  
+                        "video": null,
+                        "created_time": "2018-06-29 17:54:12",
+                        "initial_like_count": 10,   // 初始点赞数
+                        "initial_forward_count": 10 // 初始转发数
                     },
                     {
-                        "id": 2,
-                        "reason": "淫秽色情",
-                        "reported_user": 1000009,
-                        "content_type": "动态",
-                        "status": "未处理",
-                        "content": {
-                            "id": 1,
-                            "user": 1000001,
-                            "content": "动态1234",
-                            "images": [],
-                            "video": null,
-                            "is_deleted": true
-                        },
-                        "created_time": "2018-05-21 15:18:21",
-                        "object_id": 1,
-                        "remark": null,
-                        "user": 1000001
+                        "id": 158,
+                        "like_count": 12,   // 真实点赞数
+                        "user_id": 1181,  
+                        "forward_count": 22,  // 真实转发数
+                        "images": [
+                            "/uploads/1a/38/78ecb0a6ac4f9509fdcef35f2691b1a7105b.jpg",
+                            "/uploads/71/a1/5f60610897faa8319c90410a4f733caef765.jpg"
+                        ],
+                        "nick_name": "5553扣扣了",  // 用户昵称
+                        "user_type": "普通用户", // 用户类型
+                        "mobile": "13260125553",
+                        "content": "",  
+                        "video": null,
+                        "created_time": "2018-06-29 17:54:12",
+                        "initial_like_count": 0,   // 初始点赞数
+                        "initial_forward_count": 0 // 初始转发数
                     },
                 ],
                 tableColumn:[
-                    {title:'id',       name :'ID',  width:''},
-                    {title:'user',     name :'举报用户ID',    width:''},
-                    {title:'reported_user',  name :'被举报用户',   width:''},
-                    {title:'reason_content',   name :'举报理由', width:''},
+                    {title:'nick_name',  name :'昵称',   width:'100'},
+                    {title:'mobile',   name :'手机号', width:'95'},
+                    {title:'user_type',   name :'用户类型', width:''},
+                    {title:'forward_count',   name :'真实转发量', width:''},
+                    {title:'initial_forward_count',   name :'初始转发量', width:''},
+                    {title:'like_count',   name :'真实点赞数', width:''},
+                    {title:'initial_like_count',   name :'初始点赞数', width:''},
+                    {title:'created_time',   name :'发布时间', width:'200'},
                 ],
             }
         },
@@ -276,23 +219,24 @@
            } 
         },
         created() {
-            this.getData({status:this.sendData.status});
+            this.getData();
         },
         methods: {
-            getData(data){
-                let $this=this
-                this.ajax('/report','get',{},data).then(function(res){
+            getData(page){
+                let $this   = this
+                let sendData={}
+                if(this.issearch){
+                   sendData=this.sendData
+                }
+                if(page){
+                    sendData.page=page
+                }
+                this.ajax('/messages','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData = res.data.results
                         for(var i=0;i<$this.tableData.length;i++){
-                            $this.tableData[i].content_type=$this.tableData[i].content_type=='comment'?'评论':'动态';
-                            if($this.tableData[i].remark&&$this.tableData[i].remark!==null){
-                                $this.tableData[i].remark = '--'+$this.tableData[i].remark
-                            }else{
-                                $this.tableData[i].remark = '';
-                            }
-                            $this.tableData[i].reason_content=$this.tableData[i].reason+$this.tableData[i].remark;
+                            
                         }
                         $this.total = res.data.count;
                     }
@@ -308,44 +252,53 @@
                     } 
                 })
             },
-            openContent(val){
-                // console.log(val)
-                val.pictures1 = [];
-                if(val.pictures&&val.pictures.length>0){
-                    for (var i=0;i<val.pictures.length;i++){
-                        val.pictures1[i] = this.config.baseUrl + val.pictures[i]
+            openContent(id){
+                let $this = this
+                this.ajax('/messages/'+id,'get',{}).then(function(res){
+                    if(res&&res.data){
+                        if(res.data.images&&res.data.images.length>0){
+                           for (var i=0;i<res.data.images.length;i++){
+                                res.data.images[i] = $this.config.baseUrl + res.data.images[i]
+                            } 
+                        }
+                        $this.detailData.allData = res.data;
+                        $this.detailData.isshow  = true
                     }
-                }
-                this.detailData.allData = val;
-                this.detailData.isshow  = true
-                // console.log(this.detailData.allData)
+
+                },function(err){
+                    console.log(err.response.status)
+                    if(err.response.status==404){
+                        $this.$message({
+                            message: '该动态已被删除，无法查看',
+                            type: 'warning'
+                        });
+                    }
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
+                
             },
-            openConfirm(id,isDel){
-                this.confirmData.id    = id
-                this.confirmData.isDel = isDel;
-                if(isDel){
-                    this.confirmData.content = '您确定核实这条内容，并做删除内容处理'
-                }else{
-                    this.confirmData.content = '您确定核实这条内容，并做核实为假处理'
-                }
+            openConfirm(row,isDel){
+                this.confirmData.row    = row
                 this.confirmData.isshow= true
             },
             changePage(val){
                 // 要看第几页
                 // console.log(val)
-                this.sendData.page=val;
-                if(this.issearch){
-                   this.getData(this.sendData); 
-               }else{
-                    this.getData({page:val});
-               }
+                this.page=val
+                this.getData(val)
                 
             },
             filter(){
                 this.issearch=true;
-                this.page = 1;
-                this.sendData.page = 1;
-                this.getData(this.sendData);
+                //搜索是先看第一页
+                this.page=1
+                this.getData(1) 
             },
             cancel(val){
                 this.detailData.isshow  = val ;
@@ -364,8 +317,7 @@
                 } 
             },
             confirm1(data){
-                console.log(data)
-                let $this=this;
+                
             },
         },
     }
