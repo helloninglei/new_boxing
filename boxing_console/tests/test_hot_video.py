@@ -23,25 +23,31 @@ class HotVideoTestCase(APITestCase):
         self.client3.login(username=self.test_user3, password='password')
 
         self.data = {
-            'user_id': self.test_user.id,
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
             'url': '/videos/111',
             'try_url': '/videos/222',
-            'cover': '/videos/333'
+            'cover': '/videos/333',
+            'users': [self.test_user.id],
         }
 
     def test_create(self):
         res = self.client2.post('/hot_videos', self.data)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res.data['user_id'], self.hot_video_user.id)
 
-        # TODO 热门视频暂时只会发在指定用户名下，以后还会改回去
-        # not_exists_user_id = User.objects.all().order_by('-id').first().id + 1
-        # self.data['user_id'] = not_exists_user_id
-        # res = self.client2.post('/hot_videos', self.data)
-        # self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data['user_list'][0]['id'], self.test_user.id)
+
+        not_exists_user_id = User.objects.all().order_by('-id').first().id + 1
+        self.data['users'] = [not_exists_user_id]
+        res = self.client2.post('/hot_videos', self.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.data['users'] = [self.test_user.id]
+        self.data['push_to_hotvideo'] = True
+        res = self.client2.post('/hot_videos', self.data)
+        self.assertEqual(len(res.data['user_list']), 2)
+        self.assertIn(HOT_VIDEO_USER_ID, [i['id'] for i in res.data['user_list']])
 
     def test_update(self):
         res = self.client2.post('/hot_videos', self.data)
@@ -56,7 +62,7 @@ class HotVideoTestCase(APITestCase):
     def test_list_search(self):
         self.client2.post('/hot_videos', self.data)
 
-        self.data['user_id'] = self.test_user3.id
+        self.data['users'] = [self.test_user3.id]
         self.client2.post('/hot_videos', self.data)
 
         # list
@@ -65,10 +71,10 @@ class HotVideoTestCase(APITestCase):
 
         # search by user_id
         res = self.client2.get(f'/hot_videos?search={self.test_user.id}')
-        self.assertEqual(res.data['count'], 0)
+        self.assertEqual(res.data['count'], 1)
 
         res = self.client2.get(f'/hot_videos?search={self.hot_video_user.id}')
-        self.assertEqual(res.data['count'], 2)
+        self.assertEqual(res.data['count'], 0)
 
         most_early_date = HotVideo.objects.all().order_by('created_time').first().created_time
         most_late_date = HotVideo.objects.all().order_by('-created_time').first().created_time

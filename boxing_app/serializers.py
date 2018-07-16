@@ -30,6 +30,7 @@ from biz.constants import WITHDRAW_MIN_CONFINE, DEFAULT_NICKNAME_FORMAT, DEFAULT
 from biz.services.money_balance_service import change_money
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
+message_dateformat = '%Y-%m-%d %H:%M'
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -137,6 +138,7 @@ class MessageSerializer(serializers.ModelSerializer):
     is_like = serializers.BooleanField(read_only=True)
     msg_type = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
+    created_time = serializers.DateTimeField(format=message_dateformat, read_only=True)
 
     def get_like_count(self, instance):
         if hasattr(instance, 'like_count'):
@@ -445,6 +447,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     bio = serializers.SerializerMethodField()
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+    has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)

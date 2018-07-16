@@ -86,3 +86,11 @@ class UserProfileTestCase(APILoginTestCase):
         response = self.client.put(path="/user_profile", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['weight'][0], "该字段是必填项。")
+
+    def test_batch_user_profile(self):
+        user1 = User.objects.create_user(mobile="13434345434", password="password")
+        user2 = User.objects.create_user(mobile="13434345435", password="password")
+        client = self.client_class()
+        response = client.get(path="/batch_user_profile", data={"user_ids": f"{user2.id},{user1.id}"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 2)
