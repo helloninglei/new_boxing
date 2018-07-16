@@ -39,6 +39,7 @@ from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
 from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
+from boxing_app.views.cover_picture import cover_picture
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -213,6 +214,10 @@ official_accounts_urls = [
     path("get_official_accounts_info", get_official_accounts_info)
 ]
 
+cover_picture_urls = [
+    path("cover_picture", cover_picture)
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -239,6 +244,7 @@ urlpatterns += city_url
 urlpatterns += version_urls
 urlpatterns += social_login_urls
 urlpatterns += official_accounts_urls
+urlpatterns += cover_picture_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
