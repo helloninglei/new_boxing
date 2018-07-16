@@ -70,6 +70,7 @@ deploy_by_name(){
     then
         docker start $stopped_container
     elif [ "$has_image" ]
+    then
         $project_name
     else
         build_image && $project_name
