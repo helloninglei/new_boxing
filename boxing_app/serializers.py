@@ -138,7 +138,7 @@ class MessageSerializer(serializers.ModelSerializer):
     is_like = serializers.BooleanField(read_only=True)
     msg_type = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
-    created_time = serializers.DateTimeField(format=message_dateformat)
+    created_time = serializers.DateTimeField(format=message_dateformat, read_only=True)
 
     def get_like_count(self, instance):
         if hasattr(instance, 'like_count'):
