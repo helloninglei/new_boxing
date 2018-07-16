@@ -91,6 +91,6 @@ class UserProfileTestCase(APILoginTestCase):
         user1 = User.objects.create_user(mobile="13434345434", password="password")
         user2 = User.objects.create_user(mobile="13434345435", password="password")
         client = self.client_class()
-        response = client.get(path="/batch_user_profile", data={"user_ids": f"{user2.id}, {user1.id}"})
+        response = client.get(path="/batch_user_profile", data={"user_ids": f"{user2.id},{user1.id}"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)
