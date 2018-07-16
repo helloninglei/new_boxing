@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg, Q
 from rest_framework import status, permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -28,7 +28,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
-        response.data['comment_count'] = self.get_queryset().count()
+        response.data['comment_count'] = self.content_object.comments.filter(Q(is_deleted=False) & (
+                Q(ancestor__is_deleted=False) | Q(ancestor__isnull=True))).count()
         return response
 
     def perform_create(self, serializer):
