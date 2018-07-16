@@ -40,6 +40,7 @@ from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
 from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
+from boxing_app.views.user_profile import batch_user_profile
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -157,7 +158,8 @@ user_urls = [
     re_path(r'^user_profile/(?P<user_identity>({0}))'.format(official_user_string), user_profile_redirect),
     path("user_profile_patch", UserProfileViewSet.as_view({"put": "partial_update"})),
     path("black_list", BlackListViewSet.as_view({"get": "list"})),
-    path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))
+    path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"})),
+    path("batch_user_profile", batch_user_profile)
 ]
 
 hot_video_url = [
