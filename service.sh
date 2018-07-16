@@ -49,6 +49,9 @@ filter_container(){
     elif [ $filter_by_status = 'stopped' ]
     then
       echo $(docker ps -a --filter "name=new_boxing_$filter_by_name" --filter "status=exited" --filter "status=created" --quiet)
+    elif [ $filter_by_status = 'has_image' ]
+    then
+      echo $(docker images --filter "reference=new_boxing_*" --quiet)
     else
         :
     fi
@@ -59,14 +62,17 @@ deploy_by_name(){
     project_name=$1
     running_container=$(filter_container running $project_name)
     stopped_container=$(filter_container stopped $project_name)
+    has_image=$(filter_container has_image $project_name)
     if [ "$running_container" ]
     then
         docker exec -i $running_container /bin/bash /work/deploy/run.sh
     elif [ "$stopped_container" ]
     then
         docker start $stopped_container
-    else
+    elif [ "$has_image" ]
         $project_name
+    else
+        build_image && $project_name
     fi
 }
 
