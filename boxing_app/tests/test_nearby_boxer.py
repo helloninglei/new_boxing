@@ -35,25 +35,25 @@ class NearbyBoxerTestCase(APITestCase):
             "avatar": "avatar"
         }
         self.boxer_data = {
-                    "user": self.user1,
-                    "real_name": "boxer name",
-                    "height": 190,
-                    "weight": 120,
-                    "birthday": "2018-04-25",
-                    "identity_number": "131313141444141444",
-                    "mobile": "11313131344",
-                    "is_professional_boxer": True,
-                    "club": "club1",
-                    "job": 'teacher',
-                    "introduction": "boxer introduction",
-                    "experience": 'boxer experience',
-                    "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                    "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
-                    "competition_video": 'https://baidu.com',
-                    "is_accept_order": True,
-                    "allowed_course": [constants.BOXER_ALLOWED_COURSES_BOXING, constants.BOXER_ALLOWED_COURSES_MMA,
-                                       constants.BOXER_ALLOWED_COURSES_THAI_BOXING]
-                }
+            "user": self.user1,
+            "real_name": "boxer name",
+            "height": 190,
+            "weight": 120,
+            "birthday": "2018-04-25",
+            "identity_number": "131313141444141444",
+            "mobile": "11313131344",
+            "is_professional_boxer": True,
+            "club": "club1",
+            "job": 'teacher',
+            "introduction": "boxer introduction",
+            "experience": 'boxer experience',
+            "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED,
+            "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
+            "competition_video": 'https://baidu.com',
+            "is_accept_order": True,
+            "allowed_course": [constants.BOXER_ALLOWED_COURSES_BOXING, constants.BOXER_ALLOWED_COURSES_MMA,
+                               constants.BOXER_ALLOWED_COURSES_THAI_BOXING]
+        }
         self.club1_data = {
             "name": "北京大学拳馆",
             "address": "东北五环",
@@ -172,7 +172,7 @@ class NearbyBoxerTestCase(APITestCase):
         redis_client.record_object_location(boxer5, club1.longitude, club1.latitude)
 
         # 获取用户周围的拳手列表（假设用户在北京奥林匹克森林公园，经纬度为116.39737,40.024919)
-        res = self.client6.get(f'/nearby/boxers?longitude=116.39737&latitude=40.024919')
+        res = self.client6.get(f'/nearby/boxers', {'longitude': 116.39737, 'latitude': 40.024919})
         # 比较获取boxer结果的排序是否与redis中获取的距离排序一致
         boxer_list = redis_client.get_near_object(BoxerIdentification, 116.39737, 40.024919)
         boxer_id_list = [item[0] for item in boxer_list]
