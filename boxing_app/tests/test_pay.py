@@ -22,7 +22,6 @@ class PaymentTestCase(APITestCase):
         self.client2.login(username=self.test_superuser, password='password')
 
         self.data = {
-            'user_id': self.test_user.id,
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
@@ -35,6 +34,7 @@ class PaymentTestCase(APITestCase):
     def test_payment(self, generate_out_trade_no):
         generate_out_trade_no.return_value = f"{datetime.now().strftime('%m%d%H%M%S%f')}"
         video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_user)
         payment_data = {
             'id': video.id,
             'payment_type': constants.PAYMENT_TYPE_WECHAT,
@@ -56,6 +56,7 @@ class PaymentTestCase(APITestCase):
 
     def test_pay_status_info(self):
         video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_user)
 
         order = PayService.perform_create_order(
             user=self.test_user,
@@ -77,6 +78,7 @@ class PaymentTestCase(APITestCase):
 
     def test_wallet_pay(self):
         video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_user)
         payment_data = {
             'id': video.id,
             'payment_type': constants.PAYMENT_TYPE_WALLET,
