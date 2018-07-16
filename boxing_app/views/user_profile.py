@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes, authentication_classes
 from boxing_app.serializers import BindAlipayAccountSerializer, UserProfileSerializer, BlockedUserSerializer
+# BatchUserProfileSerializer
 from biz.models import UserProfile, User
 from biz import redis_client
 from biz.constants import USER_IDENTITY_DICT
@@ -75,11 +76,11 @@ class UserProfileNoLoginViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMix
 @authentication_classes([])
 @permission_classes([permissions.AllowAny])
 def batch_user_profile(request):
-    user_ids_str = request.query_params.get("user_ids")
-    if not user_ids_str:
-        return Response(data={"message": "请求参数错误"}, status=status.HTTP_400_BAD_REQUEST)
-    user_ids = json.loads(user_ids_str)
-    if not isinstance(user_ids, Iterable):
-        return Response(data={"message": "请求参数类型错误"}, status=status.HTTP_400_BAD_REQUEST)
-    users = UserProfile.objects.filter(user_id__in=user_ids).select_related("user", "user__boxer_identification")
-    return Response(UserProfileSerializer(users, many=True, context={"request": request}).data, status=status.HTTP_200_OK)
+    user_ids = request.query_params.get("user_ids", "")
+    user_ids = user_ids.split(",")
+    user_ids = [user_id for user_id in user_ids if user_id.isdigit()]
+
+    users = UserProfile.objects.filter(user_id__in=user_ids).select_related("user",
+                                                                            "user__boxer_identification")
+    return Response({"results": UserProfileSerializer(users, many=True, context={"request": request}).data},
+                    status=status.HTTP_200_OK)
