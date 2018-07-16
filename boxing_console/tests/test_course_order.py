@@ -156,13 +156,13 @@ class CourseOrderTestCase(APITestCase):
             "pay_order__payment_type": self.other_order_data['payment_type']})
         self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"pay_order__payment_type": "unknown_type"})
-        self.assertEqual(search_user_mobile_res.data['count'], 0)
+        self.assertEqual(search_user_mobile_res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # 通过订单状态过滤
         search_user_mobile_res = self.client.get('/course/orders', {"status": constants.PAYMENT_STATUS_UNPAID})
         self.assertEqual(search_user_mobile_res.data['count'], 3)
         search_user_mobile_res = self.client.get('/course/orders', {"status": "unknown_status"})
-        self.assertEqual(search_user_mobile_res.data['count'], 0)
+        self.assertEqual(search_user_mobile_res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_course_detail(self):
         # 创建user_profile->创建boxer->创建club->创建course->创建course_order->创建comment
