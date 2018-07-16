@@ -688,3 +688,7 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = ['id', "nick_name", "avatar", "index_letter", "user_type"]
+
+
+class ShutUpWriteOnlySerializer(serializers.Serializer):
+    user_ids = serializers.ListField(child=serializers.IntegerField())
