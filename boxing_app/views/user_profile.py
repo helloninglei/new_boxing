@@ -75,7 +75,7 @@ class UserProfileNoLoginViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMix
 def batch_user_profile(request):
     user_ids = request.query_params.get("user_ids", "")
     user_ids = user_ids.split(",")
-    user_ids = [user_id for user_id in user_ids if user_id.isdigit()]
+    user_ids = filter(str.isdigit, user_ids)
 
     users = UserProfile.objects.filter(user_id__in=user_ids).select_related("user",
                                                                             "user__boxer_identification")
