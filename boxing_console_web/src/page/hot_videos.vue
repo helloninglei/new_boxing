@@ -96,7 +96,7 @@
                 },
                 total_count : 1000000,//付费人数
                 total_amount : 1000000,//付费金额
-                total     : 1000,//数据的总条数
+                total     : 0,//数据的总条数
                 tableData : [
                     {
                         "id": 1,

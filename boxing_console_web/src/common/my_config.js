@@ -1,5 +1,5 @@
 let config = {
-    'baseUrl': location.pathname == '/console/' ? location.protocol+'//'+location.host: 'http://192.168.80.97:8010',
+    'baseUrl': location.pathname == '/console/' ? location.protocol+'//'+location.host: 'http://qa2.htop.info:50001',
 };
 
 export default config;

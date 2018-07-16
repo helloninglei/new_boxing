@@ -153,81 +153,8 @@
                 },
                 page:1,
                 userTotal : 1000000,//注册人数
-                total     : 1000,//数据的总条数
-                tableData : [
-                    {
-                        "id": 1,  // 用户id
-                        "mobile": "19990000000",  //手机号
-                        "following_count": 0,  // 关注数
-                        "follower_count": 0,  // 粉丝数
-                        "share_count": 0,  // 分享数
-                        "money_balance": 0,  // 钱包余额
-                        "is_boxer": false,  // 是否认证拳手  true，拳手，false，普通用户
-                        "user_basic_info": {
-                            "nick_name": "我是是个汉子哈哈哈哈",  // 昵称
-                            "gender": true,    // 性别   true，男，false，女
-                            "address": null,  // 地址
-                            "name": "哈哈",// 姓名
-                            "nation": "汉子",  //民族
-                            "birthday": "2018-09-09",// 生日
-                            "height": 170,  // 身高
-                            "weight": 45,  // 体重
-                            "profession": "医生" // 职业
-                        },
-                        user_type:'普通用户',
-                        title:'北京拳首',
-                        "date_joined": "2018-05-11 16-49-10",  // 注册时间
-                        "boxer_id": null  // 拳手id
-                    },
-                    {
-                        "id": 2,  // 用户id
-                        "mobile": "19990000000",  //手机号
-                        "following_count": 0,  // 关注数
-                        "follower_count": 0,  // 粉丝数
-                        "share_count": 0,  // 分享数
-                        "money_balance": 0,  // 钱包余额
-                        "is_boxer": false,  // 是否认证拳手  true，拳手，false，普通用户
-                        "user_basic_info": {
-                            "nick_name": "我是是个汉子哈哈哈哈",  // 昵称
-                            "gender": true,    // 性别   true，男，false，女
-                            "address": null,  // 地址
-                            "name": "哈哈",// 姓名
-                            "nation": "汉子",  //民族
-                            "birthday": "2018-09-09",// 生日
-                            "height": 170,  // 身高
-                            "weight": 45,  // 体重
-                            "profession": "医生" // 职业
-                        },
-                        user_type:'认证拳手',
-                        title:'北京拳首',
-                        "date_joined": "2018-05-11 16-49-10",  // 注册时间
-                        "boxer_id": null  // 拳手id
-                    },
-                    {
-                        "id": 3,  // 用户id
-                        "mobile": "19990000000",  //手机号
-                        "following_count": 0,  // 关注数
-                        "follower_count": 0,  // 粉丝数
-                        "share_count": 0,  // 分享数
-                        "money_balance": 0,  // 钱包余额
-                        "is_boxer": false,  // 是否认证拳手  true，拳手，false，普通用户
-                        "user_basic_info": {
-                            "nick_name": "我是是个汉子哈哈哈哈",  // 昵称
-                            "gender": true,    // 性别   true，男，false，女
-                            "address": null,  // 地址
-                            "name": "哈哈",// 姓名
-                            "nation": "汉子",  //民族
-                            "birthday": "2018-09-09",// 生日
-                            "height": 170,  // 身高
-                            "weight": 45,  // 体重
-                            "profession": "医生" // 职业
-                        },
-                        user_type:'自媒体',
-                        title:'北京拳首',
-                        "date_joined": "2018-05-11 16-49-10",  // 注册时间
-                        "boxer_id": null  // 拳手id
-                    },
-                ],
+                total     : 0,//数据的总条数
+                tableData : [],
                 tableColumn:[
                     {title:'id',    name :'用户ID',   width: '45'},
                     {title:'mobile',name :'用户手机号',width: '120'},

@@ -21,17 +21,19 @@
         </style>
 
         <template>
-        <div>
-        <!-- quill-editor插件标签 分别绑定各个事件-->
-        <quill-editor v-model="content" ref="myQuillEditor" :options="editorOption1" @change="onEditorChange($event)">
-        </quill-editor>
-        <!-- 文件上传input 将它隐藏-->
-        <el-upload class="upload-demo" :action="qnLocation" :before-upload='beforeUpload' :data="uploadData" :on-success='upScuccess'
-        ref="upload" style="display:none">
-        <el-button size="small" type="primary" :id="imgInput" element-loading-text="插入中,请稍候">点击上传</el-button>
-        </el-upload>
-        </div>
-
+            <div style='position:relative'>
+                <!-- quill-editor插件标签 分别绑定各个事件-->
+                <quill-editor v-model="content" ref="myQuillEditor" :options="editorOption1" @change="onEditorChange($event)">
+                </quill-editor>
+                <!-- 文件上传input 将它隐藏-->
+                <el-upload class="upload-demo" :action="qnLocation" :before-upload='beforeUpload' :data="uploadData" :on-success='upScuccess'
+                ref="upload" style="display:none">
+                    <el-button size="small" type="primary" :id="imgInput" element-loading-text="插入中,请稍候">点击上传</el-button>
+                </el-upload>
+                <div style='position:absolute;top:38px;right:174px;cursor:pointer' id='local_video' @click='videoHandler'>
+                    本地视频
+                </div>
+            </div>
         </template>
 
         <script>
@@ -169,7 +171,7 @@
             // 为图片ICON绑定事件 getModule 为编辑器的内部属性
             // console.log(this.$refs.myQuillEditor.quill)
             this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
-            this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('video', this.videoHandler) // 为视频ICON绑定事件
+            // this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('video', this.videoHandler) // 为视频ICON绑定事件
         }
     }
 </script>

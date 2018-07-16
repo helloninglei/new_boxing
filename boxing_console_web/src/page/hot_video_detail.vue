@@ -34,7 +34,7 @@
                             <el-row>
                                 <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
                                 <div>  
-                                    <div class='showImg' @click="addImg('inputId3','src_avatar')">  
+                                      <div class='showImg' @click="addImg('inputId3','src_avatar')">  
                                       <img :src="src_avatar" alt="" width='100%' id='src_avatar'> 
                                       <div class='noImg' v-if="!src_avatar"> 
                                           <p>添加视频封面</p>
@@ -53,15 +53,15 @@
                         <el-form-item label="关联用户">
                             <ul>
                                 <li class='lf'>
-                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px'>
+                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
                                         <img src="/static/img/edit_user_img.png" alt="" width="100%">
                                     </p>
                                     <p style='text-align: center'>编辑关联用户</p>
                                 </li>
                                 <li class='lf' v-for="item in userImgIds" style='width:80px'>
                                     <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px'>
-                                        <!-- <img :src="config.baseUrl+item.avatar" alt="" style='border:1px solid #ccc;border-radius: 50%;width:50px;height:50px'> -->
-                                        <img src="/static/img/edit_user_img.png" alt="" width="100%">
+                                        <img :src="config.baseUrl+item.avatar" alt="" width="100%">
+                                        <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
                                     <p style='text-align: center'>{{item.nick_name}}</p>
                                 </li>
@@ -111,6 +111,15 @@
     #addHotvideo .el-form-item{margin-bottom:30px;}
     #addHotvideo .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
     #addHotvideo .myAddress input{padding-left:50px;}
+    .el-checkbox__inner:hover,.el-checkbox__input.is-focus .el-checkbox__inner,.el-input__inner:focus{
+        border-color:#F95862!important;
+    }
+    .el-checkbox__input.is-checked+.el-checkbox__label{
+        color:#F95862!important;
+    }
+    .el-transfer-panel__item.el-checkbox {
+        color: #606266;
+    }
 </style>
 <style scope>
     .myDialog .el-dialog{position:fixed;left:50%;margin-left:-302px;width:604px;}
@@ -118,6 +127,10 @@
     .myDialog .el-dialog__body{padding-top:10px;}
     .image{height:140px;width:140px;border:1px solid #ccc;vertical-align: middle}
     .image img{height:100%;}
+    .myUser .el-button--primary{
+        background:#F95862!important;
+        border-color:#F95862!important;
+    }
     .video_name{
         width:90%;
         display: inline-block;
@@ -177,28 +190,9 @@
                 userIds     : [],
                 userHash    : [],
                 userImgIds  : [
-                    {
-                        "id": 1374,
-                        "nick_name": "阿拉蕾汐亚",
-                        "avatar": "/uploads/02/2e/60bf8ecc8742f14b61aa30ebcd183985c8b5.jpg"
-                    },
-                    {
-                        "id": 1082,
-                        "nick_name": "庞祥",
-                        "avatar": "/uploads/17/58/27063b949c18f58eadb8d874611bcd271f11.jpg"
-                    },
-                    {
-                        "id": 17,
-                        "nick_name": "MMA吴紫龙",
-                        "avatar": "/uploads/7f/d6/3b0282a98a73114fb3f8aa7204ffa995ef43.jpg"
-                    },
-                    {
-                        "id": 15,
-                        "nick_name": "熊呈呈",
-                        "avatar": "/uploads/e7/30/3c917a2c3f3879c6189ab0b71ba72213b00c.jpg"
-                    }
+                    
                 ],
-                showChangeUser:false,
+                showChangeUser:true,
                 ruleForm: {
                     users   : [],
                     name    : '',
@@ -260,22 +254,19 @@
         created() {
             let query     = this.$route.query
             this.id = query.id
-            this.ruleForm.name    = query.name;
-            this.ruleForm.price_int   = parseInt(query.price);
-            this.ruleForm.description = query.description;
+            if(this.id){
+                this.secondTitle_name = '修改视频'
+                this.btn_name = '修改'
+            }
+            this.getData(this.id)
+            this.getUserIds();
+            
             let tsurl = query.url
             this.tsurl=query.url
             let try_ts_url = query.try_url
             this.try_ts_url= query.try_url
             $('#full_video').val(tsurl) 
             $('#little_video').val(try_ts_url) 
-            if(this.id){
-                this.secondTitle_name = '修改视频'
-                this.btn_name = '修改'
-            }
-            this.getUserIds();
-            // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
-            // console.log(query)
         },
         methods: {
             getFullVideo(){
@@ -291,20 +282,49 @@
                 let $this = this;
                 this.ajax('/hot_videos/users','get').then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
                         res.data.forEach((val, index) => {
-                          $this.userHash[val.id]={ label: val.nick_name,
-                                                    key: val.id,
-                                                    image:val.avatar
-                                                }
+                          $this.userHash[val.id]=val
                         });
                         $this.userIds = res.data
-                        console.log($this.userIds)
                     }
 
                 },function(err){
                     if(err&&err.response){
                         $this.loadingInstance.close();
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
+            getData(id){
+                let $this = this;
+                this.ajax('/hot_videos/'+id,'get').then(function(res){
+                    if(res&&res.data){
+                        $this.ruleForm.name    = res.data.name;
+                        $this.ruleForm.price_int   = parseInt(res.data.price);
+                        $this.ruleForm.description = res.data.description;
+                        // let tsurl = res.data.url
+                        // $this.tsurl=res.data.url
+                        // let try_ts_url = res.data.try_url
+                        // $this.try_ts_url= res.data.try_url
+                        // $('#full_video').val(tsurl) 
+                        // $('#little_video').val(try_ts_url) 
+                        
+                        $this.ruleForm.cover = res.data.cover;
+                        $this.userImgIds = res.data.user_list;
+                        for(var i=0;i<$this.userImgIds.length;i++){
+                            $this.ruleForm.users.push($this.userImgIds[i].id)
+                        }
+                        $this.src_avatar = $this.config.baseUrl + res.data.cover;
+                    }
+
+                },function(err){
+                    if(err&&err.response){
                         let errors=err.response.data
                         for(var key in errors){
                             $this.$message({
@@ -358,11 +378,11 @@
             confirm(){
                 this.showChangeUser = false;
                 console.log(this.ruleForm.users)
-
+                let userImgIds = []
                 for(var i=0;i<this.ruleForm.users.length;i++){
-                    this.userImgIds.push(this.userHash[this.ruleForm.users[i]])
+                    userImgIds.push(this.userHash[this.ruleForm.users[i]])
                 }
-                console.log(this.userImgIds)
+                this.userImgIds = userImgIds
             },
             submitForm(formName) {
                 let $this = this
@@ -443,7 +463,7 @@
             //宣传图
             getUrl(url,imgId){
                 this.changeUrl=false
-                this.src_avatar = this.config.baseUrl+url
+                // this.src_avatar = this.config.baseUrl+url
                 this.ruleForm.cover = url
             },
             addImg(ele,imgId){
