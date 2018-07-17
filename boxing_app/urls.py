@@ -42,6 +42,7 @@ from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
+from boxing_app.views.cover_picture import cover_picture
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -225,6 +226,10 @@ shutup_list_urls = [
     path("shutup_list", ShutUpListViewSet.as_view({"get": "list", "delete": "destroy", "post": "create"})),
 ]
 
+cover_picture_urls = [
+    path("cover_picture", cover_picture)
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -253,6 +258,7 @@ urlpatterns += social_login_urls
 urlpatterns += official_accounts_urls
 urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
+urlpatterns += cover_picture_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

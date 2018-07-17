@@ -70,8 +70,6 @@ deploy(){
         done
     elif [ "$stopped_container" ]; then
         docker start ${stopped_container}
-    elif [ "$has_images" ]; then
-        api && console
     else
         build_image  && init $@
     fi
