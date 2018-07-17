@@ -30,9 +30,7 @@
                 ref="upload" style="display:none">
                     <el-button size="small" type="primary" :id="imgInput" element-loading-text="插入中,请稍候">点击上传</el-button>
                 </el-upload>
-                <div style='position:absolute;top:38px;right:174px;cursor:pointer' id='local_video' @click='videoHandler'>
-                    本地视频
-                </div>
+                
             </div>
         </template>
 
@@ -170,8 +168,17 @@
         mounted () {
             // 为图片ICON绑定事件 getModule 为编辑器的内部属性
             // console.log(this.$refs.myQuillEditor.quill)
+            let $this = this
             this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
             // this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('video', this.videoHandler) // 为视频ICON绑定事件
+            $('.ql-toolbar').find('.ql-formats').last().append("<button type='button' style='width:28px;height:25px;cursor:pointer' class='local_video "+$this.imgInput+"'><img src='/static/img/upload_img.png' width='100%'></button>")
+            $('.ql-toolbar').on('click','.local_video.'+$this.imgInput,function(e){
+                $this.addRange = $this.$refs.myQuillEditor.quill.getSelection()
+                let fileInput = document.getElementById($this.imgInput)
+                fileInput.click() // 加一个触发事件
+                
+                $this.uploadType = 'video'
+            })
         }
     }
 </script>
