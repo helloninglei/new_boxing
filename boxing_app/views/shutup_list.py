@@ -1,17 +1,18 @@
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from biz.models import UserProfile
 from biz.redis_client import get_shutup_list, rm_shutup_list, add_shutup_list
 from boxing_app.serializers import UserProfileSerializer, ShutUpWriteOnlySerializer
 
 
-class ShutUpListViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class ShutUpListViewSet(viewsets.GenericViewSet):
     serializer_class = UserProfileSerializer
 
     def get_queryset(self):
-        return UserProfile.objects.filter(user_id__in=get_shutup_list()).select_related("user",
-                                                                                        "user__boxer_identification")
+        return get_shutup_list()
+
+    def list(self, request):
+        return Response({"results": self.get_queryset()}, status=status.HTTP_200_OK)
 
     def destroy(self, request):
         serializer = ShutUpWriteOnlySerializer(data=request.data)
