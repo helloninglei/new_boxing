@@ -6,7 +6,7 @@ from biz.redis_client import get_shutup_list, rm_shutup_list, add_shutup_list
 from boxing_app.serializers import UserProfileSerializer, ShutUpWriteOnlySerializer
 
 
-class ShutUpListReadOnlyViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class ShutUpListViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = UserProfileSerializer
 
     def get_queryset(self):
