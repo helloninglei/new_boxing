@@ -4,7 +4,7 @@
         <div class='container'>
             <el-row> 
                 <el-col :span="12">
-                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
                         <el-form-item label="视频名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
@@ -32,7 +32,7 @@
                             <el-progress type="circle" :percentage="tryTsurlProgress" :width='70' style='position:absolute;right:-69px;top:-14px' v-show='tryTsurlProgress>0&&tryTsurlProgress<100'></el-progress>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频封面" prop="avatar">
+                        <el-form-item label="视频封面" prop="try_ts_url">
                             <el-row>
                                 <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
                                 <div>  
@@ -52,7 +52,7 @@
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
-                        <el-form-item label="关联用户">
+                        <el-form-item label="关联用户" prop='try_ts_url'>
                             <ul>
                                 <li class='lf'>
                                     <p style='border-radius: 50%;width:50px;height:50px;overflow: hidden;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
@@ -68,6 +68,18 @@
                                     <p style='text-align: center'>{{item.nick_name}}</p>
                                 </li>
                             </ul>
+                        </el-form-item>
+                        <el-form-item label="是否同步热门视频" prop="push_to_hotvideo">
+                            <el-radio-group v-model="ruleForm.push_to_hotvideo">
+                                <el-radio :label="true" >是</el-radio>
+                                <el-radio :label="false">否</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="是否置顶" prop="stay_top" v-if='ruleForm.push_to_hotvideo'>
+                            <el-radio-group v-model="ruleForm.stay_top">
+                                <el-radio :label="true" >是</el-radio>
+                                <el-radio :label="false">否</el-radio>
+                            </el-radio-group>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -205,6 +217,8 @@
                     price   : '',
                     tsurl   :'',
                     try_ts_url: '',
+                    push_to_hotvideo:false,
+                    stay_top:false,
                 },
                 rules:{
                     users:[
@@ -234,6 +248,12 @@
                                 callback();
                               }
                         }, trigger: 'blur',required:true }
+                    ],
+                    push_to_hotvideo:[
+                        { trigger: 'blur',required:true }
+                    ],
+                    stay_top:[
+                        { trigger: 'blur',required:true }
                     ],
                     tsurl:[
                         { validator: validateUrl, trigger: 'blur',required:true }
@@ -310,11 +330,14 @@
                         $this.ruleForm.price_int   = parseInt(res.data.price);
                         $this.ruleForm.description = res.data.description;
                         $this.ruleForm.cover = res.data.cover;
+                        $this.ruleForm.stay_top = res.data.stay_top
+                        $this.ruleForm.push_to_hotvideo = res.data.push_to_hotvideo 
                         $this.userImgIds = res.data.user_list;
                         for(var i=0;i<$this.userImgIds.length;i++){
                             $this.ruleForm.users.push($this.userImgIds[i].id)
                         }
                         $this.src_avatar = $this.config.baseUrl + res.data.cover;
+
                     }
 
                 },function(err){

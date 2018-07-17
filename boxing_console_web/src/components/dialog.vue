@@ -76,6 +76,10 @@
           showIndenTitle:{
             type : Boolean,
             default:false,
+          },
+          title:{
+            type : String,
+            default:"",
           }
         },
         watch:{
@@ -91,7 +95,10 @@
         	},
         	'showIndenTitle'(val){
         		// console.log(val)
-        	}
+        	},
+          title(val){
+            this.form.title = val
+          }
 
         },
         components: {
