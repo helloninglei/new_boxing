@@ -103,7 +103,7 @@
                 if(page){
                     sendData.page=page
                 }
-                this.ajax('/','get',{},sendData).then(function(res){
+                this.ajax('/word_filters/','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData = res.data.results
@@ -136,7 +136,7 @@
             },
             confirm(val){
                 var $this = this;
-                this.ajax('/','post',{mobile:val},{}).then(function(res){
+                this.ajax('/word_filters/','post',{mobile:val},{}).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData.unshift(res.data);

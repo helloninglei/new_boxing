@@ -54,7 +54,7 @@
                             <ul>
                                 <li class='lf'>
                                     <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
-                                        <img src="/static/img/edit_user_img.png" alt="" width="100%">
+                                        <img :src="'./static/img/edit_user_img.png'" alt="" width="100%">
                                     </p>
                                     <p style='text-align: center'>编辑关联用户</p>
                                 </li>
@@ -192,7 +192,7 @@
                 userImgIds  : [
                     
                 ],
-                showChangeUser:true,
+                showChangeUser:false,
                 ruleForm: {
                     users   : [],
                     name    : '',
@@ -257,16 +257,17 @@
             if(this.id){
                 this.secondTitle_name = '修改视频'
                 this.btn_name = '修改'
+                this.getData(this.id)
+                let tsurl = query.url
+                this.tsurl=query.url
+                let try_ts_url = query.try_url
+                this.try_ts_url= query.try_url
+                $('#full_video').val(tsurl) 
+                $('#little_video').val(try_ts_url) 
             }
-            this.getData(this.id)
+            
             this.getUserIds();
             
-            let tsurl = query.url
-            this.tsurl=query.url
-            let try_ts_url = query.try_url
-            this.try_ts_url= query.try_url
-            $('#full_video').val(tsurl) 
-            $('#little_video').val(try_ts_url) 
         },
         methods: {
             getFullVideo(){
@@ -290,7 +291,6 @@
 
                 },function(err){
                     if(err&&err.response){
-                        $this.loadingInstance.close();
                         let errors=err.response.data
                         for(var key in errors){
                             $this.$message({

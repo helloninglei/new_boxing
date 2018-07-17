@@ -7,9 +7,9 @@
                     <el-col :span="4" style='width:280px'>
                         <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='请输入用户昵称/手机号' style='width:250px'></el-input>
                     </el-col>
-                    <el-col :span="4" style='width:280px'>
+                    <!-- <el-col :span="4" style='width:280px'>
                         <el-input v-model="sendData.content"  class='myInput_40 margin_rt25' placeholder='请输入关键字' style='width:250px'></el-input>
-                    </el-col>  
+                    </el-col>   -->
                     <el-col :span="7" style='width:500px'>
                         <el-date-picker
                         v-model="sendData.start_date"
@@ -35,11 +35,11 @@
                     <el-col :span="5">
                         <el-select v-model="sendData.user_type" class="margin_tp30">
                             <el-option value="1" label="认证拳手">认证拳手</el-option>
-                            <el-option value="2" label="普通用户">名人</el-option>
-                            <el-option value="3" label="认证拳手">自媒体</el-option>
+                            <el-option value="2" label="名人">名人</el-option>
+                            <el-option value="3" label="自媒体">自媒体</el-option>
                         </el-select>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="10">
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_lf70 margin_tp30' @click="filter()">查询</el-button>
                         <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click='reset()'>重置</el-button>
                     </el-col> 
@@ -199,7 +199,7 @@
                     {title:'initial_forward_count',   name :'初始转发量', width:''},
                     {title:'like_count',   name :'真实点赞数', width:''},
                     {title:'initial_like_count',   name :'初始点赞数', width:''},
-                    {title:'created_time',   name :'发布时间', width:'200'},
+                    {title:'created_time',   name :'发布时间', width:'150'},
                 ],
             }
         },
@@ -305,6 +305,10 @@
             },
             cancel1(val){
                 this.confirmData.isshow=val;
+            },
+            reset(){
+                this.sendData={};
+                this.getData();
             },
             update(id){
                 this.confirmData.isshow=false;

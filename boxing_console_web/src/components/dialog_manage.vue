@@ -6,7 +6,7 @@
               <el-form-item label="用户昵称" prop="forward_num">
                 {{nick_name}}
               </el-form-item>
-              <el-form-item label="钱包余额" prop="change_amount">
+              <el-form-item label="增加余额" prop="change_amount">
                 <el-input v-model="form3.change_amount" placeholder="请输入" type='number'></el-input>
               </el-form-item>
               <el-form-item label="用户类别" prop="user_type" v-if='row.user_type=="认证拳手"'>
@@ -72,7 +72,7 @@
             return {
               showDialog:false,
                 form3:{
-                  change_amount:'',
+                  change_amount:0,
                   title:'',
                   user_type:'认证拳手',
                 },

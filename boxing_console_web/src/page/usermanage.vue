@@ -34,8 +34,8 @@
                             <el-option value="" label="全部">全部</el-option>
                             <el-option value="4" label="普通用户">普通用户</el-option>
                             <el-option value="1" label="认证拳手">认证拳手</el-option>
-                            <el-option value="2" label="普通用户">名人</el-option>
-                            <el-option value="3" label="认证拳手">自媒体</el-option>
+                            <el-option value="2" label="名人">名人</el-option>
+                            <el-option value="3" label="自媒体">自媒体</el-option>
                         </el-select>
                     </el-col>
                     <el-col :span="5">

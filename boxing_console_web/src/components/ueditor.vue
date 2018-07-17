@@ -41,6 +41,7 @@
         data () {
           return {
             content: '', // 文章内容
+            img_url:'./static/img/upload_img.png',
             editorOption1: {
               placeholder: '请输入内容',
               name : '',
@@ -171,7 +172,7 @@
             let $this = this
             this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
             // this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('video', this.videoHandler) // 为视频ICON绑定事件
-            $('.ql-toolbar').find('.ql-formats').last().append("<button type='button' style='width:28px;height:25px;cursor:pointer' class='local_video "+$this.imgInput+"'><img src='/static/img/upload_img.png' width='100%'></button>")
+            $('.ql-toolbar').find('.ql-formats').last().append("<button type='button' style='width:28px;height:25px;cursor:pointer' class='local_video "+$this.imgInput+"'><img src='"+$this.img_url+"' width='100%'></button>")
             $('.ql-toolbar').on('click','.local_video.'+$this.imgInput,function(e){
                 $this.addRange = $this.$refs.myQuillEditor.quill.getSelection()
                 let fileInput = document.getElementById($this.imgInput)
