@@ -52,8 +52,6 @@ filter_container(){
     elif [ $filter_by_status = 'has_image' ]
     then
       echo $(docker images --filter "reference=new_boxing_*" --quiet)
-    else
-        :
     fi
 }
 
