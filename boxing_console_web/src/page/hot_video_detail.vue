@@ -331,10 +331,12 @@
                         $this.ruleForm.description = res.data.description;
                         $this.ruleForm.cover = res.data.cover;
                         $this.ruleForm.stay_top = res.data.stay_top
-                        $this.ruleForm.push_to_hotvideo = res.data.push_to_hotvideo 
                         $this.userImgIds = res.data.user_list;
                         for(var i=0;i<$this.userImgIds.length;i++){
                             $this.ruleForm.users.push($this.userImgIds[i].id)
+                            if($this.userImgIds[i].id==10){
+                               $this.ruleForm.push_to_hotvideo = true;
+                            }
                         }
                         $this.src_avatar = $this.config.baseUrl + res.data.cover;
 

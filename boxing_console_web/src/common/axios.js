@@ -5,16 +5,6 @@ let $this = this;
 axios.interceptors.response.use(function (response) {
     return response;
   }, function (error) {
-    // console.log(error.response.status)
-    // if(error&&error.response){
-    //     let errors=error.response.data
-    //     for(var key in errors){
-    //         $this.$message({
-    //             message: errors[key][0],
-    //             type: 'error'
-    //         });
-    //     } 
-    // } 
     if(error.response.status==401){
         localStorage.token='';
         $this.$router.push({path:'/login'});
@@ -40,7 +30,10 @@ export default function(url='',method='get',data={},params={},headers={},success
         onUploadProgress(progressEvent){
             if (progressEvent.lengthComputable) {
               let val = (progressEvent.loaded / progressEvent.total * 100).toFixed(0);
-              successfun(val)
+              if(successfun){
+                successfun(val)
+              }
+              
             }
         },
         headers: headers,
