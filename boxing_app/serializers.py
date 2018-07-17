@@ -82,6 +82,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     city = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
     title = serializers.CharField(source='user.title')
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
