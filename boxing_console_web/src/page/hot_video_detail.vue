@@ -1,13 +1,10 @@
 <template>
-    <div id="addBoxing">
-        <TopBar v-if="isShowTop" firstTitle_name="热门视频" firstTitle_path="/hotvideo" :secondTitle_name="secondTitle_name" ></TopBar>
+    <div id="addHotvideo">
+        <TopBar v-if="isShowTop" firstTitle_name="视频管理" firstTitle_path="/hotvideo" :secondTitle_name="secondTitle_name" ></TopBar>
         <div class='container'>
             <el-row> 
                 <el-col :span="12">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
-                        <!-- <el-form-item label="用户ID" prop="user_id">
-                            <el-input v-model="ruleForm.user_id" placeholder='必须为有效的用户ID'></el-input>
-                        </el-form-item> -->
                         <el-form-item label="视频名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
@@ -17,12 +14,6 @@
                         <el-form-item label="付费金额" prop="price_int">
                             <el-input v-model="ruleForm.price_int" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <!-- <el-form-item label="完整视频" prop="tsurl" style='display: none'>
-                            
-                        </el-form-item> -->
-                        <!-- <el-form-item label="不完整视频" prop="try_ts_url" style='display: none'>
-                            
-                        </el-form-item> -->
                         <el-form-item label="完整视频" prop="tsurl">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red'  @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
                             <p v-if="(tsurl)">
@@ -39,6 +30,43 @@
                             </p>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
+                        <el-form-item label="视频封面" prop="avatar">
+                            <el-row>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
+                                <div>  
+                                      <div class='showImg' @click="addImg('inputId3','src_avatar')">  
+                                      <img :src="src_avatar" alt="" width='100%' id='src_avatar'> 
+                                      <div class='noImg' v-if="!src_avatar"> 
+                                          <p>添加视频封面</p>
+                                          <p>750*400</p>
+                                      </div>
+                                    </div>
+                                    <div style="margin-top:63px;float:left;margin-left:20px">  
+                                      <input type="file" id="inputId3" style='display:none' accept="image" @change="change">  
+                                      <label for="inputId1"></label>  
+                                    </div>  
+
+                                </div> 
+                            </el-row>
+                            <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
+                        </el-form-item>
+                        <el-form-item label="关联用户">
+                            <ul>
+                                <li class='lf'>
+                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
+                                        <img src="/static/img/edit_user_img.png" alt="" width="100%">
+                                    </p>
+                                    <p style='text-align: center'>编辑关联用户</p>
+                                </li>
+                                <li class='lf' v-for="item in userImgIds" style='width:80px'>
+                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px'>
+                                        <img :src="config.baseUrl+item.avatar" alt="" width="100%">
+                                        <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
+                                    </p>
+                                    <p style='text-align: center'>{{item.nick_name}}</p>
+                                </li>
+                            </ul>
+                        </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
                              <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">{{btn_name}}</el-button>
@@ -48,22 +76,61 @@
                 </el-col>
             </el-row>
         </div>
+        <el-dialog  :visible.sync="showChangeUser" class='myDialog' title="编辑关联用户">
+          <!-- <div class="dialog_title">编辑关联用户</div> -->
+          <div class="dialog_content myUser" >
+            <template>
+              <el-transfer 
+                filterable
+                :filter-method="filterMethod"
+                filter-placeholder="请输入用户名称"
+                :titles="['待选择', '已选择']"
+                :props="{
+                  key: 'id',
+                  label: 'nick_name',
+
+                }"
+                v-model="ruleForm.users" 
+                :data="userIds"></el-transfer>
+            </template>
+          </div>
+          <div slot="footer" class="dialog-footer" style='text-align:center'>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 border_raduis_100' @click="confirm()">确定</el-button>
+            <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">取消</el-button>
+          </div>
+        </el-dialog>
     </div>
 </template>
 
 <style>
-#addBoxing .el-form-item__label{
-    font-family: "PingFangSC-Regular";
-    font-size: 16px;
-    color: #000000;
-}
-#addBoxing .el-form-item{margin-bottom:30px;}
-#addBoxing .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
-#addBoxing .myAddress input{padding-left:50px;}
+    #addHotvideo .el-form-item__label{
+        font-family: "PingFangSC-Regular";
+        font-size: 16px;
+        color: #000000;
+    }
+    #addHotvideo .el-form-item{margin-bottom:30px;}
+    #addHotvideo .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
+    #addHotvideo .myAddress input{padding-left:50px;}
+    .el-checkbox__inner:hover,.el-checkbox__input.is-focus .el-checkbox__inner,.el-input__inner:focus{
+        border-color:#F95862!important;
+    }
+    .el-checkbox__input.is-checked+.el-checkbox__label{
+        color:#F95862!important;
+    }
+    .el-transfer-panel__item.el-checkbox {
+        color: #606266;
+    }
 </style>
 <style scope>
+    .myDialog .el-dialog{position:fixed;left:50%;margin-left:-302px;width:604px;}
+    .myUser .el-checkbox:first-child{margin-left:0px!important;}
+    .myDialog .el-dialog__body{padding-top:10px;}
     .image{height:140px;width:140px;border:1px solid #ccc;vertical-align: middle}
     .image img{height:100%;}
+    .myUser .el-button--primary{
+        background:#F95862!important;
+        border-color:#F95862!important;
+    }
     .video_name{
         width:90%;
         display: inline-block;
@@ -73,11 +140,27 @@
         overflow:auto;
         /*text-overflow:ellipse;*/
     }
+    .showImg{
+        width:150px;
+        height:104px;
+        overflow: hidden;
+        position: relative;
+        float: left;
+        /* border-radius: 50%; */
+        border: 1px solid #d5d5d5;
+    }
+    .noImg{
+        text-align: center;
+        font-size: 14px;
+        line-height: 25px;
+        margin:-17px auto;
+    }
 </style>
 <script>
     import TopBar from 'components/topBar';
     import $      from 'jquery' 
     import { Loading } from 'element-ui';
+    import Cropper from 'components/cropper';
     export default {
         data() {
             var validateUrl = (rule, value, callback) => {
@@ -104,8 +187,14 @@
                 secondTitle_name:'添加视频',
                 id          :'',
                 btn_name    : '发布',
+                userIds     : [],
+                userHash    : [],
+                userImgIds  : [
+                    
+                ],
+                showChangeUser:true,
                 ruleForm: {
-                    user_id : 1,
+                    users   : [],
                     name    : '',
                     description: '',
                     price_int  : '',
@@ -114,9 +203,9 @@
                     try_ts_url: '',
                 },
                 rules:{
-                    // user_id:[
-                    //     { required:true,message:'请输入用户id', trigger:'blur' }
-                    // ],
+                    users:[
+                        { required:true,message:'请选择用户id', trigger:'blur' }
+                    ],
                     name:[
                         { required:true,message:'请输入视频名称', trigger:'blur' }
                     ],
@@ -150,37 +239,36 @@
                     ]
                 },
                 loadingInstance:'',
-                
+                inputId:'',
+                url_f:'',
+                changeUrl:false,
+                imgId :'',
+                src_avatar:'',
             }
         },
         components: {
             TopBar,
-            Loading
+            Loading,
+            Cropper
         },
         created() {
             let query     = this.$route.query
             this.id = query.id
-            this.ruleForm.name    = query.name;
-            this.ruleForm.price_int   = parseInt(query.price);
-            this.ruleForm.description = query.description;
+            if(this.id){
+                this.secondTitle_name = '修改视频'
+                this.btn_name = '修改'
+            }
+            this.getData(this.id)
+            this.getUserIds();
+            
             let tsurl = query.url
             this.tsurl=query.url
             let try_ts_url = query.try_url
             this.try_ts_url= query.try_url
             $('#full_video').val(tsurl) 
             $('#little_video').val(try_ts_url) 
-            if(this.id){
-                this.secondTitle_name = '修改视频'
-                this.btn_name = '修改'
-            }
-            
-            // this.ruleForm.try_ts_url = 'this.config.baseUrl+try_ts_url'
-            // console.log(query)
         },
         methods: {
-            getData(){
-
-            },
             getFullVideo(){
                 var _this=this
                 var file=event.target.files;
@@ -189,6 +277,67 @@
                     $this.loadingInstance.close();
                     $this.tsurl = url
                 });
+            },
+            getUserIds(){
+                let $this = this;
+                this.ajax('/hot_videos/users','get').then(function(res){
+                    if(res&&res.data){
+                        res.data.forEach((val, index) => {
+                          $this.userHash[val.id]=val
+                        });
+                        $this.userIds = res.data
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        $this.loadingInstance.close();
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
+            getData(id){
+                let $this = this;
+                this.ajax('/hot_videos/'+id,'get').then(function(res){
+                    if(res&&res.data){
+                        $this.ruleForm.name    = res.data.name;
+                        $this.ruleForm.price_int   = parseInt(res.data.price);
+                        $this.ruleForm.description = res.data.description;
+                        // let tsurl = res.data.url
+                        // $this.tsurl=res.data.url
+                        // let try_ts_url = res.data.try_url
+                        // $this.try_ts_url= res.data.try_url
+                        // $('#full_video').val(tsurl) 
+                        // $('#little_video').val(try_ts_url) 
+                        
+                        $this.ruleForm.cover = res.data.cover;
+                        $this.userImgIds = res.data.user_list;
+                        for(var i=0;i<$this.userImgIds.length;i++){
+                            $this.ruleForm.users.push($this.userImgIds[i].id)
+                        }
+                        $this.src_avatar = $this.config.baseUrl + res.data.cover;
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
+            filterMethod(query, item){
+                return item.nick_name.indexOf(query) > -1;
+
             },
             getLittleVideo(){
                 var _this=this
@@ -222,6 +371,18 @@
                         } 
                     } 
                 })
+            },
+            close(){
+                this.showChangeUser = false;
+            },
+            confirm(){
+                this.showChangeUser = false;
+                console.log(this.ruleForm.users)
+                let userImgIds = []
+                for(var i=0;i<this.ruleForm.users.length;i++){
+                    userImgIds.push(this.userHash[this.ruleForm.users[i]])
+                }
+                this.userImgIds = userImgIds
             },
             submitForm(formName) {
                 let $this = this
@@ -298,6 +459,35 @@
             deleteTryUrl(){
                 this.try_ts_url=''
                 this.ruleForm.try_ts_url=''
+            },
+            //宣传图
+            getUrl(url,imgId){
+                this.changeUrl=false
+                // this.src_avatar = this.config.baseUrl+url
+                this.ruleForm.cover = url
+            },
+            addImg(ele,imgId){
+                this.imgId=imgId;
+                $("#"+ele).click();
+            },
+            change(e){
+                let files = e.target.files || e.dataTransfer.files;  
+                if (!files.length) return;  
+                let picValue = files[0];  
+                this.url_f = this.getObjectURL(picValue); 
+                this.changeUrl=true
+                console.log(this.url_f)
+            },
+            getObjectURL (file) {  
+                var url = null ;   
+                if (window.createObjectURL!=undefined) { // basic  
+                  url = window.createObjectURL(file) ;  
+                } else if (window.URL!=undefined) { // mozilla(firefox)  
+                  url = window.URL.createObjectURL(file) ;  
+                } else if (window.webkitURL!=undefined) { // webkit or chrome  
+                  url = window.webkitURL.createObjectURL(file) ;  
+                }  
+                return url ;  
             },
         },
     }

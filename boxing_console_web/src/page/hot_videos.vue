@@ -1,6 +1,6 @@
 <template>
     <div class="usermanage">
-        <TopBar v-if="isShowTop" firstTitle_name="热门视频" firstTitle_path="/usermanage" disNone="disNone"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="视频管理" firstTitle_path="/usermanage" disNone="disNone"></TopBar>
         <div class='container'>
             <header>
                  <el-row>
@@ -96,7 +96,7 @@
                 },
                 total_count : 1000000,//付费人数
                 total_amount : 1000000,//付费金额
-                total     : 1000,//数据的总条数
+                total     : 0,//数据的总条数
                 tableData : [
                     {
                         "id": 1,
@@ -115,7 +115,7 @@
                 tableColumn:[
                     {title:'id',    name :'ID',   width: '80'},
                     {title:'name',  name :'视频名称',width: ''},
-                    {title:'user_id',name :'用户ID' ,width: '80'},
+                    {title:'user_id',name :'关联用户' ,width: '80'},
                     {title:'price',name :'付费金额（元）',width: '100'},
                     {title:'sales_count', name :'付费人数'   ,width: ''},
                     {title:'price_amount',name :'总金额（元）',width: '100'},

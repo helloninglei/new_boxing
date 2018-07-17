@@ -2,10 +2,23 @@
   <div id="dialog_label">
     <el-dialog  :visible.sync="showDialog">
           <div class="dialog_title">{{content_title}}</div>
-          <div class="dialog_content" style='margin-top:40px' v-if="type=='phone'">
+          <div class="dialog_content" style='margin-top:40px' v-if="type=='phone'||type=='sensitive'">
             <el-form ref="form1" :model="form1" label-width="70px" :rules="rules1">
-              <el-form-item label="手机号" prop="mobile">
+              <el-form-item label="手机号" prop="mobile" v-if="type=='phone'">
                 <el-input v-model="form1.mobile" placeholder="请输入注册手机号" ></el-input>
+              </el-form-item>
+              <el-form-item label="敏感词" prop="sensitive" v-if="type=='sensitive'">
+                <el-input v-model="form1.sensitive" placeholder="请输入敏感词" ></el-input>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div class="dialog_content" style='margin-top:20px' v-else-if="type=='forward'">
+            <el-form ref="form3" :model="form3" label-width="105px" :rules="rules3">
+              <el-form-item label="初始转发量" prop="initial_forward_count">
+                <el-input v-model="form3.initial_forward_count" placeholder="请输入" ></el-input>
+              </el-form-item>
+              <el-form-item label="初始点赞数" prop="initial_like_count">
+                <el-input v-model="form3.initial_like_count" placeholder="请输入" ></el-input>
               </el-form-item>
             </el-form>
           </div>
@@ -37,6 +50,9 @@
     export default {
         data() {
             var validatePhone = (rule, value, callback) => {
+              if(this.type=='sensitive'){
+                callback();
+              }else
               if (value === '') {
                 callback(new Error('请输入手机号'));
               } else {
@@ -44,6 +60,16 @@
                 if (!reg.test(value) ){
                   callback(new Error('请输入合法的手机号'));
                 }
+                callback();
+              }
+            };
+            var validateSensitive = (rule, value, callback) => {
+              if(this.type=='phone'){
+                callback();
+              }else
+              if (value === '') {
+                callback(new Error('请输入敏感词'));
+              } else {
                 callback();
               }
             };
@@ -62,18 +88,54 @@
               showDialog:false,
                 form1 :{
                   mobile:'',
+                  sensitive:''
                 },
                 form2 :{
                   balance :'',
+                },
+                form3:{
+                  initial_forward_count:'',
+                  initial_like_count:'',
                 },
                 rules1:{
                   mobile: [
                     { validator: validatePhone, trigger: 'blur' }
                   ],
+                  sensitive: [
+                    { validator: validateSensitive, trigger: 'blur' }
+                  ],
                 },
                 rules2:{
                   balance: [
                     { validator: validateBalace, trigger: 'blur' }
+                  ],
+                },
+                rules3:{
+                  initial_forward_count: [
+                    { validator: (rule, value, callback) => {
+                        var reg=/^[0-9]*$/;
+                        if(value==''){
+                            callback(new Error('请输入初始阅读量'));
+                        }else if (!reg.test(value)) {
+                            callback(new Error('请输入数字'));
+                        } else {
+                        
+                            callback();
+                        }
+                      }, trigger: 'blur' ,required:true}
+                  ],
+                  initial_like_count: [
+                    { validator: (rule, value, callback) => {
+                        var reg=/^[0-9]*$/;
+                        if(value==''){
+                            callback(new Error('请输入初始点赞数'));
+                        }else if (!reg.test(value)) {
+                            callback(new Error('请输入数字'));
+                        } else {
+                        
+                            callback();
+                        }
+                      }, trigger: 'blur' ,required:true}
                   ],
                 }
             }
@@ -93,7 +155,17 @@
           },
           type:{
             type : String,
-            default:1,
+            default:'',
+          },
+          sensitive_name:{
+            type : String,
+            default:"",
+          },
+          row:{
+            type:Object,
+            default:function(val){
+              return val
+            }
           }
         },
         watch:{
@@ -108,12 +180,20 @@
           },
           'form.class_name'(val){
             // console.log(val)
+          },
+          sensitive_name(val){
+            this.form1.sensitive = val
+          },
+          row(row){
+            this.form3.initial_forward_count = row.initial_forward_count
+            this.form3.initial_like_count = row.initial_like_count
           }
 
         },
         components: {
         },
         created() {
+          
         },
         methods: {
             confirm(){
@@ -125,6 +205,24 @@
                     this.$emit('confirm',this.form1.mobile)
                   } else {
                     // console.log('error submit!!');
+                    return false;
+                  }
+                });
+              }else if(this.type=='sensitive'){
+                this.$refs['form1'].validate((valid) => {
+                  if (valid) {
+                    this.$emit('confirm',this.form1.sensitive)
+                  } else {
+                    console.log('error submit!!');
+                    return false;
+                  }
+                });
+              }else if(this.type=='forward'){
+                this.$refs['form3'].validate((valid) => {
+                  if (valid) {
+                    this.confirm1(this.form3,this.row)
+                  } else {
+                    console.log('error submit!!');
                     return false;
                   }
                 });
@@ -140,10 +238,31 @@
               }
               
             },
+            confirm1(data,row){
+                let $this=this;
+                this.ajax('/messages/'+row.id,'patch',data).then(function(res){
+                    if(res&&res.data){
+                        row.initial_forward_count = res.data.initial_forward_count
+                        row.initial_like_count = res.data.initial_like_count
+                        $this.$emit('cancel',false)
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
+            },
             resetForm(form) {
-              if(this.type=='phone'){
+              if(this.type=='phone'||this.type=='sensitive'){
                 this.$refs['form1'].resetFields();
-              }else{
+              }else if(this.type=='forward'){
+                this.$refs['form3'].resetFields();
+              } else{
                 this.$refs['form2'].resetFields();
               } 
             },

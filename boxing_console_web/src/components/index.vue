@@ -22,7 +22,7 @@
                         <div class='menu-item-inner'>公司账户金额记录</div>
                     </el-menu-item>
                     <el-menu-item index="/hotvideo" :disabled="disabled">
-                        <div class='menu-item-inner'>热门视频</div>
+                        <div class='menu-item-inner'>视频管理</div>
                     </el-menu-item>
                     <el-submenu index='2'>
                         <template slot="title" ><div class='mySubMenu'>约单管理</div></template>
@@ -57,11 +57,20 @@
                             <div class="menu-item-inner" ><div class='_hr'></div>查看报名</div>
                         </el-menu-item> -->
                     </el-submenu>
-                    <el-menu-item index="/report" :disabled="disabled">
-                        <div class='menu-item-inner'>举报处理</div>
-                    </el-menu-item>
+                    <el-submenu index='5'>
+                        <template slot="title" ><div class='mySubMenu'>动态管理</div></template>
+                        <el-menu-item index="/dynamic" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>动态列表</div>
+                        </el-menu-item>
+                        <el-menu-item index="/report" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>举报处理</div>
+                        </el-menu-item>
+                    </el-submenu>
                     <el-menu-item index="/admin" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
+                    </el-menu-item>
+                    <el-menu-item index="/sensitiveword" :disabled="disabled">
+                        <div class='menu-item-inner'>拳城BB敏感词</div>
                     </el-menu-item>
                     <!-- <el-menu-item index="/useDialog" :disabled="disabled">
                         <div class='menu-item-inner'>弹框管理</div>
