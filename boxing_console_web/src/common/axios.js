@@ -21,7 +21,7 @@ axios.interceptors.response.use(function (response) {
     }
     return Promise.reject(error);
   });
-export default function(url='',method='get',data={},params={},headers={}){
+export default function(url='',method='get',data={},params={},headers={},successfun){
     // console.log(localStorage.token)
     let token=localStorage.token,baseURL=this.config.baseUrl;
     // console.log(token)
@@ -37,6 +37,12 @@ export default function(url='',method='get',data={},params={},headers={}){
         responseType:'json',
         data:data,
         params:params,
+        onUploadProgress(progressEvent){
+            if (progressEvent.lengthComputable) {
+              let val = (progressEvent.loaded / progressEvent.total * 100).toFixed(0);
+              successfun(val)
+            }
+        },
         headers: headers,
         method:method,
         withCredentials:false

@@ -2,8 +2,8 @@
 	<div id="report_content">
 		<el-dialog  :visible.sync="showDialog">
       <ul class='clearfix dynamic_title'>
-        <li style='border:1px solid #ccc;border-radius: 50%;width:60px;height:60px;margin-top:-5px'>
-          <img :src="getData.nick_name" alt="">
+        <li style='border-radius: 50%;width:60px;height:60px;margin-top:-5px'>
+          <img :src="config.baseUrl+getData.avatar" alt="" width='100%'>
         </li>
         <li style='margin-top:5px'>
           <h3 style='color:#000'>{{getData.nick_name}}</h3>

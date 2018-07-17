@@ -13,15 +13,15 @@
                     <el-col :span="7" style='width:500px'>
                         <el-date-picker
                         v-model="sendData.start_date"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        type="date"
+                        value-format="yyyy-MM-dd"
                         :default-value= "new Date()"
                         placeholder="起始时间" style='width:220px' class="margin_rt25 margin_tp_30">
                         </el-date-picker>
                         <el-date-picker
                         v-model="sendData.end_date"
-                        type="datetime"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        type="date"
+                        value-format="yyyy-MM-dd"
 
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="结束时间" style='width:220px' class="margin_rt25">
@@ -29,7 +29,7 @@
                     </el-col> 
                 </el-row> 
                 <el-row> 
-                    <el-col :span="2">
+                    <el-col :span="3">
                         <div class="inlimeLabel margin_tp30">用户类别</div>
                     </el-col>
                     <el-col :span="5">
@@ -193,13 +193,13 @@
                 ],
                 tableColumn:[
                     {title:'nick_name',  name :'昵称',   width:'100'},
-                    {title:'mobile',   name :'手机号', width:'95'},
+                    {title:'mobile',   name :'手机号', width:'100'},
                     {title:'user_type',   name :'用户类型', width:''},
                     {title:'forward_count',   name :'真实转发量', width:''},
                     {title:'initial_forward_count',   name :'初始转发量', width:''},
                     {title:'like_count',   name :'真实点赞数', width:''},
                     {title:'initial_like_count',   name :'初始点赞数', width:''},
-                    {title:'created_time',   name :'发布时间', width:'150'},
+                    {title:'created_time',   name :'发布时间', width:'140'},
                 ],
             }
         },
