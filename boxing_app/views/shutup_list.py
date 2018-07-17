@@ -17,10 +17,10 @@ class ShutUpListViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         serializer = ShutUpWriteOnlySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         rm_shutup_list(*serializer.validated_data['user_ids'])
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "解禁成功"}, status=status.HTTP_204_NO_CONTENT)
 
     def create(self, request):
         serializer = ShutUpWriteOnlySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         add_shutup_list(*serializer.validated_data['user_ids'])
-        return Response(status=status.HTTP_201_CREATED)
+        return Response({"message": "禁言成功"}, status=status.HTTP_201_CREATED)
