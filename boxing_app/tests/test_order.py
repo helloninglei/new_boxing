@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
+from biz.constants import USER_TYPE_BOXER, USER_TYPE_MAP
 from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder, PayOrder
 
 
@@ -214,6 +215,7 @@ class OrderTestCase(APITestCase):
         self.test_user_1.refresh_from_db()
         self.boxer_data['user'] = self.test_user_1
         boxer = BoxerIdentification.objects.create(**self.boxer_data)
+        User.objects.filter(id=self.test_user_1.id).update(user_type=USER_TYPE_BOXER)
         club = BoxingClub.objects.create(**self.club_data)
         self.course_data['club'] = club
         self.course_data['boxer'] = boxer
@@ -237,6 +239,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['club_id'], club.id)
         self.assertEqual(res.data['club_name'], self.club_data['name'])
         self.assertEqual(res.data['club_address'], self.club_data['address'])
+        self.assertEqual(res.data['boxer_user_type'], USER_TYPE_MAP[USER_TYPE_BOXER])
         self.assertEqual(str(res.data['club_longitude']), str(self.club_data['longitude']))
         self.assertEqual(str(res.data['club_latitude']), str(self.club_data['latitude']))
 

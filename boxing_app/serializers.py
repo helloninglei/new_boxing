@@ -82,6 +82,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     city = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
     title = serializers.CharField(source='user.title')
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
@@ -107,7 +108,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
-                  'allowed_course', 'city', 'user_id', 'title']
+                  'allowed_course', 'city', 'user_id', 'title', 'user_type']
         read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
                             'real_name', 'allowed_course', 'city', 'title']
 
@@ -410,6 +411,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
     boxer_gender = serializers.BooleanField(source='boxer.user.user_profile.gender', read_only=True)
     boxer_avatar = serializers.CharField(source='boxer.user.user_profile.avatar', read_only=True)
+    boxer_user_type = serializers.CharField(source="boxer.user.get_user_type_display", read_only=True)
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):

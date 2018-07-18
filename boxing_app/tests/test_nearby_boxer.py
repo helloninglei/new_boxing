@@ -3,6 +3,7 @@ from datetime import datetime
 from rest_framework.test import APITestCase
 
 from biz import constants, redis_client
+from biz.constants import USER_TYPE_MAP, USER_TYPE_BOXER
 from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, CourseOrder
 
 
@@ -146,6 +147,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.boxer_data['user'] = self.user5
         self.boxer_data['real_name'] = 'boxer5'
         boxer5 = BoxerIdentification.objects.create(**self.boxer_data)
+        User.objects.all().update(user_type=USER_TYPE_BOXER)
 
         # 分别为boxer1-5创建课程，其中course5和course1的club相同
         self.course_data['club'] = club1
@@ -204,6 +206,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.assertEqual(boxer['gender'], self.user_profile_data['gender'])
         self.assertEqual(boxer['avatar'], self.user_profile_data['avatar'])
         self.assertEqual(boxer['allowed_course'], self.boxer_data['allowed_course'])
+        self.assertEqual(boxer['user_type'], USER_TYPE_MAP[USER_TYPE_BOXER])
 
         # 通过课程最低价筛选拳手
         res = self.client6.get('/nearby/boxers', data={"longitude": 116.39737,
