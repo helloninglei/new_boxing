@@ -78,7 +78,7 @@
                     <div class='detail_content margin_lf'>{{result.club}}</div>
                 </el-col>
             </el-row>
-            <el-row class='detail_item_sub' v-show='result.authentication_state=="APPROVED"'>
+            <el-row class='detail_item_sub' v-show='result.authentication_state!="REFUSE"'>
                 <el-col :span="1">
                     <div class='detail_title'>认证称号</div>
                 </el-col>
@@ -139,7 +139,7 @@
         </div>
 
         <Dialog :isshow="refuseData.isshow1" @confirm="refuse" @cancel="cancel()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="1"></Dialog> 
-        <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2" :showIndenTitle="showIndenTitle"></Dialog> 
+        <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2" :showIndenTitle="showIndenTitle" :title='result.title'></Dialog> 
         
     </div>
 </template>

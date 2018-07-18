@@ -15,7 +15,7 @@
                   style="width: 100%"
                   :highlight-current-row="true">
                     <el-table-column
-                    prop="sensitive_name"
+                    prop="sensitive_word"
                     label="敏感词">
                     </el-table-column>
                     <el-table-column
@@ -32,7 +32,7 @@
         <footer v-show='total>10'>
             <Pagination :total="total" @changePage="changePage"></Pagination>
         </footer>
-        <DialogLabel :isshow="dialog_label_data.isshow" @confirm="confirm" @cancel="cancel"  :type="'sensitive'" :sensitive_name='sensitive_name'></DialogLabel> 
+        <DialogLabel :isshow="dialog_label_data.isshow" @confirm="confirm" @cancel="cancel"  :type="'sensitive'" :sensitive_name='sensitive_word'></DialogLabel> 
         <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
     </div>
 </template>
@@ -52,10 +52,10 @@
         data() {
             return {
                 isShowTop : true,
-                total     : 1000,
+                total     : 0,
                 showImg   : false,
                 imgSrc    : '',
-                sensitive_name : '',
+                sensitive_word : '',
                 page:1,
                 issearch:false,
                 sendData  :{
@@ -72,9 +72,7 @@
                     content:'确认删除这条敏感词？'
                 },
                 tableData : [
-                    {id:1,sensitive_name:'hahah1'},
-                    {id:1,sensitive_name:'hahah2'},
-                    {id:1,sensitive_name:'hahah3'},
+                    
                 ],
             }
         },
@@ -132,29 +130,50 @@
             },
             cancel(val){
                 this.dialog_label_data.isshow=val;
-                this.sensitive_name = ''
+                this.sensitive_word = ''
             },
             confirm(val){
                 var $this = this;
-                this.ajax('/word_filters/','post',{mobile:val},{}).then(function(res){
-                    if(res&&res.data){
-                        // console.log(res.data)
-                        $this.tableData.unshift(res.data);
-                        $this.dialog_label_data.isshow=false;
-                    }
-
-                },function(err){
-                    console.log(err.response.status)
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            $this.$message({
-                                message: errors[key][0],
-                                type: 'error'
-                            });
+                if(this.confirmData.row.id){
+                    this.ajax('/word_filters/'+this.confirmData.row.id,'put',{sensitive_word:val}).then(function(res){
+                        if(res&&res.data){
+                            // console.log(res.data)
+                            $this.confirmData.row. sensitive_word= res.data.sensitive_word;
+                            $this.dialog_label_data.isshow=false;
+                        }
+                    },function(err){
+                        console.log(err.response.status)
+                        if(err&&err.response){
+                            let errors=err.response.data
+                            for(var key in errors){
+                                $this.$message({
+                                    message: errors[key][0],
+                                    type: 'error'
+                                });
+                            } 
                         } 
-                    } 
-                })
+                    })
+                }else{
+                    this.ajax('/word_filters/','post',{sensitive_word:val},{}).then(function(res){
+                        if(res&&res.data){
+                            // console.log(res.data)
+                            $this.tableData.unshift(res.data);
+                            $this.dialog_label_data.isshow=false;
+                        }
+                    },function(err){
+                        console.log(err.response.status)
+                        if(err&&err.response){
+                            let errors=err.response.data
+                            for(var key in errors){
+                                $this.$message({
+                                    message: errors[key][0],
+                                    type: 'error'
+                                });
+                            } 
+                        } 
+                    })
+                }
+                
                 
             },
             openConfirm(id,index){
@@ -165,10 +184,12 @@
                 console.log($('.v-modal'))
             },
             openDialog(row,index){
+                this.confirmData.row=row
+                console.log(row)
                 if(row){
-                    this.sensitive_name = row.sensitive_name
+                    this.sensitive_word = row.sensitive_word
                 }else{
-                    this.sensitive_name = ''
+                    this.sensitive_word = ''
                 }
                 
                 this.dialog_label_data.isshow=true
@@ -176,7 +197,7 @@
             deleteSensitive(id,index){
                 let $this=this;
                 // console.log(index)
-                this.ajax('/','delete').then(function(res){
+                this.ajax('/word_filters/'+id,'delete').then(function(res){
                     if(res&&res.status==204){
                         $this.tableData.splice(index,1)
                         $this.confirmData.isshow=false;

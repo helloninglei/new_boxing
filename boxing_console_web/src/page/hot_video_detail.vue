@@ -4,7 +4,7 @@
         <div class='container'>
             <el-row> 
                 <el-col :span="12">
-                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
+                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
                         <el-form-item label="视频名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
                         </el-form-item>
@@ -20,6 +20,7 @@
                                 <span class='video_name'>{{tsurl}} </span>
                                 <span ><i class="el-icon-error" style='cursor:pointer' @click='deleteUrl(1)'></i></span>
                             </p>
+                            <el-progress type="circle" :percentage="tsurlProgress" :width='70' style='position:absolute;right:-69px;top:-14px' v-show='tsurlProgress>0&&tsurlProgress<100'></el-progress>
                             <el-input v-model="ruleForm.tsurl" type='file' id='full_video' @change='getFullVideo' style='display: none'></el-input>
                         </el-form-item>
                         <el-form-item label="不完整视频" prop="try_ts_url">
@@ -28,9 +29,10 @@
                                 <span class='video_name'>{{try_ts_url}}</span> 
                                 <span ><i class="el-icon-error" style='cursor:pointer' @click='deleteUrl(2)'></i></span>
                             </p>
+                            <el-progress type="circle" :percentage="tryTsurlProgress" :width='70' style='position:absolute;right:-69px;top:-14px' v-show='tryTsurlProgress>0&&tryTsurlProgress<100'></el-progress>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频封面" prop="avatar">
+                        <el-form-item label="视频封面" prop="try_ts_url">
                             <el-row>
                                 <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
                                 <div>  
@@ -50,22 +52,34 @@
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
-                        <el-form-item label="关联用户">
+                        <el-form-item label="关联用户" prop='try_ts_url'>
                             <ul>
                                 <li class='lf'>
-                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
+                                    <p style='border-radius: 50%;width:50px;height:50px;overflow: hidden;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
                                         <img :src="'./static/img/edit_user_img.png'" alt="" width="100%">
                                     </p>
                                     <p style='text-align: center'>编辑关联用户</p>
                                 </li>
                                 <li class='lf' v-for="item in userImgIds" style='width:80px'>
-                                    <p style='border-radius: 50%;width:50px;height:50px;margin-left:15px'>
+                                    <p style='border-radius: 50%;overflow: hidden;width:50px;height:50px;margin-left:15px'>
                                         <img :src="config.baseUrl+item.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
                                     <p style='text-align: center'>{{item.nick_name}}</p>
                                 </li>
                             </ul>
+                        </el-form-item>
+                        <el-form-item label="是否同步热门视频" prop="push_to_hotvideo">
+                            <el-radio-group v-model="ruleForm.push_to_hotvideo">
+                                <el-radio :label="true" >是</el-radio>
+                                <el-radio :label="false">否</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="是否置顶" prop="stay_top" v-if='ruleForm.push_to_hotvideo'>
+                            <el-radio-group v-model="ruleForm.stay_top">
+                                <el-radio :label="true" >是</el-radio>
+                                <el-radio :label="false">否</el-radio>
+                            </el-radio-group>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -99,6 +113,7 @@
             <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">取消</el-button>
           </div>
         </el-dialog>
+
     </div>
 </template>
 
@@ -141,8 +156,8 @@
         /*text-overflow:ellipse;*/
     }
     .showImg{
-        width:150px;
-        height:104px;
+        width:188px;
+        height:100px;
         overflow: hidden;
         position: relative;
         float: left;
@@ -159,7 +174,6 @@
 <script>
     import TopBar from 'components/topBar';
     import $      from 'jquery' 
-    import { Loading } from 'element-ui';
     import Cropper from 'components/cropper';
     export default {
         data() {
@@ -192,6 +206,8 @@
                 userImgIds  : [
                     
                 ],
+                tryTsurlProgress:0,
+                tsurlProgress:0,
                 showChangeUser:false,
                 ruleForm: {
                     users   : [],
@@ -201,6 +217,8 @@
                     price   : '',
                     tsurl   :'',
                     try_ts_url: '',
+                    push_to_hotvideo:false,
+                    stay_top:false,
                 },
                 rules:{
                     users:[
@@ -231,6 +249,12 @@
                               }
                         }, trigger: 'blur',required:true }
                     ],
+                    push_to_hotvideo:[
+                        { trigger: 'blur',required:true }
+                    ],
+                    stay_top:[
+                        { trigger: 'blur',required:true }
+                    ],
                     tsurl:[
                         { validator: validateUrl, trigger: 'blur',required:true }
                     ],
@@ -238,7 +262,6 @@
                         { validator: validateTryUrl, trigger: 'blur',required:true }
                     ]
                 },
-                loadingInstance:'',
                 inputId:'',
                 url_f:'',
                 changeUrl:false,
@@ -248,7 +271,6 @@
         },
         components: {
             TopBar,
-            Loading,
             Cropper
         },
         created() {
@@ -275,9 +297,8 @@
                 var file=event.target.files;
                 var $this=this
                 this.upload(file[0],function(url){
-                    $this.loadingInstance.close();
                     $this.tsurl = url
-                });
+                },2);
             },
             getUserIds(){
                 let $this = this;
@@ -308,19 +329,17 @@
                         $this.ruleForm.name    = res.data.name;
                         $this.ruleForm.price_int   = parseInt(res.data.price);
                         $this.ruleForm.description = res.data.description;
-                        // let tsurl = res.data.url
-                        // $this.tsurl=res.data.url
-                        // let try_ts_url = res.data.try_url
-                        // $this.try_ts_url= res.data.try_url
-                        // $('#full_video').val(tsurl) 
-                        // $('#little_video').val(try_ts_url) 
-                        
                         $this.ruleForm.cover = res.data.cover;
+                        $this.ruleForm.stay_top = res.data.stay_top
                         $this.userImgIds = res.data.user_list;
                         for(var i=0;i<$this.userImgIds.length;i++){
                             $this.ruleForm.users.push($this.userImgIds[i].id)
+                            if($this.userImgIds[i].id==10){
+                               $this.ruleForm.push_to_hotvideo = true;
+                            }
                         }
                         $this.src_avatar = $this.config.baseUrl + res.data.cover;
+
                     }
 
                 },function(err){
@@ -345,23 +364,28 @@
                 var $this=this
                 this.upload(file[0],function(url){
                     $this.try_ts_url = url
-                    $this.loadingInstance.close();
-                });
+                },1);
             },
-            upload(file,fun){
+            upload(file,fun,type){
                 // console.log(file)
                 let formData = new FormData() 
                 let $this = this;
                 formData.append('file', file) 
-                this.loadingInstance = Loading.service();
-                this.ajax('/upload','post',formData).then(function(res){
+                this.ajax('/upload','post',formData,{},{},function(val){
+                    if(type==1){
+                        $this.tryTsurlProgress = parseFloat(val)
+                    }
+                    if(type==2){
+                        $this.tsurlProgress = parseFloat(val)
+                    }
+                    
+                }).then(function(res){
                     if(res&&res.data){
                         fun(res.data.urls[res.data.urls.length-1])
                     }
 
                 },function(err){
                     if(err&&err.response){
-                        $this.loadingInstance.close();
                         let errors=err.response.data
                         for(var key in errors){
                             $this.$message({
@@ -377,7 +401,7 @@
             },
             confirm(){
                 this.showChangeUser = false;
-                console.log(this.ruleForm.users)
+                // console.log(this.ruleForm.users)
                 let userImgIds = []
                 for(var i=0;i<this.ruleForm.users.length;i++){
                     userImgIds.push(this.userHash[this.ruleForm.users[i]])

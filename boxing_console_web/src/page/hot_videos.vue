@@ -115,7 +115,7 @@
                 tableColumn:[
                     {title:'id',    name :'ID',   width: '80'},
                     {title:'name',  name :'视频名称',width: ''},
-                    {title:'user_id',name :'关联用户' ,width: '80'},
+                    {title:'user_list_name',name :'关联用户' ,width: '80'},
                     {title:'price',name :'付费金额（元）',width: '100'},
                     {title:'sales_count', name :'付费人数'   ,width: ''},
                     {title:'price_amount',name :'总金额（元）',width: '100'},
@@ -151,6 +151,11 @@
                             res.data.results[i].price_amount = res.data.results[i].price_amount  ?(res.data.results[i].price_amount/100).toFixed(2)  :0
                             res.data.results[i].price = res.data.results[i].price  ?(res.data.results[i].price/100).toFixed(2)  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
+                            res.data.results[i].user_list_name = [] 
+                            for(var a=0;a<res.data.results[i].user_list.length;a++){
+                                res.data.results[i].user_list_name.push(res.data.results[i].user_list[a].nick_name)
+                            }
+                            res.data.results[i].user_list_name = res.data.results[i].user_list_name.toString();
                         }
                         $this.tableData=res.data.results;
                         $this.total = res.data.count;
