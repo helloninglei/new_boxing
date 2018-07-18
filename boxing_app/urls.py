@@ -223,7 +223,8 @@ chat_rooms_info_urls = [
 ]
 
 shutup_list_urls = [
-    path("shutup_list", ShutUpListViewSet.as_view({"get": "list", "delete": "destroy", "post": "create"})),
+    path("shutup_list", ShutUpListViewSet.as_view({"get": "list", "post": "create"})),
+    path("shutup_list_delete", ShutUpListViewSet.as_view({"post": "destroy"}))
 ]
 
 cover_picture_urls = [
