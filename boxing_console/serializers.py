@@ -41,6 +41,10 @@ class UserSerializer(serializers.ModelSerializer):
     share_count = serializers.SerializerMethodField()
     is_boxer = serializers.SerializerMethodField()
     boxer_id = serializers.CharField(source="boxer_identification.id")
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, instance):
+        return instance.get_user_type_display() or "普通用户"
 
     def get_is_boxer(self, instance):
         return BoxerIdentification.objects.filter(

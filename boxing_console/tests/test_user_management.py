@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from biz.models import User
 from rest_framework import status
-from biz.constants import USER_TYPE_BOXER, USER_TYPE_CELEBRITY, USER_TYPE_MEDIA
+from biz.constants import USER_TYPE_BOXER, USER_TYPE_CELEBRITY, USER_TYPE_MEDIA, USER_TYPE_MAP
 
 
 class UserManagementTestCase(APITestCase):
@@ -28,22 +28,22 @@ class UserManagementTestCase(APITestCase):
         response = self.client.get(path=f"/users?user_type={USER_TYPE_CELEBRITY}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['user_type'], USER_TYPE_CELEBRITY)
+        self.assertEqual(response.data['results'][0]['user_type'], USER_TYPE_MAP[USER_TYPE_CELEBRITY])
 
         response = self.client.get(path=f"/users?user_type={USER_TYPE_BOXER}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['user_type'], USER_TYPE_BOXER)
+        self.assertEqual(response.data['results'][0]['user_type'], USER_TYPE_MAP[USER_TYPE_BOXER])
 
         response = self.client.get(path=f"/users?user_type={USER_TYPE_MEDIA}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['user_type'], USER_TYPE_MEDIA)
+        self.assertEqual(response.data['results'][0]['user_type'], USER_TYPE_MAP[USER_TYPE_MEDIA])
 
         response = self.client.get(path="/users?user_type=4")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 2)
-        self.assertIsNone(response.data['results'][0]['user_type'])
+        self.assertEqual(response.data['results'][0]['user_type'], "普通用户")
 
         response = self.client.get(path="/users")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
