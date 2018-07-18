@@ -1,4 +1,6 @@
 import subprocess as sp
+from rest_framework.response import Response
+from rest_framework import status
 
 from django.http import StreamingHttpResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -18,4 +20,7 @@ def cover_picture(request):
                '-f', 'image2pipe',
                '-']
     pipe = sp.Popen(command, stdout=sp.PIPE, bufsize=10 ** 8)
+    pipe.wait()
+    if pipe.returncode is not 0:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     return StreamingHttpResponse(pipe.stdout, content_type="image/jpeg")
