@@ -5,7 +5,7 @@
             评论 {{commentNum}}
             <span class="underline"></span>
         </span>
-        <span class="item praise" :class="{active: checked === 'praise'}" @click="tab('praise')" v-if="ifShowPraise">
+        <span class="item praise" v-if="ifShowPraise">
             点赞 {{praises.length}}
             <span class="underline"></span>
         </span>
