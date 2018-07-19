@@ -446,7 +446,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
     identity = serializers.CharField(source="user.identity", read_only=True)
     is_following = serializers.SerializerMethodField(read_only=True)
-    bio = serializers.SerializerMethodField()
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
@@ -455,14 +454,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         data = super(UserProfileSerializer, self).to_representation(instance)
         data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
         data['avatar'] = instance.avatar or DEFAULT_AVATAR
+        data['bio'] = instance.bio or (DEFAULT_BIO_OF_MEN if instance.gender else DEFAULT_BIO_OF_WOMEN)
         return data
-
-    def get_bio(self, instance):
-        if instance.bio:
-            return instance.bio
-        if instance.gender:
-            return DEFAULT_BIO_OF_MEN
-        return DEFAULT_BIO_OF_WOMEN
 
     def get_is_following(self, instance):
         return bool(is_following(self.context['request'].user.id, instance.user.id))
