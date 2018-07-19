@@ -1,4 +1,4 @@
-from django.db.models import Q, Count, Case, When
+from django.db.models import Q, Count, Case, When, Value
 from rest_framework import permissions, mixins
 from rest_framework.viewsets import GenericViewSet
 
@@ -17,13 +17,13 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         search_type = kwargs['search_type']
         keywords = self.request.query_params.get('keywords')
         if search_type == "USER":
-            user_and_follwer_list = get_user_sorted_set_by_follower
-            sort_rule = Case(*[When(pk=user_id, then=follower_count) for user_id, follower_count
-                               in user_and_follwer_list])
+            user_list = get_user_sorted_set_by_follower()
+            sort_rule = Case(*[When(pk=user_id, then=follower_count) for user_id, follower_count in user_list],
+                             default=Value(0))
             self.serializer_class = UserProfileSerializer
             qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
                 .select_related("user", "user__boxer_identification")\
-                .order_by(sort_rule, '-created_time')
+                .order_by(-sort_rule, '-created_time')
             self.queryset = qs if keywords else []
         elif search_type == "MESSAGE":
             user_id = self.request.user.id
