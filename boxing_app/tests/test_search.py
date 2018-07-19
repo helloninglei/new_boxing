@@ -81,7 +81,6 @@ class SearchCase(APITestCase):
         GameNews.objects.create(**self.news_data)
         self.news_data['title'] = title2
         GameNews.objects.create(**self.news_data)
-        GameNews.objects.create(**self.news_data)
 
         res = self.client1.get(f'/search/NEWS?keywords={title1}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
