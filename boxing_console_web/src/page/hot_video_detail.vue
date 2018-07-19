@@ -487,7 +487,7 @@
             //宣传图
             getUrl(url,imgId){
                 this.changeUrl=false
-                // this.src_avatar = this.config.baseUrl+url
+                this.src_avatar = this.config.baseUrl+url
                 this.ruleForm.cover = url
             },
             addImg(ele,imgId){
@@ -500,7 +500,6 @@
                 let picValue = files[0];  
                 this.url_f = this.getObjectURL(picValue); 
                 this.changeUrl=true
-                console.log(this.url_f)
             },
             getObjectURL (file) {  
                 var url = null ;   
