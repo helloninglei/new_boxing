@@ -15,6 +15,7 @@ def cover_picture(request):
                '-ss', '0',
                "-i", f'{request.query_params.get("video_url")}',
                '-t', '1',
+               '-s', '480*320',
                '-f', 'image2pipe',
                '-']
     pipe = sp.Popen(command, stdout=sp.PIPE, bufsize=10 ** 8)
