@@ -403,6 +403,13 @@
                 this.showChangeUser = false;
             },
             confirm(){
+                if(this.ruleForm.users.length>7){
+                    this.$message({
+                        message: '关联用户最多只能选7个',
+                        type: 'warning'
+                    })
+                    return;
+                }
                 this.showChangeUser = false;
                 // console.log(this.ruleForm.users)
                 let userImgIds = []
