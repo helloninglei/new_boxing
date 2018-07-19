@@ -18,12 +18,12 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         keywords = self.request.query_params.get('keywords')
         if search_type == "USER":
             user_list = get_user_sorted_set_by_follower()
-            sort_rule = Case(*[When(pk=user_id, then=follower_count) for user_id, follower_count in user_list],
-                             default=Value(0))
+            sort_rule = Case(*[When(pk=user_id, then=-follower_count) for user_id, follower_count in user_list],
+                             default=Value(100000000))
             self.serializer_class = UserProfileSerializer
             qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
                 .select_related("user", "user__boxer_identification")\
-                .order_by(-sort_rule, '-created_time')
+                .order_by(sort_rule, '-created_time')
             self.queryset = qs if keywords else []
         elif search_type == "MESSAGE":
             user_id = self.request.user.id
