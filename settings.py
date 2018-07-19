@@ -2,6 +2,7 @@
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 import os
+import raven
 import sys
 from base64 import b64decode
 from corsheaders.defaults import default_headers, default_methods
@@ -149,6 +150,7 @@ INSTALLED_APPS = [
     'captcha',
     'django_filters',
     'corsheaders',
+    'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE = [
@@ -281,3 +283,10 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'biz.hasher.BoxingMD5PasswordHasher',
 ]
+
+RAVEN_CONFIG = {
+    'dsn': 'http://ded6e41633544be1bd6e1f03454fe5c7:48dc8740b5ec42d58f9618649ffae5ec@39.104.180.65//2',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(BASE_DIR),
+}
