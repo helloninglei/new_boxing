@@ -4,7 +4,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from biz.constants import PAYMENT_STATUS_PAID
 from biz.models import Message, GameNews, HotVideo, UserProfile
-from biz.redis_client import blocked_user_list, get_user_sorted_set_by_follower
+from biz.redis_client import blocked_user_list, user_list_order_by_follower
 from biz.utils import comment_count_condition
 from boxing_app.serializers import MessageSerializer, NewsSerializer, HotVideoSerializer, \
     UserProfileSerializer
@@ -17,9 +17,8 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         search_type = kwargs['search_type']
         keywords = self.request.query_params.get('keywords')
         if search_type == "USER":
-            user_list = get_user_sorted_set_by_follower()
-            sort_rule = Case(*[When(pk=user_id, then=-follower_count) for user_id, follower_count in user_list],
-                             default=Value(100000000))
+            user_list = user_list_order_by_follower()
+            sort_rule = Case(*[When(pk=user_id, then=-follower_count) for user_id, follower_count in user_list])
             self.serializer_class = UserProfileSerializer
             qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
                 .select_related("user", "user__boxer_identification")\

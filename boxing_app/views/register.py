@@ -82,6 +82,7 @@ def register_with_user_info(request):
                                                  nick_name_index_letter=nick_name_index_letter)
     register_easemob_account.delay(user.id)
     redis_client.redis_client.delete(redis_const.REGISTER_INFO.format(mobile=serializer.validated_data['mobile']))
+    redis_client.redis_client.zadd('user_set_order_by_follower', 0, user.id)
     return Response(data={"result": "ok"}, status=status.HTTP_201_CREATED)
 
 
