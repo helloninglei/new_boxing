@@ -103,5 +103,3 @@ class SearchCase(APITestCase):
         res = self.client1.get('/search/VIDEO?keywords=世界杯')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
-
-

@@ -23,6 +23,7 @@ def follow_user(current_user_id, follower_id):
         p = redis_client.pipeline()
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
         p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
+        p.zincrby('users_by_follower', follower_id)
         p.execute()
 
 
@@ -30,6 +31,7 @@ def unfollow_user(current_user_id, follower_id):
     p = redis_client.pipeline()
     p.zrem(f'follower_{follower_id}', current_user_id)
     p.zrem(f'following_{current_user_id}', follower_id)
+    p.zincrby('users_by_follower', follower_id, amount=-1)
     p.execute()
 
 
@@ -63,6 +65,10 @@ def follower_count(current_user_id):
 
 def following_count(current_user_id):
     return redis_client.zcard(f'following_{current_user_id}')
+
+
+def get_user_sorted_set_by_follower():
+    return redis_client.zrevrange('users_by_follower', 0, -1, withscores=True)
 
 
 def record_object_location(obj, longitude, latitude):
