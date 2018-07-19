@@ -7,7 +7,7 @@ build_image(){
     docker build -f ./deploy/docker/NodeDockerfile -t new_boxing_node_image deploy/docker
 }
 
-api(){
+app(){
     docker run -p 5000:8000 --name new_boxing_app -v `pwd`:/work -v $LOG_PATH:/var/log/new_boxing -v `pwd`/deploy/supervisor:/etc/supervisor -e APP='boxing_app' -d -it new_boxing_image /work/deploy/run.sh
 }
 
@@ -28,7 +28,7 @@ init(){
     if [[ -n $2 ]]; then
         eval $2
     else
-        api && console
+        app && console
     fi
 }
 
@@ -39,6 +39,42 @@ init_web(){
         web_console && web_share
     fi
 }
+
+filter_container(){
+    filter_by_status=$1
+    filter_by_name=$2
+    if [ $filter_by_status = 'running' ]
+    then
+      echo $(docker ps --filter "name=new_boxing_$filter_by_name" --quiet)
+    elif [ $filter_by_status = 'stopped' ]
+    then
+      echo $(docker ps -a --filter "name=new_boxing_$filter_by_name" --filter "status=exited" --filter "status=created" --quiet)
+    elif [ $filter_by_status = 'has_image' ]
+    then
+      echo $(docker images --filter "reference=new_boxing_*" --quiet)
+    fi
+}
+
+
+deploy_by_name(){
+    project_name=$1
+    running_container=$(filter_container running $project_name)
+    stopped_container=$(filter_container stopped $project_name)
+    has_image=$(filter_container has_image $project_name)
+    if [ "$running_container" ]
+    then
+        docker exec -i $running_container /bin/bash /work/deploy/run.sh
+    elif [ "$stopped_container" ]
+    then
+        docker start $stopped_container
+    elif [ "$has_image" ]
+    then
+        $project_name
+    else
+        build_image && $project_name
+    fi
+}
+
 
 reset_api(){
     docker stop $(docker ps  --filter "name=new_boxing_" --quiet)
@@ -60,18 +96,11 @@ restart_web(){
 }
 
 deploy(){
-    running_container=$(docker ps --filter "name=new_boxing_" --quiet)
-    stopped_container=$(docker ps -a --filter "name=new_boxing_" --filter "status=exited" --filter "status=created" --quiet)
-    has_images=$(docker images --filter "reference=new_boxing_*" --quiet)
-    if [ "$running_container" ]; then
-        for container in $running_container
-        do
-            docker exec -i $container /bin/bash /work/deploy/run.sh
-        done
-    elif [ "$stopped_container" ]; then
-        docker start ${stopped_container}
+    if [[ -n $2 ]]
+    then
+        deploy_by_name $2
     else
-        build_image  && init $@
+        deploy_by_name app && deploy_by_name console
     fi
 }
 
