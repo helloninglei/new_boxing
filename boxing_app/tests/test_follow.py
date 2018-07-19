@@ -23,7 +23,7 @@ class FollowTestCase(APITestCase):
         res = self.client1.post('/follow', data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-        data = {'user_id': self.test_user_1.id}
+        data = {'user_id': "a"}
         res = self.client1.post('/follow', data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
