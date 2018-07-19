@@ -81,7 +81,7 @@
                         label="用户类别"
                         width="70">
                             <template slot-scope="scope">
-                                <span class='colorFont' v-if="scope.row.is_boxer" @click='checkIdent(scope.row.boxer_id)'>认证拳手</span>
+                                <span class='colorFont' v-if="scope.row.user_type=='拳手'" @click='checkIdent(scope.row.boxer_id)'>认证拳手</span>
                                 <span class='colorFont' v-else @click='goUserDetail(scope.row)'>{{scope.row.user_type}}</span>
                             </template>
                         </el-table-column>

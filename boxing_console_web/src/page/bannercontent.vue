@@ -46,14 +46,14 @@
                             :action=action
                             :show-file-list="false"
                             :on-success="handleAvatarSuccess"
-                            style="position: relative;width: 414px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;height:188px">
+                            style="position: relative;width: 414px;height:188px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
                         <template v-if="picture">
                             <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
                             <img  :src="picture" class="avatar">
                         </template>
                         <template v-else>
                             <i class="el-icon-plus avatar-uploader-icon"></i>
-                            <div class="upload_tip_text">尺寸大小：828*376</div>
+                            <div class="upload_tip_text">尺寸大小：1242*564</div>
                         </template>
                     </el-upload>
                     <div class="el-form-item__error" v-if="showError">
@@ -216,7 +216,7 @@
                 let image = new Image();
                 image.src = picUrl;
                 image.onload = () => {
-                    if (image.width !== 828 || image.height != 376) {
+                    if (image.width !== 1242 || image.height != 564) {
                         this.showErrorTip('请上传符合尺寸的商品详情图');
                     }
                     else {

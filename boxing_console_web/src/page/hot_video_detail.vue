@@ -32,15 +32,15 @@
                             <el-progress type="circle" :percentage="tryTsurlProgress" :width='70' style='position:absolute;right:-69px;top:-14px' v-show='tryTsurlProgress>0&&tryTsurlProgress<100'></el-progress>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频封面" prop="try_ts_url">
+                        <el-form-item label="视频封面" prop="cover">
                             <el-row>
-                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='750' :height='400'></Cropper>
+                                <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='1242' :height='663'></Cropper>
                                 <div>  
-                                      <div class='showImg' @click="addImg('inputId3','src_avatar')">  
+                                    <div class='showImg' @click="addImg('inputId3','src_avatar')">  
                                       <img :src="src_avatar" alt="" width='100%' id='src_avatar'> 
                                       <div class='noImg' v-if="!src_avatar"> 
                                           <p>添加视频封面</p>
-                                          <p>750*400</p>
+                                          <p>1242*663</p>
                                       </div>
                                     </div>
                                     <div style="margin-top:63px;float:left;margin-left:20px">  
@@ -52,7 +52,7 @@
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
-                        <el-form-item label="关联用户" prop='try_ts_url'>
+                        <el-form-item label="关联用户" prop='users'>
                             <ul>
                                 <li class='lf'>
                                     <p style='border-radius: 50%;width:50px;height:50px;overflow: hidden;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
@@ -156,8 +156,8 @@
         /*text-overflow:ellipse;*/
     }
     .showImg{
-        width:188px;
-        height:100px;
+        width:207px;
+        height:111px;
         overflow: hidden;
         position: relative;
         float: left;
@@ -223,6 +223,9 @@
                 rules:{
                     users:[
                         { required:true,message:'请选择用户id', trigger:'blur' }
+                    ],
+                    cover:[
+                        { required:true,message:'请添加视频封面', trigger:'blur' }
                     ],
                     name:[
                         { required:true,message:'请输入视频名称', trigger:'blur' }
