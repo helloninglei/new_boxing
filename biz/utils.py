@@ -72,4 +72,3 @@ comment_count_condition = Count('comments', filter=Q(comments__is_deleted=False)
 class Round(Func):
     function = 'ROUND'
     template = '%(function)s(%(expressions)s, 1)'
-

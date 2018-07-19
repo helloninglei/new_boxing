@@ -20,9 +20,10 @@ from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet, GetBoxerCourseByAnyOneViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
+from boxing_app.views.search import SearchVewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_LIST, \
-    USER_IDENTITY_DICT
+    USER_IDENTITY_DICT, SEARCH_TYPE_CHOICE
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
@@ -206,6 +207,13 @@ share_urls = [
     path("boxer/<int:pk>/info", boxer_info_to_share)
 ]
 
+search_type_string = '|'.join(SEARCH_TYPE_CHOICE)
+search_urls = [
+    re_path(r'^search/(?P<search_type>({0}))'.format(search_type_string), SearchVewSet.as_view({'get': 'list'}),
+            name='search')
+
+]
+
 version_urls = [
     path("version", version)
 ]
@@ -259,6 +267,7 @@ urlpatterns += official_accounts_urls
 urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
+urlpatterns += search_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
