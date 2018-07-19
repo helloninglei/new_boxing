@@ -9,8 +9,8 @@
               <el-form-item label="增加余额" prop="change_amount">
                 <el-input v-model="form3.change_amount" placeholder="请输入" type='number'></el-input>
               </el-form-item>
-              <el-form-item label="用户类别" prop="user_type" v-if='row.user_type=="认证拳手"'>
-                认证拳手
+              <el-form-item label="用户类别" prop="user_type" v-if='row.user_type=="拳手"'>
+                拳手
               </el-form-item>
               <el-form-item label="用户类别" prop="user_type" v-else>
                 <el-radio-group v-model="form3.user_type">
@@ -74,12 +74,12 @@
                 form3:{
                   change_amount:0,
                   title:'',
-                  user_type:'认证拳手',
+                  user_type:'拳手',
                 },
                 rules3:{
                   change_amount: [
                     { validator: (rule, value, callback) => {
-                        if(value==''){
+                        if(value===''){
                             callback(new Error('请输入钱包余额'));
                         }else if (value<0) {
                             callback(new Error('请输入正数'));
@@ -90,7 +90,7 @@
                   ],
                   user_type: [
                     { validator: (rule, value, callback) => {
-                        if(this.row.user_type=='认证拳手'){
+                        if(this.row.user_type=='拳手'){
                             callback();
                         }
                         else if(value==''){
@@ -173,10 +173,7 @@
               let $this = this
               this.$refs['form3'].validate((valid) => {
                   if (valid) {
-                    this.form3.change_amount = this.form3.change_amount*100
-                    if(this.form3.user_type=='认证拳手'){
-                      delete this.form3.user_type
-                    }else if(this.form3.user_type=='普通用户'){
+                    if(this.form3.user_type=='普通用户'){
                       delete this.form3.title
                     }
                       this.ajax('/edit_user/'+this.row.id,'put',this.form3).then(function(res){
