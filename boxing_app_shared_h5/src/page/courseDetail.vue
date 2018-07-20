@@ -89,6 +89,8 @@
     .portrait_container
         display inline-block
         position relative
+        width 2.5rem
+        height 2.5rem
         .sign_icon
             position absolute
             right 0
