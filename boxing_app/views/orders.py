@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -8,10 +9,9 @@ from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
 from biz import constants, sms_client
-from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder, CourseSettleOrder
+from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder, CourseSettleOrder, PayOrder
 from biz.services.pay_service import PayService
-from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission, \
-    IsBoxerPermission
+from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission
 from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
@@ -73,6 +73,13 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             return Response({"message": '订单不是未支付状态，不能删除'}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        pay_order = PayOrder.objects.filter(content_type__pk=ContentType.objects.get_for_model(instance).id,
+                                            object_id=instance.id).first()
+        if pay_order:
+            pay_order.delete()
+        super().perform_destroy(instance)
 
     @permission_classes([OnlyUserSelfCanConfirmOrderPermission])
     def user_confirm_order(self, request, *args, **kwargs):
