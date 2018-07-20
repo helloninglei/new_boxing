@@ -1,7 +1,11 @@
+import time
+
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
+from biz.constants import PAYMENT_TYPE_ALIPAY, DEVICE_PLATFORM_IOS
 from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder, PayOrder
 
 
@@ -163,7 +167,8 @@ class OrderTestCase(APITestCase):
 
     def test_get_user_order_list(self):
         # 分别为test_user_1、2、3、4创建user_profile
-        [UserProfile.objects.filter(user=user).update(**self.user_profile_data) for user in [self.test_user_1, self.test_user_2, self.test_user_3, self.test_user_4]]
+        [UserProfile.objects.filter(user=user).update(**self.user_profile_data) for user in
+         [self.test_user_1, self.test_user_2, self.test_user_3, self.test_user_4]]
 
         # 为拳手用户test_user_1创建1个课程(依次创建user_profile->boxer->club->course）
         self.boxer_data['user'] = self.test_user_4
@@ -306,7 +311,17 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data['message'], '订单不是未支付状态，不能删除')
         # 可以删除未支付状态的支付订单
+
+        pay_order = PayOrder.objects.create(user=self.test_user_1, content_object=course_order,
+                                            payment_type=PAYMENT_TYPE_ALIPAY,
+                                            amount=90, device=DEVICE_PLATFORM_IOS, out_trade_no=f"{int(time.time())}")
+        self.assertIsNotNone(
+            PayOrder.objects.filter(content_type__pk=ContentType.objects.get_for_model(course_order).id,
+                                    object_id=course_order.id).first())
+
         CourseOrder.objects.filter(user=self.test_user_2).update(status=constants.PAYMENT_STATUS_UNPAID)
         res = self.client2.delete(f'/user/order/{course_order.id}')
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(CourseOrder.objects.filter(id=course_order.id).exists())
+        self.assertIsNone(PayOrder.objects.filter(content_type__pk=ContentType.objects.get_for_model(course_order).id,
+                                                  object_id=course_order.id).first())
