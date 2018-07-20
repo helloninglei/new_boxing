@@ -75,10 +75,8 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_destroy(self, instance):
-        pay_order = PayOrder.objects.filter(content_type__pk=ContentType.objects.get_for_model(instance).id,
-                                            object_id=instance.id).first()
-        if pay_order:
-            pay_order.delete()
+        PayOrder.objects.filter(content_type__pk=ContentType.objects.get_for_model(instance).id,
+                                object_id=instance.id).delete()
         super().perform_destroy(instance)
 
     @permission_classes([OnlyUserSelfCanConfirmOrderPermission])
