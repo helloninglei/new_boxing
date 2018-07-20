@@ -30,3 +30,8 @@ class NewsViewSet(viewsets.ReadOnlyModelViewSet):
         news_id = self.kwargs['pk']
         models.GameNews.objects.filter(pk=news_id).update(views_count=F('views_count') + 1)
         return super().retrieve(request, *args, **kwargs)
+
+    def search_news(self, request, *args, **kwargs):
+        keywords = self.request.query_params.get('keywords')
+        self.queryset = self.queryset.filter(title__icontains=keywords) if keywords else []
+        return super().list(request, *args, **kwargs)

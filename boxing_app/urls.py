@@ -19,6 +19,8 @@ from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet, GetBoxerCourseByAnyOneViewSet
+from boxing_app.views.game_news import NewsViewSet
+from boxing_app.views.message import MessageViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
 from boxing_app.views.search import SearchVewSet
 from boxing_app.views.verify_code import send_verify_code
@@ -207,11 +209,11 @@ share_urls = [
     path("boxer/<int:pk>/info", boxer_info_to_share)
 ]
 
-search_type_string = '|'.join(SEARCH_TYPE_CHOICE)
 search_urls = [
-    re_path(r'^search/(?P<search_type>({0}))'.format(search_type_string), SearchVewSet.as_view({'get': 'list'}),
-            name='search')
-
+    path("search/MESSAGE", MessageViewSet.as_view({'get': 'search_message'})),
+    path("search/NEWS", NewsViewSet.as_view({'get': 'search_news'})),
+    path("search/VIDEO", SearchVewSet.as_view({'get': 'search_video'})),
+    path("search/USER", SearchVewSet.as_view({'get': 'search_user'})),
 ]
 
 version_urls = [
