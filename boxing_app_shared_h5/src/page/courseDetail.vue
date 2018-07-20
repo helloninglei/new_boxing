@@ -379,10 +379,10 @@
                             this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(thumbnail_swiper)}`
                         }
                         else if (picArrSize > 1 && picArrSize < 5) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize * 2)}`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize)}`
                         }
                         else if (picArrSize > 5) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize * 2)}`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize)}`
                         }
                         let compressPic = `?x-oss-process=image/resize,w_${parseInt(thumbnail_swiper)}`;
                         this.playerInfo.honor_certificate_images.forEach((item) => {

@@ -3,7 +3,7 @@
         <div class="trends_container_head">
             <template v-if="info.user">
                 <div class="portrait_container">
-                    <img class="portrait" :src="info.user.avatar ? config.baseUrl + info.user.avatar + `${portraitQuery}` : avatar_default" />
+                    <img class="portrait" :src="info.user.avatar ? info.user.avatar + `${portraitQuery}` : avatar_default" />
                     <div class="sign_icon" :class="info.user.user_type"></div>
                 </div>
 
@@ -255,10 +255,10 @@
                             this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(thumbnail_swiper)}`
                         }
                         else if (picArrSize > 1 && picArrSize < 5) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize * 2)}`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(8 * baseSize)}`
                         }
                         else if (picArrSize > 5) {
-                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize * 2)}`
+                            this.compressPic = `?x-oss-process=image/resize,m_fill,w_${parseInt(5 * baseSize)}`
                         }
                         let compressPic = `?x-oss-process=image/resize,w_${parseInt(thumbnail_swiper)}/quality,q_90`;
                         this.info.images.forEach((item) => {
