@@ -109,7 +109,7 @@
         width 2.5rem
         height 2.5rem
         border-radius 50%
-        vertical-align top
+        vertical-align middle
     .boxer_info
         display inline-block
         vertical-align middle
