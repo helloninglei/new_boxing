@@ -36,6 +36,11 @@ class MessageViewSet(viewsets.ModelViewSet):
             is_like=is_like).select_related('user__boxer_identification',
                                             'user__user_profile')
 
+    def search_message(self, request, *args, **kwargs):
+        keywords = self.request.query_params.get('keywords', "")
+        self.queryset = self._get_query_set().filter(content__icontains=keywords) if keywords else []
+        return super().list(request, *args, **kwargs)
+
     # 最新动态
     def list(self, request, *args, **kwargs):
         user_id = request.query_params.get('user_id')
