@@ -403,12 +403,21 @@
                 this.showChangeUser = false;
             },
             confirm(){
+                if(this.ruleForm.users.length>7){
+                    this.$message({
+                        message: '关联用户最多只能选7个',
+                        type: 'warning'
+                    })
+                    return;
+                }
                 this.showChangeUser = false;
                 // console.log(this.ruleForm.users)
                 let userImgIds = []
                 for(var i=0;i<this.ruleForm.users.length;i++){
                     userImgIds.push(this.userHash[this.ruleForm.users[i]])
                 }
+                console.log(this.ruleForm.users)
+                console.log(userImgIds)
                 this.userImgIds = userImgIds
             },
             submitForm(formName) {
