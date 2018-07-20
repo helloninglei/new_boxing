@@ -2,7 +2,11 @@
     <div class="course_detail" :class="{hasClose: ifClose}">
         <div class="boxer_container">
             <template>
-                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
+                <div class="portrait_container">
+                    <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
+                    <div class="sign_icon" :class="playerInfo.user.user_type"></div>
+                </div>
+
                 <div class="boxer_info">
                     <div class="boxerName">{{playerInfo.real_name}}<span :class="playerInfo.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
@@ -82,6 +86,24 @@
         overflow hidden
         .hasClose
             padding-bottom 0
+    .portrait_container
+        display inline-block
+        position relative
+        .sign_icon
+            position absolute
+            right 0
+            bottom 0
+            width .9rem
+            height .9rem
+            &.boxer_icon
+                background url("../assets/images/boxer_icon.png") no-repeat
+                background-size contain
+            &.mark_icon
+                background url("../assets/images/mark_icon.png") no-repeat
+                background-size contain
+            &.media_icon
+                background url("../assets/images/media_icon.png") no-repeat
+                background-size contain
     .portrait
         margin-right .6rem
         width 2.5rem
@@ -334,6 +356,20 @@
                 this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
                     if (res && res.data) {
                         this.playerInfo = res.data.results;
+                        switch (this.playerInfo.user.user_type) {
+                            case '拳手':
+                                this.playerInfo.user.user_type = 'boxer_icon';
+                                break;
+                            case '自媒体':
+                                this.playerInfo.user.user_type = 'media_icon';
+                                break;
+                            case '名人':
+                                this.playerInfo.user.user_type = 'mark_icon';
+                                break;
+                            default:
+                                this.playerInfo.user.user_type = ''
+                                break;
+                        };
                         let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
                         let picArrSize = this.playerInfo.honor_certificate_images.length;
                         let thumbnail_swiper = 18.75 * baseSize;

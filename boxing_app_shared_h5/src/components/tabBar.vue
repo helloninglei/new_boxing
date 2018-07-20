@@ -6,7 +6,7 @@
             <span class="underline"></span>
         </span>
         <span class="item praise" v-if="ifShowPraise">
-            点赞 {{praises.length}}
+            点赞 {{praiseNum}}
             <span class="underline"></span>
         </span>
         </div>
@@ -164,6 +164,10 @@
             commentType: {
                 type: String,
                 default: 'message'
+            },
+            praiseNum: {
+                type: [String, Number],
+                default: ''
             }
         },
         components: {
