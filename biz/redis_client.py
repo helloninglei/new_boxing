@@ -3,6 +3,9 @@ import redis
 from time import time
 from datetime import datetime
 from django.conf import settings
+from django.db.models import F
+
+from biz.models import UserProfile
 from biz.redis_const import SHUTUP_LIST
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
@@ -23,16 +26,16 @@ def follow_user(current_user_id, follower_id):
         p = redis_client.pipeline()
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
         p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
-        p.zincrby('user_set_order_by_follower', follower_id, amount=1)
         p.execute()
+        UserProfile.objects.filter(id=follower_id).update(fans=F('fans') + 1)
 
 
 def unfollow_user(current_user_id, follower_id):
     p = redis_client.pipeline()
     p.zrem(f'follower_{follower_id}', current_user_id)
     p.zrem(f'following_{current_user_id}', follower_id)
-    p.zincrby('user_set_order_by_follower', follower_id, amount=-1)
     p.execute()
+    UserProfile.objects.filter(id=follower_id).update(fans=F('fans') - 1)
 
 
 def is_follower(current_user_id, follower_id):
@@ -65,10 +68,6 @@ def follower_count(current_user_id):
 
 def following_count(current_user_id):
     return redis_client.zcard(f'following_{current_user_id}')
-
-
-def user_list_order_by_follower():
-    return redis_client.zrevrange('user_set_order_by_follower', 0, -1, withscores=True)
 
 
 def record_object_location(obj, longitude, latitude):
