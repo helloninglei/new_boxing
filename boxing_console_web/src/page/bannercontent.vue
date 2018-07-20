@@ -87,8 +87,8 @@
     }
     .avatar {
         display: block;
-        width: 375px;
-        height 170px
+        width: 414px;
+        height 188px
     }
     .handle_btn {
         margin-top 60px
