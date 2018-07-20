@@ -25,7 +25,7 @@ from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderView
 from boxing_app.views.search import SearchVewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_LIST, \
-    USER_IDENTITY_DICT, SEARCH_TYPE_CHOICE
+    USER_IDENTITY_DICT
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
