@@ -8,7 +8,7 @@ def update_user_fans_count(apps, schema_editor):
     key_list = redis_client.redis_client.keys(pattern='follower_*')
     for key in key_list:
         user_id = int(key.split('_')[1])
-        follower_count = redis_client.follower_count(user_id)
+        follower_count = redis_client.redis_client.zcard(key)
         UserProfile.objects.filter(id=user_id).update(fans=follower_count)
 
 
