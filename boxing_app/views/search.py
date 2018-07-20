@@ -20,7 +20,7 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
             self.serializer_class = UserProfileSerializer
             qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
                 .select_related("user", "user__boxer_identification")\
-                .order_by('-created_time')
+                .order_by('-fans', '-created_time')
             self.queryset = qs if keywords else []
         elif search_type == "MESSAGE":
             user_id = self.request.user.id

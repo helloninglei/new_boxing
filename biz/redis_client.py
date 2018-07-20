@@ -94,7 +94,8 @@ def get_near_object(obj_or_cls, longitude, latitude, radius=10000, unit='km'):
 
 # 加入黑名单
 def block_user(current_user_id, black_user_id):
-    unfollow_user(current_user_id, black_user_id)
+    if is_following(current_user_id, black_user_id):
+        unfollow_user(current_user_id, black_user_id)
     return redis_client.sadd(f"user_{current_user_id}_black_list", black_user_id)
 
 
