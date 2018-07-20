@@ -16,7 +16,7 @@
                     <template v-if="item.user">
                         <div class="portrait_container">
                             <img class="portrait" :src="item.user.avatar ? item.user.avatar + `${portraitQuery}` : avatar_default" />
-                            <div class="sign_icon" :class="item.user_type"></div>
+                            <div class="sign_icon" :class="item.user.user_type"></div>
                         </div>
 
                         <div class="portrait_right_wrapper">
@@ -118,7 +118,7 @@
             color  #9DA3B4
             .topic
                 line-height 1rem
-                margin .35rem auto .6rem 1.2rem
+                margin .35rem auto .6rem 2.2rem
             .replay_container
                 width 15.4rem
                 margin 0 auto 1.2rem 1.2rem
