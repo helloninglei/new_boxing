@@ -14,10 +14,17 @@
             <template v-if="checked === 'comment'">
                 <div class="comments_container" v-for="(item, index) in comments" :key="index">
                     <template v-if="item.user">
-                        <img class="portrait" :src="item.user.avatar ? item.user.avatar + `${portraitQuery}` : avatar_default" />
-                        <span class="userName">{{item.user.nick_name}}</span>
+                        <div class="portrait_container">
+                            <img class="portrait" :src="item.user.avatar ? item.user.avatar + `${portraitQuery}` : avatar_default" />
+                            <div class="sign_icon" :class="item.user_type"></div>
+                        </div>
+
+                        <div class="portrait_right_wrapper">
+                            <span class="userName">{{item.user.nick_name}}</span>
+                            <GetTime :createTime="item.created_time" class="getTime"></GetTime>
+                        </div>
                     </template>
-                    <GetTime :createTime="item.created_time"></GetTime>
+
                     <div class="topic">{{item.content}}</div>
                     <div :class="{replay_container: item.replies.results.length}">
                         <div v-for="(replay,index_replay) in item.replies.results" :key="index_replay" v-if="index_replay < 3">
@@ -48,13 +55,37 @@
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
+    .portrait_container
+        position relative
+        display inline-block
+        .sign_icon
+            position absolute
+            right 0
+            bottom 0
+            width .9rem
+            height .9rem
+            &.boxer_icon
+                background url("../assets/images/boxer_icon.png") no-repeat
+                background-size contain
+            &.mark_icon
+                background url("../assets/images/mark_icon.png") no-repeat
+                background-size contain
+            &.media_icon
+                background url("../assets/images/media_icon.png") no-repeat
+                background-size contain
+
+    .portrait_right_wrapper
+        display inline-block
+        vertical-align middle
+        .getTime
+            margin .5rem auto auto auto
     .portrait
-        width 1.1rem
-        height 1.1rem
+        width 2rem
+        height 2rem
         border-radius 50%
         vertical-align middle
     .userName
-        vertical-align middle
+        /*vertical-align middle*/
         color #fff
     .tab_bar
         margin .5rem auto auto auto
@@ -112,6 +143,7 @@
 
 <script type="text/ecmascript-6">
     import GetTime from 'components/getTime';
+    import config from 'common/my_config'
     export default {
         data() {
             return {
@@ -148,7 +180,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 1.1)},m_fill`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2)},m_fill`;
             },0)
         },
         methods: {
@@ -163,6 +195,22 @@
                 this.ajax(`/${this.commentType}/${this.id}/comments`,'get').then((res) => {
                     if (res && res.data) {
                         this.comments = res.data.results;
+                        this.comments.forEach((item) => {
+                            switch (item.user_type) {
+                                case '拳手':
+                                    item.user_type = 'boxer_icon';
+                                    break;
+                                case '自媒体':
+                                    item.user_type = 'media_icon';
+                                    break;
+                                case '名人':
+                                    item.user_type = 'mark_icon';
+                                    break;
+                                default:
+                                    item.user_type = ''
+                                    break;
+                            }
+                        })
                         this.commentNum = res.data.comment_count;
                     }
                 },(err) => {
