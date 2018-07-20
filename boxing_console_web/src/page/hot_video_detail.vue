@@ -330,7 +330,7 @@
                 this.ajax('/hot_videos/'+id,'get').then(function(res){
                     if(res&&res.data){
                         $this.ruleForm.name    = res.data.name;
-                        $this.ruleForm.price_int   = parseInt(res.data.price);
+                        $this.ruleForm.price_int   = parseInt(res.data.price)/100;
                         $this.ruleForm.description = res.data.description;
                         $this.ruleForm.cover = res.data.cover;
                         $this.ruleForm.stay_top = res.data.stay_top
