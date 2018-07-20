@@ -32,6 +32,6 @@ class NewsViewSet(viewsets.ReadOnlyModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def search_news(self, request, *args, **kwargs):
-        keywords = self.request.query_params.get('keywords')
+        keywords = self.request.query_params.get('keywords', "")
         self.queryset = self.queryset.filter(title__icontains=keywords) if keywords else []
         return super().list(request, *args, **kwargs)

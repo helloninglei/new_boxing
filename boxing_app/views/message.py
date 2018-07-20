@@ -37,7 +37,7 @@ class MessageViewSet(viewsets.ModelViewSet):
                                             'user__user_profile')
 
     def search_message(self, request, *args, **kwargs):
-        keywords = self.request.query_params.get('keywords')
+        keywords = self.request.query_params.get('keywords', "")
         self.queryset = self._get_query_set().filter(content__icontains=keywords) if keywords else []
         return super().list(request, *args, **kwargs)
 

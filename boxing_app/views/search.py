@@ -12,7 +12,7 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
     permission_classes = (permissions.AllowAny,)
 
     def search_user(self, request, *args, **kwargs):
-        keywords = self.request.query_params.get('keywords')
+        keywords = self.request.query_params.get('keywords', "")
         qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
             .select_related("user", "user__boxer_identification")
         self.serializer_class = UserProfileSerializer
@@ -20,7 +20,7 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         return super().list(request, *args, **kwargs)
 
     def search_video(self, request, *args, **kwargs):
-        keywords = self.request.query_params.get('keywords')
+        keywords = self.request.query_params.get('keywords', "")
         _filter = Q(orders__status=PAYMENT_STATUS_PAID, orders__user_id=self.request.user.id)
         qs = HotVideo.objects.filter(Q(name__icontains=keywords) | Q(description__icontains=keywords)) \
             .annotate(is_paid=Count('orders', filter=_filter), comment_count=comment_count_condition)
