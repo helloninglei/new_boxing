@@ -4,7 +4,7 @@
             <template>
                 <div class="portrait_container">
                     <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
-                    <div class="sign_icon" :class="playerInfo.user.user_type"></div>
+                    <div class="sign_icon" :class="playerInfo.user_type"></div>
                 </div>
 
                 <div class="boxer_info">
@@ -356,18 +356,18 @@
                 this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
                     if (res && res.data) {
                         this.playerInfo = res.data.results;
-                        switch (this.playerInfo.user.user_type) {
+                        switch (this.playerInfo.user_type) {
                             case '拳手':
-                                this.playerInfo.user.user_type = 'boxer_icon';
+                                this.playerInfo.user_type = 'boxer_icon';
                                 break;
                             case '自媒体':
-                                this.playerInfo.user.user_type = 'media_icon';
+                                this.playerInfo.user_type = 'media_icon';
                                 break;
                             case '名人':
-                                this.playerInfo.user.user_type = 'mark_icon';
+                                this.playerInfo.user_type = 'mark_icon';
                                 break;
                             default:
-                                this.playerInfo.user.user_type = ''
+                                this.playerInfo.user_type = ''
                                 break;
                         };
                         let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
