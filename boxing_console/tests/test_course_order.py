@@ -96,7 +96,6 @@ class CourseOrderTestCase(APITestCase):
             "course_validity": course.validity,
             "order_number": pay_order1.out_trade_no,
             "pay_time": datetime.now(),
-            "amount": course.price
         }
         CourseOrder.objects.create(**course_order_data)
         course_order_data['pay_order'] = pay_order2
@@ -188,7 +187,6 @@ class CourseOrderTestCase(APITestCase):
             "course_duration": course.duration,
             "course_validity": course.validity,
             "order_number": pay_order.out_trade_no,
-            "amount": course.price
         }
         course_order = CourseOrder.objects.create(**course_order_data)
         conmment_data = {
@@ -237,7 +235,6 @@ class CourseOrderTestCase(APITestCase):
             "course_validity": course.validity,
             "order_number": pay_order.out_trade_no,
             "pay_time": datetime.now(),
-            "amount": course.price
         }
         insurance_data = {"insurance_amount": 100}
         course_order = CourseOrder.objects.create(**course_order_data)
@@ -245,7 +242,8 @@ class CourseOrderTestCase(APITestCase):
         res = self.client.post(f'/order/{course_order.id}/mark_insurance', data=insurance_data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         # 订单状态是待使用状态，可以标记
-        CourseOrder.objects.filter(id=course_order.id).update(status=constants.COURSE_PAYMENT_STATUS_WAIT_USE)
+        CourseOrder.objects.filter(id=course_order.id).update(status=constants.COURSE_PAYMENT_STATUS_WAIT_USE,
+                                                              amount=course.price)
         res = self.client.post(f'/order/{course_order.id}/mark_insurance', data=insurance_data)
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(CourseOrder.objects.get(id=course_order.id).insurance_amount,

@@ -60,7 +60,6 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             "course_duration": course.duration,
             "course_validity": course.validity,
             "order_number": PayService.generate_out_trade_no(),
-            "amount": course.price
         }
         serializer = self.get_serializer(data=course_order_data)
         serializer.is_valid(raise_exception=True)
