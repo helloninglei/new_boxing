@@ -530,6 +530,10 @@ class CourseOrderInsuranceSerializer(serializers.Serializer):
     def validate(self, attrs):
         if self.context['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_USE:
             raise ValidationError("订单不是待使用状态，不能标记保险")
+        if attrs['insurance_amount'] > self.context['order'].amount:
+            raise ValidationError("保险金额不能超过订单金额")
+        if attrs['insurance_amount'] < 0:
+            raise ValidationError("保险金额不能为负值")
         return attrs
 
     class Meta:

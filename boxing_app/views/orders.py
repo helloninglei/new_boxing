@@ -10,8 +10,7 @@ from rest_framework.response import Response
 from biz import constants, sms_client
 from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder, CourseSettleOrder
 from biz.services.pay_service import PayService
-from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission, \
-    IsBoxerPermission
+from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission
 from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
@@ -60,7 +59,8 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             "course_price": course.price,
             "course_duration": course.duration,
             "course_validity": course.validity,
-            "order_number": PayService.generate_out_trade_no()
+            "order_number": PayService.generate_out_trade_no(),
+            "amount": course.price
         }
         serializer = self.get_serializer(data=course_order_data)
         serializer.is_valid(raise_exception=True)

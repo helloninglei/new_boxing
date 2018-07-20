@@ -95,7 +95,8 @@ class CourseOrderTestCase(APITestCase):
             "course_duration": course.duration,
             "course_validity": course.validity,
             "order_number": pay_order1.out_trade_no,
-            "pay_time": datetime.now()
+            "pay_time": datetime.now(),
+            "amount": course.price
         }
         CourseOrder.objects.create(**course_order_data)
         course_order_data['pay_order'] = pay_order2
@@ -187,6 +188,7 @@ class CourseOrderTestCase(APITestCase):
             "course_duration": course.duration,
             "course_validity": course.validity,
             "order_number": pay_order.out_trade_no,
+            "amount": course.price
         }
         course_order = CourseOrder.objects.create(**course_order_data)
         conmment_data = {
@@ -234,7 +236,8 @@ class CourseOrderTestCase(APITestCase):
             "course_duration": course.duration,
             "course_validity": course.validity,
             "order_number": pay_order.out_trade_no,
-            "pay_time": datetime.now()
+            "pay_time": datetime.now(),
+            "amount": course.price
         }
         insurance_data = {"insurance_amount": 100}
         course_order = CourseOrder.objects.create(**course_order_data)

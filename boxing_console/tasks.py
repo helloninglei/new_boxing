@@ -49,7 +49,8 @@ def refund_after_order_overdue():
                                                       refund_record__isnull=True)
     for course_order in should_refund_orders:
         insurance_amount = course_order.insurance_amount or 0
-        return_amount = course_order.amount - insurance_amount
+        order_amount = course_order.amount or course_order.course_price
+        return_amount = order_amount - insurance_amount
         change_money_log = change_money(course_order.user, return_amount, MONEY_CHANGE_TYPE_INCREASE_ORDER_OVERDUE,
                                         course_order.order_number)
         course_order.refund_record = change_money_log
