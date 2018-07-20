@@ -416,6 +416,8 @@
                 for(var i=0;i<this.ruleForm.users.length;i++){
                     userImgIds.push(this.userHash[this.ruleForm.users[i]])
                 }
+                console.log(this.ruleForm.users)
+                console.log(userImgIds)
                 this.userImgIds = userImgIds
             },
             submitForm(formName) {
