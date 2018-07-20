@@ -196,18 +196,18 @@
                     if (res && res.data) {
                         this.comments = res.data.results;
                         this.comments.forEach((item) => {
-                            switch (item.user_type) {
+                            switch (item.user.user_type) {
                                 case '拳手':
-                                    item.user_type = 'boxer_icon';
+                                    item.user.user_type = 'boxer_icon';
                                     break;
                                 case '自媒体':
-                                    item.user_type = 'media_icon';
+                                    item.user.user_type = 'media_icon';
                                     break;
                                 case '名人':
-                                    item.user_type = 'mark_icon';
+                                    item.user.user_type = 'mark_icon';
                                     break;
                                 default:
-                                    item.user_type = ''
+                                    item.user.user_type = ''
                                     break;
                             }
                         })
