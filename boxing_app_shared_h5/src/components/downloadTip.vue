@@ -30,7 +30,7 @@
                 left: .65rem;
                 width: 2.5rem;
                 height: 2.5rem;
-                background: url("../assets/images/logo.png") no-repeat;
+                background: url("../assets/images/logo.jpg") no-repeat;
                 background-size: contain;
                 vertical-align: middle;
             }

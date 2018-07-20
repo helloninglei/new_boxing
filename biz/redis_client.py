@@ -3,6 +3,7 @@ import redis
 from time import time
 from datetime import datetime
 from django.conf import settings
+from biz.redis_const import SHUTUP_LIST
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
 
@@ -122,3 +123,40 @@ def get_order_no_serial():
     if order_incr == 1:
         redis_client.expire(key, 3600 * 24)
     return str(order_incr).rjust(5, '0')
+
+
+def forward_message(message_id):
+    redis_client.hincrby('msg_forward', message_id, 1)
+
+
+def get_message_forward_count(message_id):
+    return int(redis_client.hget('msg_forward', message_id) or 0)
+
+
+def set_user_title(user, title):
+    return redis_client.set(f'user_{user.id}_title', title)
+
+
+def get_user_title(user):
+    return redis_client.get(f'user_{user.id}_title')
+
+
+def del_user_title(user):
+    return redis_client.delete(f'user_{user.id}_title')
+
+
+# shut up list
+def add_shutup_list(*user_ids):
+    if user_ids:
+        p = redis_client.pipeline()
+        [p.zadd(SHUTUP_LIST, _get_timestamp(), user_id) for user_id in user_ids]
+        p.execute()
+
+
+def get_shutup_list():
+    return redis_client.zrevrange(SHUTUP_LIST, 0, -1)
+
+
+def rm_shutup_list(*user_ids):
+    if user_ids:
+        return redis_client.zrem(SHUTUP_LIST, *user_ids)

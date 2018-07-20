@@ -5,8 +5,8 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from biz import constants
-from biz.constants import BOXER_ALLOWED_COURSES_CHOICE
+from biz import constants, redis_client
+from biz.constants import BOXER_ALLOWED_COURSES_CHOICE, USER_TYPE_BOXER
 from biz.models import User, BoxerIdentification, UserProfile, OperationLog, Course, SmsLog
 from biz.sms_client import SMS_TEMPLATES
 
@@ -92,18 +92,22 @@ class BoxerIdentificationTestCase(TestCase):
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
             "competition_video": 'https://baidu.com'
         }
+        title = "最牛的拳手"
         identification = BoxerIdentification.objects.create(**identification_data)
-
+        redis_client.set_user_title(identification.user, title)
         self.assertEqual(self.fake_user1.boxer_identification.authentication_state,
                          constants.BOXER_AUTHENTICATION_STATE_WAITING)
         data = {'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED,
-                'allowed_course': [constants.BOXER_ALLOWED_COURSES_THAI_BOXING, constants.BOXER_ALLOWED_COURSES_BOXING]}
+                'allowed_course': [constants.BOXER_ALLOWED_COURSES_THAI_BOXING, constants.BOXER_ALLOWED_COURSES_BOXING],
+                'title': title}
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data=json.dumps(data), content_type='application/json')
-        identification = BoxerIdentification.objects.get(user=self.fake_user1)
+        identification.refresh_from_db()
+        identification.user.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(identification.authentication_state, constants.BOXER_AUTHENTICATION_STATE_APPROVED)
         self.assertEqual(identification.allowed_course, data['allowed_course'])
+        self.assertEqual(identification.user.title, title)
         #判断审核后，是否成功添加课程
         self.assertEqual(Course.objects.filter(boxer=identification).count(), 2)
 
@@ -118,6 +122,9 @@ class BoxerIdentificationTestCase(TestCase):
         allowed_courses = [course_dict.get(key) for key in data['allowed_course']]
         courses = '、'.join(allowed_courses)
         self.assertEqual(approve_message_log.content, (SMS_TEMPLATES['boxerApproved']["text"]).format(courses=courses))
+
+        self.fake_user1.refresh_from_db()
+        self.assertEqual(self.fake_user1.user_type, USER_TYPE_BOXER)
 
     def test_boxer_identification_approve_failed_without_course(self):
         identification_data = {
@@ -140,7 +147,6 @@ class BoxerIdentificationTestCase(TestCase):
         res = self.client.post(reverse('identification_approve', kwargs={'pk': identification.pk}),
                                data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_APPROVED})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['allowed_course'][0], "可开通的课程类型是必填项")
 
     def test_boxer_identification_refuse_success(self):
         identification_data = {
@@ -199,7 +205,6 @@ class BoxerIdentificationTestCase(TestCase):
         res = self.client.post(reverse('identification_refuse', kwargs={'pk': identification.pk}),
                                data={'authentication_state': constants.BOXER_AUTHENTICATION_STATE_REFUSE})
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['refuse_reason'][0], '驳回理由是必填项')
 
     def test_get_boxer_identification_detail(self):
         identification_data = {

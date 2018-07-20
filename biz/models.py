@@ -9,7 +9,7 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.db.transaction import atomic
 
 from biz import validator, constants
-from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER
+from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -63,6 +63,8 @@ class User(AbstractUser):
     wechat_openid = models.CharField(null=True, blank=True, unique=True, max_length=128)
     coin_balance = models.IntegerField(default=0)
     money_balance = models.IntegerField(default=0)  # unit, 分
+    user_type = models.IntegerField(choices=USER_TYPE_CHOICE, null=True, blank=True)
+    title = models.CharField(null=True, blank=True, max_length=56)
 
     @property
     def identity(self):
@@ -189,6 +191,8 @@ class Message(SoftDeleteModel):
     is_deleted = models.BooleanField(default=False, db_index=True)
     created_time = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_time = models.DateTimeField(auto_now=True)
+    initial_like_count = models.PositiveIntegerField(default=0)  # 后台设置的点赞数
+    initial_forward_count = models.PositiveIntegerField(default=0)  # 后台设置的转发数
     comments = GenericRelation('Comment')
     reports = GenericRelation('Report')
 
@@ -328,7 +332,7 @@ class BaseAuditModel(BaseModel):
 
 
 class HotVideo(BaseAuditModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hot_videos')
+    users = models.ManyToManyField(User, related_name='hot_videos', db_table='hot_video_user_rel')
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=140)
     url = models.CharField(max_length=200)
@@ -338,10 +342,12 @@ class HotVideo(BaseAuditModel):
     comments = GenericRelation('Comment')
     orders = GenericRelation('PayOrder', related_query_name='hot_video')
     reports = GenericRelation('Report')
+    cover = models.CharField(max_length=200)
+    stay_top = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'hot_video'
-        ordering = ("-created_time",)
+        ordering = ("-stay_top", "-created_time",)
         verbose_name = '热门视频'
 
 
@@ -386,7 +392,7 @@ class CourseOrder(SoftDeleteModel):
     user_confirm_time = models.DateTimeField(null=True)
     finish_time = models.DateTimeField(null=True)  # 订单完成时间
     amount = models.PositiveIntegerField(null=True)  # 订单金额，单位分
-    insurance_amount = models.PositiveIntegerField(null=True)  #保险金额
+    insurance_amount = models.PositiveIntegerField(null=True)  # 保险金额
     refund_record = models.ForeignKey(MoneyChangeLog, null=True, on_delete=models.PROTECT,
                                       related_name='+', db_index=False)
     is_deleted = models.BooleanField(default=False)
@@ -516,3 +522,11 @@ class OfficialAccountChangeLog(models.Model):
     class Meta:
         db_table = "official_account_change_log"
         ordering = ("-created_time",)
+
+
+class WordFilter(BaseModel):
+    sensitive_word = models.CharField(max_length=20, db_index=True, unique=True)
+
+    class Meta:
+        db_table = "word_filter"
+        ordering = ("-updated_time",)

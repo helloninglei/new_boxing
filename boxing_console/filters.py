@@ -7,7 +7,7 @@ from django.db.models import Q
 from biz import models
 from biz.models import Course
 from biz import constants
-from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID
+from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID, USER_TYPE_CHOICE
 
 
 class CommonFilter(django_filters.FilterSet):
@@ -44,9 +44,16 @@ class CourseFilter(django_filters.FilterSet):
 
 
 class HotVideoFilter(CommonFilter):
+    search = django_filters.CharFilter(method='search_filter')
+
+    def search_filter(self, qs, name, value):
+        if value.isdigit():
+            return qs.filter(Q(name__icontains=value) | Q(users__id=value))
+        return qs.filter(name__icontains=value)
+
     class Meta:
         model = models.HotVideo
-        fields = ('created_time',)
+        fields = ('start_time', 'end_time', 'search')
 
 
 class GameNewsFilter(django_filters.FilterSet):
@@ -77,22 +84,20 @@ class CourseOrderFilter(CommonFilter):
 
 
 class UserFilter(django_filters.FilterSet):
-    is_boxer = django_filters.CharFilter(method="filter_user_type")
+    user_type = django_filters.CharFilter(method="filter_user_type")
     start_time = django_filters.DateTimeFilter(field_name="date_joined", lookup_expr="gte")
     end_time = django_filters.DateTimeFilter(field_name="date_joined", lookup_expr="lte")
 
     def filter_user_type(self, qs, name, value):
-
-        if value == "true":
-            return qs.filter(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED)
-        if value == "false":
-            return qs.filter(
-                ~Q(boxer_identification__authentication_state=constants.BOXER_AUTHENTICATION_STATE_APPROVED))
-        return qs
+        if not value:
+            return qs
+        if value == "4":
+            return qs.filter(user_type__isnull=True)
+        return qs.filter(user_type=value)
 
     class Meta:
         model = models.User
-        fields = ["is_boxer", "start_time", "end_time"]
+        fields = ["user_type", "start_time", "end_time"]
 
 
 class ReportFilter(django_filters.FilterSet):
@@ -184,3 +189,14 @@ class PayOrderFilter(django_filters.FilterSet):
     class Meta:
         model = models.PayOrder
         fields = ["device", "payment_type", "status"]
+
+
+class MessageFilter(django_filters.FilterSet):
+    start_date = django_filters.DateFilter(field_name='created_time', lookup_expr='gte')
+    end_date = django_filters.DateFilter(field_name='created_time', lookup_expr='lte')
+    content = django_filters.CharFilter(field_name='content', lookup_expr='icontains')
+    user_type = django_filters.ChoiceFilter(choices=USER_TYPE_CHOICE, field_name='user__user_type')
+
+    class Meta:
+        model = models.Message
+        fields = ('start_date', 'end_date', 'content', 'user_type')

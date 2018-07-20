@@ -12,6 +12,11 @@
       			    <el-checkbox label="拳击" name="class_name">拳击</el-checkbox>
       			    <el-checkbox label="MMA" name="class_name">MMA</el-checkbox>
       			</el-checkbox-group>
+            <el-form ref="form" :model="form" label-width="80px" v-if='showIndenTitle'>
+              <el-form-item label="认证称号" class='mytitle'>
+                <el-input v-model="form.title" placeholder="请输入" ></el-input>
+              </el-form-item>
+            </el-form>
             <div class="el-form-item__error">{{errorTxt}}</div>
           </div>
           <div slot="footer" class="dialog-footer" style='text-align:center'>
@@ -23,13 +28,20 @@
 </template>
 <style>
   #dialog .el-dialog{width:385px; height:294px; margin-top:20vh;}
-  .border_raduis_100{border-radius: 100px!important}
-  #dialog .el-dialog__body{height:150px; font-family: "PingFang SC";padding:16px 30px 30px 30px;font-size: 16px;color: #000000;}
+  .border_raduis_100{border-radius: 140px!important}
+  #dialog .el-dialog__body{height:145px; font-family: "PingFang SC";padding:16px 30px 30px 30px;font-size: 16px;color: #000000;}
   #dialog .dialog_content{margin:20px 0; position:relative;}
   #dialog .el-dialog__footer{padding-bottom:38px;}
   /*.content_foot{font-size:14px!important;color:#F95862;}*/
   #dialog .el-checkbox,#dialog .el-checkbox__input.is-checked+.el-checkbox__label{font-family: PingFangSC-Regular;font-size: 16px;color: #000000;}
   .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{background: #F95862;border-color:#F95862;}
+  .mytitle{
+    margin-top:20px;
+  }
+  .mytitle .el-form-item__label {
+    font-family: "PingFang SC";
+    color:#000;
+  }
 </style>
 <script >
     export default {
@@ -39,6 +51,7 @@
               	form :{
               		class_name:[],
               		textarea_val:'',
+                  title:''
               	},
                 errorTxt:'',
             }
@@ -59,6 +72,14 @@
           type:{
           	type : Number,
             default:1,
+          },
+          showIndenTitle:{
+            type : Boolean,
+            default:false,
+          },
+          title:{
+            type : String,
+            default:"",
           }
         },
         watch:{
@@ -72,9 +93,12 @@
               this.form.textarea_val = '';
             }
         	},
-        	'form.class_name'(val){
+        	'showIndenTitle'(val){
         		// console.log(val)
-        	}
+        	},
+          title(val){
+            this.form.title = val
+          }
 
         },
         components: {
@@ -94,6 +118,9 @@
                 if(this.form.class_name.length==0){
                   this.errorTxt = '请至少选择一个课程'
                   return;
+                }else if(this.showIndenTitle&&this.form.title==''){
+                  this.errorTxt = '请填写认证称号';
+                  return;
                 }else{
                   this.errorTxt = '';
                 }
@@ -101,6 +128,11 @@
             	this.$emit('confirm',this.form)
             },
             close(){
+              this.form ={
+                  class_name:[],
+                  textarea_val:'',
+                  title:''
+                }
               this.$emit('cancel',false)
             },
         },

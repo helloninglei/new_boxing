@@ -8,18 +8,20 @@ from django.conf import settings
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
-from boxing_console.views.coin_and_money import CoinChangLogViewSet, MoneyChangeLogViewSet
+from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
-from boxing_console.views.hot_video import HotVideoViewSet
+from boxing_console.views.hot_video import HotVideoViewSet, hot_video_user_list
 from boxing_console.views.game_news import NewsViewSet
 from boxing_console.views.banner import BannerViewSet
 from biz.views import upload_file, captcha_image
 from boxing_console.views.financial_management import WithdrawLogViewSet, PayOrdersViewSet
 from boxing_console.views import admin, report
 from rest_framework.routers import SimpleRouter
-from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet
+from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, EditUserInfo
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
+from boxing_console.views.message import MessageViewSet
+from boxing_console.views.word_filter import WordFilterViewSet
 
 router = SimpleRouter()
 
@@ -39,6 +41,7 @@ hot_video_url = [
     path('hot_videos', HotVideoViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('hot_videos/<int:pk>',
          HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'})),
+    path('hot_videos/users', hot_video_user_list),
 ]
 
 course_url = [
@@ -91,21 +94,28 @@ banner_urls = [
 
 financial_management_urls = [
     path("withdraw_logs", WithdrawLogViewSet.as_view({"get": "list"})),
-    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$", WithdrawLogViewSet.as_view({"put": "update"})),
+    re_path("^withdraw_logs/(?P<pk>\d+)/(?P<operate>(approved|rejected))$",
+            WithdrawLogViewSet.as_view({"put": "update"})),
     path("pay_orders", PayOrdersViewSet.as_view({"get": "list"}))
 ]
 
 user_management_urls = [
     path('coin/change', CoinChangLogViewSet.as_view({'post': 'create'}), name='coin_change'),
-    path('money/change', MoneyChangeLogViewSet.as_view({'post': 'create'}), name='money_change'),
     path('coin/change/log', CoinChangLogViewSet.as_view({"get": "list"}), name='coin_change_log'),
     path("users", UserManagementViewSet.as_view({"get": "list"})),
-    path("money_change_logs/<int:pk>", MoneyBalanceChangeLogViewSet.as_view({"get": "list"}))
+    path("money_change_logs/<int:pk>", MoneyBalanceChangeLogViewSet.as_view({"get": "list"})),
+    path("edit_user/<int:pk>", EditUserInfo.as_view({"put": "update"}))
 ]
 
 official_account_change_logs_urls = [
     path("official_account_change_logs", OfficialAccountChangeLogsViewSet.as_view({"get": "list"}))
 ]
+
+message_urls = [
+    path('messages', MessageViewSet.as_view({'get': 'list'}), name='message'),
+    path('messages/<int:pk>', MessageViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='message'),
+]
+router.register(r"word_filters", WordFilterViewSet)
 
 urlpatterns = router.urls
 urlpatterns += boxer_url
@@ -121,6 +131,7 @@ urlpatterns += banner_urls
 urlpatterns += financial_management_urls
 urlpatterns += user_management_urls
 urlpatterns += official_account_change_logs_urls
+urlpatterns += message_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

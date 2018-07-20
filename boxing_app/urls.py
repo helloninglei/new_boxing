@@ -14,6 +14,7 @@ from boxing_app.views import comment
 from boxing_app.views import report
 from boxing_app.views import like
 from boxing_app.views import follow
+from boxing_app.views.chat_rooms_info import chat_rooms_info
 from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
@@ -39,6 +40,8 @@ from boxing_app.views.social_login import social_login
 from boxing_app.views.share import second_share_signature
 from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
+from boxing_app.views.user_profile import batch_user_profile
+from boxing_app.views.shutup_list import ShutUpListViewSet
 from boxing_app.views.cover_picture import cover_picture
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
@@ -157,7 +160,8 @@ user_urls = [
     re_path(r'^user_profile/(?P<user_identity>({0}))'.format(official_user_string), user_profile_redirect),
     path("user_profile_patch", UserProfileViewSet.as_view({"put": "partial_update"})),
     path("black_list", BlackListViewSet.as_view({"get": "list"})),
-    path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"}))
+    path("black_list/<int:pk>", BlackListViewSet.as_view({"get": "retrieve", "delete": "destroy", "post": "create"})),
+    path("batch_user_profile", batch_user_profile)
 ]
 
 hot_video_url = [
@@ -214,6 +218,15 @@ official_accounts_urls = [
     path("get_official_accounts_info", get_official_accounts_info)
 ]
 
+chat_rooms_info_urls = [
+    path("chat_rooms_info", chat_rooms_info)
+]
+
+shutup_list_urls = [
+    path("shutup_list", ShutUpListViewSet.as_view({"get": "list", "post": "create"})),
+    path("shutup_list_delete", ShutUpListViewSet.as_view({"post": "destroy"}))
+]
+
 cover_picture_urls = [
     path("cover_picture", cover_picture)
 ]
@@ -244,6 +257,8 @@ urlpatterns += city_url
 urlpatterns += version_urls
 urlpatterns += social_login_urls
 urlpatterns += official_accounts_urls
+urlpatterns += chat_rooms_info_urls
+urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:

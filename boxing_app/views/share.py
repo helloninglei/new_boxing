@@ -4,7 +4,7 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from biz.models import Message, HotVideo, GameNews, UserProfile
-from biz.redis_client import incr_number_of_share
+from biz.redis_client import incr_number_of_share, forward_message
 from biz.utils import get_model_class_by_name, get_share_img_url, get_object_or_404
 from biz.weixin_public_client import Sign
 
@@ -59,11 +59,12 @@ def share_view(_, object_type, object_id):
             picture = get_share_img_url(profile.avatar)
         title = _truncate_text(title, 14)
         sub_title = _truncate_text(sub_title, 20)
+        forward_message(object_id)
     elif isinstance(obj, HotVideo):
-        user = obj.user
+        user = obj.users.first()
         title = obj.name
-        sub_title = '拳城出击'
-        picture = get_share_img_url(obj.try_url, is_video=True)
+        sub_title = f'来自{user.user_profile.nick_name}的拳城出击'
+        picture = get_share_img_url(obj.cover) or get_share_img_url(obj.try_url, is_video=True)
         url = f'{h5_base_url}hot_videos/{user.id}/{object_id}'
     elif isinstance(obj, GameNews):
         title = obj.title
