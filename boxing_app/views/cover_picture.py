@@ -16,7 +16,7 @@ def cover_picture(request):
     command = [FFMPEG_BIN,
                '-ss', '0',
                "-i", f'{request.query_params.get("video_url")}',
-               '-t', '1',
+               '-vframes', '1',
                '-vf', 'scale=480:trunc(ow/a/2)*2',
                '-f', 'image2pipe',
                '-']

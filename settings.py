@@ -130,6 +130,8 @@ WEIXIN_PUBLIC_PLATFORM_CONF = {
     "app_secret": ""
 }
 
+SENTRY_DSN = 'http://ded6e41633544be1bd6e1f03454fe5c7:48dc8740b5ec42d58f9618649ffae5ec@39.104.180.65//2'
+
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
     from settings_local import *
@@ -285,7 +287,7 @@ PASSWORD_HASHERS = [
 ]
 
 RAVEN_CONFIG = {
-    'dsn': 'http://ded6e41633544be1bd6e1f03454fe5c7:48dc8740b5ec42d58f9618649ffae5ec@39.104.180.65//2',
+    'dsn': SENTRY_DSN,
     # If you are using git, you can also automatically configure the
     # release based on the git info.
     'release': raven.fetch_git_sha(BASE_DIR),
