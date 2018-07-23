@@ -3,6 +3,9 @@ import redis
 from time import time
 from datetime import datetime
 from django.conf import settings
+from django.db.models import F
+
+from biz.models import UserProfile
 from biz.redis_const import SHUTUP_LIST
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
@@ -24,6 +27,7 @@ def follow_user(current_user_id, follower_id):
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
         p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
         p.execute()
+        UserProfile.objects.filter(id=follower_id).update(follower_count=F('follower_count') + 1)
 
 
 def unfollow_user(current_user_id, follower_id):
@@ -31,6 +35,7 @@ def unfollow_user(current_user_id, follower_id):
     p.zrem(f'follower_{follower_id}', current_user_id)
     p.zrem(f'following_{current_user_id}', follower_id)
     p.execute()
+    UserProfile.objects.filter(id=follower_id).update(follower_count=F('follower_count') - 1)
 
 
 def is_follower(current_user_id, follower_id):
@@ -89,7 +94,8 @@ def get_near_object(obj_or_cls, longitude, latitude, radius=10000, unit='km'):
 
 # 加入黑名单
 def block_user(current_user_id, black_user_id):
-    unfollow_user(current_user_id, black_user_id)
+    if is_following(current_user_id, black_user_id):
+        unfollow_user(current_user_id, black_user_id)
     return redis_client.sadd(f"user_{current_user_id}_black_list", black_user_id)
 
 
