@@ -1,6 +1,6 @@
 <template>
     <div>
-         <TopBar v-if="isShowTop" firstTitle_name="用户管理" firstTitle_path="/usermanage" secondTitle_name="普通用户" secondTitle_path="/userdetail"></TopBar>
+         <TopBar v-if="isShowTop" firstTitle_name="用户管理" firstTitle_path="/usermanage" :secondTitle_name="user_type" secondTitle_path="/userdetail"></TopBar>
          <div class='userDetail'>
             <el-row class='detail_item'>
                 <el-col :span="2">
@@ -42,6 +42,14 @@
                     <div class='detail_content margin_lf'>{{result.user_basic_info.profession}}</div>
                 </el-col>
             </el-row>
+            <el-row class='detail_item' v-if='user_type!=="普通用户"'>
+                <el-col :span="2">
+                    <div class='detail_title'>认证称号</div>
+                </el-col>
+                <el-col :span="13">
+                    <div class='detail_content margin_lf'>{{title}}</div>
+                </el-col>
+            </el-row>
         </div>
     </div>
 </template>
@@ -64,7 +72,9 @@ nav{min-height: 528px}
                 isShowTop: true,
                 result   : {
                     user_basic_info : {}
-                }
+                },
+                user_type:'',
+                title:'',
             }
         },
         components: {
@@ -73,7 +83,9 @@ nav{min-height: 528px}
         created() { 
             //刷新后对象里面都变成字符串
             let query   = this.$route.query
-            this.result.user_basic_info = query;
+            this.user_type = query.user_type
+            this.title = query.title
+            this.result.user_basic_info = query.user_basic_info;
             console.log(query)
         },
         mounted(){

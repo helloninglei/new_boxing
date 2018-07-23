@@ -3,7 +3,7 @@
         <BigImg v-if="showImg" @clickit="viewImg" :imgSrc="imgSrc"></BigImg>
         <div class='detail_header' v-if="authentication_state=='APPROVED'">审核通过 
             <span class='detail_content'>已通过的课程类型 ： <span v-for="item in result.allowed_course">{{item}} &nbsp;&nbsp;</span>
-                <el-button type="danger" class='myColor_red myButton_40' style='width:95px;margin-top:-13px' @click="openApprove()">修改</el-button>
+                <el-button type="danger" class='myColor_red myButton_40' style='width:95px;margin-top:-13px' @click="openApprove(false)">修改</el-button>
             </span>
         </div>
         <div class='detail_header' v-else-if="authentication_state=='REFUSE'">已驳回</div>
@@ -78,6 +78,14 @@
                     <div class='detail_content margin_lf'>{{result.club}}</div>
                 </el-col>
             </el-row>
+            <el-row class='detail_item_sub' v-show='result.authentication_state!="REFUSE"'>
+                <el-col :span="1">
+                    <div class='detail_title'>认证称号</div>
+                </el-col>
+                <el-col :span="23">
+                    <div class='detail_content margin_lf'>{{result.title}}</div>
+                </el-col>
+            </el-row>
         </div>
         <hr style="height:1px;border:none;border-top:1px solid rgba(187,187,187,0.2);margin-left:-60px;margin-right:-20px;margin-bottom:30px" >
     
@@ -127,11 +135,11 @@
         </div>
         <div style='text-align:center' v-if="authentication_state=='WAITING'">
             <el-button  class='myButton_40 myBtnHover_red btn_width_200 margin_rt60' @click="refuseData.isshow1=true">驳回</el-button>
-            <el-button type="danger" class='myColor_red myButton_40 btn_width_200 ' @click="openApprove()">审核通过</el-button>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_200 ' @click="openApprove(true)">审核通过</el-button>
         </div>
 
         <Dialog :isshow="refuseData.isshow1" @confirm="refuse" @cancel="cancel()" :content_title="refuseData.content_title" :content_foot="refuseData.content_foot" :type="1"></Dialog> 
-        <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2"></Dialog> 
+        <Dialog :isshow="refuseData.isshow2" @confirm="approve" @cancel="cancel()" :content_title="refuseData.content_title2" :content_foot="refuseData.content_foot" :type="2" :showIndenTitle="showIndenTitle" :title='result.title'></Dialog> 
         
     </div>
 </template>
@@ -142,7 +150,7 @@
     .detail_item{margin-bottom:30px;}
     .detail_title{width:80px;}
     .detail_title_lf{width:80px;text-align: left}
-    .detail_content.margin_lf{margin-left:39px;}
+    .detail_content.margin_lf{margin-left:50px;}
     .detail_content.detail_content_p{margin-left:16px;line-height:25px;}
     .width_160{width:145px!important;}
     .addImage{width:95px;height:65px;float:left;margin-right:14px;}
@@ -166,6 +174,7 @@
                 result:{
                     
                 },
+                showIndenTitle:true,
                 refuseData:{
                     isshow1: false,
                     isshow2: false,
@@ -212,7 +221,8 @@
                     } 
                 })
             },
-            openApprove(){
+            openApprove(showIndenTitle){
+                this.showIndenTitle= showIndenTitle;
                 this.refuseData.isshow2=true
             },
             approve(val){
@@ -222,6 +232,9 @@
                         "authentication_state": 'APPROVED',    //认证状态
                         "allowed_course": val.class_name  //可开通课程，选项为THAI_BOXING/BOXING/MMA
                     }
+                if(this.showIndenTitle){
+                    sendData.title = val.title
+                }
                 //通过
                 this.ajax('boxer/identification/'+this.result.id+'/approve','post',sendData).then(function(res){
                     if(res&&res.data){

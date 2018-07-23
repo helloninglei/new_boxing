@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User
+from biz.models import User, Message
 
 
 class LikeTestCase(APITestCase):
@@ -29,7 +29,7 @@ class LikeTestCase(APITestCase):
 
     def test_create_like(self):
         self.prepare()
-        res = self.client1.post('/messages/%s/like' % self.message_id2)
+        res = self.client1.post(f'/messages/{self.message_id2}/like')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         response = self.client1.get('/messages')
 
@@ -52,6 +52,18 @@ class LikeTestCase(APITestCase):
                 self.assertEqual(like_count, 1)
             else:
                 self.assertEqual(like_count, 0)
+
+        initial_like_count = 10
+        Message.objects.update(initial_like_count=initial_like_count)
+        response = self.client2.get('/messages')
+        for message in response.data['results']:
+            is_like = message['is_like']
+            like_count = message['like_count']
+            self.assertFalse(is_like)
+            if message['id'] == self.message_id2:
+                self.assertEqual(like_count, 1 + initial_like_count)
+            else:
+                self.assertEqual(like_count, 0 + initial_like_count)
 
     def test_hot_message(self):
         self.prepare()

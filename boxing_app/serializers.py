@@ -10,26 +10,27 @@ from rest_framework import serializers
 from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
-from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
 from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
-from biz.redis_client import follower_count, following_count
+from biz.redis_client import follower_count, following_count, get_user_title
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
-from biz.redis_client import is_following, get_object_location
+from biz.redis_client import is_following, get_object_location, set_user_title
 from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
-from biz.redis_client import redis_client
+from biz.redis_client import redis_client, get_message_forward_count
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
-from biz.constants import WITHDRAW_MIN_CONFINE
+from biz.constants import WITHDRAW_MIN_CONFINE, DEFAULT_NICKNAME_FORMAT, DEFAULT_AVATAR
 from biz.services.money_balance_service import change_money
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
+message_dateformat = '%Y-%m-%d %H:%M'
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -40,6 +41,13 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
     avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
     course_order_count = serializers.SerializerMethodField()
+    title = serializers.CharField(max_length=16, write_only=True)
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['title'] = get_user_title(instance.user) or instance.user.title
+        return ret
 
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
@@ -50,6 +58,12 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         validated_data['is_accept_order'] = False
         Course.objects.filter(boxer=instance).update(is_open=False)
         return super().update(instance, validated_data)
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        title = self.validated_data.pop('title')
+        set_user_title(user, title)
+        return super().save(**kwargs)
 
     class Meta:
         model = models.BoxerIdentification
@@ -67,6 +81,8 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     city = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
+    title = serializers.CharField(source='user.title')
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
@@ -92,9 +108,9 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
-                  'allowed_course', 'city', 'user_id']
+                  'allowed_course', 'city', 'user_id', 'title', 'user_type']
         read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
-                            'real_name', 'allowed_course', 'city']
+                            'real_name', 'allowed_course', 'city', 'title']
 
 
 class DiscoverUserField(serializers.RelatedField):
@@ -105,6 +121,7 @@ class DiscoverUserField(serializers.RelatedField):
             'is_following': bool(is_following(self.context['request'].user.id, user.id)),
             'nick_name': None,
             'avatar': None,
+            "user_type": user.get_user_type_display()
         }
 
         if hasattr(user, 'user_profile'):
@@ -117,10 +134,19 @@ class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
     video = serializers.CharField(max_length=200, required=False)
     user = DiscoverUserField(read_only=True)
-    like_count = serializers.IntegerField(read_only=True)
+    like_count = serializers.SerializerMethodField()
     comment_count = serializers.IntegerField(read_only=True)
     is_like = serializers.BooleanField(read_only=True)
     msg_type = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField()
+    created_time = serializers.DateTimeField(format=message_dateformat, read_only=True)
+
+    def get_like_count(self, instance):
+        if hasattr(instance, 'like_count'):
+            return instance.like_count + instance.initial_like_count
+
+    def get_forward_count(self, instance):
+        return get_message_forward_count(instance.id) + instance.initial_forward_count
 
     def get_msg_type(self, obj):
         if obj.video:
@@ -139,7 +165,7 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'msg_type', 'created_time', 'user', 'like_count', 'comment_count',
-                  'is_like']
+                  'forward_count', 'is_like']
 
 
 class BasicReplySerializer(serializers.ModelSerializer):
@@ -199,13 +225,17 @@ class FollowUserSerializer(serializers.Serializer):
     gender = serializers.BooleanField(source='user_profile.gender')
     identity = serializers.CharField()
     is_following = serializers.SerializerMethodField()
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, user):
+        return user.get_user_type_display()
 
     def get_is_following(self, user):
         current_user_id = self.context['current_user_id']
         return bool(is_following(current_user_id, user.id))
 
     class Meta:
-        fields = ['id', 'gender', 'avatar', 'nick_name', 'address', 'bio', 'is_follow', 'identity']
+        fields = ['id', 'gender', 'avatar', 'nick_name', 'address', 'bio', 'is_follow', 'identity', "user_type"]
         read_only_fields = '__all__'
 
 
@@ -267,7 +297,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.HotVideo
-        fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time')
+        fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
+                  'cover')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
@@ -343,6 +374,7 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     user_gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     user_avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     identity = serializers.CharField(source='user.identity', read_only=True)
     comment_score = serializers.SerializerMethodField()
     comment_time = serializers.SerializerMethodField()
@@ -379,6 +411,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
     boxer_gender = serializers.BooleanField(source='boxer.user.user_profile.gender', read_only=True)
     boxer_avatar = serializers.CharField(source='boxer.user.user_profile.avatar', read_only=True)
+    boxer_user_type = serializers.CharField(source="boxer.user.get_user_type_display", read_only=True)
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
@@ -413,6 +446,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
     identity = serializers.CharField(source="user.identity", read_only=True)
     is_following = serializers.SerializerMethodField(read_only=True)
+    title = serializers.CharField(source="user.title", read_only=True)
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+    has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
+
+    def to_representation(self, instance):
+        data = super(UserProfileSerializer, self).to_representation(instance)
+        data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
+        data['avatar'] = instance.avatar or DEFAULT_AVATAR
+        data['bio'] = instance.bio or (DEFAULT_BIO_OF_MEN if instance.gender else DEFAULT_BIO_OF_WOMEN)
+        return data
 
     def get_is_following(self, instance):
         return bool(is_following(self.context['request'].user.id, instance.user.id))
@@ -444,7 +487,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
         exclude = ["created_time", "id", "updated_time", "user"]
-        read_only_fields = ["alipay_account", "gender", "nick_name", "boxer_info", "mobile"]
+        read_only_fields = ["alipay_account", "nick_name", "boxer_info", "mobile"]
 
 
 class ChangeMobileSerializer(serializers.Serializer):
@@ -483,7 +526,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
 class BlockedUserSerializer(serializers.BaseSerializer):
     def to_representation(self, user):
-        representation_dict = {"id": user.id}
+        representation_dict = {"id": user.id, "user_type": user.get_user_type_display()}
         if hasattr(user, "user_profile"):
             representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
         return representation_dict
@@ -632,7 +675,15 @@ class ContactSerializer(serializers.ModelSerializer):
     nick_name = serializers.CharField(source="user_profile.nick_name")
     avatar = serializers.CharField(source="user_profile.avatar")
     index_letter = serializers.CharField(source="user_profile.nick_name_index_letter")
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, user):
+        return user.get_user_type_display()
 
     class Meta:
         model = models.User
-        fields = ['id', "nick_name", "avatar", "index_letter"]
+        fields = ['id', "nick_name", "avatar", "index_letter", "user_type"]
+
+
+class ShutUpWriteOnlySerializer(serializers.Serializer):
+    user_ids = serializers.ListField(child=serializers.IntegerField())

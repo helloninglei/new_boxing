@@ -1,6 +1,6 @@
 <template>
     <div id='report'>
-        <TopBar v-if="isShowTop" firstTitle_name="举报处理" disNone="disNone"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="动态管理" firstTitle_path="/dynamic" secondTitle_name="举报处理" secondTitle_path="/report"></TopBar>
         <header style='padding:30px'>
             <div style='margin:20px 0 40px 0'>
                 <!-- <el-row>

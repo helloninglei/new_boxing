@@ -1,6 +1,6 @@
 <template>
     <div >
-        <TopBar v-if="isShowTop" firstTitle_name="管理员" firstTitle_path="/boxingmanage" disNone="disNone"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="管理员" firstTitle_path="/admin" disNone="disNone"></TopBar>
         <nav  id="admin">
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="dialog_label_data.isshow=true">新增</el-button>            
             <template>

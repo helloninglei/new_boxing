@@ -28,6 +28,8 @@ import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infolist';
 import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
+import Dynamic          from 'page/dynamic';
+import SensitiveWord    from 'page/sensitive_words';
 
 
 export default [
@@ -162,6 +164,14 @@ export default [
             {
                 path: '/boxBean',
                 component: BoxBean,
+            },
+            {
+                path: '/dynamic',
+                component: Dynamic,
+            },
+            {
+                path: '/sensitiveword',
+                component: SensitiveWord,
             },
         ]
     },

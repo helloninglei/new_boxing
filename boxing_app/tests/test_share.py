@@ -39,21 +39,21 @@ class ShareTestCase(APITestCase):
         msg_data = {'images': ['/uploads/xxxxxxxx.jpg'], 'user': self.test_user}
         self.msg2 = models.Message.objects.create(**msg_data)
 
-        video_data = {
-            'user_id': self.test_user.id,
+        self.video_data = {
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
             'url': '/videos/111',
             'try_url': '/uploads/xxxxxxxx.mp4',
             'operator': self.test_user,
+            'cover': 'http://xxxx'
         }
 
-        self.video = models.HotVideo.objects.create(**video_data)
+        self.video = models.HotVideo.objects.create(**self.video_data)
+        self.video.users.add(self.test_user)
 
     def test_share_content(self):
         img_prefix = '?x-oss-process=image/resize,w_120,h_120'
-        video_prefix = '?x-oss-process=video/snapshot,t_10000,f_jpg,w_120,h_120,m_fast'
 
         data = self.client.get(f'/game_news/{self.news.id}/share').data
         self.assertEqual(data['title'], self.news.title)
@@ -63,8 +63,8 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/hot_videos/{self.video.id}/share').data
         self.assertEqual(data['title'], self.video.name)
-        self.assertEqual(data['sub_title'], '拳城出击')
-        self.assertEqual(data['picture'], f'{oss_base_url}{self.video.try_url}{video_prefix}')
+        self.assertEqual(data['sub_title'], f'来自{self.nick_name}的拳城出击')
+        self.assertEqual(data['picture'], self.video_data['cover'])
         self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.test_user.id}/{self.video.id}')
 
         data = self.client.get(f'/messages/{self.msg.id}/share').data

@@ -13,7 +13,6 @@ class PayOrderTestCase(APITestCase):
 
     def test_pay_orders_list(self):
         hot_video_data = {
-            'user': self.user,
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
@@ -22,6 +21,7 @@ class PayOrderTestCase(APITestCase):
             'operator': self.user,
         }
         hot_video = HotVideo.objects.create(**hot_video_data)
+        hot_video.users.add(self.user)
 
         boxer_data = {
             "user": self.user,

@@ -19,17 +19,18 @@ class HotVideoTestCase(APITestCase):
         self.client3.login(username=self.test_user3, password='password')
 
         self.data = {
-            'user_id': self.test_user.id,
             'name': 'test video1',
             'description': 'test video1',
             'price': 111,
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator_id': self.test_superuser.id,
+            'cover': '/videos/333'
         }
 
     def test_video_payment(self):
         video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_user)
 
         PayOrder.objects.create(
             user=self.test_user,

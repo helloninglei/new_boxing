@@ -279,3 +279,30 @@ if settings.ENVIRONMENT != settings.PRODUCTION:
     DELAY_SEVEN_DAYS = timedelta(minutes=5)
 else:
     DELAY_SEVEN_DAYS = timedelta(days=7)
+
+# user type
+USER_TYPE_BOXER = 1
+USER_TYPE_CELEBRITY = 2
+USER_TYPE_MEDIA = 3
+USER_TYPE_CHOICE = (
+    (USER_TYPE_BOXER, "拳手"),
+    (USER_TYPE_CELEBRITY, "名人"),
+    (USER_TYPE_MEDIA, "自媒体")
+)
+USER_TYPE_MAP = dict(USER_TYPE_CHOICE)
+
+# user default bio
+DEFAULT_BIO_FORMAT = "{}好懒哦，什么都没留下～"
+DEFAULT_BIO_OF_MEN = DEFAULT_BIO_FORMAT.format("小哥哥")
+DEFAULT_BIO_OF_WOMEN = DEFAULT_BIO_FORMAT.format("小姐姐")
+
+# chat rooms
+CHAT_ROOM_NAME = "拳城BB"
+CHAT_ROOM_DESCRIPTION = "拳城出击聊天室"
+CHAT_ROOM_MAXUSERS = 10000  # 聊天室最大用户数量
+
+# user default nickname、avatar
+DEFAULT_NICKNAME_FORMAT = "拳城{}"
+DEFAULT_AVATAR = ""
+
+MAX_HOT_VIDEO_BIND_USER_COUNT = 7

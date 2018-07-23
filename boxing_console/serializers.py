@@ -10,17 +10,17 @@ from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from biz.models import CoinChangeLog, MoneyChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, \
-    Message, Comment, OrderComment
+from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
+    OrderComment
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
 from biz.validator import validate_mobile
-from biz.redis_client import get_number_of_share
+from biz.redis_client import get_number_of_share, get_message_forward_count
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
-    HOT_VIDEO_USER_ID
+    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT, HOT_VIDEO_USER_ID
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -41,6 +41,10 @@ class UserSerializer(serializers.ModelSerializer):
     share_count = serializers.SerializerMethodField()
     is_boxer = serializers.SerializerMethodField()
     boxer_id = serializers.CharField(source="boxer_identification.id")
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, instance):
+        return instance.get_user_type_display() or "普通用户"
 
     def get_is_boxer(self, instance):
         return BoxerIdentification.objects.filter(
@@ -63,11 +67,11 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.User
         fields = [
             "id", "mobile", "following_count", "follower_count", "share_count", "money_balance", "is_boxer",
-            "user_basic_info", "date_joined", "boxer_id", "coin_balance"
+            "user_basic_info", "date_joined", "boxer_id", "coin_balance", "user_type", "title"
         ]
 
 
-class CoinMoneyBaseSerializer(serializers.ModelSerializer):
+class CoinBaseSerializer(serializers.ModelSerializer):
     created_time = serializers.DateTimeField(format('%Y-%m-%d %H:%M:%S'), required=False)
     operator = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -89,7 +93,7 @@ class CoinMoneyBaseSerializer(serializers.ModelSerializer):
         return change_log
 
 
-class CoinLogSerializer(CoinMoneyBaseSerializer):
+class CoinLogSerializer(CoinBaseSerializer):
     change_type = serializers.ChoiceField(choices=constants.COIN_CHANGE_TYPE_CHOICES,
                                           error_messages={'invalid_choice': '拳豆修改类型未知'})
 
@@ -102,19 +106,6 @@ class CoinLogSerializer(CoinMoneyBaseSerializer):
         fields = '__all__'
 
 
-class MoneyLogSerializer(CoinMoneyBaseSerializer):
-    change_type = serializers.ChoiceField(choices=constants.MONEY_CHANGE_TYPE_CHOICES,
-                                          error_messages={'invalid_choice': '钱包余额修改类型未知'})
-
-    def create(self, validated_data):
-        validated_data['alias'] = 'money'
-        return super(MoneyLogSerializer, self).create(validated_data)
-
-    class Meta:
-        model = MoneyChangeLog
-        fields = '__all__'
-
-
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
     honor_certificate_images = serializers.ListField(child=serializers.CharField(), required=False)
     competition_video = serializers.CharField(required=False)
@@ -122,16 +113,13 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     allowed_course = serializers.ListField(child=serializers.CharField())
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
     mobile = serializers.CharField(source='user.mobile')
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, instance):
+        return redis_client.get_user_title(instance.user) or instance.user.title
 
     def validate(self, attrs):
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_REFUSE and \
-                not attrs.get('refuse_reason'):
-            raise ValidationError({'refuse_reason': ['驳回理由是必填项']})
-        if attrs.get('authentication_state') == constants.BOXER_AUTHENTICATION_STATE_APPROVED:
-            if not attrs.get('allowed_course'):
-                raise ValidationError({'allowed_course': ['可开通的课程类型是必填项']})
-            else:
-                attrs['is_locked'] = False
+        attrs['is_locked'] = False
         return attrs
 
     class Meta:
@@ -140,6 +128,21 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         read_only_fields = ('user', 'real_name', 'height', 'weight', 'birthday', 'identity_number',
                             'mobile', 'is_professional_boxer', 'club', 'job', 'introduction', 'experience',
                             'honor_certificate_images', 'competition_video')
+
+
+class BoxerApproveSerializer(serializers.Serializer):
+    allowed_course = serializers.ListField()
+    title = serializers.CharField(max_length=16)
+
+    class Meta:
+        fields = ('allowed_course', 'title')
+
+
+class BoxerRefuseSerializer(serializers.Serializer):
+    refuse_reason = serializers.CharField(max_length=100)
+
+    class Meta:
+        fields = ('refuse_reason',)
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -218,23 +221,39 @@ class BoxingClubSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class HotVideoUserSerializer(serializers.ModelSerializer):
+    nick_name = serializers.CharField(source='user_profile.nick_name')
+    avatar = serializers.CharField(source='user_profile.avatar')
+
+    class Meta:
+        model = User
+        fields = ('id', 'nick_name', 'avatar')
+
+
 class HotVideoSerializer(serializers.ModelSerializer):
-    user_id = serializers.IntegerField(required=False)
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
     sales_count = serializers.IntegerField(read_only=True)
     price_amount = serializers.IntegerField(read_only=True)
+    user_list = serializers.SerializerMethodField()
+    users = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)
 
-    def validate(self, data):
-        data['user_id'] = HOT_VIDEO_USER_ID  # 固定由"热门视频"用户发布
-        # user_id = data['user_id']
-        # if not models.User.objects.filter(pk=user_id).exists():
-        #     raise ValidationError({'user_id': [f'用户 {user_id} 不存在']})
-        return data
+    def get_user_list(self, instance):
+        return HotVideoUserSerializer(instance.users, many=True).data
+
+    def validate(self, attrs):
+        if len(attrs['users']) > MAX_HOT_VIDEO_BIND_USER_COUNT:
+            raise ValidationError({'message': [f'最多关联{MAX_HOT_VIDEO_BIND_USER_COUNT}个用户']})
+        if not User.objects.filter(id__in=attrs['users']).exists():
+            raise ValidationError({'message': ['用户不存在']})
+        if attrs.pop('push_to_hotvideo'):
+            attrs['users'].append(HOT_VIDEO_USER_ID)
+        return attrs
 
     class Meta:
         model = HotVideo
-        fields = ('id', 'user_id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time')
+        fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
+                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list', 'push_to_hotvideo')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
@@ -349,9 +368,15 @@ class ReportSerializer(serializers.ModelSerializer):
         if instance.content_object:
             return instance.content_object._meta.verbose_name
 
+    def _get_reported_user(self, instance):
+        obj = instance.content_object
+        if obj:
+            if not isinstance(obj, HotVideo):
+                return obj.user
+            return obj.users.first()
+
     def get_reported_user(self, instance):
-        if instance.content_object:
-            return instance.content_object.user.id
+        return self._get_reported_user(instance).id
 
     def get_operator(self, instance):
         return instance.operator.user_profile.nick_name if instance.operator and instance.operator.user_profile else None
@@ -369,7 +394,7 @@ class ReportSerializer(serializers.ModelSerializer):
         obj = instance.content_object
         if not obj:
             return {}
-        user = obj.user
+        user = self._get_reported_user(instance)
         created_time = obj.created_time
         video = None
         pictures = []
@@ -538,3 +563,55 @@ class CourseOrderInsuranceSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('insurance_amount',)
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    like_count = serializers.IntegerField(read_only=True)
+    user_id = serializers.IntegerField(read_only=True)
+    avatar = serializers.CharField(source='user.user_profile.avatar')
+    forward_count = serializers.SerializerMethodField()
+    images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
+    nick_name = serializers.CharField(source='user.user_profile.nick_name')
+    user_type = serializers.SerializerMethodField()
+    mobile = serializers.CharField(source='user.mobile')
+
+    def get_user_type(self, instance):
+        return instance.user.get_user_type_display() or '普通用户'
+
+    def get_forward_count(self, instance):
+        return get_message_forward_count(instance.id)
+
+    class Meta:
+        model = models.Message
+        exclude = ('is_deleted', 'user', 'updated_time')
+        read_only_fields = ('content', 'images', 'video', 'is_deleted', 'created_time')
+
+
+class EditUserInfoSerializer(serializers.ModelSerializer):
+    change_amount = serializers.IntegerField(write_only=True, min_value=0)
+    user_type = serializers.CharField(source="get_user_type_display")
+
+    def validate(self, attrs):
+        attrs['user_type'] = dict(zip(USER_TYPE_MAP.values(), USER_TYPE_MAP.keys())).get(attrs['get_user_type_display'])
+        attrs['money_balance'] = self.instance.money_balance + attrs['change_amount']
+        return attrs
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        models.MoneyChangeLog.objects.create(user=instance, change_type=MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE,
+                                             last_amount=instance.money_balance,
+                                             change_amount=validated_data['change_amount'],
+                                             remain_amount=validated_data['money_balance'],
+                                             operator=self.context['request'].user)
+        return super(EditUserInfoSerializer, self).update(instance, validated_data)
+
+    class Meta:
+        model = models.User
+        fields = ('title', "user_type", "money_balance", "change_amount")
+        read_only_fields = ("money_balance",)
+
+
+class WordFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.WordFilter
+        fields = ['id', "sensitive_word"]
