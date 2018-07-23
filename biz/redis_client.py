@@ -164,4 +164,5 @@ def get_shutup_list():
 
 
 def rm_shutup_list(*user_ids):
-    return redis_client.zrem(SHUTUP_LIST, *user_ids)
+    if user_ids:
+        return redis_client.zrem(SHUTUP_LIST, *user_ids)

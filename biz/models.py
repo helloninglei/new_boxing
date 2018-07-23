@@ -348,7 +348,7 @@ class HotVideo(BaseAuditModel):
 
     class Meta:
         db_table = 'hot_video'
-        ordering = ("stay_top", "-created_time",)
+        ordering = ("-stay_top", "-created_time",)
         verbose_name = '热门视频'
 
 

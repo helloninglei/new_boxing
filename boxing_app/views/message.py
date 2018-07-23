@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Count, Q
+from django.db.models import Count, Q, ExpressionWrapper, F, IntegerField
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -32,9 +32,9 @@ class MessageViewSet(viewsets.ModelViewSet):
         blocked_user_id_list = blocked_user_list(user_id)
         is_like = Count('likes', filter=Q(likes__user_id=user_id), distinct=True)
         return Message.objects.exclude(user_id__in=blocked_user_id_list).annotate(
-            like_count=Count('likes', distinct=True), comment_count=comment_count_condition,
-            is_like=is_like).select_related('user__boxer_identification',
-                                            'user__user_profile')
+            like_count=ExpressionWrapper(Count('likes', distinct=True) + F('initial_like_count'),
+                                         output_field=IntegerField()), comment_count=comment_count_condition,
+            is_like=is_like).select_related('user__boxer_identification', 'user__user_profile')
 
     def search_message(self, request, *args, **kwargs):
         keywords = self.request.query_params.get('keywords', "")

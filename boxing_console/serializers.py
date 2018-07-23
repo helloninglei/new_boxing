@@ -41,6 +41,10 @@ class UserSerializer(serializers.ModelSerializer):
     share_count = serializers.SerializerMethodField()
     is_boxer = serializers.SerializerMethodField()
     boxer_id = serializers.CharField(source="boxer_identification.id")
+    user_type = serializers.SerializerMethodField()
+
+    def get_user_type(self, instance):
+        return instance.get_user_type_display() or "普通用户"
 
     def get_is_boxer(self, instance):
         return BoxerIdentification.objects.filter(
@@ -364,12 +368,15 @@ class ReportSerializer(serializers.ModelSerializer):
         if instance.content_object:
             return instance.content_object._meta.verbose_name
 
-    def get_reported_user(self, instance):
+    def _get_reported_user(self, instance):
         obj = instance.content_object
         if obj:
             if not isinstance(obj, HotVideo):
-                return obj.user.id
-            return obj.users.first().id
+                return obj.user
+            return obj.users.first()
+
+    def get_reported_user(self, instance):
+        return self._get_reported_user(instance).id
 
     def get_operator(self, instance):
         return instance.operator.user_profile.nick_name if instance.operator and instance.operator.user_profile else None
@@ -387,7 +394,7 @@ class ReportSerializer(serializers.ModelSerializer):
         obj = instance.content_object
         if not obj:
             return {}
-        user = self.get_reported_user(instance)
+        user = self._get_reported_user(instance)
         created_time = obj.created_time
         video = None
         pictures = []

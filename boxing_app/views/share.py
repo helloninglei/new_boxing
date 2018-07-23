@@ -63,7 +63,7 @@ def share_view(_, object_type, object_id):
     elif isinstance(obj, HotVideo):
         user = obj.users.first()
         title = obj.name
-        sub_title = f'来自{user.user_profile.nick_name}的拳城出击'
+        sub_title = f'来自拳城出击的热门视频'
         picture = get_share_img_url(obj.cover) or get_share_img_url(obj.try_url, is_video=True)
         url = f'{h5_base_url}hot_videos/{user.id}/{object_id}'
     elif isinstance(obj, GameNews):

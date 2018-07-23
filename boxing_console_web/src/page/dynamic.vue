@@ -34,7 +34,7 @@
                     </el-col>
                     <el-col :span="5">
                         <el-select v-model="sendData.user_type" class="margin_tp30">
-                            <el-option value="1" label="认证拳手">认证拳手</el-option>
+                            <el-option value="1" label="拳手">拳手</el-option>
                             <el-option value="2" label="名人">名人</el-option>
                             <el-option value="3" label="自媒体">自媒体</el-option>
                         </el-select>
