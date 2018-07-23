@@ -82,6 +82,14 @@ class LikeTestCase(APITestCase):
             self.assertGreaterEqual(last_count, like_count)
             last_count = like_count
 
+        msg = Message.objects.get(pk=self.message_id3)
+        msg.initial_like_count = 1000
+        msg.save()
+        response = self.client1.get('/messages/hot')
+        self.assertEqual(response.data['results'][0]['id'], self.message_id3)
+        response = self.client1.get(f'/messages/{self.message_id3}')
+        self.assertEqual(response.data['like_count'], 1 + 1000)
+
     def test_unset_like(self):
         self.prepare()
         self.client1.post('/message/%s/like/' % self.message_id2)
