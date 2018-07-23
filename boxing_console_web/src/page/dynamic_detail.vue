@@ -2,7 +2,7 @@
 	<div id="report_content">
 		<el-dialog  :visible.sync="showDialog">
       <ul class='clearfix dynamic_title'>
-        <li style='border-radius: 50%;width:60px;height:60px;margin-top:-5px'>
+        <li style='border-radius: 50%;width:60px;height:60px;margin-top:-5px;overflow: hidden;'>
           <img :src="config.baseUrl+getData.avatar" alt="" width='100%'>
         </li>
         <li style='margin-top:5px'>

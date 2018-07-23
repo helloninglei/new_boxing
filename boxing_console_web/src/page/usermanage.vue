@@ -33,7 +33,7 @@
                         <el-select v-model="sendData.user_type" class="margin_tp30">
                             <el-option value="" label="全部">全部</el-option>
                             <el-option value="4" label="普通用户">普通用户</el-option>
-                            <el-option value="1" label="认证拳手">认证拳手</el-option>
+                            <el-option value="1" label="拳手">拳手</el-option>
                             <el-option value="2" label="名人">名人</el-option>
                             <el-option value="3" label="自媒体">自媒体</el-option>
                         </el-select>
@@ -81,7 +81,7 @@
                         label="用户类别"
                         width="70">
                             <template slot-scope="scope">
-                                <span class='colorFont' v-if="scope.row.is_boxer" @click='checkIdent(scope.row.boxer_id)'>认证拳手</span>
+                                <span class='colorFont' v-if="scope.row.user_type=='拳手'" @click='checkIdent(scope.row.boxer_id)'>拳手</span>
                                 <span class='colorFont' v-else @click='goUserDetail(scope.row)'>{{scope.row.user_type}}</span>
                             </template>
                         </el-table-column>
