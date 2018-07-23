@@ -82,6 +82,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     city = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
     title = serializers.CharField(source='user.title')
+    user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
@@ -107,7 +108,7 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BoxerIdentification
         fields = ['id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar', 'real_name',
-                  'allowed_course', 'city', 'user_id', 'title']
+                  'allowed_course', 'city', 'user_id', 'title', 'user_type']
         read_only_fields = ['boxer_id', 'longitude', 'latitude', 'course_min_price', 'order_count', 'gender', 'avatar',
                             'real_name', 'allowed_course', 'city', 'title']
 
@@ -410,6 +411,7 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
     boxer_gender = serializers.BooleanField(source='boxer.user.user_profile.gender', read_only=True)
     boxer_avatar = serializers.CharField(source='boxer.user.user_profile.avatar', read_only=True)
+    boxer_user_type = serializers.CharField(source="boxer.user.get_user_type_display", read_only=True)
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
@@ -444,7 +446,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     boxer_status = serializers.CharField(source='user.boxer_identification.authentication_state', read_only=True)
     identity = serializers.CharField(source="user.identity", read_only=True)
     is_following = serializers.SerializerMethodField(read_only=True)
-    bio = serializers.SerializerMethodField()
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
@@ -453,14 +454,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         data = super(UserProfileSerializer, self).to_representation(instance)
         data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
         data['avatar'] = instance.avatar or DEFAULT_AVATAR
+        data['bio'] = instance.bio or (DEFAULT_BIO_OF_MEN if instance.gender else DEFAULT_BIO_OF_WOMEN)
         return data
-
-    def get_bio(self, instance):
-        if instance.bio:
-            return instance.bio
-        if instance.gender:
-            return DEFAULT_BIO_OF_MEN
-        return DEFAULT_BIO_OF_WOMEN
 
     def get_is_following(self, instance):
         return bool(is_following(self.context['request'].user.id, instance.user.id))
