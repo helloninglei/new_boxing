@@ -69,7 +69,7 @@
         <div class="separate_line"></div>
         <div class="see_more" @click="openApp">查看更多>></div>
         <div class="go_order" @click="openApp">去下单</div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="boxers"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
@@ -287,7 +287,8 @@
                 thumbnail: '',
                 portraitQuery: '',
                 bigPicArr: [],
-                showVideo: true
+                showVideo: true,
+                id: ''
             }
         },
 
@@ -367,7 +368,8 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+//                    this.$router.push({path: '/download'})
+                    location.href = `boxing://api.bituquanguan.com:80/boxers?id=${this.id}&time=${new Date().getTime()}`;
                 }
                 else {
                     this.showModal = false;

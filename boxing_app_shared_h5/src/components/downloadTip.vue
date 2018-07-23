@@ -75,10 +75,18 @@
                 show: true
             }
         },
+        props: {
+            id: {
+              type: [Number,String]
+            },
+            page: {
+                type: String
+            }
+        },
         methods: {
             openApp() {
 //                this.$router.push({path: '/download'})
-                location.href = 'boxing://api.bituquanguan.com:80/mypath?key=test&time=' + new Date().getTime()
+                location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&time=${new Date().getTime()}`;
             },
             closeEv() {
                 this.show = false;
