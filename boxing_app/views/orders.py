@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
@@ -22,10 +22,10 @@ class BaseCourseOrderViewSet(viewsets.ModelViewSet):
 
 class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = BoxerCourseOrderSerializer
-    permission_classes = (OnlyBoxerSelfCanConfirmOrderPermission,)
+    permission_classes = (permissions.IsAuthenticated, OnlyBoxerSelfCanConfirmOrderPermission,)
 
     def get_queryset(self):
-        boxer = BoxerIdentification.objects.get(user=self.request.user)
+        boxer = BoxerIdentification.objects.get(user=self.request.user.id)
         return CourseOrder.objects.filter(boxer=boxer)
 
     def boxer_confirm_order(self, request, *args, **kwargs):
