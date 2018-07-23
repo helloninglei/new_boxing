@@ -210,10 +210,10 @@ share_urls = [
 ]
 
 search_urls = [
-    path("search/MESSAGE", MessageViewSet.as_view({'get': 'search_message'})),
-    path("search/NEWS", NewsViewSet.as_view({'get': 'search_news'})),
-    path("search/VIDEO", SearchVewSet.as_view({'get': 'search_video'})),
-    path("search/USER", SearchVewSet.as_view({'get': 'search_user'})),
+    path("search/message", MessageViewSet.as_view({'get': 'search_message'})),
+    path("search/news", NewsViewSet.as_view({'get': 'search_news'})),
+    path("search/video", SearchVewSet.as_view({'get': 'search_video'})),
+    path("search/user", SearchVewSet.as_view({'get': 'search_user'})),
 ]
 
 version_urls = [

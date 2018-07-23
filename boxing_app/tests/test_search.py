@@ -46,13 +46,13 @@ class SearchCase(APITestCase):
         UserProfile.objects.filter(user=self.test_user_1).update(nick_name=user1_nick_name)
         UserProfile.objects.filter(user=self.test_user_2).update(nick_name=user2_nick_name)
 
-        res = self.client1.get(f'/search/USER?keywords={user1_nick_name}')
+        res = self.client1.get(f'/search/user?keywords={user1_nick_name}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/USER?keywords=三')
+        res = self.client1.get('/search/user?keywords=三')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
-        res = self.client1.get('/search/USER?keywords=')
+        res = self.client1.get('/search/user?keywords=')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
 
@@ -64,13 +64,13 @@ class SearchCase(APITestCase):
         Message.objects.create(user=self.test_user_2, content=content2)
         Message.objects.create(user=self.test_user_3, content=content3)
 
-        res = self.client1.get(f'/search/MESSAGE?keywords={content1}')
+        res = self.client1.get(f'/search/message?keywords={content1}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/MESSAGE?keywords=看')
+        res = self.client1.get('/search/message?keywords=看')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
-        res = self.client1.get('/search/MESSAGE?keywords=')
+        res = self.client1.get('/search/message?keywords=')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
 
@@ -82,10 +82,10 @@ class SearchCase(APITestCase):
         self.news_data['title'] = title2
         GameNews.objects.create(**self.news_data)
 
-        res = self.client1.get(f'/search/NEWS?keywords={title1}')
+        res = self.client1.get(f'/search/news?keywords={title1}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/NEWS?keywords=')
+        res = self.client1.get('/search/news?keywords=')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
 
@@ -97,9 +97,9 @@ class SearchCase(APITestCase):
         self.video_data['name'] = v_name2
         HotVideo.objects.create(**self.video_data)
 
-        res = self.client1.get(f'/search/VIDEO?keywords={v_name1}')
+        res = self.client1.get(f'/search/video?keywords={v_name1}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/VIDEO?keywords=世界杯')
+        res = self.client1.get('/search/video?keywords=世界杯')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)

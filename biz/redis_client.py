@@ -27,7 +27,7 @@ def follow_user(current_user_id, follower_id):
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
         p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
         p.execute()
-        UserProfile.objects.filter(id=follower_id).update(fans=F('fans') + 1)
+        UserProfile.objects.filter(id=follower_id).update(follower_count=F('follower_count') + 1)
 
 
 def unfollow_user(current_user_id, follower_id):
@@ -35,7 +35,7 @@ def unfollow_user(current_user_id, follower_id):
     p.zrem(f'follower_{follower_id}', current_user_id)
     p.zrem(f'following_{current_user_id}', follower_id)
     p.execute()
-    UserProfile.objects.filter(id=follower_id).update(fans=F('fans') - 1)
+    UserProfile.objects.filter(id=follower_id).update(follower_count=F('follower_count') - 1)
 
 
 def is_follower(current_user_id, follower_id):
