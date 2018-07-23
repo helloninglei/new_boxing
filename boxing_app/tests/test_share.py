@@ -63,7 +63,7 @@ class ShareTestCase(APITestCase):
 
         data = self.client.get(f'/hot_videos/{self.video.id}/share').data
         self.assertEqual(data['title'], self.video.name)
-        self.assertEqual(data['sub_title'], f'来自{self.nick_name}的拳城出击')
+        self.assertEqual(data['sub_title'], f'来自拳城出击的热门视频')
         self.assertEqual(data['picture'], self.video_data['cover'])
         self.assertEqual(data['url'], f'{h5_base_url}hot_videos/{self.test_user.id}/{self.video.id}')
 

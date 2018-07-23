@@ -134,16 +134,12 @@ class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
     video = serializers.CharField(max_length=200, required=False)
     user = DiscoverUserField(read_only=True)
-    like_count = serializers.SerializerMethodField()
+    like_count = serializers.IntegerField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     is_like = serializers.BooleanField(read_only=True)
     msg_type = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
     created_time = serializers.DateTimeField(format=message_dateformat, read_only=True)
-
-    def get_like_count(self, instance):
-        if hasattr(instance, 'like_count'):
-            return instance.like_count + instance.initial_like_count
 
     def get_forward_count(self, instance):
         return get_message_forward_count(instance.id) + instance.initial_forward_count
