@@ -17,7 +17,7 @@
             <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
         <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
-        <DownloadTip @closeEv="closeEv" :id="id" page="hot_videos"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" :userId="userId" page="hot_videos"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
@@ -131,7 +131,7 @@
             modalEv(ifShow) {
                 if (ifShow) {
 //                    this.$router.push({path: '/download'})
-                    location.href = `boxing://api.bituquanguan.com:80/hot_videos?id=${this.id}&time=${new Date().getTime()}`;
+                    location.href = `boxing://api.bituquanguan.com:80/hot_videos?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
                 }
                 else {
                     this.showModal = false
