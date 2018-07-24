@@ -31,9 +31,11 @@ class BaseFollowView(APIView):
 
     def post(self, request, *args, **kwargs):
         current_user_id = request.user.id
-        to_follow_user_id = int(request.data['user_id'])
-        if not User.objects.filter(pk=to_follow_user_id).exists() or current_user_id == to_follow_user_id:
-            return Response({'message': '用户不存在或者试图关注自己'}, status=status.HTTP_400_BAD_REQUEST)
+        to_follow_user_id =request.data.get("user_id", "")
+        if not to_follow_user_id or not str(to_follow_user_id).isdigit():
+            return Response({"message": "请求参数错误"}, status=status.HTTP_400_BAD_REQUEST)
+        if not User.objects.filter(pk=to_follow_user_id).exists():
+            return Response({'message': '用户不存在'}, status=status.HTTP_400_BAD_REQUEST)
         follow_user(current_user_id, to_follow_user_id)
         return Response(status=status.HTTP_201_CREATED)
 

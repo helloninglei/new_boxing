@@ -171,6 +171,8 @@
         watch:{
           isshow(newval,oldval){
             this.showDialog=newval;
+            this.form3.initial_forward_count = this.row.initial_forward_count
+            this.form3.initial_like_count = this.row.initial_like_count
           },
           showDialog(val){
             if(!val){
@@ -185,6 +187,7 @@
             this.form1.sensitive = val
           },
           row(row){
+            
             this.form3.initial_forward_count = row.initial_forward_count
             this.form3.initial_like_count = row.initial_like_count
           }
@@ -220,6 +223,7 @@
               }else if(this.type=='forward'){
                 this.$refs['form3'].validate((valid) => {
                   if (valid) {
+                    // console.log(111)
                     this.confirm1(this.form3,this.row)
                   } else {
                     console.log('error submit!!');
@@ -244,7 +248,9 @@
                     if(res&&res.data){
                         row.initial_forward_count = res.data.initial_forward_count
                         row.initial_like_count = res.data.initial_like_count
-                        $this.$emit('cancel',false)
+                        $this.form3.initial_forward_count = res.data.initial_forward_count
+                        $this.form3.initial_like_count = res.data.initial_like_count
+                        $this.$emit('cancel',false) 
                     }
 
                 },function(err){

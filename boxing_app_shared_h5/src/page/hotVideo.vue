@@ -7,7 +7,7 @@
             </div>
             <div class="video_info_wrapper">
                 <div v-if="videoObj.try_url || videoObj.url" class="video">
-                    <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem" v-show="showVideo"></Video>
+                    <Video :url="videoObj.try_url" height="11.8rem" v-show="showVideo"></Video>
                 </div>
                 <div class="text">
                     <h2 class="title">{{videoObj.name}}</h2>

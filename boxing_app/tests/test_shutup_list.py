@@ -19,7 +19,7 @@ class ShutUpListTestCase(APITestCase):
         print(response.data)
         self.assertEqual(response.data['results'], [str(self.user2.id)])
 
-        response = self.client.delete(path="/shutup_list", data={"user_ids": [self.user2.id]})
+        response = self.client.post(path="/shutup_list_delete", data={"user_ids": [self.user2.id]})
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         response = self.client.get(path="/shutup_list")
