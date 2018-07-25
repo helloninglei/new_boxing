@@ -47,8 +47,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         if user_id:  # 指定用户的动态
             self.queryset = self._get_query_set().filter(user_id=user_id)
         else:
-            following_user_id_list = following_list_all(request.user.id)
-            self.queryset = self._get_query_set().exclude(user_id__in=following_user_id_list)
+            self.queryset = self._get_query_set()
         return super().list(request, *args, **kwargs)
 
     def hot(self, request, *args, **kwargs):
