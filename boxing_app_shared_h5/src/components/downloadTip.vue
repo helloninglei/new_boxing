@@ -75,9 +75,27 @@
                 show: true
             }
         },
+        props: {
+            id: {
+              type: [Number,String]
+            },
+            page: {
+                type: String
+            },
+            userId: {
+                type: [Number,String],
+                default: ''
+            }
+        },
         methods: {
             openApp() {
-                this.$router.push({path: '/download'})
+//                this.$router.push({path: '/download'})
+                if (this.page === 'hot_videos') {
+                    location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
+                }
+                else {
+                    location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&time=${new Date().getTime()}`;
+                }
             },
             closeEv() {
                 this.show = false;

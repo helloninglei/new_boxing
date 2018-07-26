@@ -8,7 +8,7 @@
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp == 0"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
@@ -149,7 +149,14 @@
                 this.showModal = true;
             },
             modalEv(ifShow) {
-                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+//                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+                if (ifShow) {
+                    location.href = `boxing://api.bituquanguan.com:80/game_news?id=${this.id}&time=${new Date().getTime()}`;
+                }
+                else {
+                    this.showModal = false;
+                    this.showVideo = true;
+                }
             },
             closeEv(val) {
                 this.ifClose = val;

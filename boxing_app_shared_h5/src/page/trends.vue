@@ -44,7 +44,7 @@
                 </div>
             </div>
         </div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="messages"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
@@ -199,6 +199,7 @@
                 portraitQuery: '',
                 bigPicArr: [],
                 showVideo: true,
+                id: '',
                 praiseNum: ''
             }
         },
@@ -281,7 +282,8 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+//                    this.$router.push({path: '/download'})
+                    location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
                 }
                 else {
                     this.showModal = false;

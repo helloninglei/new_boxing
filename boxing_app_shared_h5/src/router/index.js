@@ -27,8 +27,7 @@ export default [
         path: '/hot_videos/:userId/:id',
         component: HotVideo,
         meta: {
-            title: '拳城出击',
-            desc: '1111'
+            title: '拳城出击'
         }
     },
     {
