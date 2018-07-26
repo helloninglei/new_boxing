@@ -193,7 +193,7 @@ class Message(SoftDeleteModel):
     updated_time = models.DateTimeField(auto_now=True)
     initial_like_count = models.PositiveIntegerField(default=0)  # 后台设置的点赞数
     initial_forward_count = models.PositiveIntegerField(default=0)  # 后台设置的转发数
-    comments = GenericRelation('Comment')
+    comments = GenericRelation('Comment', related_query_name='message')
     reports = GenericRelation('Report')
 
     class Meta:
