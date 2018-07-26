@@ -191,9 +191,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentMeSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(read_only=TabError)
+    user = DiscoverUserField(read_only=True)
 
     class Meta:
         model = models.Comment
+        fields = '__all__'
 
 
 

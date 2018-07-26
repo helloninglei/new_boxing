@@ -48,7 +48,7 @@ class CommentMeListViewSet(mixins.ListModelMixin,
     serializer_class = CommentMeSerializer
 
     def list(self, request, *args, **kwargs):
-        self.queryset = models.Comment.objects.filter(content_object__user=request.user)
+        self.queryset = models.Comment.objects.filter(Q(parent__user=request.user) | Q(message__user=request.user))
         return super().list(request, *args, **kwargs)
 
 
