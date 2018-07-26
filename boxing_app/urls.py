@@ -53,8 +53,6 @@ discover_urls = [
     path('messages/following', message.MessageViewSet.as_view({'get': 'following'}), name='message-following'),
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
-    path('messages/<int:message_id>/like',
-         like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
 ]
 
 comment_object_string = '|'.join(COMMENT_OBJECT_DICT.keys())
@@ -99,7 +97,7 @@ order_url = [
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
     path('course/order', UserCourseOrderViewSet.as_view({'post': 'create'}), name='create-course-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}),
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve', "delete": "destroy"}),
          name='user-order-detail'),
     path('order/<int:pk>/boxer-confirm', BoxerCourseOrderViewSet.as_view({'post': 'boxer_confirm_order'}),
          name='boxer-confirm-order'),
@@ -231,6 +229,12 @@ cover_picture_urls = [
     path("cover_picture", cover_picture)
 ]
 
+like_urls = [
+    path('messages/<int:message_id>/like',
+         like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view({'post': 'create', 'delete': 'destroy'})),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -260,6 +264,7 @@ urlpatterns += official_accounts_urls
 urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
+urlpatterns += like_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

@@ -22,7 +22,7 @@ from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
-from biz.redis_client import redis_client, get_message_forward_count
+from biz.redis_client import redis_client, get_message_forward_count, get_hotvideo_forward_count
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
@@ -286,15 +286,19 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField()
 
-    def get_url(self, obj):
-        if obj.is_paid or obj.price == 0:
-            return obj.url
+    def get_forward_count(self, instance):
+        return get_hotvideo_forward_count(instance.id)
+
+    def get_url(self, instance):
+        if instance.is_paid or instance.price == 0:
+            return instance.url
 
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover')
+                  'cover', 'views_count', 'like_count', 'forward_count')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):

@@ -9,6 +9,7 @@ from biz import models
 from biz.utils import comment_count_condition
 from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
 from boxing_app.serializers import HotVideoSerializer
+from boxing_app.tasks import incr_hot_video_views_count
 
 
 @api_view(['GET'])
@@ -22,6 +23,11 @@ def hot_video_redirect(_):
 class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HotVideoSerializer
     permission_classes = (permissions.AllowAny,)
+
+    def retrieve(self, request, *args, **kwargs):
+        video_id = self.kwargs['pk']
+        incr_hot_video_views_count.delay(video_id)
+        return super().retrieve(request, *args, **kwargs)
 
     def get_queryset(self):
         _filter = Q(orders__status=PAYMENT_STATUS_PAID, orders__user_id=self.request.user.id)

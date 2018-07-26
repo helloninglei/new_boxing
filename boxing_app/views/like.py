@@ -7,9 +7,10 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz.utils import get_object_or_404
 from biz.models import Like, Message
 from boxing_app.serializers import LikeSerializer
+from biz.redis_client import like_hot_video, unlike_hot_video
 
 
-class LikeViewSet(viewsets.ModelViewSet):
+class MessageLikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
@@ -29,3 +30,16 @@ class LikeViewSet(viewsets.ModelViewSet):
         except IntegrityError as e:
             if 'Duplicate entry' not in str(e):
                 raise e
+
+
+class HotVideoLikeViewSet(viewsets.GenericViewSet):
+    serializer_class = LikeSerializer
+    queryset = object()
+
+    def destroy(self, request, *args, **kwargs):
+        unlike_hot_video(request.user.id, self.kwargs['video_id'])
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def create(self, request, *args, **kwargs):
+        like_hot_video(request.user.id, self.kwargs['video_id'])
+        return Response(status=status.HTTP_201_CREATED)
