@@ -120,3 +120,9 @@ class CommentTestCase(APITestCase):
         res = self.client1.get('/comment_me')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
+
+        comment_id = self.comment1['id']
+        msg3 = {'content': 'comment by user2 to user1'}
+        self.client2.post('/messages/%s/comments/%s' % (self.message_id, comment_id), msg3)
+        res = self.client1.get('/comment_me')
+        self.assertEqual(len(res.data['results']), 3)
