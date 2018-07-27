@@ -1,6 +1,7 @@
 import django_filters
+from biz import models
+from biz.constants import HOT_VIDEO_TAG_CHOICES
 from biz.models import MoneyChangeLog, Course
-
 from biz.models import BoxerIdentification
 
 
@@ -38,3 +39,11 @@ class MoneyChangeLogFilter(django_filters.FilterSet):
     class Meta:
         model = MoneyChangeLog
         fields = ['keyword']
+
+
+class HotVideoFilter(django_filters.FilterSet):
+    tag = django_filters.ChoiceFilter(choices=HOT_VIDEO_TAG_CHOICES, field_name='tag')
+
+    class Meta:
+        model = models.HotVideo
+        fields = ('tag',)
