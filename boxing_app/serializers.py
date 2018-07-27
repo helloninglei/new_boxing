@@ -115,19 +115,16 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
-        result = {
+        profile = user.user_profile
+
+        return {
             'id': user.id,
             'identity': user.identity,
             'is_following': bool(is_following(self.context['request'].user.id, user.id)),
-            'nick_name': DEFAULT_NICKNAME_FORMAT.format(user.id),
-            'avatar': None,
+            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+            'avatar': profile.avatar,
             "user_type": user.get_user_type_display()
         }
-
-        if hasattr(user, 'user_profile'):
-            profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
-            result.update(profile)
-        return result
 
 
 class MessageSerializer(serializers.ModelSerializer):
