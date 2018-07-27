@@ -17,8 +17,9 @@
             <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
         <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
-        <DownloadTip @closeEv="closeEv" :id="id" :userId="userId" page="hot_videos"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" :userId="userId" page="hot_videos" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
+        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -77,6 +78,7 @@
     import DownloadTip from 'components/downloadTip';
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
+    import PopTip from 'components/popTip';
     import Modal from 'components/modal';
     import {wxConfig} from 'common/wechat';
 
@@ -91,7 +93,8 @@
                 videoObj: {},
                 wx: '',
                 dataObj: '',
-                showVideo: true
+                showVideo: true,
+                popTip: false
             }
         },
         components: {
@@ -99,7 +102,8 @@
             DownloadTip,
             Video,
             TabBar,
-            Modal
+            Modal,
+            PopTip
         },
         created() {
             this.id = this.$route.params.id;
@@ -128,15 +132,29 @@
                     }
                 })
             },
+            tipOpenType(e) {
+                e && (this.popTip = true);
+            },
+            closePopTip() {
+                this.popTip = false;
+            },
             modalEv(ifShow) {
                 if (ifShow) {
-//                    this.$router.push({path: '/download'})
-                    location.href = `boxing://api.bituquanguan.com:80/hot_videos?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
+                    if (this.isInWeChat()) {
+                        this.popTip = true;
+                    }
+                    else {
+                        location.href = `boxing://api.bituquanguan.com:80/hot_videos?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
+                    }
                 }
                 else {
                     this.showModal = false
                     this.showVideo = true;
                 }
+            },
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
             },
             closePayTipEv() {
                 this.showPayTip = false;

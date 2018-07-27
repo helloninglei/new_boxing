@@ -88,13 +88,21 @@
             }
         },
         methods: {
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
             openApp() {
-//                this.$router.push({path: '/download'})
-                if (this.page === 'hot_videos') {
-                    location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
+                if (this.isInWeChat()) {
+                    this.$emit('tipOpenType',true);
                 }
                 else {
-                    location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&time=${new Date().getTime()}`;
+                    if (this.page === 'hot_videos') {
+                        location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
+                    }
+                    else {
+                        location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&time=${new Date().getTime()}`;
+                    }
                 }
             },
             closeEv() {

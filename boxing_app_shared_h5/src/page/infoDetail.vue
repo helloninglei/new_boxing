@@ -8,8 +8,9 @@
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
+        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -76,6 +77,7 @@
     import DownloadTip from 'components/downloadTip';
     import ZoomImage from 'components/zoomImage';
     import Video from 'components/video';
+    import PopTip from 'components/popTip';
 
     export default {
         data() {
@@ -87,7 +89,8 @@
                 info: {},
                 wx: '',
                 dataObj: '',
-                str: ''
+                str: '',
+                popTip: false
             }
         },
         components: {
@@ -95,7 +98,8 @@
             DownloadTip,
             Modal,
             ZoomImage,
-            Video
+            Video,
+            PopTip
         },
         created() {
             this.id = this.$route.params.id;
@@ -145,13 +149,24 @@
                     }
                 })
             },
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
             openApp() {
                 this.showModal = true;
             },
+            closePopTip() {
+                this.popTip = false;
+            },
             modalEv(ifShow) {
-//                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
                 if (ifShow) {
-                    location.href = `boxing://api.bituquanguan.com:80/game_news?id=${this.id}&time=${new Date().getTime()}`;
+                    if (this.isInWeChat()) {
+                        this.popTip = true;
+                    }
+                    else {
+                        location.href = `boxing://api.bituquanguan.com:80/game_news?id=${this.id}&time=${new Date().getTime()}`;
+                    }
                 }
                 else {
                     this.showModal = false;
@@ -160,6 +175,9 @@
             },
             closeEv(val) {
                 this.ifClose = val;
+            },
+            tipOpenType(e) {
+                e && (this.popTip = true);
             },
             sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
