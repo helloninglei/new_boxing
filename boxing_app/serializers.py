@@ -222,10 +222,11 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class LikeMeListSerializer(LikeSerializer):
-    message = serializers.PrimaryKeyRelatedField(read_only=True)
-    message_content = serializers.CharField(source='message.content', read_only=True)
-    message_images = serializers.ListField(source='message.images', read_only=True)
-    message_video = serializers.CharField(source='message.video', read_only=True)
+    message = serializers.SerializerMethodField()
+
+    def get_message(self, instance):
+        dict_obj = model_to_dict(instance.message)
+        return dict_obj
 
     class Meta:
         model = models.Like
