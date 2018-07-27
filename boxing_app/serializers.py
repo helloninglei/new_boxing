@@ -119,7 +119,7 @@ class DiscoverUserField(serializers.RelatedField):
             'id': user.id,
             'identity': user.identity,
             'is_following': bool(is_following(self.context['request'].user.id, user.id)),
-            'nick_name': None,
+            'nick_name': DEFAULT_NICKNAME_FORMAT.format(user.id),
             'avatar': None,
             "user_type": user.get_user_type_display()
         }
