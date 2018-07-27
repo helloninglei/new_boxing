@@ -44,9 +44,10 @@
                 </div>
             </div>
         </div>
-        <DownloadTip @closeEv="closeEv" :id="id" page="messages"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="messages" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
+        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -181,6 +182,7 @@
     import TabBar from 'components/tabBar';
     import Modal from 'components/modal';
     import ZoomImage from 'components/zoomImage';
+    import PopTip from 'components/popTip';
     import {wxConfig} from 'common/wechat';
 
     export default {
@@ -200,7 +202,8 @@
                 bigPicArr: [],
                 showVideo: true,
                 id: '',
-                praiseNum: ''
+                praiseNum: '',
+                popTip: false
             }
         },
 
@@ -211,7 +214,10 @@
                 this.sharePage();
             }
         },
-
+        isInWeChat() {
+            let u = navigator.userAgent, app = navigator.appVersion;
+            return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+        },
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
@@ -225,11 +231,11 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
+            PopTip
         },
 
         methods: {
-
             getData() {
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
@@ -282,8 +288,12 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-//                    this.$router.push({path: '/download'})
-                    location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
+                    if (this.isInWeChat()) {
+                        this.popTip = true;
+                    }
+                    else {
+                        location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
+                    }
                 }
                 else {
                     this.showModal = false;
@@ -299,6 +309,10 @@
 
             closeEv(val) {
                 this.ifClose = val;
+            },
+
+            tipOpenType(e) {
+                e && (this.popTip = true);
             },
 
             sharePage() {
@@ -362,6 +376,9 @@
             hideSwiper() {
                 this.showSwiper = false;
             }
+        },
+        closePopTip() {
+            this.popTip = false;
         },
         computed: {
             getClass() {
