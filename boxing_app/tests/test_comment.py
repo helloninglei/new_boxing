@@ -114,3 +114,9 @@ class CommentTestCase(APITestCase):
         res = self.anonymous_client.post('/messages/%s/comments/%s' % (self.message_id, self.comment1['id']),
                                          reply_data)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_comment_me(self):
+        self.prepare()
+        res = self.client1.get('/comment_me')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 2)

@@ -1,0 +1,371 @@
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 582, in connect
+    **kwargs)
+  File "/usr/local/lib/python3.7/socket.py", line 727, in create_connection
+    raise err
+  File "/usr/local/lib/python3.7/socket.py", line 716, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 234, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.33.10' ([Errno 111] Connection refused)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/bin/celery", line 11, in <module>
+    sys.exit(main())
+  File "/usr/local/lib/python3.7/site-packages/celery/__main__.py", line 16, in main
+    _main()
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 322, in main
+    cmd.execute_from_commandline(argv)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 496, in execute_from_commandline
+    super(CeleryCommand, self).execute_from_commandline(argv)))
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/base.py", line 275, in execute_from_commandline
+    return self.handle_argv(self.prog_name, argv[1:])
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 488, in handle_argv
+    return self.execute(command, argv)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 420, in execute
+    ).run_from_argv(self.prog_name, argv[1:], command=argv[0])
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/worker.py", line 223, in run_from_argv
+    return self(*args, **options)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/base.py", line 238, in __call__
+    ret = self.run(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/worker.py", line 257, in run
+    **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/celery/worker/worker.py", line 96, in __init__
+    self.app.loader.init_worker()
+  File "/usr/local/lib/python3.7/site-packages/celery/loaders/base.py", line 114, in init_worker
+    self.import_default_modules()
+  File "/usr/local/lib/python3.7/site-packages/celery/loaders/base.py", line 108, in import_default_modules
+    raise response
+  File "/usr/local/lib/python3.7/site-packages/celery/utils/dispatch/signal.py", line 288, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/usr/local/lib/python3.7/site-packages/celery/fixups/django.py", line 82, in on_import_modules
+    self.worker_fixup.validate_models()
+  File "/usr/local/lib/python3.7/site-packages/celery/fixups/django.py", line 121, in validate_models
+    run_checks()
+  File "/usr/local/lib/python3.7/site-packages/django/core/checks/registry.py", line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "/usr/local/lib/python3.7/site-packages/django/core/checks/model_checks.py", line 27, in check_all_models
+    errors.extend(model.check(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/base.py", line 1200, in check
+    errors.extend(cls._check_fields(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/base.py", line 1272, in _check_fields
+    errors.extend(field.check(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 894, in check
+    errors = super().check(**kwargs)
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 206, in check
+    errors.extend(self._check_backend_specific_checks(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 303, in _check_backend_specific_checks
+    return connections[db].validation.check_field(self, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/validation.py", line 21, in check_field
+    field_type = field.db_type(self.connection)
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 648, in db_type
+    return connection.data_types[self.get_internal_type()] % data
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 133, in data_types
+    if self.features.supports_microsecond_precision:
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/features.py", line 65, in supports_microsecond_precision
+    return self.connection.mysql_version >= (5, 6, 4)
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 343, in mysql_version
+    with self.temporary_connection() as cursor:
+  File "/usr/local/lib/python3.7/contextlib.py", line 112, in __enter__
+    return next(self.gen)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 576, in temporary_connection
+    cursor = self.cursor()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 234, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+django.db.utils.OperationalError: (2003, "Can't connect to MySQL server on '192.168.33.10' ([Errno 111] Connection refused)")
+Sentry is attempting to send 1 pending error messages
+Waiting up to 10 seconds
+Press Ctrl-C to quit
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 582, in connect
+    **kwargs)
+  File "/usr/local/lib/python3.7/socket.py", line 727, in create_connection
+    raise err
+  File "/usr/local/lib/python3.7/socket.py", line 716, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 234, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.33.10' (timed out)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/bin/celery", line 11, in <module>
+    sys.exit(main())
+  File "/usr/local/lib/python3.7/site-packages/celery/__main__.py", line 16, in main
+    _main()
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 322, in main
+    cmd.execute_from_commandline(argv)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 496, in execute_from_commandline
+    super(CeleryCommand, self).execute_from_commandline(argv)))
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/base.py", line 275, in execute_from_commandline
+    return self.handle_argv(self.prog_name, argv[1:])
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 488, in handle_argv
+    return self.execute(command, argv)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 420, in execute
+    ).run_from_argv(self.prog_name, argv[1:], command=argv[0])
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/worker.py", line 223, in run_from_argv
+    return self(*args, **options)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/base.py", line 238, in __call__
+    ret = self.run(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/worker.py", line 257, in run
+    **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/celery/worker/worker.py", line 96, in __init__
+    self.app.loader.init_worker()
+  File "/usr/local/lib/python3.7/site-packages/celery/loaders/base.py", line 114, in init_worker
+    self.import_default_modules()
+  File "/usr/local/lib/python3.7/site-packages/celery/loaders/base.py", line 108, in import_default_modules
+    raise response
+  File "/usr/local/lib/python3.7/site-packages/celery/utils/dispatch/signal.py", line 288, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/usr/local/lib/python3.7/site-packages/celery/fixups/django.py", line 82, in on_import_modules
+    self.worker_fixup.validate_models()
+  File "/usr/local/lib/python3.7/site-packages/celery/fixups/django.py", line 121, in validate_models
+    run_checks()
+  File "/usr/local/lib/python3.7/site-packages/django/core/checks/registry.py", line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "/usr/local/lib/python3.7/site-packages/django/core/checks/model_checks.py", line 27, in check_all_models
+    errors.extend(model.check(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/base.py", line 1200, in check
+    errors.extend(cls._check_fields(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/base.py", line 1272, in _check_fields
+    errors.extend(field.check(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 894, in check
+    errors = super().check(**kwargs)
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 206, in check
+    errors.extend(self._check_backend_specific_checks(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 303, in _check_backend_specific_checks
+    return connections[db].validation.check_field(self, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/validation.py", line 21, in check_field
+    field_type = field.db_type(self.connection)
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 648, in db_type
+    return connection.data_types[self.get_internal_type()] % data
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 133, in data_types
+    if self.features.supports_microsecond_precision:
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/features.py", line 65, in supports_microsecond_precision
+    return self.connection.mysql_version >= (5, 6, 4)
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 343, in mysql_version
+    with self.temporary_connection() as cursor:
+  File "/usr/local/lib/python3.7/contextlib.py", line 112, in __enter__
+    return next(self.gen)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 576, in temporary_connection
+    cursor = self.cursor()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 234, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+django.db.utils.OperationalError: (2003, "Can't connect to MySQL server on '192.168.33.10' (timed out)")
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+/usr/local/lib/python3.7/importlib/_bootstrap.py:219: RuntimeWarning: greenlet.greenlet size changed, may indicate binary incompatibility. Expected 144, got 128
+  return f(*args, **kwds)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 582, in connect
+    **kwargs)
+  File "/usr/local/lib/python3.7/socket.py", line 727, in create_connection
+    raise err
+  File "/usr/local/lib/python3.7/socket.py", line 716, in create_connection
+    sock.connect(sa)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 234, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.168.33.10' (timed out)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/bin/celery", line 11, in <module>
+    sys.exit(main())
+  File "/usr/local/lib/python3.7/site-packages/celery/__main__.py", line 16, in main
+    _main()
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 322, in main
+    cmd.execute_from_commandline(argv)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 496, in execute_from_commandline
+    super(CeleryCommand, self).execute_from_commandline(argv)))
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/base.py", line 275, in execute_from_commandline
+    return self.handle_argv(self.prog_name, argv[1:])
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 488, in handle_argv
+    return self.execute(command, argv)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/celery.py", line 420, in execute
+    ).run_from_argv(self.prog_name, argv[1:], command=argv[0])
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/worker.py", line 223, in run_from_argv
+    return self(*args, **options)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/base.py", line 238, in __call__
+    ret = self.run(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/celery/bin/worker.py", line 257, in run
+    **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/celery/worker/worker.py", line 96, in __init__
+    self.app.loader.init_worker()
+  File "/usr/local/lib/python3.7/site-packages/celery/loaders/base.py", line 114, in init_worker
+    self.import_default_modules()
+  File "/usr/local/lib/python3.7/site-packages/celery/loaders/base.py", line 108, in import_default_modules
+    raise response
+  File "/usr/local/lib/python3.7/site-packages/celery/utils/dispatch/signal.py", line 288, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/usr/local/lib/python3.7/site-packages/celery/fixups/django.py", line 82, in on_import_modules
+    self.worker_fixup.validate_models()
+  File "/usr/local/lib/python3.7/site-packages/celery/fixups/django.py", line 121, in validate_models
+    run_checks()
+  File "/usr/local/lib/python3.7/site-packages/django/core/checks/registry.py", line 73, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "/usr/local/lib/python3.7/site-packages/django/core/checks/model_checks.py", line 27, in check_all_models
+    errors.extend(model.check(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/base.py", line 1200, in check
+    errors.extend(cls._check_fields(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/base.py", line 1272, in _check_fields
+    errors.extend(field.check(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 894, in check
+    errors = super().check(**kwargs)
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 206, in check
+    errors.extend(self._check_backend_specific_checks(**kwargs))
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 303, in _check_backend_specific_checks
+    return connections[db].validation.check_field(self, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/validation.py", line 21, in check_field
+    field_type = field.db_type(self.connection)
+  File "/usr/local/lib/python3.7/site-packages/django/db/models/fields/__init__.py", line 648, in db_type
+    return connection.data_types[self.get_internal_type()] % data
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 133, in data_types
+    if self.features.supports_microsecond_precision:
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/features.py", line 65, in supports_microsecond_precision
+    return self.connection.mysql_version >= (5, 6, 4)
+  File "/usr/local/lib/python3.7/site-packages/django/utils/functional.py", line 36, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 343, in mysql_version
+    with self.temporary_connection() as cursor:
+  File "/usr/local/lib/python3.7/contextlib.py", line 112, in __enter__
+    return next(self.gen)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 576, in temporary_connection
+    cursor = self.cursor()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 234, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/__init__.py", line 94, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 327, in __init__
+    self.connect()
+  File "/usr/local/lib/python3.7/site-packages/pymysql/connections.py", line 629, in connect
+    raise exc
+django.db.utils.OperationalError: (2003, "Can't connect to MySQL server on '192.168.33.10' (timed out)")

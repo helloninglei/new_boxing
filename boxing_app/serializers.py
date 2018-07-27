@@ -196,8 +196,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = '__all__'
-
+        fields = ['content', 'user', 'parent']
 
 
 class LikeSerializer(serializers.ModelSerializer):
