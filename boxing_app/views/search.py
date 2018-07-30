@@ -15,7 +15,7 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         keywords = self.request.query_params.get('keywords', "")
         qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
             .select_related("user", "user__boxer_identification")\
-            .order_by('-follower_count', '-created_time')
+            .order_by('-follower_count', 'created_time')
         self.serializer_class = UserProfileSerializer
         self.queryset = qs if keywords else []
         return super().list(request, *args, **kwargs)
