@@ -8,9 +8,9 @@
         </div>
         <div class="preface-text ql-editor" v-html="str"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" ></DownloadTip>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <!--<PopTip v-if="popTip" @click.native="closePopTip"></PopTip>-->
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -67,6 +67,7 @@
             line-height 1.5rem
             font-size .75rem
             color #E9E9EA
+
 </style>
 
 <script>
