@@ -131,6 +131,7 @@ WEIXIN_PUBLIC_PLATFORM_CONF = {
 }
 
 SENTRY_DSN = 'http://ded6e41633544be1bd6e1f03454fe5c7:48dc8740b5ec42d58f9618649ffae5ec@39.104.180.65//2'
+CDN_BASE_URL = ''
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
@@ -292,5 +293,3 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(BASE_DIR),
 }
-
-CDN_BASE_URL = ''
