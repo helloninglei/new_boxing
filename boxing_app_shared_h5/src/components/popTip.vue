@@ -12,7 +12,7 @@
         top 0
         left 0
         text-align right
-        background rgba(0, 0, 0, 0.5) url("../assets/images/popTip.png") no-repeat
+        background rgba(0, 0, 0, 0.7) url("../assets/images/popTip.png") no-repeat
         background-size contain
 </style>
 

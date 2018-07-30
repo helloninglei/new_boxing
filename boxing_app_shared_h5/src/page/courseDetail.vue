@@ -427,6 +427,7 @@
                 if (ifShow) {
                     if (this.isInWeChat()) {
                         this.showVideo = false;
+                        this.showModal = false;
                         this.popTip = true;
                     }
                     else {
