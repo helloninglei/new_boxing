@@ -164,13 +164,6 @@ class MessageSerializer(serializers.ModelSerializer):
                   'forward_count', 'is_like']
 
 
-class BaseUserSerializer(serializers.Serializer):
-    user = DiscoverUserField(read_only=True)
-
-    class Meta:
-        fields = ['user']
-
-
 class BasicReplySerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     to_user = DiscoverUserField(read_only=True)
@@ -294,12 +287,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
-    linked_users = serializers.SerializerMethodField()
+    users = DiscoverUserField(read_only=True, many=True)
 
-    def get_linked_users(self, instance):
-        user_id = self.context['view'].kwargs['user_id']
-        print(instance.users.all())
-        return BaseUserSerializer(instance.users.all(), many=True).data
 
     def get_forward_count(self, instance):
         return get_hotvideo_forward_count(instance.id)
@@ -311,7 +300,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'linked_users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'users')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):

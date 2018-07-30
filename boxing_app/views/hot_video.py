@@ -30,7 +30,6 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = HotVideoFilter
 
     def retrieve(self, request, *args, **kwargs):
-        print(kwargs)
         video_id = kwargs['pk']
         incr_hot_video_views_count.delay(video_id)
         return super().retrieve(request, *args, **kwargs)
@@ -44,4 +43,4 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
         ).annotate(
             is_paid=Count('orders', filter=_filter),
             comment_count=comment_count_condition,
-        ).prefetch_related('users', 'users__user_profile')
+        ).prefetch_related('users', 'users__user_profile', 'users__boxer_identification')
