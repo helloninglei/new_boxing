@@ -12,7 +12,6 @@ from biz.utils import comment_count_condition
 from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
 from boxing_app.serializers import HotVideoSerializer
 from boxing_app.tasks import incr_hot_video_views_count
-from boxing_app.filters import HotVideoFilter
 
 
 @api_view(['GET'])
@@ -27,7 +26,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HotVideoSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend,)
-    filter_class = HotVideoFilter
+    filter_fields = ("tag",)
 
     def retrieve(self, request, *args, **kwargs):
         video_id = kwargs['pk']

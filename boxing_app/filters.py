@@ -39,11 +39,3 @@ class MoneyChangeLogFilter(django_filters.FilterSet):
     class Meta:
         model = MoneyChangeLog
         fields = ['keyword']
-
-
-class HotVideoFilter(django_filters.FilterSet):
-    tag = django_filters.ChoiceFilter(choices=HOT_VIDEO_TAG_CHOICES, field_name='tag')
-
-    class Meta:
-        model = models.HotVideo
-        fields = ('tag',)

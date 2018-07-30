@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import atomic
 from rest_framework import serializers
-from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
@@ -31,6 +30,8 @@ from biz.services.money_balance_service import change_money
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 message_dateformat = '%Y-%m-%d %H:%M'
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -115,19 +116,16 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
-        result = {
+        profile = user.user_profile
+
+        return {
             'id': user.id,
             'identity': user.identity,
             'is_following': bool(is_following(self.context['request'].user.id, user.id)),
-            'nick_name': None,
-            'avatar': None,
+            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+            'avatar': profile.avatar,
             "user_type": user.get_user_type_display()
         }
-
-        if hasattr(user, 'user_profile'):
-            profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
-            result.update(profile)
-        return result
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -288,14 +286,17 @@ class HotVideoSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
     users = DiscoverUserField(read_only=True, many=True)
-
+    try_url = serializers.SerializerMethodField()
 
     def get_forward_count(self, instance):
         return get_hotvideo_forward_count(instance.id)
 
     def get_url(self, instance):
         if instance.is_paid or instance.price == 0:
-            return instance.url
+            return f'{CDN_BASE_URL}{instance.url}'
+
+    def get_try_url(self, instance):
+        return f'{CDN_BASE_URL}{instance.try_url}'
 
     class Meta:
         model = models.HotVideo
