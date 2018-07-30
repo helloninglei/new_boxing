@@ -10,7 +10,7 @@
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
         <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -67,12 +67,6 @@
             line-height 1.5rem
             font-size .75rem
             color #E9E9EA
-    video::-internal-media-controls-download-button {
-        display:none;
-    }
-    video::-webkit-media-controls-enclosure {
-        overflow:hidden;
-    }
 
 </style>
 
@@ -126,7 +120,7 @@
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controlsList="nodownload" controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                         }
                     }
                 }
@@ -161,13 +155,17 @@
             },
             openApp() {
                 this.showModal = true;
+                this.showVideo = false;
             },
             closePopTip() {
                 this.popTip = false;
+                this.showVideo = true
             },
             modalEv(ifShow) {
                 if (ifShow) {
                     if (this.isInWeChat()) {
+                        this.showVideo = false;
+                        this.showModal = false;
                         this.popTip = true;
                     }
                     else {
@@ -183,7 +181,10 @@
                 this.ifClose = val;
             },
             tipOpenType(e) {
-                e && (this.popTip = true);
+                if (e) {
+                    this.popTip = true
+                    this.showVideo = false;
+                }
             },
             sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {

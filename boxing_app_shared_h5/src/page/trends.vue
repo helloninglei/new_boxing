@@ -47,7 +47,7 @@
         <DownloadTip @closeEv="closeEv" :id="id" page="messages" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
-        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -214,10 +214,6 @@
                 this.sharePage();
             }
         },
-        isInWeChat() {
-            let u = navigator.userAgent, app = navigator.appVersion;
-            return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
-        },
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
@@ -281,6 +277,11 @@
                 })
             },
 
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
+
             openApp() {
                 this.showVideo = false;
                 this.showModal = true;
@@ -290,6 +291,8 @@
                 if (ifShow) {
                     if (this.isInWeChat()) {
                         this.popTip = true;
+                        this.showModal = false;
+                        this.showVideo = false;
                     }
                     else {
                         location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
@@ -312,7 +315,10 @@
             },
 
             tipOpenType(e) {
-                e && (this.popTip = true);
+                if (e) {
+                    this.popTip = true;
+                    this.showVideo = false;
+                }
             },
 
             sharePage() {
@@ -372,13 +378,16 @@
             showZoomImage(index) {
                 this.slideIndex = index;
                 this.showSwiper = true;
+                this.showVideo = false;
             },
             hideSwiper() {
                 this.showSwiper = false;
-            }
-        },
-        closePopTip() {
-            this.popTip = false;
+                this.showVideo = true;
+            },
+            closePopTip() {
+                this.popTip = false;
+                this.showVideo = true;
+            },
         },
         computed: {
             getClass() {
