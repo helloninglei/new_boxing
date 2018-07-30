@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import atomic
 from rest_framework import serializers
-from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
@@ -31,6 +30,8 @@ from biz.services.money_balance_service import change_money
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 message_dateformat = '%Y-%m-%d %H:%M'
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -283,10 +284,14 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    try_url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
         if obj.is_paid or obj.price == 0:
-            return obj.url
+            return f'{CDN_BASE_URL}{obj.url}'
+
+    def get_try_url(self, obj):
+        return f'{CDN_BASE_URL}{obj.try_url}'
 
     class Meta:
         model = models.HotVideo

@@ -292,3 +292,5 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(BASE_DIR),
 }
+
+CDN_BASE_URL = 'https://v1.bituquanguan.com'
