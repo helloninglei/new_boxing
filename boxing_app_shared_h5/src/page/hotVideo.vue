@@ -19,7 +19,7 @@
         <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
         <DownloadTip @closeEv="closeEv" :id="id" :userId="userId" page="hot_videos" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -133,14 +133,19 @@
                 })
             },
             tipOpenType(e) {
-                e && (this.popTip = true);
+                if (e) {
+                    this.showVideo = false;
+                    this.popTip = true
+                }
             },
             closePopTip() {
+                this.showVideo = true;
                 this.popTip = false;
             },
             modalEv(ifShow) {
                 if (ifShow) {
                     if (this.isInWeChat()) {
+                        this.showVideo = false;
                         this.popTip = true;
                     }
                     else {

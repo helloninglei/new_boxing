@@ -76,7 +76,7 @@
         <DownloadTip @closeEv="closeEv" :id="id" page="boxers" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
-        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -364,6 +364,7 @@
                 return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
             },
             closePopTip() {
+                this.showVideo = true;
                 this.popTip = false;
             },
             getPlayerData() {
@@ -416,12 +417,16 @@
             },
 
             tipOpenType(e) {
-                e && (this.popTip = true);
+                if (e) {
+                    this.showVideo = false;
+                    this.popTip = true
+                }
             },
 
             modalEv(ifShow) {
                 if (ifShow) {
                     if (this.isInWeChat()) {
+                        this.showVideo = false;
                         this.popTip = true;
                     }
                     else {

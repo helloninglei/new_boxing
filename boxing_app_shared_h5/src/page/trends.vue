@@ -47,7 +47,7 @@
         <DownloadTip @closeEv="closeEv" :id="id" page="messages" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
-        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -290,6 +290,7 @@
                 if (ifShow) {
                     if (this.isInWeChat()) {
                         this.popTip = true;
+                        this.showVideo = false;
                     }
                     else {
                         location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
@@ -312,7 +313,10 @@
             },
 
             tipOpenType(e) {
-                e && (this.popTip = true);
+                if (e) {
+                    this.popTip = true;
+                    this.showVideo = false;
+                }
             },
 
             sharePage() {
@@ -372,13 +376,16 @@
             showZoomImage(index) {
                 this.slideIndex = index;
                 this.showSwiper = true;
+                this.showVideo = false;
             },
             hideSwiper() {
                 this.showSwiper = false;
-            }
-        },
-        closePopTip() {
-            this.popTip = false;
+                this.showVideo = true;
+            },
+            closePopTip() {
+                this.popTip = false;
+                this.showVideo = true;
+            },
         },
         computed: {
             getClass() {

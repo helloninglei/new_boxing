@@ -10,7 +10,7 @@
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
         <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <PopTip v-if="popTip" @click="closePopTip"></PopTip>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -161,13 +161,16 @@
             },
             openApp() {
                 this.showModal = true;
+                this.showVideo = false;
             },
             closePopTip() {
                 this.popTip = false;
+                this.showVideo = true
             },
             modalEv(ifShow) {
                 if (ifShow) {
                     if (this.isInWeChat()) {
+                        this.showVideo = false;
                         this.popTip = true;
                     }
                     else {
@@ -183,7 +186,10 @@
                 this.ifClose = val;
             },
             tipOpenType(e) {
-                e && (this.popTip = true);
+                if (e) {
+                    this.popTip = true
+                    this.showVideo = false;
+                }
             },
             sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
