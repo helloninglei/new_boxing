@@ -52,6 +52,12 @@
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
+                        <el-form-item label="视频标签" prop="biaoqian">
+                            <el-select v-model="ruleForm.biaoqian" placeholder="请选择视频标签">
+                                <el-option label="区域一" value="shanghai"></el-option>
+                                <el-option label="区域二" value="beijing"></el-option>
+                            </el-select>
+                        </el-form-item>
                         <el-form-item label="关联用户" prop='users'>
                             <ul>
                                 <li class='lf'>
@@ -81,6 +87,27 @@
                                 <el-radio :label="false">否</el-radio>
                             </el-radio-group>
                         </el-form-item>
+                        <el-checkbox-group v-model="ruleForm.push_news" style='margin-bottom:22px;width:200px;text-align: right;' v-if='ruleForm.push_to_hotvideo'>
+                          <el-checkbox label="创建推送" name="push_news"></el-checkbox>
+                        </el-checkbox-group>
+                        <el-form-item label="发送时间" :class="isRequired" style='margin-left:32px' id='addTime' v-if='ruleForm.push_to_hotvideo'>
+                            <el-date-picker
+                                    class="margin_rt25"
+                                    v-model="dateArr"
+                                    type="datetimerange"
+                                    range-separator="至"
+                                    start-placeholder="起始日期"
+                                    end-placeholder="结束日期"
+                                    @change="getDateTime"
+                                    :default-value='new Date()'
+                                    value-format="yyyy-MM-dd HH:mm:ss">
+                            </el-date-picker>
+                        </el-form-item>
+                        <!-- <el-form-item style='margin-left:30px;margin-top:-30px'>
+                            <el-form-item prop="end_time" >
+                                <el-input v-model="ruleForm.end_time" style='display: none'></el-input>
+                            </el-form-item>
+                        </el-form-item> -->
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
                              <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">{{btn_name}}</el-button>
@@ -118,18 +145,18 @@
 </template>
 
 <style>
-    #addHotvideo .el-form-item__label{
-        font-family: "PingFangSC-Regular";
+    #addHotvideo .el-checkbox__label,#addHotvideo .el-radio__label,#addHotvideo .el-form-item__label,#addHotvideo .el-checkbox__input.is-checked+.el-checkbox__label{
+        font-family: PingFangSC-Regular;
         font-size: 16px;
-        color: #000000;
+        color: #000000!important;
     }
     #addHotvideo .el-form-item{margin-bottom:30px;}
     #addHotvideo .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
     #addHotvideo .myAddress input{padding-left:50px;}
-    .el-checkbox__inner:hover,.el-checkbox__input.is-focus .el-checkbox__inner,.el-input__inner:focus{
+    .el-checkbox__inner:hover,.el-checkbox__input.is-focus .el-checkbox__inner,.el-input__inner:focus,.el-select .el-input__inner:focus,.el-select .el-input.is-focus .el-input__inner{
         border-color:#F95862!important;
     }
-    .el-checkbox__input.is-checked+.el-checkbox__label{
+    .el-checkbox__input.is-checked+.el-checkbox__label,.el-select-dropdown__item.selected{
         color:#F95862!important;
     }
     .el-transfer-panel__item.el-checkbox {
@@ -206,6 +233,8 @@
                 userImgIds  : [
                     
                 ],
+                dateArr:[],
+                isRequired:'',
                 tryTsurlProgress:0,
                 tsurlProgress:0,
                 showChangeUser:false,
@@ -219,6 +248,10 @@
                     try_ts_url: '',
                     push_to_hotvideo:false,
                     stay_top:false,
+                    push_news:false,
+                    start_time:'',
+                    end_time:'',
+                    biaoqian:''
                 },
                 rules:{
                     users:[
@@ -293,6 +326,11 @@
             
             this.getUserIds();
             
+        },
+        watch:{
+            "ruleForm.push_news":function(val){
+                this.isRequired = val?'is-required':''
+            }
         },
         methods: {
             getFullVideo(){
@@ -514,6 +552,10 @@
                   url = window.webkitURL.createObjectURL(file) ;  
                 }  
                 return url ;  
+            },
+            getDateTime() {
+                this.ruleForm.start_time = this.dateArr?this.dateArr[0]:'';
+                this.ruleForm.end_time = this.dateArr?this.dateArr[1]:'';
             },
         },
     }

@@ -22,10 +22,19 @@
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="发布结束时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>
-                    </el-col>      
-                    <el-col :span='6'>
-                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click="reset()">重置</el-button>
+                    </el-col> 
+                    <el-col :span="5" style='margin-right:25px'>
+                        <div class="inlimeLabel lf" style='margin:10px'>用户类别</div>
+                        <el-select v-model="sendData.user_type" >
+                            <el-option value="" label="全部">全部</el-option>
+                            <el-option value="1" label="标签一">标签一</el-option>
+                            <el-option value="2" label="标签二">标签二</el-option>
+                            <el-option value="3" label="标签三">标签三</el-option>
+                        </el-select>
+                    </el-col>     
+                    <el-col :span='5'>
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click="filter()">查询</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red margin_tp30' @click="reset()">重置</el-button>
                     </el-col>   
                     <el-col :span='24'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click="toDetail()" style='margin-top:30px'>新增视频</el-button>
@@ -68,6 +77,9 @@
     .myTable{font-size:14px!important;}
     @media screen and (max-width:1919px){
        .margin_top_30{margin-top:30px;margin-left:0!important;} 
+    } 
+    @media screen and (min-width:1660px){
+       .margin_tp30{margin-top:0px!important;margin-left:0!important;} 
     } 
 </style>
 <style>
@@ -116,7 +128,11 @@
                     {title:'id',    name :'ID',   width: '80'},
                     {title:'name',  name :'视频名称',width: ''},
                     {title:'user_list_name',name :'关联用户' ,width: '80'},
+                    {title:'biaoqian',name :'标签',width: '100'},
                     {title:'price',name :'付费金额（元）',width: '100'},
+                    {title:'zhuanfa', name :'转发数'   ,width: '50'},
+                    {title:'dianzan', name :'点赞数'   ,width: '50'},
+                    {title:'guankan', name :'观看人数'   ,width: '60'},
                     {title:'sales_count', name :'付费人数'   ,width: ''},
                     {title:'price_amount',name :'总金额（元）',width: '100'},
                     {title:'created_time',name :'发布时间' ,width: '200'},

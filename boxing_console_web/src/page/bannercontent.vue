@@ -23,14 +23,14 @@
                 </template>
                 <template v-else>
                     <el-radio-group v-model="checkType" @change="changeCheckType" style="width: 100%">
-                        <el-radio label="voteId" class="vertical_radio" style="display: block">
+                        <!-- <el-radio label="voteId" class="vertical_radio" style="display: block">
                             <el-form-item label="投票ID" prop="voteId">
                                 <el-input v-model="form.voteId"></el-input>
-                            </el-form-item>
+                            </el-form-item> -->
                         </el-radio>
-                        <el-radio label="enrollId" style="display: block;margin-left: 0" class="vertical_radio">
-                            <el-form-item label="报名ID" prop="enrollId">
-                                <el-input v-model="form.enrollId"></el-input>
+                        <el-radio label="videoId" style="display: block;margin-left: 0" class="vertical_radio">
+                            <el-form-item label="视频ID" prop="videoId">
+                                <el-input v-model="form.videoId"></el-input>
                             </el-form-item>
                         </el-radio>
                         <el-radio label="contentId" style="display: block;margin-left: 0" class="vertical_radio">
@@ -123,7 +123,7 @@
                     link_type: 1,
                     link: '',
                     voteId: '',
-                    enrollId: '',
+                    videoId: '',
                     contentId: '',
                 },
                 picture: '',
@@ -168,9 +168,9 @@
                             }
                         }, trigger: 'change',required: true }
                     ],
-                    enrollId: [
+                    videoId: [
                         { validator: (rule, value, callback) => {
-                            if (this.checkType !== 'enrollId') callback();
+                            if (this.checkType !== 'videoId') callback();
                             if (value === '') {
                                 callback(new Error('请输入报名ID'));
                             } else {
@@ -259,13 +259,13 @@
                 if (obj.link_type == 3) {
                     let linkObj = {
                         'voteId': 'game_votes',
-                        'enrollId': 'game_apply',
+                        'videoId': 'game_apply',
                         'contentId': 'game_news'
                     }
                     obj['link'] = linkObj[this.checkType] + ':' + obj[this.checkType];
                 }
                 delete obj['voteId'];
-                delete obj['enrollId'];
+                delete obj['videoId'];
                 delete obj['contentId'];
 
                 !this.id ? this.createBannerEv(obj) : this.modifyBannerEv(obj);
@@ -308,7 +308,7 @@
                         delete this.form['picture'];
 
                         this.form.link_type !== 3
-                            ? (this.form['voteId'] = this.form['enrollId'] = this.form['contentId'] = '') : this.setCheckType(res.data.link);
+                            ? (this.form['voteId'] = this.form['videoId'] = this.form['contentId'] = '') : this.setCheckType(res.data.link);
                     }
 
                     console.log(this.form)
@@ -342,7 +342,7 @@
                 let checkType = data.split(':');
                 let obj = {
                     'game_votes': 'voteId',
-                    'game_apply': 'enrollId',
+                    'game_apply': 'videoId',
                     'game_news': 'contentId'
                 }
                 for (let key in obj) {
