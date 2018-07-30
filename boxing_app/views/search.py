@@ -23,7 +23,7 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
     def search_video(self, request, *args, **kwargs):
         keywords = self.request.query_params.get('keywords', "")
         _filter = Q(orders__status=PAYMENT_STATUS_PAID, orders__user_id=self.request.user.id)
-        qs = HotVideo.objects.filter(Q(is_show=True) & (Q(name__icontains=keywords) | Q(description__icontains=keywords))) \
+        qs = HotVideo.objects.filter(Q(is_show=True) & Q(name__icontains=keywords)) \
             .annotate(is_paid=Count('orders', filter=_filter), comment_count=comment_count_condition)
         self.serializer_class = HotVideoSerializer
         self.queryset = qs if keywords else []
