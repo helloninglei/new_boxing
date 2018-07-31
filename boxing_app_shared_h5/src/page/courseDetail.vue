@@ -422,7 +422,10 @@
                     this.popTip = true
                 }
             },
-
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             modalEv(ifShow) {
                 if (ifShow) {
                     if (this.isInWeChat()) {
@@ -432,6 +435,14 @@
                     }
                     else {
                         location.href = `boxing://api.bituquanguan.com:80/boxers?id=${this.id}&time=${new Date().getTime()}`;
+                        setTimeout(() => {
+                            if (this.isIos()) {
+                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
+                            }
+                            else {
+                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
+                            }
+                        },300);
                     }
                 }
                 else {
