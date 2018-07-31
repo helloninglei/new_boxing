@@ -73,9 +73,10 @@
         <div class="separate_line"></div>
         <div class="see_more" @click="openApp">查看更多>></div>
         <div class="go_order" @click="openApp">去下单</div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="boxers" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -292,6 +293,7 @@
     import Video from 'components/video';
     import TabBar from 'components/tabBar';
     import ZoomImage from 'components/zoomImage';
+    import PopTip from 'components/popTip';
     import Modal from 'components/modal';
     import {wxConfig} from 'common/wechat';
 
@@ -311,7 +313,9 @@
                 thumbnail: '',
                 portraitQuery: '',
                 bigPicArr: [],
-                showVideo: true
+                showVideo: true,
+                id: '',
+                popTip: false
             }
         },
 
@@ -336,7 +340,8 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
+            PopTip
         },
 
         methods: {
@@ -354,6 +359,14 @@
                 })
             },
 
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
+            closePopTip() {
+                this.showVideo = true;
+                this.popTip = false;
+            },
             getPlayerData() {
                 this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
                     if (res && res.data) {
@@ -403,9 +416,34 @@
                 this.showVideo = false;
             },
 
+            tipOpenType(e) {
+                if (e) {
+                    this.showVideo = false;
+                    this.popTip = true
+                }
+            },
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isInWeChat()) {
+                        this.showVideo = false;
+                        this.showModal = false;
+                        this.popTip = true;
+                    }
+                    else {
+                        location.href = `boxing://api.bituquanguan.com:80/boxers?id=${this.id}&time=${new Date().getTime()}`;
+                        setTimeout(() => {
+                            if (this.isIos()) {
+                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
+                            }
+                            else {
+                                window.location.href = 'http://api.bituquanguan.com/app/boxing.apk';
+                            }
+                        },300);
+                    }
                 }
                 else {
                     this.showModal = false;
