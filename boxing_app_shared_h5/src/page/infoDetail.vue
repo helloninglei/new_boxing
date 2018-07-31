@@ -6,7 +6,7 @@
             <!--<img v-if="info.picture" class="picture" :src="`${config.baseUrl}` + info.picture"/>-->
             <!--<div class="content">{{info.content}}</div>-->
         </div>
-        <div class="preface-text ql-editor" v-html="str"></div>
+        <div class="preface-text ql-editor" v-html="str" v-if="showVideo"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
         <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
@@ -90,7 +90,8 @@
                 wx: '',
                 dataObj: '',
                 str: '',
-                popTip: false
+                popTip: false,
+                showVideo: true
             }
         },
         components: {
