@@ -232,7 +232,7 @@ cover_picture_urls = [
 like_urls = [
     path('messages/<int:message_id>/like',
          like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
-    path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view({'post': 'create', 'delete': 'destroy'})),
+    path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view()),
 ]
 
 urlpatterns = []

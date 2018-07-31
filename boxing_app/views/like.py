@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.utils import IntegrityError
 from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import viewsets, views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz.utils import get_object_or_404
@@ -32,14 +32,12 @@ class MessageLikeViewSet(viewsets.ModelViewSet):
                 raise e
 
 
-class HotVideoLikeViewSet(viewsets.GenericViewSet):
-    serializer_class = LikeSerializer
-    queryset = object()
+class HotVideoLikeViewSet(views.APIView):
 
-    def destroy(self, request, *args, **kwargs):
-        unlike_hot_video(request.user.id, self.kwargs['video_id'])
+    def delete(self, request, *args, **kwargs):
+        unlike_hot_video(request.user.id, kwargs['video_id'])
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def create(self, request, *args, **kwargs):
-        like_hot_video(request.user.id, self.kwargs['video_id'])
+    def post(self, request, *args, **kwargs):
+        like_hot_video(request.user.id, kwargs['video_id'])
         return Response(status=status.HTTP_201_CREATED)
