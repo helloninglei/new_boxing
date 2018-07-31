@@ -9,7 +9,7 @@ def update_user_follower_count(apps, schema_editor):
     for key in key_list:
         user_id = int(key.split('_')[1])
         follower_count = redis_client.redis_client.zcard(key)
-        UserProfile.objects.filter(id=user_id).update(follower_count=follower_count)
+        UserProfile.objects.filter(user_id=user_id).update(follower_count=follower_count)
 
 
 class Migration(migrations.Migration):
