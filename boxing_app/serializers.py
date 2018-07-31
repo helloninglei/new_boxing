@@ -223,8 +223,7 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
-        dict_obj = model_to_dict(instance.message)
-        return dict_obj
+        return model_to_dict(instance.message)
 
     class Meta:
         model = models.Like
