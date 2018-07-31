@@ -222,7 +222,8 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
-        return model_to_dict(instance.message)
+        get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
+        return model_to_dict(instance.message, fields=get_fields)
 
     class Meta:
         model = models.Like
