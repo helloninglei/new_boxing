@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Avg, Q
-from rest_framework import status, permissions
+from rest_framework import status, permissions, mixins
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
+
 from biz import models
 from biz.models import OrderComment
 from biz.utils import get_model_class_by_name, get_object_or_404, Round
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
-from boxing_app.serializers import CommentSerializer, OrderCommentSerializer
+from boxing_app.serializers import CommentSerializer, OrderCommentSerializer, CommentMeSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -38,6 +40,17 @@ class CommentViewSet(viewsets.ModelViewSet):
             'content_object': self.content_object,
         }
         serializer.save(**kwargs)
+
+
+class CommentMeListViewSet(mixins.ListModelMixin,
+                           GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CommentMeSerializer
+
+    def list(self, request, *args, **kwargs):
+        self.queryset = models.Comment.objects.filter(Q(parent__user=request.user) |
+                                                      (Q(message__user=request.user) & Q(parent__isnull=True)))
+        return super().list(request, *args, **kwargs)
 
 
 class ReplyViewSet(CommentViewSet):

@@ -58,6 +58,7 @@ discover_urls = [
          name='message-detail'),
     path('messages/<int:message_id>/like',
          like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('like_me', like.LikeMeListViewSet.as_view({'get': 'list'})),
 ]
 
 comment_object_string = '|'.join(COMMENT_OBJECT_DICT.keys())
@@ -67,6 +68,7 @@ comment_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string),
             comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}),
             name='comment-detail'),
+    path('comment_me', comment.CommentMeListViewSet.as_view({'get': 'list'}))
 ]
 
 upload_urls = [

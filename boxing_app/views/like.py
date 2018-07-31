@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from django.db.utils import IntegrityError
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
+
 from biz.utils import get_object_or_404
 from biz.models import Like, Message
-from boxing_app.serializers import LikeSerializer
+from boxing_app.serializers import LikeSerializer, LikeMeListSerializer
 
 
 class LikeViewSet(viewsets.ModelViewSet):
@@ -29,3 +31,13 @@ class LikeViewSet(viewsets.ModelViewSet):
         except IntegrityError as e:
             if 'Duplicate entry' not in str(e):
                 raise e
+
+
+class LikeMeListViewSet(mixins.ListModelMixin,
+                        GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = LikeMeListSerializer
+
+    def list(self, request, *args, **kwargs):
+        self.queryset = Like.objects.filter(message__user=request.user.id).select_related('user', 'message')
+        return super().list(request, *args, **kwargs)

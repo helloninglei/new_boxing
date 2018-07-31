@@ -2,6 +2,7 @@
 import re
 from datetime import datetime
 
+from django.forms import model_to_dict
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course
+from biz.models import OrderComment, BoxingClub, User, Course, Message, Comment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title
@@ -188,12 +189,45 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_time',)
 
 
+class CommentMeSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(read_only=True)
+    user = DiscoverUserField(read_only=True)
+    to_object = serializers.SerializerMethodField()
+    obj_type = serializers.SerializerMethodField()
+    reply_or_comment = serializers.SerializerMethodField()
+    
+    def get_to_object(self, instance):
+        return model_to_dict(instance.content_object)
+
+    def get_obj_type(self, instance):
+        return instance.content_type.name
+
+    def get_reply_or_comment(self, instance):
+        return 'reply' if instance.parent else 'comment'
+
+    class Meta:
+        model = models.Comment
+        fields = ['content', 'user', 'to_object', 'obj_type', 'object_id', 'created_time', 'reply_or_comment']
+
+
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
 
     class Meta:
         model = models.Like
         fields = ['user', 'created_time']
+
+
+class LikeMeListSerializer(LikeSerializer):
+    message = serializers.SerializerMethodField()
+
+    def get_message(self, instance):
+        get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
+        return model_to_dict(instance.message, fields=get_fields)
+
+    class Meta:
+        model = models.Like
+        fields = '__all__'
 
 
 class ReportSerializer(serializers.ModelSerializer):
