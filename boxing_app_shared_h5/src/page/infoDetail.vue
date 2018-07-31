@@ -179,7 +179,7 @@
                                 window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
                             }
                             else {
-                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
+                                window.location.href = 'http://api.bituquanguan.com/app/boxing.apk';
                             }
                         },300);
                     }
