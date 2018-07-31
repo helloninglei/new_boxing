@@ -198,8 +198,9 @@ class CommentMeSerializer(serializers.ModelSerializer):
     reply_or_comment = serializers.SerializerMethodField()
     
     def get_to_object(self, instance):
-        obj_dict = model_to_dict(instance.content_object)
-        return obj_dict
+        obj = instance.content_object
+        dict_obj = model_to_dict(obj)
+        return dict_obj
 
     def get_obj_type(self, instance):
         return instance.content_type.name
@@ -224,8 +225,8 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
-        message_dict = model_to_dict(instance.message)
-        return message_dict
+        dict_obj = model_to_dict(instance.message)
+        return dict_obj
 
     class Meta:
         model = models.Like
