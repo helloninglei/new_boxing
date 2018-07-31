@@ -2,6 +2,7 @@
 import re
 from datetime import datetime
 
+from django.forms import model_to_dict
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
