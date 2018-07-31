@@ -44,9 +44,10 @@
                 </div>
             </div>
         </div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="messages" @tipOpenType="tipOpenType"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
+        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -181,6 +182,7 @@
     import TabBar from 'components/tabBar';
     import Modal from 'components/modal';
     import ZoomImage from 'components/zoomImage';
+    import PopTip from 'components/popTip';
     import {wxConfig} from 'common/wechat';
 
     export default {
@@ -199,7 +201,9 @@
                 portraitQuery: '',
                 bigPicArr: [],
                 showVideo: true,
-                praiseNum: ''
+                id: '',
+                praiseNum: '',
+                popTip: false
             }
         },
 
@@ -210,7 +214,6 @@
                 this.sharePage();
             }
         },
-
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
@@ -224,11 +227,11 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
+            PopTip
         },
 
         methods: {
-
             getData() {
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
@@ -274,6 +277,16 @@
                 })
             },
 
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
+
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
+
             openApp() {
                 this.showVideo = false;
                 this.showModal = true;
@@ -281,7 +294,22 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isInWeChat()) {
+                        this.popTip = true;
+                        this.showModal = false;
+                        this.showVideo = false;
+                    }
+                    else {
+                        location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
+                        setTimeout(() => {
+                            if (this.isIos()) {
+                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
+                            }
+                            else {
+                                window.location.href = 'http://api.bituquanguan.com/app/boxing.apk';
+                            }
+                        },300);
+                    }
                 }
                 else {
                     this.showModal = false;
@@ -297,6 +325,13 @@
 
             closeEv(val) {
                 this.ifClose = val;
+            },
+
+            tipOpenType(e) {
+                if (e) {
+                    this.popTip = true;
+                    this.showVideo = false;
+                }
             },
 
             sharePage() {
@@ -356,10 +391,16 @@
             showZoomImage(index) {
                 this.slideIndex = index;
                 this.showSwiper = true;
+                this.showVideo = false;
             },
             hideSwiper() {
                 this.showSwiper = false;
-            }
+                this.showVideo = true;
+            },
+            closePopTip() {
+                this.popTip = false;
+                this.showVideo = true;
+            },
         },
         computed: {
             getClass() {
