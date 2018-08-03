@@ -8,9 +8,8 @@
         </div>
         <div class="preface-text ql-editor" v-html="str" v-if="showVideo"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id" @tipOpenType="tipOpenType"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
-        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 </template>
 
@@ -83,7 +82,6 @@
     import DownloadTip from 'components/downloadTip';
     import ZoomImage from 'components/zoomImage';
     import Video from 'components/video';
-    import PopTip from 'components/popTip';
 
     export default {
         data() {
@@ -96,7 +94,6 @@
                 wx: '',
                 dataObj: '',
                 str: '',
-                popTip: false,
                 showVideo: true
             }
         },
@@ -106,7 +103,6 @@
             Modal,
             ZoomImage,
             Video,
-            PopTip
         },
         created() {
             this.id = this.$route.params.id;
@@ -164,31 +160,17 @@
                 this.showModal = true;
                 this.showVideo = false;
             },
-            closePopTip() {
-                this.popTip = false;
-                this.showVideo = true
-            },
             isIos() {
                 let u = navigator.userAgent, app = navigator.appVersion;
                 return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
             },
             modalEv(ifShow) {
                 if (ifShow) {
-                    if (this.isInWeChat()) {
-                        this.showVideo = false;
-                        this.showModal = false;
-                        this.popTip = true;
+                    if (this.isIos()) {
+                        window.location.href = `/#/download?id=${this.id}&page=game_news`
                     }
                     else {
-                        location.href = `boxing://api.bituquanguan.com:80/game_news?id=${this.id}&time=${new Date().getTime()}`;
-                        setTimeout(() => {
-                            if (this.isIos()) {
-                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
-                            }
-                            else {
-                                window.location.href = 'http://api.bituquanguan.com/app/boxing.apk';
-                            }
-                        },300);
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'game_news'}});
                     }
                 }
                 else {
@@ -199,12 +181,7 @@
             closeEv(val) {
                 this.ifClose = val;
             },
-            tipOpenType(e) {
-                if (e) {
-                    this.popTip = true
-                    this.showVideo = false;
-                }
-            },
+
             sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
                     let wechat = require('../common/wechat');
