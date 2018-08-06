@@ -73,15 +73,9 @@
         },
         created() {
             this.goApp();
-            if (this.$route.query.id) {
-              this.id = this.$route.query.id;
-            }
-            if (this.$route.query.userId) {
-                this.userId = this.$route.query.userId;
-            }
-            if (this.$route.query.page) {
-                this.page = this.$route.query.page;
-            }
+            this.id = this.$route.query.id;
+            this.userId = this.$route.query.userId;
+            this.page = this.$route.query.page;
         },
         computed: {
             popTip() {
