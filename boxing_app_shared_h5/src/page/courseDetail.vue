@@ -418,7 +418,7 @@
                         window.location.href = `/share/#/download?id=${this.id}&page=boxers`
                     }
                     else {
-                        this.$router.push({path: '/share/download',query: {id: this.id, page: 'boxers'}});
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'boxers'}});
                     }
                 }
                 else {

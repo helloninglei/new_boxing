@@ -104,10 +104,10 @@
                 }
                 else {
                     if (this.page === 'hot_videos') {
-                        this.$router.push({path: '/share/download',query: {id: this.id, page: this.page, userId: this.userId}});
+                        this.$router.push({path: '/download',query: {id: this.id, page: this.page, userId: this.userId}});
                     }
                     else {
-                        this.$router.push({path: '/share/download',query: {id: this.id, page: this.page}});
+                        this.$router.push({path: '/download',query: {id: this.id, page: this.page}});
                     }
                 }
             },

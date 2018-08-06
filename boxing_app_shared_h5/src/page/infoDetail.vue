@@ -170,7 +170,7 @@
                         window.location.href = `/share/#/download?id=${this.id}&page=game_news`
                     }
                     else {
-                        this.$router.push({path: '/share/download',query: {id: this.id, page: 'game_news'}});
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'game_news'}});
                     }
                 }
                 else {
