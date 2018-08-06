@@ -47,7 +47,7 @@
             position absolute
             left 50%
             bottom 3rem
-            transform translate(-50%,0)
+            margin-left: -4.325rem;
             width 8.65rem
             height 2.35rem
             line-height 2.35rem
