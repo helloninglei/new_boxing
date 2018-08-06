@@ -95,19 +95,19 @@
             openApp() {
                 if (this.isIos()) {
                     if (this.page === 'hot_videos') {
-                        window.location.href = `/#/download?id=${this.id}&page=${this.page}&userId=${this.userId}`
+                        window.location.href = `/share/#/download?id=${this.id}&page=${this.page}&userId=${this.userId}`
                     }
                     else {
-                        window.location.href = `/#/download?id=${this.id}&page=${this.page}`
+                        window.location.href = `/share/#/download?id=${this.id}&page=${this.page}`
                     }
 
                 }
                 else {
                     if (this.page === 'hot_videos') {
-                        this.$router.push({path: '/download',query: {id: this.id, page: this.page, userId: this.userId}});
+                        this.$router.push({path: '/share/download',query: {id: this.id, page: this.page, userId: this.userId}});
                     }
                     else {
-                        this.$router.push({path: '/download',query: {id: this.id, page: this.page}});
+                        this.$router.push({path: '/share/download',query: {id: this.id, page: this.page}});
                     }
                 }
             },

@@ -415,10 +415,10 @@
             modalEv(ifShow) {
                 if (ifShow) {
                     if (this.isIos()) {
-                        window.location.href = `/#/download?id=${this.id}&page=boxers`
+                        window.location.href = `/share/#/download?id=${this.id}&page=boxers`
                     }
                     else {
-                        this.$router.push({path: '/download',query: {id: this.id, page: 'boxers'}});
+                        this.$router.push({path: '/share/download',query: {id: this.id, page: 'boxers'}});
                     }
                 }
                 else {
