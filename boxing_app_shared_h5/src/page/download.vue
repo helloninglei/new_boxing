@@ -72,10 +72,10 @@
 
         },
         created() {
-            this.goApp();
             this.id = this.$route.query.id;
             this.userId = this.$route.query.userId;
             this.page = this.$route.query.page;
+            this.goApp();
         },
         computed: {
             popTip() {
