@@ -9,6 +9,7 @@ from rest_framework.viewsets import GenericViewSet
 from biz.utils import get_object_or_404
 from biz.models import Like, Message
 from boxing_app.serializers import LikeSerializer, LikeMeListSerializer
+from biz.easemob_client import EaseMobClient
 
 
 class LikeViewSet(viewsets.ModelViewSet):
@@ -27,10 +28,12 @@ class LikeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(user=self.request.user, message=self._get_message_instance())
+            instance = serializer.save(user=self.request.user, message=self._get_message_instance())
         except IntegrityError as e:
             if 'Duplicate entry' not in str(e):
                 raise e
+        else:
+            EaseMobClient.send_passthrough_message([instance.message.user.id])
 
 
 class LikeMeListViewSet(mixins.ListModelMixin,
