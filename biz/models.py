@@ -9,7 +9,8 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.db.transaction import atomic
 
 from biz import validator, constants
-from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE
+from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE, HOT_VIDEO_TAG_CHOICES, \
+    HOT_VIDEO_TAG_DEFAULT
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -345,6 +346,9 @@ class HotVideo(BaseAuditModel):
     reports = GenericRelation('Report')
     cover = models.CharField(max_length=200)
     stay_top = models.BooleanField(default=False)
+    views_count = models.PositiveIntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
+    tag = models.PositiveSmallIntegerField(choices=HOT_VIDEO_TAG_CHOICES, default=HOT_VIDEO_TAG_DEFAULT)
 
     class Meta:
         db_table = 'hot_video'
