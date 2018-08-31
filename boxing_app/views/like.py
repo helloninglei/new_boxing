@@ -34,7 +34,6 @@ class MessageLikeViewSet(viewsets.ModelViewSet):
                 raise e
 
 
-<<<<<<< HEAD
 class HotVideoLikeViewSet(views.APIView):
 
     def delete(self, request, *args, **kwargs):
@@ -44,7 +43,8 @@ class HotVideoLikeViewSet(views.APIView):
     def post(self, request, *args, **kwargs):
         like_hot_video(request.user.id, kwargs['video_id'])
         return Response(status=status.HTTP_201_CREATED)
-=======
+
+
 class LikeMeListViewSet(mixins.ListModelMixin,
                         GenericViewSet):
     permission_classes = (IsAuthenticated,)
@@ -53,4 +53,3 @@ class LikeMeListViewSet(mixins.ListModelMixin,
     def list(self, request, *args, **kwargs):
         self.queryset = Like.objects.filter(message__user=request.user.id).select_related('user', 'message')
         return super().list(request, *args, **kwargs)
->>>>>>> master_3.3.0
