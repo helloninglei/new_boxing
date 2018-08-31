@@ -22,6 +22,8 @@ from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, E
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
+from boxing_console.views.album import AlbumViewSet
+
 
 router = SimpleRouter()
 
@@ -115,6 +117,11 @@ message_urls = [
     path('messages', MessageViewSet.as_view({'get': 'list'}), name='message'),
     path('messages/<int:pk>', MessageViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}), name='message'),
 ]
+
+album_url = [
+    path('album', AlbumViewSet.as_view({"get":"list", "post":"create"}), name='album_list'),
+]
+
 router.register(r"word_filters", WordFilterViewSet)
 
 urlpatterns = router.urls
@@ -132,6 +139,7 @@ urlpatterns += financial_management_urls
 urlpatterns += user_management_urls
 urlpatterns += official_account_change_logs_urls
 urlpatterns += message_urls
+urlpatterns += album_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
