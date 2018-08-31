@@ -24,7 +24,7 @@ def check_captcha(captcha_code, captcha_hash):
         CaptchaStore.objects.filter(response=captcha_code, hashkey=captcha_hash).delete()
         return True
 
-    if settings.ENVIRONMENT != settings.PRODUCTION:
+    if settings.ENVIRONMENT == settings.DEVELOPMENT:
         return True
 
     return False
