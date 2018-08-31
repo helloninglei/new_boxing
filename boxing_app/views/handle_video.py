@@ -1,6 +1,9 @@
 import subprocess as sp
+import json
 from rest_framework.response import Response
 from rest_framework import status
+from biz.redis_client import redis_client
+from urllib.parse import urlparse
 import re
 
 from django.http import StreamingHttpResponse
@@ -32,15 +35,22 @@ def cover_picture(request):
 @permission_classes([])
 @authentication_classes([])
 def video_width_and_height(request):
+    video_url = request.data['video_url']
+    video_path = urlparse(video_url).path
+    if redis_client.exists(video_path):
+        data = json.loads(redis_client.get(video_path))
+        return Response({"height": data['height'], "width": data['width']})
     pipe = sp.Popen(
         ["ffprobe", "-v", "error", "-of", "flat=s=_", "-select_streams", "v:0", "-show_entries", "stream=height,width",
-         f"{request.data['video_url']}"], stdout=sp.PIPE)
+         f"{video_url}"], stdout=sp.PIPE)
     pipe.wait()
     if pipe.returncode is not 0:
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    data = pipe.communicate()[0]
+    std_out = pipe.communicate()[0]
 
     rex = re.compile(r"[^=]*=(\d+)[^=]*=(\d+).*")
 
-    width, height = rex.match(str(data)).groups()
-    return Response({"height": height, "width": width})
+    width, height = rex.match(str(std_out)).groups()
+    data = {"height": height, "width": width}
+    redis_client.set(video_path, json.dumps(data))
+    return Response(data)
