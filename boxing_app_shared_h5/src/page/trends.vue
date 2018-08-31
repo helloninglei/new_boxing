@@ -44,10 +44,9 @@
                 </div>
             </div>
         </div>
-        <DownloadTip @closeEv="closeEv" :id="id" page="messages" @tipOpenType="tipOpenType"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" page="messages" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
-        <PopTip v-if="popTip" @click.native="closePopTip"></PopTip>
     </div>
 
 </template>
@@ -182,7 +181,6 @@
     import TabBar from 'components/tabBar';
     import Modal from 'components/modal';
     import ZoomImage from 'components/zoomImage';
-    import PopTip from 'components/popTip';
     import {wxConfig} from 'common/wechat';
 
     export default {
@@ -203,7 +201,6 @@
                 showVideo: true,
                 id: '',
                 praiseNum: '',
-                popTip: false
             }
         },
 
@@ -228,7 +225,6 @@
             TabBar,
             Modal,
             ZoomImage,
-            PopTip
         },
 
         methods: {
@@ -294,21 +290,11 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-                    if (this.isInWeChat()) {
-                        this.popTip = true;
-                        this.showModal = false;
-                        this.showVideo = false;
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=messages`
                     }
                     else {
-                        location.href = `boxing://api.bituquanguan.com:80/messages?id=${this.id}&time=${new Date().getTime()}`;
-                        setTimeout(() => {
-                            if (this.isIos()) {
-                                window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
-                            }
-                            else {
-                                window.location.href = 'http://api.bituquanguan.com/app/boxing.apk';
-                            }
-                        },300);
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'messages'}});
                     }
                 }
                 else {
@@ -325,13 +311,6 @@
 
             closeEv(val) {
                 this.ifClose = val;
-            },
-
-            tipOpenType(e) {
-                if (e) {
-                    this.popTip = true;
-                    this.showVideo = false;
-                }
             },
 
             sharePage() {
@@ -395,10 +374,6 @@
             },
             hideSwiper() {
                 this.showSwiper = false;
-                this.showVideo = true;
-            },
-            closePopTip() {
-                this.popTip = false;
                 this.showVideo = true;
             },
         },

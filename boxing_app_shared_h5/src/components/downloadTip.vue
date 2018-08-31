@@ -77,44 +77,38 @@
         },
         props: {
             id: {
-              type: [Number,String]
+              type: [String,Number]
             },
             page: {
                 type: String
             },
             userId: {
-                type: [Number,String],
-                default: ''
+                type: [String,Number],
+                default: 1
             }
         },
         methods: {
-            isInWeChat() {
-                let u = navigator.userAgent, app = navigator.appVersion;
-                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
-            },
             isIos() {
                 let u = navigator.userAgent, app = navigator.appVersion;
                 return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
             },
             openApp() {
-                if (this.isInWeChat()) {
-                    this.$emit('tipOpenType',true);
+                if (this.isIos()) {
+                    if (this.page === 'hot_videos') {
+                        window.location.href = `/share/#/download?id=${this.id}&page=${this.page}&userId=${this.userId}`
+                    }
+                    else {
+                        window.location.href = `/share/#/download?id=${this.id}&page=${this.page}`
+                    }
+
                 }
                 else {
                     if (this.page === 'hot_videos') {
-                        location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
+                        this.$router.push({path: '/download',query: {id: this.id, page: this.page, userId: this.userId}});
                     }
                     else {
-                        location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&time=${new Date().getTime()}`;
+                        this.$router.push({path: '/download',query: {id: this.id, page: this.page}});
                     }
-                    setTimeout(() => {
-                        if (this.isIos()) {
-                            window.location.href = 'https://itunes.apple.com/cn/app/id1256291812';
-                        }
-                        else {
-                            window.location.href = 'http://api.bituquanguan.com/app/boxing.apk';
-                        }
-                    },300);
                 }
             },
             closeEv() {
