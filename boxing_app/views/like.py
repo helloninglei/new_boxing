@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.db.utils import IntegrityError
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework import viewsets, views
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
+
 from biz.utils import get_object_or_404
 from biz.models import Like, Message
-from boxing_app.serializers import LikeSerializer
 from biz.redis_client import like_hot_video, unlike_hot_video
+from boxing_app.serializers import LikeSerializer, LikeMeListSerializer
 
 
 class MessageLikeViewSet(viewsets.ModelViewSet):
@@ -32,6 +34,7 @@ class MessageLikeViewSet(viewsets.ModelViewSet):
                 raise e
 
 
+<<<<<<< HEAD
 class HotVideoLikeViewSet(views.APIView):
 
     def delete(self, request, *args, **kwargs):
@@ -41,3 +44,13 @@ class HotVideoLikeViewSet(views.APIView):
     def post(self, request, *args, **kwargs):
         like_hot_video(request.user.id, kwargs['video_id'])
         return Response(status=status.HTTP_201_CREATED)
+=======
+class LikeMeListViewSet(mixins.ListModelMixin,
+                        GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = LikeMeListSerializer
+
+    def list(self, request, *args, **kwargs):
+        self.queryset = Like.objects.filter(message__user=request.user.id).select_related('user', 'message')
+        return super().list(request, *args, **kwargs)
+>>>>>>> master_3.3.0
