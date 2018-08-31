@@ -44,7 +44,7 @@
                 </div>
             </div>
         </div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" page="messages" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
@@ -199,7 +199,8 @@
                 portraitQuery: '',
                 bigPicArr: [],
                 showVideo: true,
-                praiseNum: ''
+                id: '',
+                praiseNum: '',
             }
         },
 
@@ -210,7 +211,6 @@
                 this.sharePage();
             }
         },
-
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
@@ -224,11 +224,10 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
         },
 
         methods: {
-
             getData() {
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
@@ -274,6 +273,16 @@
                 })
             },
 
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
+
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
+
             openApp() {
                 this.showVideo = false;
                 this.showModal = true;
@@ -281,7 +290,12 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=messages`
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'messages'}});
+                    }
                 }
                 else {
                     this.showModal = false;
@@ -356,10 +370,12 @@
             showZoomImage(index) {
                 this.slideIndex = index;
                 this.showSwiper = true;
+                this.showVideo = false;
             },
             hideSwiper() {
                 this.showSwiper = false;
-            }
+                this.showVideo = true;
+            },
         },
         computed: {
             getClass() {

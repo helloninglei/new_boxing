@@ -75,9 +75,41 @@
                 show: true
             }
         },
+        props: {
+            id: {
+              type: [String,Number]
+            },
+            page: {
+                type: String
+            },
+            userId: {
+                type: [String,Number],
+                default: 1
+            }
+        },
         methods: {
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             openApp() {
-                this.$router.push({path: '/download'})
+                if (this.isIos()) {
+                    if (this.page === 'hot_videos') {
+                        window.location.href = `/share/#/download?id=${this.id}&page=${this.page}&userId=${this.userId}`
+                    }
+                    else {
+                        window.location.href = `/share/#/download?id=${this.id}&page=${this.page}`
+                    }
+
+                }
+                else {
+                    if (this.page === 'hot_videos') {
+                        this.$router.push({path: '/download',query: {id: this.id, page: this.page, userId: this.userId}});
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: this.page}});
+                    }
+                }
             },
             closeEv() {
                 this.show = false;

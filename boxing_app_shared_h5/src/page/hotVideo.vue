@@ -17,7 +17,7 @@
             <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
         <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" :userId="userId" page="hot_videos"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
@@ -91,7 +91,7 @@
                 videoObj: {},
                 wx: '',
                 dataObj: '',
-                showVideo: true
+                showVideo: true,
             }
         },
         components: {
@@ -99,7 +99,7 @@
             DownloadTip,
             Video,
             TabBar,
-            Modal
+            Modal,
         },
         created() {
             this.id = this.$route.params.id;
@@ -128,14 +128,27 @@
                     }
                 })
             },
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=hot_videos&userId=${this.userId}`
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'hot_videos', userId: this.userId}});
+                    }
                 }
                 else {
                     this.showModal = false
                     this.showVideo = true;
                 }
+            },
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
             },
             closePayTipEv() {
                 this.showPayTip = false;

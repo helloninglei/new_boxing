@@ -73,7 +73,7 @@
         <div class="separate_line"></div>
         <div class="see_more" @click="openApp">查看更多>></div>
         <div class="go_order" @click="openApp">去下单</div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="boxers"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
@@ -311,7 +311,8 @@
                 thumbnail: '',
                 portraitQuery: '',
                 bigPicArr: [],
-                showVideo: true
+                showVideo: true,
+                id: '',
             }
         },
 
@@ -336,7 +337,7 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
         },
 
         methods: {
@@ -352,6 +353,11 @@
                         console.log(errors);
                     }
                 })
+            },
+
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
             },
 
             getPlayerData() {
@@ -402,10 +408,18 @@
                 this.showModal = true;
                 this.showVideo = false;
             },
-
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=boxers`
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'boxers'}});
+                    }
                 }
                 else {
                     this.showModal = false;

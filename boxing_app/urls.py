@@ -19,7 +19,10 @@ from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet, GetBoxerCourseByAnyOneViewSet
+from boxing_app.views.game_news import NewsViewSet
+from boxing_app.views.message import MessageViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
+from boxing_app.views.search import SearchVewSet
 from boxing_app.views.verify_code import send_verify_code
 from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJECT_DICT, SHARE_OBJECT_LIST, \
     USER_IDENTITY_DICT
@@ -204,6 +207,13 @@ share_urls = [
     path("boxer/<int:pk>/info", boxer_info_to_share)
 ]
 
+search_urls = [
+    path("search/message", MessageViewSet.as_view({'get': 'search_message'})),
+    path("search/news", NewsViewSet.as_view({'get': 'search_news'})),
+    path("search/video", SearchVewSet.as_view({'get': 'search_video'})),
+    path("search/user", SearchVewSet.as_view({'get': 'search_user'})),
+]
+
 version_urls = [
     path("version", version)
 ]
@@ -265,6 +275,7 @@ urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
 urlpatterns += like_urls
+urlpatterns += search_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

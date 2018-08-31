@@ -6,9 +6,9 @@
             <!--<img v-if="info.picture" class="picture" :src="`${config.baseUrl}` + info.picture"/>-->
             <!--<div class="content">{{info.content}}</div>-->
         </div>
-        <div class="preface-text ql-editor" v-html="str"></div>
+        <div class="preface-text ql-editor" v-html="str" v-if="showVideo"></div>
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
-        <DownloadTip @closeEv="closeEv" v-if="inApp == 0"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
     </div>
 </template>
@@ -66,7 +66,13 @@
             line-height 1.5rem
             font-size .75rem
             color #E9E9EA
-    video::-internal-media-controls-download-button{display:none;}
+
+    video::-internal-media-controls-download-button
+        display none
+
+    video::-webkit-media-controls-enclosure
+        overflow hidden
+
 </style>
 
 <script>
@@ -87,7 +93,8 @@
                 info: {},
                 wx: '',
                 dataObj: '',
-                str: ''
+                str: '',
+                showVideo: true
             }
         },
         components: {
@@ -95,7 +102,7 @@
             DownloadTip,
             Modal,
             ZoomImage,
-            Video
+            Video,
         },
         created() {
             this.id = this.$route.params.id;
@@ -116,7 +123,7 @@
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controlsList="nodownload" controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                         }
                     }
                 }
@@ -145,15 +152,36 @@
                     }
                 })
             },
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
             openApp() {
                 this.showModal = true;
+                this.showVideo = false;
+            },
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
             },
             modalEv(ifShow) {
-                ifShow ?  this.$router.push({path: '/download'}) : this.showModal = false;
+                if (ifShow) {
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=game_news`
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'game_news'}});
+                    }
+                }
+                else {
+                    this.showModal = false;
+                    this.showVideo = true;
+                }
             },
             closeEv(val) {
                 this.ifClose = val;
             },
+
             sharePage() {
                 if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
                     let wechat = require('../common/wechat');

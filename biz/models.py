@@ -118,6 +118,7 @@ class UserProfile(BaseModel):
     address = models.CharField(max_length=254, null=True, blank=True)
     bio = models.CharField(max_length=30, blank=True, null=True)  # 个性签名
     alipay_account = models.CharField(max_length=30, null=True, blank=True)
+    follower_count = models.PositiveIntegerField(default=0)  # 粉丝数
 
     class Meta:
         db_table = 'user_profile'
