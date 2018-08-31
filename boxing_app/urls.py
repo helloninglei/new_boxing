@@ -57,7 +57,7 @@ discover_urls = [
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
     path('messages/<int:message_id>/like',
-         like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+         like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
     path('like_me', like.LikeMeListViewSet.as_view({'get': 'list'})),
 ]
 
