@@ -618,8 +618,12 @@ class WordFilterSerializer(serializers.ModelSerializer):
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    nick_name = serializers.CharField(source='related_account.user_profile.nick_name', required=False, allow_blank=True)
+    # 此处注释为学习记录，请勿建议删除
+    # related_account = serializers.SerializerMethodField()
+    # def get_related_account(self, instance):
+    #     return HotVideoUserSerializer(instance.related_account).data
 
     class Meta:
         model = Album
-        fields = '__all__'
+        exclude = ('created_time', 'updated_time')

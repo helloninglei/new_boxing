@@ -533,7 +533,7 @@ class WordFilter(BaseModel):
         ordering = ("-updated_time",)
 
 
-class Album(BaseAuditModel):
+class Album(BaseModel):
     name = models.CharField(max_length=32)   # 相册名称
     related_account = models.ForeignKey(User, on_delete=models.CASCADE, related_name='albums')  # 关联用户
     release_time = models.DateTimeField()  # 发布时间

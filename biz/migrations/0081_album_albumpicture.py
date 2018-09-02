@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=32)),
                 ('release_time', models.DateTimeField()),
                 ('is_show', models.BooleanField()),
-                ('operator', models.ForeignKey(db_index=False, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('related_account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='albums', to=settings.AUTH_USER_MODEL)),
             ],
             options={

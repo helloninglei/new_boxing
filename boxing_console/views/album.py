@@ -7,4 +7,4 @@ from boxing_console.serializers import AlbumSerializer
 
 class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
-    queryset = models.Album.objects.all()
+    queryset = models.Album.objects.select_related('related_account', 'related_account__user_profile')
