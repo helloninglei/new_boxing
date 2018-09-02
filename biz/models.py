@@ -553,3 +553,5 @@ class AlbumPicture(models.Model):
     class Meta:
         db_table = 'picture'
         ordering = ('-created_time',)
+        verbose_name = '照片'
+
