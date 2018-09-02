@@ -121,7 +121,8 @@ message_urls = [
 album_url = [
     path('album', AlbumViewSet.as_view({"get": "list", "post": "create"}), name='album_list'),
     path('album/<int:pk>', AlbumViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name='album_modify'),
-    path('<int:aid>/picture', AlbumPictureViewSet.as_view({"get":"list", "post":"create"}), name='picture_list')
+    path('<int:aid>/picture', AlbumPictureViewSet.as_view({"get":"list", "post":"create"}), name='picture_list'),
+    path('picture/<int:pid>', AlbumPictureViewSet.as_view({"delete":"delete"}), name='picture_delete')
 ]
 
 router.register(r"word_filters", WordFilterViewSet)

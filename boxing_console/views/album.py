@@ -22,8 +22,13 @@ class AlbumPictureViewSet(viewsets.ViewSet):
     def create(self, request, aid):
         serializer = AlbumPictureSerializer(data=request.data)
         if serializer.is_valid():
-            models.AlbumPicture(album_id=int(aid), picture=serializer.validated_data['picture']).save()
-            return Response(status=201)
+            pic = models.AlbumPicture(album_id=int(aid), picture=serializer.validated_data['picture'])
+            pic.save()
+            return Response(pic.id, status=201)
 
         return Response(status=400)
+
+    def delete(self, request, pid):
+        models.AlbumPicture.objects.filter(id=pid).delete()
+        return Response(status=200)
 
