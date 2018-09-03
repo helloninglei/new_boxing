@@ -3,6 +3,8 @@ from django_filters import rest_framework as df_filters
 from rest_framework import viewsets, filters
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.utils import timezone
+from biz.services.push_service import broadcast_hot_video
 from django.db.models import Count, Sum, Q
 from django.contrib.contenttypes.fields import ContentType
 from biz import models
@@ -35,6 +37,11 @@ class HotVideoViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         self.serializer_class = HotVideoShowSerializer
         return super().partial_update(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        news = serializer.save(updated_time=timezone.now())
+        if news.push_hot_video:
+            broadcast_hot_video(news)
 
 
 @api_view(['GET'])
