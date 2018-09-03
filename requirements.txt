@@ -26,3 +26,4 @@ sqlparse==0.2.4
 pytest==3.6.3
 pytest-django==3.3.2
 raven==6.9.0
+django-extensions==2.1.2

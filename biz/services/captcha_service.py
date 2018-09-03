@@ -1,4 +1,4 @@
-
+from django.conf import settings
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 
@@ -19,7 +19,12 @@ def check_captcha(captcha_code, captcha_hash):
     :return: bool
     """
     CaptchaStore.remove_expired()
+
     if CaptchaStore.objects.filter(response=captcha_code, hashkey=captcha_hash).exists():
         CaptchaStore.objects.filter(response=captcha_code, hashkey=captcha_hash).delete()
         return True
+
+    if settings.ENVIRONMENT == settings.DEVELOPMENT:
+        return True
+
     return False
