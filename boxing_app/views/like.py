@@ -10,6 +10,7 @@ from biz.utils import get_object_or_404
 from biz.models import Like, Message
 from biz.redis_client import like_hot_video, unlike_hot_video
 from boxing_app.serializers import LikeSerializer, LikeMeListSerializer
+from biz.easemob_client import EaseMobClient
 
 
 class MessageLikeViewSet(viewsets.ModelViewSet):
@@ -28,10 +29,12 @@ class MessageLikeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(user=self.request.user, message=self._get_message_instance())
+            instance = serializer.save(user=self.request.user, message=self._get_message_instance())
         except IntegrityError as e:
             if 'Duplicate entry' not in str(e):
                 raise e
+        else:
+            EaseMobClient.send_passthrough_message([instance.message.user.id])
 
 
 class HotVideoLikeViewSet(views.APIView):
