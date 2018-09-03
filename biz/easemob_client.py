@@ -86,3 +86,11 @@ class EaseMobClient:
         chat_rooms_info = response.json()['data']
         redis_client.set(redis_const.EASEMOB_CHAT_ROOMS_INFO, json.dumps(chat_rooms_info))
         return chat_rooms_info
+
+    @classmethod
+    def send_passthrough_message(cls, target: list, msg_type: str = "like"):
+        token = cls._get_token()
+        url = f"{cls.domain}{cls.org_name}/{cls.app_name}/messages"
+        json_data = {
+            "target_type": "users", "target": target, "msg": {"type": "cmd"}, "ext": {"msgType": msg_type}}
+        return requests.post(url=url, json=json_data, headers={"Authorization": f"Bearer {token}"})

@@ -249,7 +249,7 @@ BANNER_LINK_MODEL_TYPE = (
     # 'game_votes',  # 赛事投票
     # 'game_apply',  # 赛事报名
     APP_JUMP_OBEJCT_NEWS,  # 赛事资讯
-    'hot_video',
+    'hot_video',  # 热门视频
 )
 
 WITHDRAW_STATUS_WAITING = 'WAITING'
@@ -307,3 +307,11 @@ DEFAULT_NICKNAME_FORMAT = "拳城{}"
 DEFAULT_AVATAR = ""
 
 MAX_HOT_VIDEO_BIND_USER_COUNT = 7
+
+HOT_VIDEO_TAG_DEFAULT = 1
+HOT_VIDEO_TAG_CHOICES = (
+    (HOT_VIDEO_TAG_DEFAULT, '默认标签'),
+    (2, '标签2'),
+    (3, '标签3'),
+    (4, '标签4'),
+)

@@ -1,6 +1,7 @@
 import django_filters
+from biz import models
+from biz.constants import HOT_VIDEO_TAG_CHOICES
 from biz.models import MoneyChangeLog, Course
-
 from biz.models import BoxerIdentification
 
 

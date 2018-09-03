@@ -45,7 +45,7 @@ from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
-from boxing_app.views.cover_picture import cover_picture
+from boxing_app.views.handle_video import cover_picture, video_resolution
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -57,7 +57,8 @@ discover_urls = [
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
     path('messages/<int:message_id>/like',
-         like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+         like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('like_me', like.LikeMeListViewSet.as_view({'get': 'list'})),
 ]
 
 comment_object_string = '|'.join(COMMENT_OBJECT_DICT.keys())
@@ -67,6 +68,7 @@ comment_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string),
             comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}),
             name='comment-detail'),
+    path('comment_me', comment.CommentMeListViewSet.as_view({'get': 'list'}))
 ]
 
 upload_urls = [
@@ -102,7 +104,7 @@ order_url = [
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
     path('course/order', UserCourseOrderViewSet.as_view({'post': 'create'}), name='create-course-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}),
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve', "delete": "destroy"}),
          name='user-order-detail'),
     path('order/<int:pk>/boxer-confirm', BoxerCourseOrderViewSet.as_view({'post': 'boxer_confirm_order'}),
          name='boxer-confirm-order'),
@@ -238,7 +240,14 @@ shutup_list_urls = [
 ]
 
 cover_picture_urls = [
-    path("cover_picture", cover_picture)
+    path("cover_picture", cover_picture),
+    path("video_resolution", video_resolution)
+]
+
+like_urls = [
+    path('messages/<int:message_id>/like',
+         like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view()),
 ]
 
 urlpatterns = []
@@ -270,6 +279,7 @@ urlpatterns += official_accounts_urls
 urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
+urlpatterns += like_urls
 urlpatterns += search_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:

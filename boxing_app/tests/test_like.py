@@ -98,3 +98,14 @@ class LikeTestCase(APITestCase):
         for message in response.data['results']:
             is_like = message['is_like']
             self.assertFalse(is_like)
+
+    def test_like_me_list(self):
+        self.prepare()
+        self.client1.post('/messages/%s/like' % self.message_id1)
+        self.client1.post('/messages/%s/like' % self.message_id2)
+        self.client2.post('/messages/%s/like' % self.message_id2)
+        self.client3.post('/messages/%s/like' % self.message_id3)
+
+        response = self.client1.get('/like_me')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 4)
