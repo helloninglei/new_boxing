@@ -10,6 +10,7 @@ from django.http import StreamingHttpResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 FFMPEG_BIN = "ffmpeg"
+VIDEO_RESOLUTION = "video_resolution"
 
 
 @api_view(['GET'])
@@ -34,12 +35,13 @@ def cover_picture(request):
 @api_view(['POST'])
 @permission_classes([])
 @authentication_classes([])
-def video_width_and_height(request):
+def video_resolution(request):
     video_url = request.data['video_url']
     video_path = urlparse(video_url).path
-    if redis_client.exists(video_path):
-        data = json.loads(redis_client.get(video_path))
+    if redis_client.hexists(VIDEO_RESOLUTION, video_path):
+        data = json.loads(redis_client.hget(VIDEO_RESOLUTION, video_path))
         return Response({"height": data['height'], "width": data['width']})
+
     pipe = sp.Popen(
         ["ffprobe", "-v", "error", "-of", "flat=s=_", "-select_streams", "v:0", "-show_entries", "stream=height,width",
          f"{video_url}"], stdout=sp.PIPE)
@@ -52,5 +54,5 @@ def video_width_and_height(request):
 
     width, height = rex.match(str(std_out)).groups()
     data = {"height": height, "width": width}
-    redis_client.set(video_path, json.dumps(data))
+    redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
     return Response(data)
