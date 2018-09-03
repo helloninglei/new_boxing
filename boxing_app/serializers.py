@@ -288,7 +288,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        ret['is_hot'] = True if (instance.operator.id == constants.HOT_VIDEO_USER_ID) else False
+        ret['is_hot'] = instance.operator.id == constants.HOT_VIDEO_USER_ID
         return ret
 
     def get_url(self, obj):
