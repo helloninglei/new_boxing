@@ -152,9 +152,3 @@ class SearchCase(APITestCase):
         res = self.client.get('/search/all', data={"keywords": '哈哈哈'})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['user_list']), 0)
-
-
-
-
-
-
