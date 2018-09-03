@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django.db.models import Count, Sum, Q
 from django.contrib.contenttypes.fields import ContentType
 from biz import models
-from biz.constants import PAYMENT_STATUS_PAID, PAYMENT_STATUS_UNPAID
+from biz.constants import PAYMENT_STATUS_PAID, PAYMENT_STATUS_UNPAID, HOT_VIDEO_TAG_CHOICES
 from boxing_console.serializers import HotVideoSerializer, HotVideoShowSerializer, HotVideoUserSerializer
 from boxing_console.filters import HotVideoFilter
 
@@ -41,3 +41,8 @@ class HotVideoViewSet(viewsets.ModelViewSet):
 def hot_video_user_list(_):
     serializer = HotVideoUserSerializer(models.User.objects.filter(user_type__isnull=False), many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def hot_video_tag_list(_):
+    return Response([{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES])

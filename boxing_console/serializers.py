@@ -237,6 +237,13 @@ class HotVideoSerializer(serializers.ModelSerializer):
     user_list = serializers.SerializerMethodField()
     users = serializers.ListField(child=serializers.IntegerField(), write_only=True)
     push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)
+    tag = serializers.SerializerMethodField()
+
+    def get_tag(self, instance):
+        return {
+            'id': instance.tag,
+            'name': instance.get_tag_display()
+        }
 
     def get_user_list(self, instance):
         return HotVideoUserSerializer(instance.users, many=True).data
@@ -253,7 +260,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = HotVideo
         fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list', 'push_to_hotvideo')
+                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'tag', 'users', 'user_list',
+                  'push_to_hotvideo')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
