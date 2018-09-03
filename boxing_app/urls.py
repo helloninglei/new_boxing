@@ -45,7 +45,7 @@ from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
-from boxing_app.views.cover_picture import cover_picture
+from boxing_app.views.handle_video import cover_picture, video_resolution
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -240,7 +240,8 @@ shutup_list_urls = [
 ]
 
 cover_picture_urls = [
-    path("cover_picture", cover_picture)
+    path("cover_picture", cover_picture),
+    path("video_resolution", video_resolution)
 ]
 
 like_urls = [
