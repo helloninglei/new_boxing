@@ -18,12 +18,12 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         keywords = self.request.query_params.get('keywords', "")
         add_q = UserProfile.objects.none()
         if keywords == "徐晓冬":
-            add_q = UserProfile.objects.filter(nick_name="冬的武林")[:1]
+            add_q = UserProfile.objects.filter(user__mobile=13501224847)  # 徐晓冬手机号
         qs = UserProfile.objects.filter(nick_name__icontains=keywords) \
             .select_related("user", "user__boxer_identification")\
             .order_by('-follower_count', 'created_time')
         self.serializer_class = UserProfileSerializer
-        self.queryset = (qs | add_q) if keywords else []
+        self.queryset = (add_q | qs) if keywords else []
         return super().list(request, *args, **kwargs)
 
     def search_video(self, request, *args, **kwargs):
@@ -42,5 +42,3 @@ class SearchVewSet(mixins.ListModelMixin, GenericViewSet):
         news_list = NewsViewSet.as_view({"get": "search_news"})(self.request._request, *args, **kwargs).data['results'][:3]
         return Response({"user_list": user_list, "video_list": video_list,
                          "message_list": message_list, "news_list": news_list})
-
-
