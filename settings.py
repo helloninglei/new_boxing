@@ -153,6 +153,7 @@ INSTALLED_APPS = [
     'captcha',
     'django_filters',
     'corsheaders',
+    'django_extensions',
     'raven.contrib.django.raven_compat',
 ]
 

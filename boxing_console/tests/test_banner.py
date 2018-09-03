@@ -26,6 +26,19 @@ class BannerTestCase(APITestCase):
         }
         self.game_news = models.GameNews.objects.create(**news_data)
 
+        hot_video_data = {
+            'name': 'test video1',
+            'description': 'test video1',
+            'price': 111,
+            'url': '/videos/111',
+            'try_url': '/videos/222',
+            'cover': '/videos/333',
+            'users': [self.test_user.id],
+        }
+
+        self.client.post('/hot_videos', hot_video_data)
+        self.hot_video = models.HotVideo.objects.first()
+
     def test_create(self):
         # url 格式不合法
         invalid_link_data = {
@@ -91,6 +104,17 @@ class BannerTestCase(APITestCase):
         res = self.client.post('/banners', valid_link_data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+        valid_link_data = {
+            'name': 'test banner',
+            'order_number': 10,
+            'link_type': constants.BANNER_LINK_TYPE_IN_APP_NATIVE,
+            'link': f'hot_video:{self.hot_video.id}',
+            'picture': '/banners',
+        }
+
+        res = self.client.post('/banners', valid_link_data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
         res = self.client.post('/banners', valid_link_data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data['message'][0], '序号已存在')
@@ -114,6 +138,7 @@ class BannerTestCase(APITestCase):
         self.client.post('/banners', valid_link_data)
 
         res = self.client.get('/banners', {'search': 'test banner'})
+        print(res.data)
         self.assertEqual(res.data['count'], 3)
 
         res = self.client.get('/banners', {'search': 'test banner 1'})
