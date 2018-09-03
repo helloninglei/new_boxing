@@ -214,6 +214,7 @@ search_urls = [
     path("search/news", NewsViewSet.as_view({'get': 'search_news'})),
     path("search/video", SearchVewSet.as_view({'get': 'search_video'})),
     path("search/user", SearchVewSet.as_view({'get': 'search_user'})),
+    path("search/all", SearchVewSet.as_view({'get': 'search_all'}))
 ]
 
 version_urls = [

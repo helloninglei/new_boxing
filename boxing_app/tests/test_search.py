@@ -9,6 +9,7 @@ class SearchCase(APITestCase):
         self.test_user_1 = User.objects.create_user(mobile='11111111111', password='password')
         self.test_user_2 = User.objects.create_user(mobile='11111111112', password='password')
         self.test_user_3 = User.objects.create_user(mobile='11111111113', password='password')
+        self.test_user_4 = User.objects.create_user(mobile='13501224847', password='password')  # 徐晓冬手机号
         self.client1 = self.client_class()
         self.client1.login(username=self.test_user_1, password='password')
         self.client2 = self.client_class()
@@ -46,13 +47,13 @@ class SearchCase(APITestCase):
         UserProfile.objects.filter(user=self.test_user_1).update(nick_name=user1_nick_name)
         UserProfile.objects.filter(user=self.test_user_2).update(nick_name=user2_nick_name)
 
-        res = self.client1.get(f'/search/user?keywords={user1_nick_name}')
+        res = self.client1.get('/search/user', data={"keywords": user1_nick_name})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/user?keywords=三')
+        res = self.client1.get('/search/user', data={"keywords": "三"})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
-        res = self.client1.get('/search/user?keywords=')
+        res = self.client1.get('/search/user', data={"keywords": ""})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
 
@@ -64,13 +65,13 @@ class SearchCase(APITestCase):
         Message.objects.create(user=self.test_user_2, content=content2)
         Message.objects.create(user=self.test_user_3, content=content3)
 
-        res = self.client1.get(f'/search/message?keywords={content1}')
+        res = self.client1.get('/search/message', data={"keywords": content1})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/message?keywords=看')
+        res = self.client1.get('/search/message', data={"keywords": "看"})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
-        res = self.client1.get('/search/message?keywords=')
+        res = self.client1.get('/search/message', data={"keywords": ""})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
 
@@ -82,10 +83,10 @@ class SearchCase(APITestCase):
         self.news_data['title'] = title2
         GameNews.objects.create(**self.news_data)
 
-        res = self.client1.get(f'/search/news?keywords={title1}')
+        res = self.client1.get('/search/news', data={"keywords": title1})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/news?keywords=')
+        res = self.client1.get('/search/news', data={"keywords": ""})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 0)
 
@@ -97,9 +98,57 @@ class SearchCase(APITestCase):
         self.video_data['name'] = v_name2
         HotVideo.objects.create(**self.video_data)
 
-        res = self.client1.get(f'/search/video?keywords={v_name1}')
+        res = self.client1.get('/search/video', data={"keywords": v_name1})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 1)
-        res = self.client1.get('/search/video?keywords=世界杯')
+        res = self.client1.get('/search/video', data={"keywords": "世界杯"})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), 2)
+
+    def test_search_all(self):
+        user1_nick_name = "测试1"
+        user2_nick_name = "测试2"
+        user3_nick_name = "徐晓冬"
+        user4_nick_name = "冬的武林"
+        UserProfile.objects.filter(user=self.test_user_1).update(nick_name=user1_nick_name)
+        UserProfile.objects.filter(user=self.test_user_2).update(nick_name=user2_nick_name)
+        UserProfile.objects.filter(user=self.test_user_3).update(nick_name=user3_nick_name)
+        UserProfile.objects.filter(user=self.test_user_4).update(nick_name=user4_nick_name)
+        content1 = '测试1'
+        content2 = '测试2'
+        content3 = '测试3'
+        content4 = '测试4'
+        Message.objects.create(user=self.test_user_1, content=content1)
+        Message.objects.create(user=self.test_user_2, content=content2)
+        Message.objects.create(user=self.test_user_3, content=content3)
+        Message.objects.create(user=self.test_user_3, content=content4)
+
+        title1 = "测试1"
+        title2 = "测试2"
+        self.news_data['title'] = title1
+        GameNews.objects.create(**self.news_data)
+        self.news_data['title'] = title2
+        GameNews.objects.create(**self.news_data)
+
+        v_name1 = "测试1"
+        v_name2 = "测试2"
+        self.video_data['name'] = v_name1
+        HotVideo.objects.create(**self.video_data)
+        self.video_data['name'] = v_name2
+        HotVideo.objects.create(**self.video_data)
+
+        res = self.client.get('/search/all', data={"keywords": '测试'})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['user_list']), 2)
+        self.assertEqual(len(res.data['video_list']), 2)
+        self.assertEqual(len(res.data['message_list']), 3)
+        self.assertEqual(len(res.data['user_list']), 2)
+        res = self.client.get('/search/all', data={"keywords": '徐晓冬'})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['user_list']), 2)
+        res = self.client.get('/search/all', data={"keywords": '冬的武林'})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['user_list']), 1)
+        res = self.client.get('/search/all', data={"keywords": '哈哈哈'})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['user_list']), 0)
