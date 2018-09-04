@@ -28,6 +28,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='hotvideo',
             name='tag',
-            field=models.PositiveSmallIntegerField(choices=[(1, '默认标签'), (2, '标签2'), (3, '标签3'), (4, '标签4')], default=1),
+            field=models.PositiveSmallIntegerField(
+                choices=[(1, '拳城出击'), (2, '徐晓冬'), (3, '教学'), (4, '街斗'), (5, '搞笑'), (6, '美女'), (7, '国外'), (8, '热点')],
+                default=1),
         ),
     ]
