@@ -52,4 +52,4 @@ def hot_video_user_list(_):
 
 @api_view(['GET'])
 def hot_video_tag_list(_):
-    return Response([{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES])
+    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES]})

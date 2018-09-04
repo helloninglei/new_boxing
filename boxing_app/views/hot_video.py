@@ -58,4 +58,4 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_tag_list(_):
-    return Response([{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES])
+    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES]})
