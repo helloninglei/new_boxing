@@ -9,6 +9,7 @@ from biz.models import UserProfile
 class AlbumTestCase(APITestCase):
     def setUp(self):
         self.test_user = User.objects.create_superuser(mobile='11111111111', password='password')
+        self.nick_name = '膜法师'
         UserProfile.objects.filter(user=self.test_user).update(nick_name='膜法师')
         self.client = self.client_class()
         self.client.login(username=self.test_user, password='password')
@@ -19,11 +20,11 @@ class AlbumTestCase(APITestCase):
     def test_create_album(self):
         res = self.client.post('/album', self.data_album)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res.data['name'], '他改变了中国')
-        self.assertEqual(res.data['release_time'], "1926-08-17 20:12:01")
+        self.assertEqual(res.data['name'], self.data_album['name'])
+        self.assertEqual(res.data['release_time'], self.data_album['release_time'])
         self.assertFalse(res.data['is_show'])
         self.assertEqual(res.data['related_account'], self.test_user.id)
-        self.assertEqual(res.data['nick_name'], '膜法师')
+        self.assertEqual(res.data['nick_name'], self.nick_name)
 
     def test_get_album_list(self):
         album_count = 15
@@ -41,11 +42,11 @@ class AlbumTestCase(APITestCase):
         album_id = response.data['id']
         res = self.client.get('/album/{}'.format(album_id))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['name'], '他改变了中国')
-        self.assertEqual(res.data['release_time'], "1926-08-17 20:12:01")
-        self.assertFalse(res.data['is_show'])
+        self.assertEqual(res.data['name'], self.data_album['name'])
+        self.assertEqual(res.data['release_time'], self.data_album['release_time'])
+        self.assertEqual(res.data['is_show'], self.data_album['is_show'])
         self.assertEqual(res.data['related_account'], self.test_user.id)
-        self.assertEqual(res.data['nick_name'], '膜法师')
+        self.assertEqual(res.data['nick_name'], self.nick_name)
 
     def test_edit_album_info(self):
         response = self.client.post('/album', self.data_album)
@@ -59,10 +60,10 @@ class AlbumTestCase(APITestCase):
         res = self.client.patch('/album/{}'.format(album_id), data=self.edit_album)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], '两行诗')
-        self.assertEqual(res.data['release_time'], "2008-08-17 22:12:01")
-        self.assertTrue(res.data['is_show'])
+        self.assertEqual(res.data['release_time'], self.edit_album['release_time'])
+        self.assertEqual(res.data['is_show'], self.edit_album['is_show'])
         self.assertEqual(res.data['related_account'], self.test_user.id)
-        self.assertEqual(res.data['nick_name'], '膜法师')
+        self.assertEqual(res.data['nick_name'], self.nick_name)
 
     def test_get_all_album_picture(self):
         picture_num = 10

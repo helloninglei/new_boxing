@@ -119,9 +119,9 @@ message_urls = [
 ]
 
 album_url = [
-    path('album', AlbumViewSet.as_view({"get": "list", "post": "create"}), name='album_list'),
-    path('album/<int:pk>', AlbumViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name='album_modify'),
-    path('<int:aid>/picture', AlbumPictureViewSet.as_view({"get":"list", "post":"create"}), name='picture_list'),
+    path('albums', AlbumViewSet.as_view({"get": "list", "post": "create"}), name='album_list'),
+    path('albums/<int:pk>', AlbumViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name='album_modify'),
+    path('albums/<int:aid>/pictures', AlbumPictureViewSet.as_view({"get":"list", "post":"create"}), name='picture_list'),
     path('picture/<int:pid>', AlbumPictureViewSet.as_view({"delete":"delete"}), name='picture_delete')
 ]
 
