@@ -15,7 +15,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
 class AlbumPictureViewSet(viewsets.ViewSet):
 
     def list(self, request, aid):
-        queryset = models.AlbumPicture.objects.all().filter(album=aid)
+        queryset = models.AlbumPicture.objects.filter(album=aid)
         serializer = AlbumPictureSerializer(queryset, many=True)
         return Response(serializer.data)
 
