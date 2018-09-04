@@ -531,3 +531,25 @@ class WordFilter(BaseModel):
     class Meta:
         db_table = "word_filter"
         ordering = ("-updated_time",)
+
+
+class Album(BaseModel):
+    name = models.CharField(max_length=32)   # 相册名称
+    related_account = models.ForeignKey(User, on_delete=models.CASCADE, related_name='albums')  # 关联用户
+    release_time = models.DateTimeField()  # 发布时间
+    is_show = models.BooleanField()  # 是否显示在APP端
+
+    class Meta:
+        db_table = 'album'
+        ordering = ('-created_time',)
+        verbose_name = '相册'
+
+
+class AlbumPicture(models.Model):
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='pictures')
+    picture = models.CharField(max_length=200)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'picture'
+        ordering = ('-created_time',)
