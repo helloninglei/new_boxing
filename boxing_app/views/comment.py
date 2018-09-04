@@ -12,6 +12,8 @@ from biz.utils import get_model_class_by_name, get_object_or_404, Round
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer, OrderCommentSerializer, CommentMeSerializer
 from biz.easemob_client import EaseMobClient
+from biz.redis_client import redis_client
+from biz.redis_const import UNREAD_COMMENT
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -43,6 +45,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         instance = serializer.save(**kwargs)
         if isinstance(instance.content_object, Message):
             EaseMobClient.send_passthrough_message([instance.content_object.user.id], msg_type="comment")
+            redis_client.lpush(UNREAD_COMMENT.format(user_id=instance.content_object.user.id), instance.id)
 
 
 class CommentMeListViewSet(mixins.ListModelMixin,
@@ -53,6 +56,7 @@ class CommentMeListViewSet(mixins.ListModelMixin,
     def list(self, request, *args, **kwargs):
         self.queryset = models.Comment.objects.filter(Q(parent__user=request.user) |
                                                       (Q(message__user=request.user) & Q(parent__isnull=True)))
+        redis_client.delete(UNREAD_COMMENT.format(user_id=request.user.id))
         return super().list(request, *args, **kwargs)
 
 
@@ -76,6 +80,7 @@ class ReplyViewSet(CommentViewSet):
         }
         instance = serializer.save(**kwargs)
         EaseMobClient.send_passthrough_message([instance.user.id], msg_type="comment")
+        redis_client.lpush(UNREAD_COMMENT.format(user_id=instance.user.id), instance.id)
 
 
 class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
