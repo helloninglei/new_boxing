@@ -21,7 +21,7 @@ class AlbumTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['name'], '他改变了中国')
         self.assertEqual(res.data['release_time'], "1926-08-17 20:12:01")
-        self.assertEqual(res.data['is_show'], False)
+        self.assertFalse(res.data['is_show'])
         self.assertEqual(res.data['related_account'], self.test_user.id)
         self.assertEqual(res.data['nick_name'], '膜法师')
 
@@ -43,7 +43,7 @@ class AlbumTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], '他改变了中国')
         self.assertEqual(res.data['release_time'], "1926-08-17 20:12:01")
-        self.assertEqual(res.data['is_show'], False)
+        self.assertFalse(res.data['is_show'])
         self.assertEqual(res.data['related_account'], self.test_user.id)
         self.assertEqual(res.data['nick_name'], '膜法师')
 
@@ -60,7 +60,7 @@ class AlbumTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['name'], '两行诗')
         self.assertEqual(res.data['release_time'], "2008-08-17 22:12:01")
-        self.assertEqual(res.data['is_show'], True)
+        self.assertTrue(res.data['is_show'])
         self.assertEqual(res.data['related_account'], self.test_user.id)
         self.assertEqual(res.data['nick_name'], '膜法师')
 
