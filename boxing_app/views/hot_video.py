@@ -30,6 +30,7 @@ def hot_video_item_redirect(_, pk):
     user_id = models.HotVideo.objects.get(pk=pk).users.first().id
     return redirect(f'/users/{user_id}/hot_videos/{pk}')
 
+
 class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HotVideoSerializer
     permission_classes = (permissions.AllowAny,)
