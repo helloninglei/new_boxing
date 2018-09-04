@@ -14,6 +14,5 @@ class CaptchaTEstCase(unittest.TestCase):
         self.assertTrue(CaptchaStore.objects.filter(hashkey=self.captcha_key).exists())
 
     def test_check_captcha(self):
-        self.assertTrue(check_captcha("error_code", self.captcha_key))
         captcha_code = CaptchaStore.objects.filter(hashkey=self.captcha_key).first().response
         self.assertTrue(check_captcha(captcha_code, self.captcha_key))
