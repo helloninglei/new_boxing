@@ -29,7 +29,7 @@ from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJEC
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
-from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect, hot_video_tag_list
+from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect, hot_video_tag_list, hot_video_item_redirect
 from boxing_app.views.user_profile import UserProfileViewSet, BlackListViewSet, UserProfileNoLoginViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
@@ -174,6 +174,7 @@ hot_video_url = [
     path('users/<int:user_id>/hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve'}),
          name='hot-video-detail'),
     path('hot_videos', hot_video_redirect),
+    path('hot_videos/<int:pk>', hot_video_item_redirect),
     path('hot_videos_tags', hot_video_tag_list),
 ]
 
