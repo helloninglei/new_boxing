@@ -286,6 +286,11 @@ class HotVideoSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
     try_url = serializers.SerializerMethodField()
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['is_hot'] = instance.operator.id == constants.HOT_VIDEO_USER_ID
+        return ret
+
     def get_url(self, obj):
         if obj.is_paid or obj.price == 0:
             return f'{CDN_BASE_URL}{obj.url}'
