@@ -16,7 +16,7 @@ from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
 from biz.validator import validate_mobile
-from biz.redis_client import get_number_of_share, get_message_forward_count
+from biz.redis_client import get_number_of_share, get_message_forward_count, get_hotvideo_forward_count
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
@@ -236,7 +236,18 @@ class HotVideoSerializer(serializers.ModelSerializer):
     price_amount = serializers.IntegerField(read_only=True)
     user_list = serializers.SerializerMethodField()
     users = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)
+    push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)  # 绑定热门视频用户
+    tag = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField()
+
+    def get_forward_count(self, instance):
+        return get_hotvideo_forward_count(instance.id)
+
+    def get_tag(self, instance):
+        return {
+            'id': instance.tag,
+            'name': instance.get_tag_display()
+        }
 
     def get_user_list(self, instance):
         return HotVideoUserSerializer(instance.users, many=True).data
@@ -253,7 +264,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = HotVideo
         fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list', 'push_to_hotvideo')
+                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'tag', 'users', 'user_list',
+                  'push_to_hotvideo', 'push_hot_video', 'like_count', 'forward_count', 'views_count')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
