@@ -2,7 +2,7 @@
     <div class="banner_content">
         <TopBar v-if="isShowTop" firstTitle_name="Banner管理" firstTitle_path="/usermanage" disNone="disNone"></TopBar>
         <div class="container">
-            <el-form :model="form" label-width="100px" :rules="rules" ref="ruleForm">
+            <el-form :model="form" label-width="100px" :rules="rules" ref="ruleForm" style='width:50%;min-width:520px'>
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="form.name" placeholder="限制20字" :maxlength="20"></el-input>
                 </el-form-item>
@@ -114,7 +114,7 @@
     }
 </style>
 
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     import config from 'common/my_config'
 
@@ -305,7 +305,6 @@
                 delete obj['enrollId'];
                 delete obj['contentId'];
                 delete obj['videoId'];
-
                 !this.id ? this.createBannerEv(obj) : this.modifyBannerEv(obj);
 
             },
