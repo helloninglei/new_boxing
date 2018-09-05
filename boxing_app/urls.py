@@ -244,7 +244,7 @@ cover_picture_urls = [
 ]
 
 album_url = [
-    path('user/<int:pk>/albums', AlbumViewSet.as_view({"get": "list"}), name='album_list'),
+    path('users/<int:pk>/albums', AlbumViewSet.as_view({"get": "list"}), name='album_list'),
 ]
 
 urlpatterns = []
