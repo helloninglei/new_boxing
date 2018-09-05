@@ -36,7 +36,9 @@ def cover_picture(request):
 @permission_classes([])
 @authentication_classes([])
 def video_resolution(request):
-    video_url = request.data['video_url']
+    video_url = request.data.get('video_url')
+    if not video_url:
+        return Response(status.HTTP_400_BAD_REQUEST)
     video_path = urlparse(video_url).path
     if redis_client.hexists(VIDEO_RESOLUTION, video_path):
         data = json.loads(redis_client.hget(VIDEO_RESOLUTION, video_path))

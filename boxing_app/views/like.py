@@ -11,6 +11,8 @@ from biz.models import Like, Message
 from biz.redis_client import like_hot_video, unlike_hot_video
 from boxing_app.serializers import LikeSerializer, LikeMeListSerializer
 from biz.easemob_client import EaseMobClient
+from biz.redis_client import redis_client
+from biz.redis_const import UNREAD_LIKE
 
 
 class MessageLikeViewSet(viewsets.ModelViewSet):
@@ -35,6 +37,7 @@ class MessageLikeViewSet(viewsets.ModelViewSet):
                 raise e
         else:
             EaseMobClient.send_passthrough_message([instance.message.user.id])
+            redis_client.lpush(UNREAD_LIKE.format(user_id=instance.message.user.id), instance.id)
 
 
 class HotVideoLikeViewSet(views.APIView):
@@ -55,4 +58,5 @@ class LikeMeListViewSet(mixins.ListModelMixin,
 
     def list(self, request, *args, **kwargs):
         self.queryset = Like.objects.filter(message__is_deleted=False, message__user=request.user.id).select_related('user', 'message')
+        redis_client.delete(UNREAD_LIKE.format(user_id=request.user.id))
         return super().list(request, *args, **kwargs)

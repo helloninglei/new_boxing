@@ -29,7 +29,7 @@ from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJEC
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
-from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect
+from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect, hot_video_tag_list, hot_video_item_redirect
 from boxing_app.views.user_profile import UserProfileViewSet, BlackListViewSet, UserProfileNoLoginViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
@@ -46,6 +46,7 @@ from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
 from boxing_app.views.handle_video import cover_picture, video_resolution
+from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -173,7 +174,9 @@ hot_video_url = [
     path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'}), name='hot-video'),
     path('users/<int:user_id>/hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve'}),
          name='hot-video-detail'),
-    path('hot_videos', hot_video_redirect)
+    path('hot_videos', hot_video_redirect),
+    path('hot_videos/<int:pk>', hot_video_item_redirect),
+    path('hot_videos_tags', hot_video_tag_list),
 ]
 
 payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
@@ -248,6 +251,7 @@ like_urls = [
     path('messages/<int:message_id>/like',
          like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
     path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view()),
+    path("unread_like_comment", has_unread_like_and_comment)
 ]
 
 urlpatterns = []

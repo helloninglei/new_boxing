@@ -310,8 +310,12 @@ MAX_HOT_VIDEO_BIND_USER_COUNT = 7
 
 HOT_VIDEO_TAG_DEFAULT = 1
 HOT_VIDEO_TAG_CHOICES = (
-    (HOT_VIDEO_TAG_DEFAULT, '默认标签'),
-    (2, '标签2'),
-    (3, '标签3'),
-    (4, '标签4'),
+    (HOT_VIDEO_TAG_DEFAULT, '拳城出击'),
+    (2, '徐晓冬'),
+    (3, '教学'),
+    (4, '街斗'),
+    (5, '搞笑'),
+    (6, '美女'),
+    (7, '国外'),
+    (8, '热点'),
 )

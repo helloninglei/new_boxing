@@ -349,6 +349,9 @@ class HotVideo(BaseAuditModel):
     views_count = models.PositiveIntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
     tag = models.PositiveSmallIntegerField(choices=HOT_VIDEO_TAG_CHOICES, default=HOT_VIDEO_TAG_DEFAULT)
+    push_hot_video = models.BooleanField(default=False)  # 是否推送
+    start_time = models.DateTimeField(null=True)  # 推送开始时间
+    end_time = models.DateTimeField(null=True)  # 推送结束时间
 
     class Meta:
         db_table = 'hot_video'

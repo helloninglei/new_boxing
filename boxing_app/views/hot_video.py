@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Count, Q
 from django.shortcuts import redirect
+from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
@@ -9,7 +10,7 @@ from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
 
 from biz.utils import comment_count_condition
-from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
 from boxing_app.serializers import HotVideoSerializer
 from boxing_app.tasks import incr_hot_video_views_count
 
@@ -20,6 +21,14 @@ from boxing_app.tasks import incr_hot_video_views_count
 def hot_video_redirect(_):
     url = reverse('hot-video', kwargs={'user_id': HOT_VIDEO_USER_ID})
     return redirect(url)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+@authentication_classes([])
+def hot_video_item_redirect(_, pk):
+    user_id = models.HotVideo.objects.get(pk=pk).users.first().id
+    return redirect(f'/users/{user_id}/hot_videos/{pk}')
 
 
 class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,3 +52,10 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
             is_paid=Count('orders', filter=_filter),
             comment_count=comment_count_condition,
         ).prefetch_related('users', 'users__user_profile', 'users__boxer_identification')
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+@authentication_classes([])
+def hot_video_tag_list(_):
+    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES]})
