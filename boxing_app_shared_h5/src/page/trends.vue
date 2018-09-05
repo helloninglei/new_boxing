@@ -2,7 +2,11 @@
     <div class="trends_container" :class="{hasClose: ifClose}">
         <div class="trends_container_head">
             <template v-if="info.user">
-                <img class="portrait" :src="info.user.avatar ? info.user.avatar + `${portraitQuery}` : avatar_default" />
+                <div class="portrait_container">
+                    <img class="portrait" :src="info.user.avatar ? info.user.avatar + `${portraitQuery}` : avatar_default" />
+                    <div class="sign_icon" :class="info.user.user_type"></div>
+                </div>
+
                 <span class="userName">{{info.user.nick_name}}</span>
                 <span class="is_following" @click="followEv">
                     <template v-if="info.user.is_following">
@@ -15,7 +19,7 @@
                     </template>
                 </span>
             </template>
-            <GetTime :createTime="info.created_time"></GetTime>
+            <GetTime :createTime="info.created_time" class="getTime"></GetTime>
             <div class="content">{{info.content}}</div>
             <template v-if="info.video">
                 <Video :url="info.video" v-show="showVideo"></Video>
@@ -26,7 +30,7 @@
                 </div>
             </template>
         </div>
-        <TabBar :id="id" :ifShowPraise=true commentType="message" @openApp="openApp"></TabBar>
+        <TabBar :id="id" :ifShowPraise=true commentType="message" @openApp="openApp" :praiseNum="praiseNum"></TabBar>
         <div class="bottom_bar">
             <div class="bar_container">
                 <div class="comment_btn" @click="openApp">
@@ -40,7 +44,7 @@
                 </div>
             </div>
         </div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" page="messages" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
@@ -48,13 +52,34 @@
 </template>
 
 <style scoped lang="stylus" type="text/stylus">
+.created_time.getTime
+    margin 0
+    margin-left 2.2rem
 .trends_container
     padding-bottom  3.5rem
     &.hasClose
         padding-bottom 0
+.portrait_container
+    display inline-block
+    position relative
+    .sign_icon
+        position absolute
+        right 0
+        bottom 0
+        width .9rem
+        height .9rem
+        &.boxer_icon
+            background url("../assets/images/boxer_icon.png") no-repeat
+            background-size contain
+        &.mark_icon
+            background url("../assets/images/mark_icon.png") no-repeat
+            background-size contain
+        &.media_icon
+            background url("../assets/images/media_icon.png") no-repeat
+            background-size contain
 .portrait
-    width 1.1rem
-    height 1.1rem
+    width 2rem
+    height 2rem
     border-radius 50%
     vertical-align middle
 .userName
@@ -173,7 +198,9 @@
                 thumbnail: '',
                 portraitQuery: '',
                 bigPicArr: [],
-                showVideo: true
+                showVideo: true,
+                id: '',
+                praiseNum: '',
             }
         },
 
@@ -184,11 +211,10 @@
                 this.sharePage();
             }
         },
-
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize)},m_fill`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 4)},m_fill`;
             },0)
         },
 
@@ -198,15 +224,29 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
         },
 
         methods: {
-
             getData() {
                 this.ajax(`/messages/${this.id}`,'get').then((res) => {
                     if (res && res.data) {
                         this.info = res.data;
+                        this.praiseNum = res.data.like_count;
+                        switch (this.info.user.user_type) {
+                            case '拳手':
+                                this.info.user.user_type = 'boxer_icon';
+                                break;
+                            case '自媒体':
+                                this.info.user.user_type = 'media_icon';
+                                break;
+                            case '名人':
+                                this.info.user.user_type = 'mark_icon';
+                                break;
+                            default:
+                                this.info.user.user_type = ''
+                                break;
+                        };
                         let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
                         let picArrSize = this.info.images.length;
                         let thumbnail_swiper = 18.75 * baseSize;
@@ -233,6 +273,16 @@
                 })
             },
 
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
+
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
+
             openApp() {
                 this.showVideo = false;
                 this.showModal = true;
@@ -240,7 +290,12 @@
 
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=messages`
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'messages'}});
+                    }
                 }
                 else {
                     this.showModal = false;
@@ -315,10 +370,12 @@
             showZoomImage(index) {
                 this.slideIndex = index;
                 this.showSwiper = true;
+                this.showVideo = false;
             },
             hideSwiper() {
                 this.showSwiper = false;
-            }
+                this.showVideo = true;
+            },
         },
         computed: {
             getClass() {

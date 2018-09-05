@@ -45,11 +45,12 @@ class CourseFilter(django_filters.FilterSet):
 
 class HotVideoFilter(CommonFilter):
     search = django_filters.CharFilter(method='search_filter')
+    tag = django_filters.ChoiceFilter(choices=constants.HOT_VIDEO_TAG_CHOICES, field_name='tag')
 
     def search_filter(self, qs, name, value):
         if value.isdigit():
-            return qs.filter(Q(name__icontains=value) | Q(users__id=value))
-        return qs.filter(name__icontains=value)
+            return qs.filter(Q(name__icontains=value) | Q(users__id=value) | Q(pk=value))
+        return qs.filter(Q(name__icontains=value) | Q(users__user_profile__nick_name__contains=value))
 
     class Meta:
         model = models.HotVideo

@@ -16,7 +16,7 @@ from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
 from biz.validator import validate_mobile
-from biz.redis_client import get_number_of_share, get_message_forward_count
+from biz.redis_client import get_number_of_share, get_message_forward_count, get_hotvideo_forward_count
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
@@ -236,7 +236,18 @@ class HotVideoSerializer(serializers.ModelSerializer):
     price_amount = serializers.IntegerField(read_only=True)
     user_list = serializers.SerializerMethodField()
     users = serializers.ListField(child=serializers.IntegerField(), write_only=True)
-    push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)
+    push_to_hotvideo = serializers.BooleanField(default=False, write_only=True)  # 绑定热门视频用户
+    tag = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField()
+
+    def get_forward_count(self, instance):
+        return get_hotvideo_forward_count(instance.id)
+
+    def get_tag(self, instance):
+        return {
+            'id': instance.tag,
+            'name': instance.get_tag_display()
+        }
 
     def get_user_list(self, instance):
         return HotVideoUserSerializer(instance.users, many=True).data
@@ -253,7 +264,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = HotVideo
         fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
-                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'users', 'user_list', 'push_to_hotvideo')
+                  'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'tag', 'users', 'user_list',
+                  'push_to_hotvideo', 'push_hot_video', 'like_count', 'forward_count', 'views_count')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
@@ -368,12 +380,15 @@ class ReportSerializer(serializers.ModelSerializer):
         if instance.content_object:
             return instance.content_object._meta.verbose_name
 
-    def get_reported_user(self, instance):
+    def _get_reported_user(self, instance):
         obj = instance.content_object
         if obj:
             if not isinstance(obj, HotVideo):
-                return obj.user.id
-            return obj.users.first().id
+                return obj.user
+            return obj.users.first()
+
+    def get_reported_user(self, instance):
+        return self._get_reported_user(instance).id
 
     def get_operator(self, instance):
         return instance.operator.user_profile.nick_name if instance.operator and instance.operator.user_profile else None
@@ -391,7 +406,7 @@ class ReportSerializer(serializers.ModelSerializer):
         obj = instance.content_object
         if not obj:
             return {}
-        user = self.get_reported_user(instance)
+        user = self._get_reported_user(instance)
         created_time = obj.created_time
         video = None
         pictures = []
@@ -552,6 +567,10 @@ class CourseOrderInsuranceSerializer(serializers.Serializer):
     def validate(self, attrs):
         if self.context['order'].status != constants.COURSE_PAYMENT_STATUS_WAIT_USE:
             raise ValidationError("订单不是待使用状态，不能标记保险")
+        if attrs['insurance_amount'] > self.context['order'].amount:
+            raise ValidationError("保险金额不能超过订单金额")
+        if attrs['insurance_amount'] < 0:
+            raise ValidationError("保险金额不能为负值")
         return attrs
 
     class Meta:

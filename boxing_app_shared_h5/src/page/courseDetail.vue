@@ -2,7 +2,11 @@
     <div class="course_detail" :class="{hasClose: ifClose}">
         <div class="boxer_container">
             <template>
-                <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
+                <div class="portrait_container">
+                    <img class="portrait" :src="playerInfo.avatar ? playerInfo.avatar + `${portraitQuery}`: avatar_default" @click="openApp" />
+                    <div class="sign_icon" :class="playerInfo.user_type"></div>
+                </div>
+
                 <div class="boxer_info">
                     <div class="boxerName">{{playerInfo.real_name}}<span :class="playerInfo.gender ? 'man_icon' : 'woman_icon'"></span></div>
                     <div class="allowed_course">
@@ -69,7 +73,7 @@
         <div class="separate_line"></div>
         <div class="see_more" @click="openApp">查看更多>></div>
         <div class="go_order" @click="openApp">去下单</div>
-        <DownloadTip @closeEv="closeEv"></DownloadTip>
+        <DownloadTip @closeEv="closeEv" :id="id" page="boxers"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
         <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="bigPicArr" :slideIndex="slideIndex"></ZoomImage>
     </div>
@@ -82,12 +86,32 @@
         overflow hidden
         .hasClose
             padding-bottom 0
+    .portrait_container
+        display inline-block
+        position relative
+        width 2.5rem
+        height 2.5rem
+        .sign_icon
+            position absolute
+            right 0
+            bottom 0
+            width .9rem
+            height .9rem
+            &.boxer_icon
+                background url("../assets/images/boxer_icon.png") no-repeat
+                background-size contain
+            &.mark_icon
+                background url("../assets/images/mark_icon.png") no-repeat
+                background-size contain
+            &.media_icon
+                background url("../assets/images/media_icon.png") no-repeat
+                background-size contain
     .portrait
         margin-right .6rem
         width 2.5rem
         height 2.5rem
         border-radius 50%
-        vertical-align top
+        vertical-align middle
     .boxer_info
         display inline-block
         vertical-align middle
@@ -287,7 +311,8 @@
                 thumbnail: '',
                 portraitQuery: '',
                 bigPicArr: [],
-                showVideo: true
+                showVideo: true,
+                id: '',
             }
         },
 
@@ -303,7 +328,7 @@
         mounted(){
             setTimeout(() => {
                 let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
-                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2.5)},m_fill`;
+                this.portraitQuery = `?x-oss-process=image/resize,w_${parseInt(baseSize * 2.5 * 2)},m_fill`;
             },0)
         },
 
@@ -312,7 +337,7 @@
             Video,
             TabBar,
             Modal,
-            ZoomImage
+            ZoomImage,
         },
 
         methods: {
@@ -330,10 +355,29 @@
                 })
             },
 
+            isInWeChat() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return /(micromessenger|webbrowser)/.test(u.toLocaleLowerCase());
+            },
+
             getPlayerData() {
                 this.ajax(`/boxer/${this.id}/info`,'get').then((res) => {
                     if (res && res.data) {
                         this.playerInfo = res.data.results;
+                        switch (this.playerInfo.user_type) {
+                            case '拳手':
+                                this.playerInfo.user_type = 'boxer_icon';
+                                break;
+                            case '自媒体':
+                                this.playerInfo.user_type = 'media_icon';
+                                break;
+                            case '名人':
+                                this.playerInfo.user_type = 'mark_icon';
+                                break;
+                            default:
+                                this.playerInfo.user_type = ''
+                                break;
+                        };
                         let baseSize = parseFloat(document.getElementsByTagName('html')[0].style.fontSize);
                         let picArrSize = this.playerInfo.honor_certificate_images.length;
                         let thumbnail_swiper = 18.75 * baseSize;
@@ -364,10 +408,18 @@
                 this.showModal = true;
                 this.showVideo = false;
             },
-
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             modalEv(ifShow) {
                 if (ifShow) {
-                    this.$router.push({path: '/download'})
+                    if (this.isIos()) {
+                        window.location.href = `/share/#/download?id=${this.id}&page=boxers`
+                    }
+                    else {
+                        this.$router.push({path: '/download',query: {id: this.id, page: 'boxers'}});
+                    }
                 }
                 else {
                     this.showModal = false;

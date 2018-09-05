@@ -2,6 +2,7 @@
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 import os
+import raven
 import sys
 from base64 import b64decode
 from corsheaders.defaults import default_headers, default_methods
@@ -109,16 +110,16 @@ BAIDU_MAP_AK = 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
 
 # version conf
 ANDROID_VERSION = {
-    'version': '3.1',
-    'version_code': '41',
+    'version': '3.3.0',
+    'version_code': '44',
     'url': '',
-    'message': '3.0大改版',
+    'message': '3.3.0',
     'force': True
 }
 
 IOS_VERSION = {
-    'version': '3.1',
-    'message': '3.0大改版',
+    'version': '3.3.0',
+    'message': '3.3.0',
     'force': True
 }
 
@@ -128,6 +129,9 @@ WEIXIN_PUBLIC_PLATFORM_CONF = {
     "app_id": "",
     "app_secret": ""
 }
+
+SENTRY_DSN = 'http://ded6e41633544be1bd6e1f03454fe5c7:48dc8740b5ec42d58f9618649ffae5ec@39.104.180.65//2'
+CDN_BASE_URL = ''
 
 setting_local_file = os.path.join(BASE_DIR, 'settings_local.py')
 if os.path.exists(setting_local_file):
@@ -149,6 +153,8 @@ INSTALLED_APPS = [
     'captcha',
     'django_filters',
     'corsheaders',
+    'django_extensions',
+    'raven.contrib.django.raven_compat',
 ]
 
 MIDDLEWARE = [
@@ -281,3 +287,10 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
     'biz.hasher.BoxingMD5PasswordHasher',
 ]
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DSN,
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(BASE_DIR),
+}

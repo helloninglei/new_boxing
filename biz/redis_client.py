@@ -3,6 +3,9 @@ import redis
 from time import time
 from datetime import datetime
 from django.conf import settings
+from django.db.models import F
+
+from biz.models import UserProfile
 from biz.redis_const import SHUTUP_LIST
 
 PAGE_SIZE = settings.REST_FRAMEWORK['PAGE_SIZE']
@@ -24,6 +27,7 @@ def follow_user(current_user_id, follower_id):
         p.zadd(f'follower_{follower_id}', _get_timestamp(), current_user_id)
         p.zadd(f'following_{current_user_id}', _get_timestamp(), follower_id)
         p.execute()
+        UserProfile.objects.filter(user__id=follower_id).update(follower_count=F('follower_count') + 1)
 
 
 def unfollow_user(current_user_id, follower_id):
@@ -31,6 +35,7 @@ def unfollow_user(current_user_id, follower_id):
     p.zrem(f'follower_{follower_id}', current_user_id)
     p.zrem(f'following_{current_user_id}', follower_id)
     p.execute()
+    UserProfile.objects.filter(user__id=follower_id).update(follower_count=F('follower_count') - 1)
 
 
 def is_follower(current_user_id, follower_id):
@@ -89,7 +94,8 @@ def get_near_object(obj_or_cls, longitude, latitude, radius=10000, unit='km'):
 
 # 加入黑名单
 def block_user(current_user_id, black_user_id):
-    unfollow_user(current_user_id, black_user_id)
+    if is_following(current_user_id, black_user_id):
+        unfollow_user(current_user_id, black_user_id)
     return redis_client.sadd(f"user_{current_user_id}_black_list", black_user_id)
 
 
@@ -131,6 +137,35 @@ def forward_message(message_id):
 
 def get_message_forward_count(message_id):
     return int(redis_client.hget('msg_forward', message_id) or 0)
+
+
+def forward_hotvideo(video_id):
+    redis_client.hincrby('video_forward', video_id, 1)
+
+
+def get_hotvideo_forward_count(video_id):
+    return int(redis_client.hget('video_forward', video_id) or 0)
+
+
+def like_hot_video(current_user_id, video_id):
+    if current_user_id and video_id and not is_liking_hot_video(current_user_id, video_id):
+        redis_client.zadd(f'video_like_{video_id}', _get_timestamp(), current_user_id)
+        _update_hot_video_like_count(video_id)
+
+
+def unlike_hot_video(current_user_id, video_id):
+    redis_client.zrem(f'video_like_{video_id}', current_user_id)
+    _update_hot_video_like_count(video_id)
+
+
+def is_liking_hot_video(current_user_id, video_id):
+    return redis_client.zscore(f'video_like_{video_id}', current_user_id)
+
+
+def _update_hot_video_like_count(video_id):
+    from boxing_app.tasks import set_hot_video_like_count
+    count = redis_client.zcard(f'video_like_{video_id}')
+    set_hot_video_like_count.delay(video_id, count)
 
 
 def set_user_title(user, title):

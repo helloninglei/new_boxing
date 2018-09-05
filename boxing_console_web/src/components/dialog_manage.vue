@@ -176,6 +176,7 @@
                     if(this.form3.user_type=='普通用户'){
                       delete this.form3.title
                     }
+                    this.form3.change_amount = this.form3.change_amount*100
                       this.ajax('/edit_user/'+this.row.id,'put',this.form3).then(function(res){
                           if(res&&res.data){
                             console.log(res.data)

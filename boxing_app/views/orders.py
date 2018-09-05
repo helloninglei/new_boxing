@@ -1,17 +1,17 @@
 from datetime import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 
 from biz import constants, sms_client
-from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder, CourseSettleOrder
+from biz.models import BoxerIdentification, Course, OrderComment, CourseOrder, CourseSettleOrder, PayOrder
 from biz.services.pay_service import PayService
-from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission, \
-    IsBoxerPermission
+from boxing_app.permissions import OnlyBoxerSelfCanConfirmOrderPermission, OnlyUserSelfCanConfirmOrderPermission
 from boxing_app.serializers import BoxerCourseOrderSerializer, UserCourseOrderSerializer, CourseOrderCommentSerializer
 
 
@@ -22,10 +22,10 @@ class BaseCourseOrderViewSet(viewsets.ModelViewSet):
 
 class BoxerCourseOrderViewSet(BaseCourseOrderViewSet):
     serializer_class = BoxerCourseOrderSerializer
-    permission_classes = (OnlyBoxerSelfCanConfirmOrderPermission,)
+    permission_classes = (permissions.IsAuthenticated, OnlyBoxerSelfCanConfirmOrderPermission,)
 
     def get_queryset(self):
-        boxer = BoxerIdentification.objects.get(user=self.request.user)
+        boxer = BoxerIdentification.objects.get(user=self.request.user.id)
         return CourseOrder.objects.filter(boxer=boxer)
 
     def boxer_confirm_order(self, request, *args, **kwargs):
@@ -60,7 +60,7 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             "course_price": course.price,
             "course_duration": course.duration,
             "course_validity": course.validity,
-            "order_number": PayService.generate_out_trade_no()
+            "order_number": PayService.generate_out_trade_no(),
         }
         serializer = self.get_serializer(data=course_order_data)
         serializer.is_valid(raise_exception=True)
@@ -73,6 +73,11 @@ class UserCourseOrderViewSet(BaseCourseOrderViewSet):
             return Response({"message": '订单不是未支付状态，不能删除'}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        PayOrder.objects.filter(content_type__pk=ContentType.objects.get_for_model(instance).id,
+                                object_id=instance.id).delete()
+        super().perform_destroy(instance)
 
     @permission_classes([OnlyUserSelfCanConfirmOrderPermission])
     def user_confirm_order(self, request, *args, **kwargs):

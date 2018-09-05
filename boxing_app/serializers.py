@@ -2,16 +2,16 @@
 import re
 from datetime import datetime
 
+from django.forms import model_to_dict
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import atomic
 from rest_framework import serializers
-from django.forms.models import model_to_dict
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course
+from biz.models import OrderComment, BoxingClub, User, Course, Message, Comment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title
@@ -22,7 +22,7 @@ from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
-from biz.redis_client import redis_client, get_message_forward_count
+from biz.redis_client import redis_client, get_message_forward_count, get_hotvideo_forward_count
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
@@ -31,6 +31,8 @@ from biz.services.money_balance_service import change_money
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 message_dateformat = '%Y-%m-%d %H:%M'
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class BoxerIdentificationSerializer(serializers.ModelSerializer):
@@ -115,35 +117,28 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
 
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
-        result = {
+        profile = user.user_profile
+
+        return {
             'id': user.id,
             'identity': user.identity,
             'is_following': bool(is_following(self.context['request'].user.id, user.id)),
-            'nick_name': None,
-            'avatar': None,
+            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+            'avatar': profile.avatar,
             "user_type": user.get_user_type_display()
         }
-
-        if hasattr(user, 'user_profile'):
-            profile = model_to_dict(user.user_profile, fields=('nick_name', 'avatar'))
-            result.update(profile)
-        return result
 
 
 class MessageSerializer(serializers.ModelSerializer):
     images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
     video = serializers.CharField(max_length=200, required=False)
     user = DiscoverUserField(read_only=True)
-    like_count = serializers.SerializerMethodField()
+    like_count = serializers.IntegerField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     is_like = serializers.BooleanField(read_only=True)
     msg_type = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
     created_time = serializers.DateTimeField(format=message_dateformat, read_only=True)
-
-    def get_like_count(self, instance):
-        if hasattr(instance, 'like_count'):
-            return instance.like_count + instance.initial_like_count
 
     def get_forward_count(self, instance):
         return get_message_forward_count(instance.id) + instance.initial_forward_count
@@ -194,12 +189,45 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_time',)
 
 
+class CommentMeSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(read_only=True)
+    user = DiscoverUserField(read_only=True)
+    to_object = serializers.SerializerMethodField()
+    obj_type = serializers.SerializerMethodField()
+    reply_or_comment = serializers.SerializerMethodField()
+    
+    def get_to_object(self, instance):
+        return model_to_dict(instance.content_object)
+
+    def get_obj_type(self, instance):
+        return instance.content_type.name
+
+    def get_reply_or_comment(self, instance):
+        return 'reply' if instance.parent else 'comment'
+
+    class Meta:
+        model = models.Comment
+        fields = ['content', 'user', 'to_object', 'obj_type', 'object_id', 'created_time', 'reply_or_comment']
+
+
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
 
     class Meta:
         model = models.Like
         fields = ['user', 'created_time']
+
+
+class LikeMeListSerializer(LikeSerializer):
+    message = serializers.SerializerMethodField()
+
+    def get_message(self, instance):
+        get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
+        return model_to_dict(instance.message, fields=get_fields)
+
+    class Meta:
+        model = models.Like
+        fields = '__all__'
 
 
 class ReportSerializer(serializers.ModelSerializer):
@@ -290,15 +318,24 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField()
+    users = DiscoverUserField(read_only=True, many=True)
+    try_url = serializers.SerializerMethodField()
 
-    def get_url(self, obj):
-        if obj.is_paid or obj.price == 0:
-            return obj.url
+    def get_forward_count(self, instance):
+        return get_hotvideo_forward_count(instance.id)
+
+    def get_url(self, instance):
+        if instance.is_paid or instance.price == 0:
+            return f'{CDN_BASE_URL}{instance.url}'
+
+    def get_try_url(self, instance):
+        return f'{CDN_BASE_URL}{instance.try_url}'
 
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'users')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):

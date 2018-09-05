@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.db.models import Count, Q
+from django.db.models import Count, Q, ExpressionWrapper, F, IntegerField
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -32,9 +32,14 @@ class MessageViewSet(viewsets.ModelViewSet):
         blocked_user_id_list = blocked_user_list(user_id)
         is_like = Count('likes', filter=Q(likes__user_id=user_id), distinct=True)
         return Message.objects.exclude(user_id__in=blocked_user_id_list).annotate(
-            like_count=Count('likes', distinct=True), comment_count=comment_count_condition,
-            is_like=is_like).select_related('user__boxer_identification',
-                                            'user__user_profile')
+            like_count=ExpressionWrapper(Count('likes', distinct=True) + F('initial_like_count'),
+                                         output_field=IntegerField()), comment_count=comment_count_condition,
+            is_like=is_like).select_related('user__boxer_identification', 'user__user_profile')
+
+    def search_message(self, request, *args, **kwargs):
+        keywords = self.request.query_params.get('keywords', "")
+        self.queryset = self._get_query_set().filter(content__icontains=keywords) if keywords else []
+        return super().list(request, *args, **kwargs)
 
     # 最新动态
     def list(self, request, *args, **kwargs):
@@ -42,8 +47,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         if user_id:  # 指定用户的动态
             self.queryset = self._get_query_set().filter(user_id=user_id)
         else:
-            following_user_id_list = following_list_all(request.user.id)
-            self.queryset = self._get_query_set().exclude(user_id__in=following_user_id_list)
+            self.queryset = self._get_query_set()
         return super().list(request, *args, **kwargs)
 
     def hot(self, request, *args, **kwargs):

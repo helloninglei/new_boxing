@@ -9,7 +9,8 @@ from django.contrib.contenttypes.fields import ContentType, GenericForeignKey, G
 from django.db.transaction import atomic
 
 from biz import validator, constants
-from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE
+from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE, HOT_VIDEO_TAG_CHOICES, \
+    HOT_VIDEO_TAG_DEFAULT
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -117,6 +118,7 @@ class UserProfile(BaseModel):
     address = models.CharField(max_length=254, null=True, blank=True)
     bio = models.CharField(max_length=30, blank=True, null=True)  # 个性签名
     alipay_account = models.CharField(max_length=30, null=True, blank=True)
+    follower_count = models.PositiveIntegerField(default=0)  # 粉丝数
 
     class Meta:
         db_table = 'user_profile'
@@ -193,7 +195,7 @@ class Message(SoftDeleteModel):
     updated_time = models.DateTimeField(auto_now=True)
     initial_like_count = models.PositiveIntegerField(default=0)  # 后台设置的点赞数
     initial_forward_count = models.PositiveIntegerField(default=0)  # 后台设置的转发数
-    comments = GenericRelation('Comment')
+    comments = GenericRelation('Comment', related_query_name='message')
     reports = GenericRelation('Report')
 
     class Meta:
@@ -344,10 +346,16 @@ class HotVideo(BaseAuditModel):
     reports = GenericRelation('Report')
     cover = models.CharField(max_length=200)
     stay_top = models.BooleanField(default=False)
+    views_count = models.PositiveIntegerField(default=0)
+    like_count = models.PositiveIntegerField(default=0)
+    tag = models.PositiveSmallIntegerField(choices=HOT_VIDEO_TAG_CHOICES, default=HOT_VIDEO_TAG_DEFAULT)
+    push_hot_video = models.BooleanField(default=False)  # 是否推送
+    start_time = models.DateTimeField(null=True)  # 推送开始时间
+    end_time = models.DateTimeField(null=True)  # 推送结束时间
 
     class Meta:
         db_table = 'hot_video'
-        ordering = ("stay_top", "-created_time",)
+        ordering = ("-stay_top", "-created_time",)
         verbose_name = '热门视频'
 
 
