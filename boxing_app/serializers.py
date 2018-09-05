@@ -697,7 +697,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     pictures = serializers.SerializerMethodField()
 
     def get_pictures(self, instance):
-        return [{'id': item.id, 'picture': item.picture} for item in instance.pictures.all()[:9]]
+        return [{'id': item.id, 'picture': item.picture} for item in instance.pictures.all()[:9]]  # APP相册列表页最多显示9张照片
 
     class Meta:
         model = models.Album
