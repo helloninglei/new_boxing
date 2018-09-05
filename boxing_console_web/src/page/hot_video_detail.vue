@@ -32,7 +32,7 @@
                             <el-progress type="circle" :percentage="tryTsurlProgress" :width='70' style='position:absolute;right:-69px;top:-14px' v-show='tryTsurlProgress>0&&tryTsurlProgress<100'></el-progress>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频封面" prop="cover">
+                        <el-form-item label="视频封面" prop="cover" class='my_avatar'>
                             <el-row>
                                 <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='1242' :height='663'></Cropper>
                                 <div>  
@@ -52,10 +52,9 @@
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频标签" prop="biaoqian">
-                            <el-select v-model="ruleForm.biaoqian" placeholder="请选择视频标签">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
+                        <el-form-item label="视频标签" prop="tag">
+                            <el-select v-model="ruleForm.tag" placeholder="请选择视频标签">
+                                <el-option :value="item.id" :label="item.name" v-for="item in videoTags">{{item.name}}</el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="关联用户" prop='users'>
@@ -87,8 +86,8 @@
                                 <el-radio :label="false">否</el-radio>
                             </el-radio-group>
                         </el-form-item>
-                        <el-checkbox-group v-model="ruleForm.push_news" style='margin-bottom:22px;width:200px;text-align: right;' v-if='ruleForm.push_to_hotvideo'>
-                          <el-checkbox label="创建推送" name="push_news"></el-checkbox>
+                        <el-checkbox-group v-model="ruleForm.push_hot_video" style='margin-bottom:22px;width:200px;text-align: right;' v-if='ruleForm.push_to_hotvideo'>
+                          <el-checkbox label="创建推送" name="push_hot_video"></el-checkbox>
                         </el-checkbox-group>
                         <el-form-item label="发送时间" :class="isRequired" style='margin-left:32px' id='addTime' v-if='ruleForm.push_to_hotvideo'>
                             <el-date-picker
@@ -103,11 +102,11 @@
                                     value-format="yyyy-MM-dd HH:mm:ss">
                             </el-date-picker>
                         </el-form-item>
-                        <!-- <el-form-item style='margin-left:30px;margin-top:-30px'>
+                        <el-form-item style='margin-left:30px;margin-top:-30px'>
                             <el-form-item prop="end_time" >
                                 <el-input v-model="ruleForm.end_time" style='display: none'></el-input>
                             </el-form-item>
-                        </el-form-item> -->
+                        </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
                              <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">{{btn_name}}</el-button>
@@ -195,7 +194,10 @@
         text-align: center;
         font-size: 14px;
         line-height: 25px;
-        margin:-17px auto;
+        margin:15px auto;
+    }
+    .my_avatar .el-form-item__content{
+        line-height: 0
     }
 </style>
 <script>
@@ -233,6 +235,7 @@
                 userImgIds  : [
                     
                 ],
+                videoTags   :[],
                 dateArr:[],
                 isRequired:'',
                 tryTsurlProgress:0,
@@ -242,16 +245,16 @@
                     users   : [],
                     name    : '',
                     description: '',
-                    price_int  : '',
+                    price_int  : 0,
                     price   : '',
                     tsurl   :'',
                     try_ts_url: '',
                     push_to_hotvideo:false,
                     stay_top:false,
-                    push_news:false,
+                    push_hot_video:false,
                     start_time:'',
                     end_time:'',
-                    biaoqian:''
+                    tag:''
                 },
                 rules:{
                     users:[
@@ -262,6 +265,9 @@
                     ],
                     name:[
                         { required:true,message:'请输入视频名称', trigger:'blur' }
+                    ],
+                    tag:[
+                        { required:true,message:'请选择视频标签', trigger:'blur' }
                     ],
                     description:[
                         { validator: (rule, value, callback) => {
@@ -296,7 +302,30 @@
                     ],
                     try_ts_url:[
                         { validator: validateTryUrl, trigger: 'blur',required:true }
-                    ]
+                    ],
+                    end_time: [
+                        { validator: (rule, value, callback) => {
+                            console.log(this.ruleForm.push_hot_video)
+                            if(this.ruleForm.push_hot_video){
+                               if(this.ruleForm.start_time===''){
+                                callback(new Error('请选择发送的开始时间'));
+                                }else if (value==='') {
+                                    callback(new Error('请选择发送的结束时间'));
+                                }else if(new Date(this.ruleForm.start_time)-new Date()<0){
+                                    callback(new Error('开始发送时间不能小于当前时间'));
+                                }else if(new Date(value)-new Date(this.ruleForm.start_time)<0){
+                                    callback(new Error('结束时间不能早于开始时间'));
+                                }else if(new Date(value)-new Date(this.ruleForm.start_time)> 60*60*24*14*1000){
+                                    callback(new Error('推送有效时间不能超过14天'));
+                                } else {
+                                    callback();
+                                } 
+                            }else{
+                               callback(); 
+                            }
+                            
+                        }, trigger: 'blur', required: true}
+                    ],
                 },
                 inputId:'',
                 url_f:'',
@@ -320,15 +349,28 @@
                 this.tsurl=query.url
                 let try_ts_url = query.try_url
                 this.try_ts_url= query.try_url
+                this.ruleForm.tag = query.tag.id
+                this.ruleForm.push_hot_video = query.push_hot_video
                 $('#full_video').val(tsurl) 
                 $('#little_video').val(try_ts_url) 
+                this.dateArr=[query.start_time?query.start_time:'',query.end_time?query.end_time:'']
+                console.log(query)
+                console.log(this.dateArr)
+            }else{
+                // 2018-06-12 08:06:08
+                let startDate = new Date();
+                let endDate   = new Date();
+                startDate.setMinutes(startDate.getMinutes()+5);
+                endDate.setDate(endDate.getDate()+1);
+                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
             }
-            
+            this.getDateTime();
             this.getUserIds();
+            this.getVideoTags();
             
         },
         watch:{
-            "ruleForm.push_news":function(val){
+            "ruleForm.push_hot_video":function(val){
                 this.isRequired = val?'is-required':''
             }
         },
@@ -381,6 +423,25 @@
                         }
                         $this.src_avatar = $this.config.baseUrl + res.data.cover;
 
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
+            getVideoTags(){
+                let $this = this;
+                this.ajax('/hot_videos_tags','get').then(function(res){
+                    if(res&&res.data){
+                        $this.videoTags = res.data.result;
                     }
 
                 },function(err){
@@ -457,6 +518,7 @@
                         sendData.try_url = this.try_ts_url;
                         sendData.url = this.tsurl;
                         sendData.price = parseInt(sendData.price_int)*100
+                        console.log(sendData)
                         let $this = this
                         if(this.id){
                             //编辑
