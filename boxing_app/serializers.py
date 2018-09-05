@@ -225,9 +225,9 @@ class LikeMeListSerializer(LikeSerializer):
         UserSerializer = type('', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
         message_user = UserSerializer.to_representation(instance.message.user)
         get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
-        dict = model_to_dict(instance.message, fields=get_fields)
-        dict.update(user=message_user)
-        return dict
+        message_dict = model_to_dict(instance.message, fields=get_fields)
+        message_dict.update(user=message_user)
+        return message_dict
 
     class Meta:
         model = models.Like
