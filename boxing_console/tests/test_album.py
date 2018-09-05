@@ -70,22 +70,22 @@ class AlbumTestCase(APITestCase):
         response = self.client.post(reverse('album_list'), self.data_album)
         album_id = response.data['id']
         for i in range(picture_num):
-            self.client.post(reverse('picture_list', kwargs={"aid": album_id}), data=self.data_picture)
-        res = self.client.get(reverse('picture_list', kwargs={"aid": album_id}))
+            self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=self.data_picture)
+        res = self.client.get(reverse('picture_list', kwargs={"album_id": album_id}))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), picture_num)
 
     def test_add_picture_to_album(self):
         response = self.client.post(reverse('album_list'), self.data_album)
         album_id = response.data['id']
-        res = self.client.post(reverse('picture_list', kwargs={"aid": album_id}), data=self.data_picture)
+        res = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=self.data_picture)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertIsNotNone(res.data)
 
     def test_delete_picture(self):
         response = self.client.post(reverse('album_list'), self.data_album)
         album_id = response.data['id']
-        response = self.client.post(reverse('picture_list', kwargs={"aid": album_id}), data=self.data_picture)
+        response = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=self.data_picture)
         picture_id = int(response.data)
-        res = self.client.delete(reverse('picture_delete', kwargs={'pid': picture_id}))
+        res = self.client.delete(reverse('picture_delete', kwargs={'picture_id': picture_id}))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
