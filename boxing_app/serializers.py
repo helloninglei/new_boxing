@@ -11,10 +11,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course, Message, Comment
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
-from biz.redis_client import follower_count, following_count, get_user_title
+from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
 from biz.redis_client import is_following, get_object_location, set_user_title
@@ -195,7 +195,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
     to_object = serializers.SerializerMethodField()
     obj_type = serializers.SerializerMethodField()
     reply_or_comment = serializers.SerializerMethodField()
-    
+
     def get_to_object(self, instance):
         return model_to_dict(instance.content_object)
 
@@ -321,6 +321,10 @@ class HotVideoSerializer(serializers.ModelSerializer):
     forward_count = serializers.SerializerMethodField()
     users = DiscoverUserField(read_only=True, many=True)
     try_url = serializers.SerializerMethodField()
+    is_like = serializers.SerializerMethodField()
+
+    def get_is_like(self, instance):
+        return is_liking_hot_video(instance.id, self.context['view'].request.user.id)
 
     def get_forward_count(self, instance):
         return get_hotvideo_forward_count(instance.id)
@@ -335,7 +339,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'users')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
