@@ -35,6 +35,22 @@ class CommentTestCase(APITestCase):
         self.assertEqual(self.comment2['user']['id'], self.test_user_2.id)
         self.assertEqual(self.msg2['content'], results[0]['content'])
 
+        # has unread comment list
+        response = self.client1.get(path="/unread_like_comment")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['has_unread_like'])
+        self.assertTrue(response.data['has_unread_comment'])
+
+        # read comment list
+        response = self.client1.get(path="/comment_me")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # not has unread comment list
+        response = self.client1.get(path="/unread_like_comment")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['has_unread_like'])
+        self.assertFalse(response.data['has_unread_comment'])
+
     def test_reply(self):
         self.prepare()
         reply_data = {

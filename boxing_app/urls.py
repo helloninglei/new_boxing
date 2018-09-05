@@ -46,6 +46,7 @@ from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
 from boxing_app.views.handle_video import cover_picture, video_resolution
+from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -250,6 +251,7 @@ like_urls = [
     path('messages/<int:message_id>/like',
          like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
     path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view()),
+    path("unread_like_comment", has_unread_like_and_comment)
 ]
 
 urlpatterns = []
