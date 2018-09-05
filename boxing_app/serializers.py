@@ -222,8 +222,12 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
+        UserSerializer = type('', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
+        message_user = UserSerializer.to_representation(instance.message.user)
         get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
-        return model_to_dict(instance.message, fields=get_fields)
+        dict = model_to_dict(instance.message, fields=get_fields)
+        dict.update(user=message_user)
+        return dict
 
     class Meta:
         model = models.Like
