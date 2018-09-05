@@ -21,7 +21,7 @@ def broadcast_news(news):
 
 
 def broadcast_hot_video(hot_video):
-    return broadcast_message(hot_video.title, f'{APP_JUMP_OBEJCT_NEWS}:{hot_video.id}', start_time=hot_video.start_time,
+    return broadcast_message(hot_video.name, f'{APP_JUMP_OBEJCT_HOT_VIDEO}:{hot_video.id}', start_time=hot_video.start_time,
                              end_time=hot_video.end_time)
 
 
