@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course
+from biz.models import OrderComment, BoxingClub, User, Course, Album, AlbumPicture
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title
@@ -690,3 +690,19 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class ShutUpWriteOnlySerializer(serializers.Serializer):
     user_ids = serializers.ListField(child=serializers.IntegerField())
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField()
+    pic_list = serializers.SerializerMethodField()
+
+    def get_total(self, instance):
+        return AlbumPicture.objects.filter(album_id=instance.id).count()
+
+    def get_pic_list(self, instance):
+        qs = AlbumPicture.objects.filter(album_id=instance.id)[:9]
+        return [{'id': item.id, 'picture': item.picture} for item in qs]
+
+    class Meta:
+        model = models.Album
+        fields = ['id', 'name', 'total', 'pic_list']

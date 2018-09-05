@@ -46,6 +46,7 @@ from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
 from boxing_app.views.cover_picture import cover_picture
+from boxing_app.views.album import AlbumViewSet
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -102,7 +103,7 @@ order_url = [
     path('boxer/order/<int:pk>', BoxerCourseOrderViewSet.as_view({'get': 'retrieve'}), name='boxer-order-detail'),
     path('user/orders', UserCourseOrderViewSet.as_view({'get': 'list'}), name='user-orders'),
     path('course/order', UserCourseOrderViewSet.as_view({'post': 'create'}), name='create-course-orders'),
-    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve',  "delete": "destroy"}),
+    path('user/order/<int:pk>', UserCourseOrderViewSet.as_view({'get': 'retrieve', "delete": "destroy"}),
          name='user-order-detail'),
     path('order/<int:pk>/boxer-confirm', BoxerCourseOrderViewSet.as_view({'post': 'boxer_confirm_order'}),
          name='boxer-confirm-order'),
@@ -242,6 +243,10 @@ cover_picture_urls = [
     path("cover_picture", cover_picture)
 ]
 
+album_url = [
+    path('users/<int:pk>/albums', AlbumViewSet.as_view({"get": "list"}), name='album_list'),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -272,6 +277,7 @@ urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
 urlpatterns += search_urls
+urlpatterns += album_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

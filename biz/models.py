@@ -539,6 +539,9 @@ class Album(BaseModel):
     release_time = models.DateTimeField()  # 发布时间
     is_show = models.BooleanField()  # 是否显示在APP端
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = 'album'
         ordering = ('-created_time',)
