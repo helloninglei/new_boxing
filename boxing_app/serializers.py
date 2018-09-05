@@ -693,16 +693,12 @@ class ShutUpWriteOnlySerializer(serializers.Serializer):
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-    total = serializers.SerializerMethodField()
-    pic_list = serializers.SerializerMethodField()
+    total = serializers.IntegerField(source="pictures.count")
+    pictures = serializers.SerializerMethodField()
 
-    def get_total(self, instance):
-        return AlbumPicture.objects.filter(album_id=instance.id).count()
-
-    def get_pic_list(self, instance):
-        qs = AlbumPicture.objects.filter(album_id=instance.id)[:9]
-        return [{'id': item.id, 'picture': item.picture} for item in qs]
+    def get_pictures(self, instance):
+        return [{'id': item.id, 'picture': item.picture} for item in instance.pictures.all()[:9]]
 
     class Meta:
         model = models.Album
-        fields = ['id', 'name', 'total', 'pic_list']
+        fields = ['id', 'name', 'total', 'pictures']
