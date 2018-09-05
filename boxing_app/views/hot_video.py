@@ -2,7 +2,6 @@
 from django.db.models import Count, Q
 from django.shortcuts import redirect
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
@@ -18,8 +17,8 @@ from boxing_app.tasks import incr_hot_video_views_count
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
-def hot_video_redirect(_):
-    url = reverse('hot-video', kwargs={'user_id': HOT_VIDEO_USER_ID})
+def hot_video_redirect(request):
+    url = f'users/{HOT_VIDEO_USER_ID}/hot_videos?page={request.GET.get("page") or 1}'
     return redirect(url)
 
 
