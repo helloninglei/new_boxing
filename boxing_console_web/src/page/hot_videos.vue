@@ -131,7 +131,7 @@
                     {title:'id',    name :'ID',   width: '80'},
                     {title:'name',  name :'视频名称',width: ''},
                     {title:'user_list_name',name :'关联用户' ,width: '80'},
-                    {title:'tag.name',name :'标签',width: '100'},
+                    {title:'tag_name',name :'标签',width: '100'},
                     {title:'price',name :'付费金额（元）',width: '100'},
                     {title:'forward_count', name :'转发数'   ,width: '50'},
                     {title:'like_count', name :'点赞数'   ,width: '50'},

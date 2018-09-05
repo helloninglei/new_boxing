@@ -70,7 +70,7 @@
                                         <img :src="config.baseUrl+item.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
-                                    <p style='text-align: center'>{{item.nick_name}}</p>
+                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name.length}}</p>
                                 </li>
                             </ul>
                         </el-form-item>
@@ -349,7 +349,7 @@
                 this.tsurl=query.url
                 let try_ts_url = query.try_url
                 this.try_ts_url= query.try_url
-                this.ruleForm.tag = query.tag.id
+                this.ruleForm.tag = query.tag
                 this.ruleForm.push_hot_video = query.push_hot_video
                 $('#full_video').val(tsurl) 
                 $('#little_video').val(try_ts_url) 

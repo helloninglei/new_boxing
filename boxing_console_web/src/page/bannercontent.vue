@@ -114,7 +114,7 @@
     }
 </style>
 
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     import config from 'common/my_config'
 
@@ -302,10 +302,9 @@
                     obj['link'] = linkObj[this.checkType] + ':' + obj[this.checkType];
                 }
                 delete obj['voteId'];
-                delete obj['videoId'];
+                delete obj['enrollId'];
                 delete obj['contentId'];
                 delete obj['videoId'];
-
                 !this.id ? this.createBannerEv(obj) : this.modifyBannerEv(obj);
 
             },
