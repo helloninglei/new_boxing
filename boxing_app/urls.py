@@ -46,7 +46,7 @@ from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
 from boxing_app.views.cover_picture import cover_picture
-from boxing_app.views.album import AlbumViewSet
+from boxing_app.views.album import AlbumViewSet, AlbumPictureViewSet
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -245,6 +245,7 @@ cover_picture_urls = [
 
 album_url = [
     path('users/<int:pk>/albums', AlbumViewSet.as_view({"get": "list"}), name='album_list'),
+    path('albums/<int:pk>', AlbumPictureViewSet.as_view({"get": "list"}), name='album_detail'),
 ]
 
 urlpatterns = []
