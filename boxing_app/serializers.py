@@ -222,6 +222,7 @@ class CommentMeHotVideoSerializer(serializers.ModelSerializer):
 
 
 class CommentMeNewsSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'picture', 'share_content')
@@ -264,8 +265,8 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
-        UserSerializer = type('', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
-        message_user = UserSerializer.to_representation(instance.message.user)
+        user_serializer = type('UserSerializer', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
+        message_user = user_serializer.to_representation(instance.message.user)
         get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
         message_dict = model_to_dict(instance.message, fields=get_fields)
         message_dict.update(user=message_user)
