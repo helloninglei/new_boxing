@@ -747,11 +747,3 @@ class AlbumPictureSerilizer(serializers.ModelSerializer):
     class Meta:
         model = models.AlbumPicture
         fields = ['id', 'picture']
-
-
-class PictureSerializer(serializers.ModelSerializer):
-    album_id = serializers.IntegerField()
-
-    class Meta:
-        model = models.AlbumPicture
-        exclude = ('created_time', 'album')

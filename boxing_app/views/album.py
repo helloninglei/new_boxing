@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from rest_framework import viewsets, permissions
 from biz.models import Album, AlbumPicture
-from boxing_app.serializers import AlbumSerializer, AlbumPictureSerilizer, UserAlbumJudgmentSerializer, PictureSerializer
+from boxing_app.serializers import AlbumSerializer, AlbumPictureSerilizer
 from rest_framework.pagination import PageNumberPagination
 from django.http import JsonResponse
 
