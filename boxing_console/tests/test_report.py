@@ -2,6 +2,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz import models
+from biz import constants
 from biz.constants import REPORT_REASON_CHOICES, REPORT_STATUS_NOT_PROCESSED, REPORT_STATUS_PROVED_FALSE, \
     REPORT_STATUS_DELETED
 
@@ -20,6 +21,8 @@ class ReportTestCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator': self.test_user,
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
         self.hot_video = models.HotVideo.objects.create(**video_data)
         self.hot_video.users.add(self.test_user)

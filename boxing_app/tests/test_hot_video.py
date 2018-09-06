@@ -26,6 +26,8 @@ class HotVideoTestCase(APITestCase):
             'try_url': '/videos/222',
             'operator_id': self.test_superuser.id,
             'cover': '/videos/333',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
 
     def test_recommend_videos(self):

@@ -2,6 +2,7 @@
 from django.conf import settings
 from rest_framework.test import APITestCase
 from biz import models
+from biz import constants
 from biz.redis_client import get_number_of_share
 
 h5_base_url = settings.SHARE_H5_BASE_URL
@@ -46,7 +47,9 @@ class ShareTestCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/uploads/xxxxxxxx.mp4',
             'operator': self.test_user,
-            'cover': 'http://xxxx'
+            'cover': 'http://xxxx',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
 
         self.video = models.HotVideo.objects.create(**self.video_data)
