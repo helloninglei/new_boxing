@@ -67,7 +67,7 @@ class HotVideoTestCase(APITestCase):
 
     def test_video_payment(self):
         video = HotVideo.objects.create(**self.data)
-        video.users.add(self.test_user)
+        video.users.add(self.test_user.id)
 
         PayOrder.objects.create(
             user=self.test_user,
