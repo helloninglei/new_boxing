@@ -320,3 +320,5 @@ HOT_VIDEO_TAG_CHOICES = (
     (7, '国外'),
     (8, '热点'),
 )
+
+HOT_VIDEO_TAG_CHOICES_FOR_FILTER = [(0, '全部')] + list(HOT_VIDEO_TAG_CHOICES)

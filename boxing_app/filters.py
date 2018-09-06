@@ -1,6 +1,6 @@
 import django_filters
 from biz import models
-from biz.constants import HOT_VIDEO_TAG_CHOICES
+from biz.constants import HOT_VIDEO_TAG_CHOICES_FOR_FILTER
 from biz.models import MoneyChangeLog, Course
 from biz.models import BoxerIdentification
 
@@ -39,3 +39,13 @@ class MoneyChangeLogFilter(django_filters.FilterSet):
     class Meta:
         model = MoneyChangeLog
         fields = ['keyword']
+
+
+class HotVideoFilter(django_filters.FilterSet):
+    tag = django_filters.CharFilter(method='filter_video')
+
+    def filter_video(self, qs, name, value):
+        value = int(value)
+        if value == 0:
+            return qs
+        return qs.filter(tag=value)

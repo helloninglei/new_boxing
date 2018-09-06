@@ -116,18 +116,22 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
                             'real_name', 'allowed_course', 'city', 'title']
 
 
+def serialize_user(user, context):
+    profile = user.user_profile
+
+    return {
+        'id': user.id,
+        'identity': user.identity,
+        'is_following': bool(is_following(context['request'].user.id, user.id)),
+        'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+        'avatar': profile.avatar,
+        "user_type": user.get_user_type_display()
+    }
+
+
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
-        profile = user.user_profile
-
-        return {
-            'id': user.id,
-            'identity': user.identity,
-            'is_following': bool(is_following(self.context['request'].user.id, user.id)),
-            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
-            'avatar': profile.avatar,
-            "user_type": user.get_user_type_display()
-        }
+        return serialize_user(user, self.context)
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -320,9 +324,19 @@ class HotVideoSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
-    users = DiscoverUserField(read_only=True, many=True)
     try_url = serializers.SerializerMethodField()
     is_like = serializers.SerializerMethodField()
+    bind_user = serializers.SerializerMethodField()
+    other_users = serializers.SerializerMethodField()
+
+    def get_bind_user(self, instance):
+        user_id = self.context['view'].kwargs['user_id']
+        user = list(filter(lambda u: u.id == user_id, instance.users.all()))[0]
+        return serialize_user(user, self.context)
+
+    def get_other_users(self, instance):
+        user_id = self.context['view'].kwargs['user_id']
+        return [serialize_user(user, self.context) for user in filter(lambda u: u.id != user_id, instance.users.all())]
 
     def get_is_like(self, instance):
         return is_liking_hot_video(self.context['view'].request.user.id, instance.id)
@@ -340,7 +354,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users')
 
 
 class HotVideoDetailSerializer(HotVideoSerializer):

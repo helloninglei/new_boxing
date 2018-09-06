@@ -4,7 +4,7 @@ from rest_framework import status
 
 from biz import constants, models
 from biz.models import User, Message
-from biz.redis_client import unlike_hot_video
+from biz.redis_client import redis_client
 
 
 class LikeTestCase(APITestCase):
@@ -18,6 +18,7 @@ class LikeTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
         self.client3 = self.client_class()
         self.client3.login(username=self.test_user_3, password='password')
+        redis_client.flushdb()
 
     def prepare(self):
         msg_data = {'content': 'message1'}
@@ -148,5 +149,3 @@ class LikeTestCase(APITestCase):
         self.client1.post(f'/hot_videos/{video.id}/like')
         res = self.client1.get(f'/users/{self.test_user_1.id}/hot_videos/{video.id}')
         self.assertTrue(res.data['is_like'])
-
-        unlike_hot_video(self.test_user_1.id, video.id)
