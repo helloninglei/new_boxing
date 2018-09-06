@@ -371,7 +371,8 @@ class HotVideoDetailSerializer(HotVideoSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'users', 'recommend_videos')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users',
+                  'recommend_videos')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
