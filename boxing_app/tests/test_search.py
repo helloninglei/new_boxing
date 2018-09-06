@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from biz import constants
 from biz.models import User, UserProfile, Message, GameNews, HotVideo
 
 
@@ -37,7 +38,9 @@ class SearchCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator_id': self.test_user_1.id,
-            'cover': '/videos/333'
+            'cover': '/videos/333',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
 
     def test_search_user(self):

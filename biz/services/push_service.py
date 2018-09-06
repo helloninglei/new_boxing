@@ -4,7 +4,7 @@ from APISender import APISender
 from django.conf import settings
 from base.APIConstants import Constants
 from base.APIMessage import PushMessage
-from biz.constants import APP_JUMP_OBEJCT_NEWS
+from biz.constants import APP_JUMP_OBEJCT_NEWS, APP_JUMP_OBEJCT_HOT_VIDEO
 
 if settings.ENVIRONMENT == settings.PRODUCTION:
     Constants.use_official()
@@ -21,7 +21,7 @@ def broadcast_news(news):
 
 
 def broadcast_hot_video(hot_video):
-    return broadcast_message(hot_video.title, f'{APP_JUMP_OBEJCT_NEWS}:{hot_video.id}', start_time=hot_video.start_time,
+    return broadcast_message(hot_video.name, f'{APP_JUMP_OBEJCT_HOT_VIDEO}:{hot_video.id}', start_time=hot_video.start_time,
                              end_time=hot_video.end_time)
 
 

@@ -25,8 +25,34 @@ class HotVideoTestCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator_id': self.test_superuser.id,
-            'cover': '/videos/333'
+            'cover': '/videos/333',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
+
+    def test_recommend_videos(self):
+        tag0 = constants.HOT_VIDEO_TAG_CHOICES[0][0]
+        tag1 = constants.HOT_VIDEO_TAG_CHOICES[1][0]
+        tag2 = constants.HOT_VIDEO_TAG_CHOICES[2][0]
+
+        self.data['tag'] = tag0
+        video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_user.id)
+
+        self.data['tag'] = tag0
+        v = HotVideo.objects.create(**self.data)
+        v.users.add(self.test_user.id)
+
+        self.data['tag'] = tag1
+        v = HotVideo.objects.create(**self.data)
+        v.users.add(self.test_user.id)
+
+        self.data['tag'] = tag2
+        v = HotVideo.objects.create(**self.data)
+        v.users.add(self.test_user.id)
+
+        res = self.client1.get(f'/users/{self.test_user.id}/hot_videos/{video.id}')
+        self.assertEqual(len(res.data['recommend_videos']), 1)  # 推荐同标签的其他视频
 
     def test_video_payment(self):
         video = HotVideo.objects.create(**self.data)
@@ -61,5 +87,3 @@ class HotVideoTestCase(APITestCase):
         result = res.data['results'][0]
         self.assertTrue(result['is_paid'])
         self.assertEqual(result['url'], self.data['url'])
-
-

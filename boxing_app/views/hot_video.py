@@ -2,7 +2,6 @@
 from django.db.models import Count, Q
 from django.shortcuts import redirect
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
@@ -11,15 +10,15 @@ from biz import models
 
 from biz.utils import comment_count_condition
 from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
-from boxing_app.serializers import HotVideoSerializer
+from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
 from boxing_app.tasks import incr_hot_video_views_count
 
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
-def hot_video_redirect(_):
-    url = reverse('hot-video', kwargs={'user_id': HOT_VIDEO_USER_ID})
+def hot_video_redirect(request):
+    url = f'users/{HOT_VIDEO_USER_ID}/hot_videos?page={request.GET.get("page") or 1}'
     return redirect(url)
 
 
@@ -38,6 +37,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = ("tag",)
 
     def retrieve(self, request, *args, **kwargs):
+        self.serializer_class = HotVideoDetailSerializer
         video_id = kwargs['pk']
         incr_hot_video_views_count.delay(video_id)
         return super().retrieve(request, *args, **kwargs)

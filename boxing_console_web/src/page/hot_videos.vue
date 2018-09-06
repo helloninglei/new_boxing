@@ -22,10 +22,17 @@
                         :default-value= "(new Date()).setTime((new Date()).getTime()+30*60*1000)"
                         placeholder="发布结束时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>
-                    </el-col>      
-                    <el-col :span='6'>
-                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
-                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click="reset()">重置</el-button>
+                    </el-col> 
+                    <el-col :span="5" style='margin-right:25px;width:245px' class='videoTags'>
+                        <div class="inlimeLabel lf" style='margin:10px'>标签</div>
+                        <el-select v-model="sendData.tag" >
+                            <el-option value="" label="全部">全部</el-option>
+                            <el-option :value="item.id" :label="item.name" v-for="item in videoTags">{{item.name}}</el-option>
+                        </el-select>
+                    </el-col>     
+                    <el-col :span='5'>
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click="filter()">查询</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red margin_tp30' @click="reset()">重置</el-button>
                     </el-col>   
                     <el-col :span='24'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click="toDetail()" style='margin-top:30px'>新增视频</el-button>
@@ -69,6 +76,12 @@
     @media screen and (max-width:1919px){
        .margin_top_30{margin-top:30px;margin-left:0!important;} 
     } 
+    @media screen and (min-width:1660px){
+       .margin_tp30{margin-top:0px!important;margin-left:0!important;} 
+    }
+    @media screen and (max-width:1355px){
+       .videoTags{margin-top:30px!important;margin-left:0!important;} 
+    } 
 </style>
 <style>
 </style>
@@ -87,15 +100,17 @@
                     start_time : '',
                     end_time   : '',
                     search     : '',
+                    tag        : ''
                 },
+                videoTags :[],
                 confirmData:{
                     isshow: false,
                     id    :'',
                     content:'确定删除这条记录？',
                     isDel :true,
                 },
-                total_count : 1000000,//付费人数
-                total_amount : 1000000,//付费金额
+                total_count : 0,//付费人数
+                total_amount : 0,//付费金额
                 total     : 0,//数据的总条数
                 tableData : [
                     {
@@ -116,7 +131,11 @@
                     {title:'id',    name :'ID',   width: '80'},
                     {title:'name',  name :'视频名称',width: ''},
                     {title:'user_list_name',name :'关联用户' ,width: '80'},
+                    {title:'tag_name',name :'标签',width: '100'},
                     {title:'price',name :'付费金额（元）',width: '100'},
+                    {title:'forward_count', name :'转发数'   ,width: '50'},
+                    {title:'like_count', name :'点赞数'   ,width: '50'},
+                    {title:'views_count', name :'观看人数'   ,width: '60'},
                     {title:'sales_count', name :'付费人数'   ,width: ''},
                     {title:'price_amount',name :'总金额（元）',width: '100'},
                     {title:'created_time',name :'发布时间' ,width: '200'},
@@ -132,6 +151,7 @@
         },
         created() {
             this.getTableData();
+            this.getVideoTags();
         },
         methods: {
             getTableData(page) {
@@ -177,6 +197,25 @@
                 // 要看第几页
                 this.page=val
                 this.getTableData(val) 
+            },
+            getVideoTags(){
+                let $this = this;
+                this.ajax('/hot_videos_tags','get').then(function(res){
+                    if(res&&res.data){
+                        $this.videoTags = res.data.result;
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
             },
             filter(){
                 this.issearch=true;
