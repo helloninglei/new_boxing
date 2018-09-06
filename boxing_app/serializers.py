@@ -191,20 +191,36 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentMeMessageSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, instance):
+        user = instance.user
+        profile = user.user_profile
+        return {
+            'id': user.id,
+            'identity': user.identity,
+            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+            'avatar': profile.avatar,
+            "user_type": user.get_user_type_display()
+        }
+
     class Meta:
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
 
 
 class CommentMeHotVideoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover')
 
+
 class CommentMeNewsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.GameNews
-        fields = ('id', 'title', 'sub_title', 'picture')
+        fields = ('id', 'title', 'sub_title', 'picture', 'share_content')
 
 
 class CommentMeSerializer(serializers.ModelSerializer):
