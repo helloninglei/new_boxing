@@ -325,7 +325,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_like = serializers.SerializerMethodField()
 
     def get_is_like(self, instance):
-        return is_liking_hot_video(instance.id, self.context['view'].request.user.id)
+        return is_liking_hot_video(self.context['view'].request.user.id, instance.id)
 
     def get_forward_count(self, instance):
         return get_hotvideo_forward_count(instance.id)
