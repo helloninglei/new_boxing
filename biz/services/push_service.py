@@ -20,6 +20,11 @@ def broadcast_news(news):
                              end_time=news.end_time)
 
 
+def broadcast_hot_video(hot_video):
+    return broadcast_message(hot_video.name, f'{APP_JUMP_OBEJCT_HOT_VIDEO}:{hot_video.id}', start_time=hot_video.start_time,
+                             end_time=hot_video.end_time)
+
+
 def push_message(mobile, content, jump_to=None, start_time=None, end_time=None):
     user_alias = mobile
 

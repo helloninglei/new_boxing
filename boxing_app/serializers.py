@@ -2,6 +2,7 @@
 import re
 from datetime import datetime
 
+from django.forms import model_to_dict
 from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course, Album, AlbumPicture
+from biz.models import OrderComment, BoxingClub, User, Course, Album, AlbumPicture, Message, Comment
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title
@@ -21,7 +22,7 @@ from biz import models, constants
 from biz.validator import validate_mobile, validate_password, validate_mobile_or_email
 from biz.services.captcha_service import check_captcha
 from biz import redis_const
-from biz.redis_client import redis_client, get_message_forward_count
+from biz.redis_client import redis_client, get_message_forward_count, get_hotvideo_forward_count
 from biz.redis_const import SENDING_VERIFY_CODE
 from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
@@ -188,12 +189,45 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_time',)
 
 
+class CommentMeSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(read_only=True)
+    user = DiscoverUserField(read_only=True)
+    to_object = serializers.SerializerMethodField()
+    obj_type = serializers.SerializerMethodField()
+    reply_or_comment = serializers.SerializerMethodField()
+    
+    def get_to_object(self, instance):
+        return model_to_dict(instance.content_object)
+
+    def get_obj_type(self, instance):
+        return instance.content_type.name
+
+    def get_reply_or_comment(self, instance):
+        return 'reply' if instance.parent else 'comment'
+
+    class Meta:
+        model = models.Comment
+        fields = ['content', 'user', 'to_object', 'obj_type', 'object_id', 'created_time', 'reply_or_comment']
+
+
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
 
     class Meta:
         model = models.Like
         fields = ['user', 'created_time']
+
+
+class LikeMeListSerializer(LikeSerializer):
+    message = serializers.SerializerMethodField()
+
+    def get_message(self, instance):
+        get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
+        return model_to_dict(instance.message, fields=get_fields)
+
+    class Meta:
+        model = models.Like
+        fields = '__all__'
 
 
 class ReportSerializer(serializers.ModelSerializer):
@@ -284,6 +318,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     is_paid = serializers.BooleanField(read_only=True)
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
+    forward_count = serializers.SerializerMethodField()
+    users = DiscoverUserField(read_only=True, many=True)
     try_url = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
@@ -291,17 +327,20 @@ class HotVideoSerializer(serializers.ModelSerializer):
         ret['is_hot'] = instance.operator.id == constants.HOT_VIDEO_USER_ID
         return ret
 
-    def get_url(self, obj):
-        if obj.is_paid or obj.price == 0:
-            return f'{CDN_BASE_URL}{obj.url}'
+    def get_forward_count(self, instance):
+        return get_hotvideo_forward_count(instance.id)
 
-    def get_try_url(self, obj):
-        return f'{CDN_BASE_URL}{obj.try_url}'
+    def get_url(self, instance):
+        if instance.is_paid or instance.price == 0:
+            return f'{CDN_BASE_URL}{instance.url}'
+
+    def get_try_url(self, instance):
+        return f'{CDN_BASE_URL}{instance.try_url}'
 
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'users')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
