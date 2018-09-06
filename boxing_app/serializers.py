@@ -330,8 +330,10 @@ class HotVideoSerializer(serializers.ModelSerializer):
     other_users = serializers.SerializerMethodField()
 
     def get_bind_user(self, instance):
-        user_id = self.context['view'].kwargs['user_id']
-        user = list(filter(lambda u: u.id == user_id, instance.users.all()))[0]
+        user_id = self.context['view'].kwargs.get('user_id')
+        user = instance.users.first()
+        if user_id:
+            user = list(filter(lambda u: u.id == user_id, instance.users.all()))[0]
         return serialize_user(user, self.context)
 
     def get_other_users(self, instance):
