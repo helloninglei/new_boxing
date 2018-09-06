@@ -45,7 +45,7 @@ from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
-from boxing_app.views.album import AlbumViewSet, AlbumPictureViewSet, UserAlbumJudgmentViewSet
+from boxing_app.views.album import AlbumViewSet, AlbumPictureViewSet
 from boxing_app.views.handle_video import cover_picture, video_resolution
 from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
 
@@ -258,7 +258,6 @@ like_urls = [
 
 album_url = [
     path('users/<int:pk>/albums', AlbumViewSet.as_view({"get": "list"}), name='album_list'),
-    path('albums/<int:pk>/exists', UserAlbumJudgmentViewSet.as_view({"get": "retrieve"}), name='album_exists'),
     path('albums/<int:pk>', AlbumPictureViewSet.as_view({"get": "list"}), name='album_detail'),
 ]
 

@@ -3,7 +3,6 @@ from rest_framework import viewsets, permissions
 from biz.models import Album, AlbumPicture
 from boxing_app.serializers import AlbumSerializer, AlbumPictureSerilizer
 from rest_framework.pagination import PageNumberPagination
-from django.http import JsonResponse
 
 
 class AlbumPageNumberPagination(PageNumberPagination):
@@ -31,8 +30,3 @@ class AlbumPictureViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return AlbumPicture.objects.filter(album_id=self.kwargs['pk'])
 
-
-class UserAlbumJudgmentViewSet(viewsets.ReadOnlyModelViewSet):
-
-    def retrieve(self, request, pk):
-        return JsonResponse({"exists": Album.objects.filter(related_account_id=self.kwargs['pk']).count() != 0})
