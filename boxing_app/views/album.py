@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from rest_framework import viewsets, permissions
 from biz.models import Album, AlbumPicture
-from boxing_app.serializers import AlbumSerializer, AlbumPictureSerilizer
+from boxing_app.serializers import AlbumSerializer, AlbumPictureSerilizer, PictureSerializer
 from rest_framework.pagination import PageNumberPagination
 
 
@@ -29,3 +29,11 @@ class AlbumPictureViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return AlbumPicture.objects.filter(album_id=self.kwargs['pk'])
+
+
+class PictureViewSet(viewsets.ModelViewSet):
+    serializer_class = PictureSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        return AlbumPicture.objects.filter(id=self.kwargs['pk'])

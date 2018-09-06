@@ -195,7 +195,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
     to_object = serializers.SerializerMethodField()
     obj_type = serializers.SerializerMethodField()
     reply_or_comment = serializers.SerializerMethodField()
-    
+
     def get_to_object(self, instance):
         return model_to_dict(instance.content_object)
 
@@ -747,3 +747,11 @@ class AlbumPictureSerilizer(serializers.ModelSerializer):
     class Meta:
         model = models.AlbumPicture
         fields = ['id', 'picture']
+
+
+class PictureSerializer(serializers.ModelSerializer):
+    album_id = serializers.IntegerField()
+
+    class Meta:
+        model = models.AlbumPicture
+        exclude = ('created_time', 'album')
