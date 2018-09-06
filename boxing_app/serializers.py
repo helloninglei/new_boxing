@@ -2,6 +2,7 @@
 import re
 from datetime import datetime
 
+from django.db.models import Q
 from django.forms import model_to_dict
 from django.utils import timezone
 from django.conf import settings
@@ -322,6 +323,10 @@ class HotVideoSerializer(serializers.ModelSerializer):
     users = DiscoverUserField(read_only=True, many=True)
     try_url = serializers.SerializerMethodField()
     is_like = serializers.SerializerMethodField()
+    recommend_videos = serializers.SerializerMethodField()
+
+    def get_recommend_videos(self, instance):
+        return []
 
     def get_is_like(self, instance):
         return is_liking_hot_video(instance.id, self.context['view'].request.user.id)
@@ -339,7 +344,13 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'users', 'recommend_videos')
+
+
+class HotVideoDetailSerializer(HotVideoSerializer):
+    def get_recommend_videos(self, instance):
+        return [{'id': v.id, 'name': v.name, 'url': v.url, 'user_id': v.users.first().id} for v in
+                models.HotVideo.objects.filter(Q(tag=instance.tag) & Q(is_show=True) & ~Q(id=instance.id))[:5]]
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
