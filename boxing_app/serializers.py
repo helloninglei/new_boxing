@@ -337,7 +337,9 @@ class HotVideoSerializer(serializers.ModelSerializer):
         return serialize_user(user, self.context)
 
     def get_other_users(self, instance):
-        user_id = self.context['view'].kwargs['user_id']
+        user_id = self.context['view'].kwargs.get('user_id')
+        if not user_id:
+            user_id = instance.users.first().id
         return [serialize_user(user, self.context) for user in filter(lambda u: u.id != user_id, instance.users.all())]
 
     def get_is_like(self, instance):
