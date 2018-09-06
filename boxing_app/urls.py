@@ -29,7 +29,7 @@ from biz.constants import REPORT_OBJECT_DICT, COMMENT_OBJECT_DICT, PAYMENT_OBJEC
 from boxing_app.views import register
 from boxing_app.views import login
 from biz.views import captcha_image
-from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect
+from boxing_app.views.hot_video import HotVideoViewSet, hot_video_redirect, hot_video_tag_list, hot_video_item_redirect
 from boxing_app.views.user_profile import UserProfileViewSet, BlackListViewSet, UserProfileNoLoginViewSet
 from boxing_app.views import pay
 from boxing_app.views import game_news
@@ -45,8 +45,9 @@ from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
-from boxing_app.views.cover_picture import cover_picture
 from boxing_app.views.album import AlbumViewSet
+from boxing_app.views.handle_video import cover_picture, video_resolution
+from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -58,7 +59,8 @@ discover_urls = [
     path('messages/<int:pk>', message.MessageViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'}),
          name='message-detail'),
     path('messages/<int:message_id>/like',
-         like.LikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+         like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('like_me', like.LikeMeListViewSet.as_view({'get': 'list'})),
 ]
 
 comment_object_string = '|'.join(COMMENT_OBJECT_DICT.keys())
@@ -68,6 +70,7 @@ comment_urls = [
     re_path(r'^(?P<object_type>({0}))s?/(?P<object_id>\d+)/comments/(?P<pk>\d+)$'.format(comment_object_string),
             comment.ReplyViewSet.as_view({'get': 'retrieve', 'post': 'create', 'delete': 'destroy'}),
             name='comment-detail'),
+    path('comment_me', comment.CommentMeListViewSet.as_view({'get': 'list'}))
 ]
 
 upload_urls = [
@@ -172,7 +175,9 @@ hot_video_url = [
     path('users/<int:user_id>/hot_videos', HotVideoViewSet.as_view({'get': 'list'}), name='hot-video'),
     path('users/<int:user_id>/hot_videos/<int:pk>', HotVideoViewSet.as_view({'get': 'retrieve'}),
          name='hot-video-detail'),
-    path('hot_videos', hot_video_redirect)
+    path('hot_videos', hot_video_redirect),
+    path('hot_videos/<int:pk>', hot_video_item_redirect),
+    path('hot_videos_tags', hot_video_tag_list),
 ]
 
 payment_object_string = '|'.join(PAYMENT_OBJECT_DICT.keys())
@@ -240,7 +245,15 @@ shutup_list_urls = [
 ]
 
 cover_picture_urls = [
-    path("cover_picture", cover_picture)
+    path("cover_picture", cover_picture),
+    path("video_resolution", video_resolution)
+]
+
+like_urls = [
+    path('messages/<int:message_id>/like',
+         like.MessageLikeViewSet.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'}), name='messgae-like'),
+    path('hot_videos/<int:video_id>/like', like.HotVideoLikeViewSet.as_view()),
+    path("unread_like_comment", has_unread_like_and_comment)
 ]
 
 album_url = [
@@ -276,6 +289,7 @@ urlpatterns += official_accounts_urls
 urlpatterns += chat_rooms_info_urls
 urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
+urlpatterns += like_urls
 urlpatterns += search_urls
 urlpatterns += album_url
 

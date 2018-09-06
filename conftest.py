@@ -8,5 +8,5 @@ def pytest_configure():
         'django.contrib.auth.hashers.UnsaltedMD5PasswordHasher',
         'biz.hasher.BoxingMD5PasswordHasher',
     ]
-    settings.REDIS_DB =15
+    settings.REDIS_DB = 15
     django.setup()

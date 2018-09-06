@@ -11,7 +11,7 @@ from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
 from boxing_console.views.user_management import UserManagementViewSet
-from boxing_console.views.hot_video import HotVideoViewSet, hot_video_user_list
+from boxing_console.views.hot_video import HotVideoViewSet, hot_video_user_list, hot_video_tag_list
 from boxing_console.views.game_news import NewsViewSet
 from boxing_console.views.banner import BannerViewSet
 from biz.views import upload_file, captcha_image
@@ -40,6 +40,7 @@ boxer_url = [
 ]
 
 hot_video_url = [
+    path('hot_videos_tags', hot_video_tag_list),
     path('hot_videos', HotVideoViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('hot_videos/<int:pk>',
          HotVideoViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'})),

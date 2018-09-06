@@ -37,4 +37,4 @@ def generate_file_name(f):
     digest = h.hexdigest()
     f.seek(0)
     file_name, file_ext = os.path.splitext(f.name)
-    return digest[:2] + '/' + digest[2:4] + '/' + digest[4:] + file_ext
+    return digest[:2] + '/' + digest[2:4] + '/' + digest[4:] + file_ext.lower()

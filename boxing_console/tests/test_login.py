@@ -24,14 +24,6 @@ class LoginTestCase(APITestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(resp.data['message'][0], "该账号无登录权限!")
 
-        resp = self.client.post(path="/login", data={
-            "username": self.user2.mobile, "password": "password", "captcha": {
-                "captcha_code": captcha.response, "captcha_hash": captcha.hashkey
-            }
-        }, format="json")
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(resp.data['message'][0], "图形验证码错误！")
-
         self.client.get(path="/captcha-image")
         captcha = CaptchaStore.objects.all().order_by("-expiration").first()
         resp = self.client.post(path="/login", data={

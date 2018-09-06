@@ -32,7 +32,7 @@
                             <el-progress type="circle" :percentage="tryTsurlProgress" :width='70' style='position:absolute;right:-69px;top:-14px' v-show='tryTsurlProgress>0&&tryTsurlProgress<100'></el-progress>
                             <el-input v-model="ruleForm.try_ts_url" type='file' id='little_video' @change='getLittleVideo' style='display: none'></el-input>
                         </el-form-item>
-                        <el-form-item label="视频封面" prop="cover">
+                        <el-form-item label="视频封面" prop="cover" class='my_avatar'>
                             <el-row>
                                 <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='1242' :height='663'></Cropper>
                                 <div>  
@@ -52,6 +52,11 @@
                             </el-row>
                             <el-input v-model="ruleForm.avatar" type='hidden'></el-input>
                         </el-form-item>
+                        <el-form-item label="视频标签" prop="tag">
+                            <el-select v-model="ruleForm.tag" placeholder="请选择视频标签">
+                                <el-option :value="item.id" :label="item.name" v-for="item in videoTags">{{item.name}}</el-option>
+                            </el-select>
+                        </el-form-item>
                         <el-form-item label="关联用户" prop='users'>
                             <ul>
                                 <li class='lf'>
@@ -65,7 +70,7 @@
                                         <img :src="config.baseUrl+item.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
-                                    <p style='text-align: center'>{{item.nick_name}}</p>
+                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name.length}}</p>
                                 </li>
                             </ul>
                         </el-form-item>
@@ -80,6 +85,27 @@
                                 <el-radio :label="true" >是</el-radio>
                                 <el-radio :label="false">否</el-radio>
                             </el-radio-group>
+                        </el-form-item>
+                        <el-checkbox-group v-model="ruleForm.push_hot_video" style='margin-bottom:22px;width:200px;text-align: right;' v-if='ruleForm.push_to_hotvideo'>
+                          <el-checkbox label="创建推送" name="push_hot_video"></el-checkbox>
+                        </el-checkbox-group>
+                        <el-form-item label="发送时间" :class="isRequired" style='margin-left:32px' id='addTime' v-if='ruleForm.push_to_hotvideo'>
+                            <el-date-picker
+                                    class="margin_rt25"
+                                    v-model="dateArr"
+                                    type="datetimerange"
+                                    range-separator="至"
+                                    start-placeholder="起始日期"
+                                    end-placeholder="结束日期"
+                                    @change="getDateTime"
+                                    :default-value='new Date()'
+                                    value-format="yyyy-MM-dd HH:mm:ss">
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item style='margin-left:30px;margin-top:-30px'>
+                            <el-form-item prop="end_time" >
+                                <el-input v-model="ruleForm.end_time" style='display: none'></el-input>
+                            </el-form-item>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -118,18 +144,18 @@
 </template>
 
 <style>
-    #addHotvideo .el-form-item__label{
-        font-family: "PingFangSC-Regular";
+    #addHotvideo .el-checkbox__label,#addHotvideo .el-radio__label,#addHotvideo .el-form-item__label,#addHotvideo .el-checkbox__input.is-checked+.el-checkbox__label{
+        font-family: PingFangSC-Regular;
         font-size: 16px;
-        color: #000000;
+        color: #000000!important;
     }
     #addHotvideo .el-form-item{margin-bottom:30px;}
     #addHotvideo .button{height:37px;width:45px;border:none;border-right:1px solid #ccc;margin-top:2px;margin-left:2px!important;font-size:20px;padding-top:8px;padding-left:12px;}
     #addHotvideo .myAddress input{padding-left:50px;}
-    .el-checkbox__inner:hover,.el-checkbox__input.is-focus .el-checkbox__inner,.el-input__inner:focus{
+    .el-checkbox__inner:hover,.el-checkbox__input.is-focus .el-checkbox__inner,.el-input__inner:focus,.el-select .el-input__inner:focus,.el-select .el-input.is-focus .el-input__inner{
         border-color:#F95862!important;
     }
-    .el-checkbox__input.is-checked+.el-checkbox__label{
+    .el-checkbox__input.is-checked+.el-checkbox__label,.el-select-dropdown__item.selected{
         color:#F95862!important;
     }
     .el-transfer-panel__item.el-checkbox {
@@ -168,7 +194,10 @@
         text-align: center;
         font-size: 14px;
         line-height: 25px;
-        margin:-17px auto;
+        margin:15px auto;
+    }
+    .my_avatar .el-form-item__content{
+        line-height: 0
     }
 </style>
 <script>
@@ -206,6 +235,9 @@
                 userImgIds  : [
                     
                 ],
+                videoTags   :[],
+                dateArr:[],
+                isRequired:'',
                 tryTsurlProgress:0,
                 tsurlProgress:0,
                 showChangeUser:false,
@@ -213,12 +245,16 @@
                     users   : [],
                     name    : '',
                     description: '',
-                    price_int  : '',
+                    price_int  : 0,
                     price   : '',
                     tsurl   :'',
                     try_ts_url: '',
                     push_to_hotvideo:false,
                     stay_top:false,
+                    push_hot_video:false,
+                    start_time:'',
+                    end_time:'',
+                    tag:''
                 },
                 rules:{
                     users:[
@@ -229,6 +265,9 @@
                     ],
                     name:[
                         { required:true,message:'请输入视频名称', trigger:'blur' }
+                    ],
+                    tag:[
+                        { required:true,message:'请选择视频标签', trigger:'blur' }
                     ],
                     description:[
                         { validator: (rule, value, callback) => {
@@ -263,7 +302,30 @@
                     ],
                     try_ts_url:[
                         { validator: validateTryUrl, trigger: 'blur',required:true }
-                    ]
+                    ],
+                    end_time: [
+                        { validator: (rule, value, callback) => {
+                            console.log(this.ruleForm.push_hot_video)
+                            if(this.ruleForm.push_hot_video){
+                               if(this.ruleForm.start_time===''){
+                                callback(new Error('请选择发送的开始时间'));
+                                }else if (value==='') {
+                                    callback(new Error('请选择发送的结束时间'));
+                                }else if(new Date(this.ruleForm.start_time)-new Date()<0){
+                                    callback(new Error('开始发送时间不能小于当前时间'));
+                                }else if(new Date(value)-new Date(this.ruleForm.start_time)<0){
+                                    callback(new Error('结束时间不能早于开始时间'));
+                                }else if(new Date(value)-new Date(this.ruleForm.start_time)> 60*60*24*14*1000){
+                                    callback(new Error('推送有效时间不能超过14天'));
+                                } else {
+                                    callback();
+                                } 
+                            }else{
+                               callback(); 
+                            }
+                            
+                        }, trigger: 'blur', required: true}
+                    ],
                 },
                 inputId:'',
                 url_f:'',
@@ -287,12 +349,30 @@
                 this.tsurl=query.url
                 let try_ts_url = query.try_url
                 this.try_ts_url= query.try_url
+                this.ruleForm.tag = query.tag
+                this.ruleForm.push_hot_video = query.push_hot_video
                 $('#full_video').val(tsurl) 
                 $('#little_video').val(try_ts_url) 
+                this.dateArr=[query.start_time?query.start_time:'',query.end_time?query.end_time:'']
+                console.log(query)
+                console.log(this.dateArr)
+            }else{
+                // 2018-06-12 08:06:08
+                let startDate = new Date();
+                let endDate   = new Date();
+                startDate.setMinutes(startDate.getMinutes()+5);
+                endDate.setDate(endDate.getDate()+1);
+                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
             }
-            
+            this.getDateTime();
             this.getUserIds();
+            this.getVideoTags();
             
+        },
+        watch:{
+            "ruleForm.push_hot_video":function(val){
+                this.isRequired = val?'is-required':''
+            }
         },
         methods: {
             getFullVideo(){
@@ -343,6 +423,25 @@
                         }
                         $this.src_avatar = $this.config.baseUrl + res.data.cover;
 
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
+            getVideoTags(){
+                let $this = this;
+                this.ajax('/hot_videos_tags','get').then(function(res){
+                    if(res&&res.data){
+                        $this.videoTags = res.data.result;
                     }
 
                 },function(err){
@@ -428,6 +527,7 @@
                         sendData.try_url = this.try_ts_url;
                         sendData.url = this.tsurl;
                         sendData.price = parseInt(sendData.price_int)*100
+                        console.log(sendData)
                         let $this = this
                         if(this.id){
                             //编辑
@@ -523,6 +623,10 @@
                   url = window.webkitURL.createObjectURL(file) ;  
                 }  
                 return url ;  
+            },
+            getDateTime() {
+                this.ruleForm.start_time = this.dateArr?this.dateArr[0]:'';
+                this.ruleForm.end_time = this.dateArr?this.dateArr[1]:'';
             },
         },
     }
