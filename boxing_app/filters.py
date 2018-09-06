@@ -1,6 +1,5 @@
 import django_filters
-from biz import models
-from biz.constants import HOT_VIDEO_TAG_CHOICES_FOR_FILTER, HOT_VIDEO_TAG_DEFAULT
+from biz.constants import HOT_VIDEO_TAG_ALL
 from biz.models import MoneyChangeLog, Course
 from biz.models import BoxerIdentification
 
@@ -46,6 +45,6 @@ class HotVideoFilter(django_filters.FilterSet):
 
     def filter_video(self, qs, name, value):
         value = int(value)
-        if value == HOT_VIDEO_TAG_DEFAULT:
+        if value == HOT_VIDEO_TAG_ALL:
             return qs
         return qs.filter(tag=value)
