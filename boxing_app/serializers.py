@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course, Message, Comment
+from biz.models import OrderComment, BoxingClub, User, Course, Message, Comment, HotVideo, GameNews
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title
@@ -189,6 +189,23 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_time',)
 
 
+class CommentMeMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Message
+        fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
+
+
+class CommentMeHotVideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.HotVideo
+        fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover')
+
+class CommentMeNewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.GameNews
+        fields = ('id', 'title', 'sub_title', 'picture')
+
+
 class CommentMeSerializer(serializers.ModelSerializer):
     content = serializers.CharField(read_only=True)
     user = DiscoverUserField(read_only=True)
@@ -197,7 +214,11 @@ class CommentMeSerializer(serializers.ModelSerializer):
     reply_or_comment = serializers.SerializerMethodField()
     
     def get_to_object(self, instance):
-        return model_to_dict(instance.content_object)
+        serializer_choice = {"动态": CommentMeMessageSerializer,
+                             "热门视频": CommentMeHotVideoSerializer,
+                             "赛事资讯": CommentMeNewsSerializer}
+        serializer = serializer_choice.get(instance.content_type.name)
+        return serializer(instance.content_object).data
 
     def get_obj_type(self, instance):
         return instance.content_type.name
@@ -207,7 +228,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = ['content', 'user', 'to_object', 'obj_type', 'object_id', 'created_time', 'reply_or_comment']
+        fields = ['content', 'user', 'obj_type', 'to_object', 'object_id', 'created_time', 'reply_or_comment']
 
 
 class LikeSerializer(serializers.ModelSerializer):
