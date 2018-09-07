@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import datetime
+from datetime import datetime, timedelta
 from biz import constants
 from django.conf import settings
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
-from biz.constants import HOT_VIDEO_USER_ID
+from biz.constants import HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
 
 
 class HotVideoTestCase(APITestCase):
@@ -30,6 +30,10 @@ class HotVideoTestCase(APITestCase):
             'try_url': '/videos/222',
             'cover': '/videos/333',
             'users': [self.test_user.id],
+            'tag': HOT_VIDEO_TAG_CHOICES[-1][0],
+            "push_hot_video": False,
+            "start_time": datetime.now() + timedelta(days=1),
+            "end_time": datetime.now() + timedelta(days=2),
         }
 
     def test_create(self):
@@ -37,6 +41,7 @@ class HotVideoTestCase(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['user_list'][0]['id'], self.test_user.id)
+        self.assertEqual(res.data['tag'], self.data['tag'])
 
         not_exists_user_id = User.objects.all().order_by('-id').first().id + 1
         self.data['users'] = [not_exists_user_id]
@@ -48,6 +53,29 @@ class HotVideoTestCase(APITestCase):
         res = self.client2.post('/hot_videos', self.data)
         self.assertEqual(len(res.data['user_list']), 2)
         self.assertIn(HOT_VIDEO_USER_ID, [i['id'] for i in res.data['user_list']])
+
+        del self.data['tag']
+        res = self.client2.post('/hot_videos', self.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_push(self):
+        self.data['start_time'] = datetime.now() - timedelta(days=1)
+        self.data['push_hot_video'] = True
+        res = self.client1.post('/hot_videos', self.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['message'][0], '开始时间必须是以后的时间')
+
+        self.data['start_time'] = datetime.now() + timedelta(days=8)
+        res = self.client1.post('/hot_videos', self.data)
+        self.assertEqual(res.data['message'][0], '开始时间必须是七天内')
+
+        self.data['start_time'] = datetime.now() + timedelta(days=2)
+        res = self.client1.post('/hot_videos', self.data)
+        self.assertEqual(res.data['message'][0], '结束时间必须大于开始时间')
+
+        self.data['end_time'] = self.data['start_time'] + timedelta(days=15)
+        res = self.client1.post('/hot_videos', self.data)
+        self.assertEqual(res.data['message'][0], '结束时间必须在开始时间以后的14天内')
 
     def test_update(self):
         res = self.client2.post('/hot_videos', self.data)
@@ -79,7 +107,7 @@ class HotVideoTestCase(APITestCase):
         most_early_date = HotVideo.objects.all().order_by('created_time').first().created_time
         most_late_date = HotVideo.objects.all().order_by('-created_time').first().created_time
 
-        delta = datetime.timedelta(days=1)
+        delta = timedelta(days=1)
         date_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 
         start_date = (most_early_date - delta).strftime(date_format)
@@ -114,7 +142,7 @@ class HotVideoTestCase(APITestCase):
             out_trade_no=PayService.generate_out_trade_no(),
             payment_type=constants.PAYMENT_TYPE_ALIPAY,
             device=constants.DEVICE_PLATFORM_IOS,
-            pay_time=datetime.datetime.now()
+            pay_time=datetime.now()
         )
         PayOrder.objects.create(
             user=self.test_user3,
@@ -124,7 +152,7 @@ class HotVideoTestCase(APITestCase):
             out_trade_no=PayService.generate_out_trade_no(),
             payment_type=constants.PAYMENT_TYPE_ALIPAY,
             device=constants.DEVICE_PLATFORM_IOS,
-            pay_time=datetime.datetime.now()
+            pay_time=datetime.now()
         )
 
         PayOrder.objects.create(

@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from biz import constants
 from biz.models import User, UserProfile, Message, GameNews, HotVideo
 
 
@@ -37,7 +38,9 @@ class SearchCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator_id': self.test_user_1.id,
-            'cover': '/videos/333'
+            'cover': '/videos/333',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
 
     def test_search_user(self):
@@ -93,9 +96,11 @@ class SearchCase(APITestCase):
         v_name1 = "世界杯法国夺冠"
         v_name2 = "世界杯梅西想早点回家"
         self.video_data['name'] = v_name1
-        HotVideo.objects.create(**self.video_data)
+        video1 = HotVideo.objects.create(**self.video_data)
+        video1.users.add(self.test_user_1.id)
         self.video_data['name'] = v_name2
-        HotVideo.objects.create(**self.video_data)
+        video2 = HotVideo.objects.create(**self.video_data)
+        video2.users.add(self.test_user_1.id)
 
         res = self.client1.get(f'/search/video?keywords={v_name1}')
         self.assertEqual(res.status_code, status.HTTP_200_OK)

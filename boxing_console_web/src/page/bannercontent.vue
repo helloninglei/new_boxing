@@ -2,7 +2,7 @@
     <div class="banner_content">
         <TopBar v-if="isShowTop" firstTitle_name="Banner管理" firstTitle_path="/usermanage" disNone="disNone"></TopBar>
         <div class="container">
-            <el-form :model="form" label-width="100px" :rules="rules" ref="ruleForm">
+            <el-form :model="form" label-width="100px" :rules="rules" ref="ruleForm" style='width:50%;min-width:520px'>
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="form.name" placeholder="限制20字" :maxlength="20"></el-input>
                 </el-form-item>
@@ -23,14 +23,19 @@
                 </template>
                 <template v-else>
                     <el-radio-group v-model="checkType" @change="changeCheckType" style="width: 100%">
-                        <el-radio label="voteId" class="vertical_radio" style="display: block">
-                            <el-form-item label="投票ID" prop="voteId">
-                                <el-input v-model="form.voteId"></el-input>
-                            </el-form-item>
-                        </el-radio>
-                        <el-radio label="enrollId" style="display: block;margin-left: 0" class="vertical_radio">
-                            <el-form-item label="报名ID" prop="enrollId">
-                                <el-input v-model="form.enrollId"></el-input>
+                        <!--<el-radio label="voteId" class="vertical_radio" style="display: block">-->
+                        <!--<el-form-item label="投票ID" prop="voteId">-->
+                        <!--<el-input v-model="form.voteId"></el-input>-->
+                        <!--</el-form-item>-->
+                        <!--</el-radio>-->
+                        <!--<el-radio label="enrollId" style="display: block;margin-left: 0" class="vertical_radio">-->
+                        <!--<el-form-item label="报名ID" prop="enrollId">-->
+                        <!--<el-input v-model="form.enrollId"></el-input>-->
+                        <!--</el-form-item>-->
+                        <!--</el-radio>-->
+                        <el-radio label="videoId" style="display: block;margin-left: 0" class="vertical_radio">
+                            <el-form-item label="视频ID" prop="videoId">
+                                <el-input v-model="form.videoId"></el-input>
                             </el-form-item>
                         </el-radio>
                         <el-radio label="contentId" style="display: block;margin-left: 0" class="vertical_radio">
@@ -49,7 +54,7 @@
                             style="position: relative;width: 414px;height:188px;border: 1px solid #d9d9d9;overflow: hidden;cursor: pointer;">
                         <template v-if="picture">
                             <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
-                            <img  :src="picture" class="avatar">
+                            <img :src="picture" class="avatar">
                         </template>
                         <template v-else>
                             <i class="el-icon-plus avatar-uploader-icon"></i>
@@ -73,10 +78,11 @@
 
     .el-icon-circle-close {
         position absolute
-        right  0
+        right 0
         top 0
         font-size 20px
     }
+
     .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
@@ -85,17 +91,20 @@
         line-height: 170px;
         text-align: center;
     }
+
     .avatar {
         display: block;
         width: 414px;
         height 188px
     }
+
     .handle_btn {
         margin-top 60px
         .cancel {
             margin-right 30px
         }
     }
+
     .upload_tip_text {
         width 100%
         text-align center
@@ -105,7 +114,7 @@
     }
 </style>
 
-<script type="text/ecmascript-6">
+<script>
     import TopBar from 'components/topBar';
     import config from 'common/my_config'
 
@@ -123,78 +132,105 @@
                     link_type: 1,
                     link: '',
                     voteId: '',
+                    videoId: '',
                     enrollId: '',
                     contentId: '',
                 },
                 picture: '',
                 pictureUrl: '',
                 rules: {
-                    name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+                    name: [{required: true, message: '请输入名称', trigger: 'blur'}],
                     order_number: [
-                        { validator: (rule, value, callback) => {
-                            if (value === '') callback(new Error('请输入序号'))
-                            else {
-                                if (value < 0 || !/^[0-9]*$/.test(value)) {
-                                    callback(new Error('只能输入正整数'));
-                                    return;
+                        {
+                            validator: (rule, value, callback) => {
+                                if (value === '') callback(new Error('请输入序号'))
+                                else {
+                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                        callback(new Error('只能输入正整数'));
+                                        return;
+                                    }
+                                    callback();
                                 }
-                                callback();
-                            }
-                        }, trigger: 'blur', }
+                            }, trigger: 'blur',
+                        }
                     ],
                     link: [
-                        { validator: (rule, value, callback) => {
-                            if (value === '') callback(new Error('请输入链接地址'));
-                            else {
-                                if (!this.checkUrl(value)) {
-                                    callback(new Error('请输入正确的链接地址'));
-                                    return;
+                        {
+                            validator: (rule, value, callback) => {
+                                if (value === '') callback(new Error('请输入链接地址'));
+                                else {
+                                    if (!this.checkUrl(value)) {
+                                        callback(new Error('请输入正确的链接地址'));
+                                        return;
+                                    }
+                                    callback();
                                 }
-                                callback();
-                            }
-                        }, trigger: 'change',required: true }
+                            }, trigger: 'change', required: true
+                        }
                     ],
                     voteId: [
-                        { validator: (rule, value, callback) => {
-                            if (this.checkType !== 'voteId') callback();
-                            if (value === '') {
-                                callback(new Error('请输入投票ID'));
-                            } else {
-                                if (value < 0 || !/^[0-9]*$/.test(value)) {
-                                    callback(new Error('投票ID必须为数字'));
-                                    return;
+                        {
+                            validator: (rule, value, callback) => {
+                                if (this.checkType !== 'voteId') callback();
+                                if (value === '') {
+                                    callback(new Error('请输入投票ID'));
+                                } else {
+                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                        callback(new Error('投票ID必须为数字'));
+                                        return;
+                                    }
+                                    callback();
                                 }
-                                callback();
-                            }
-                        }, trigger: 'change',required: true }
+                            }, trigger: 'change', required: true
+                        }
                     ],
                     enrollId: [
-                        { validator: (rule, value, callback) => {
-                            if (this.checkType !== 'enrollId') callback();
-                            if (value === '') {
-                                callback(new Error('请输入报名ID'));
-                            } else {
-                                if (value < 0 || !/^[0-9]*$/.test(value)) {
-                                    callback(new Error('报名ID必须为数字'));
-                                    return;
+                        {
+                            validator: (rule, value, callback) => {
+                                if (this.checkType !== 'enrollId') callback();
+                                if (value === '') {
+                                    callback(new Error('请输入报名ID'));
+                                } else {
+                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                        callback(new Error('报名ID必须为数字'));
+                                        return;
+                                    }
+                                    callback();
                                 }
-                                callback();
-                            }
-                        }, trigger: 'change',required: true }
+                            }, trigger: 'change', required: true
+                        }
                     ],
                     contentId: [
-                        { validator: (rule, value, callback) => {
-                            if (this.checkType !== 'contentId') callback();
-                            if (value === '') {
-                                callback(new Error('请输入资讯ID'));
-                            } else {
-                                if (value < 0 || !/^[0-9]*$/.test(value)) {
-                                    callback(new Error('资讯ID必须为数字'));
-                                    return;
+                        {
+                            validator: (rule, value, callback) => {
+                                if (this.checkType !== 'contentId') callback();
+                                if (value === '') {
+                                    callback(new Error('请输入资讯ID'));
+                                } else {
+                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                        callback(new Error('资讯ID必须为数字'));
+                                        return;
+                                    }
+                                    callback();
                                 }
-                                callback();
-                            }
-                        }, trigger: 'change',required: true }
+                            }, trigger: 'change', required: true
+                        }
+                    ],
+                    videoId: [
+                        {
+                            validator: (rule, value, callback) => {
+                                if (this.checkType !== 'videoId') callback();
+                                if (value === '') {
+                                    callback(new Error('请输入热门ID'));
+                                } else {
+                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                        callback(new Error('热门视频ID必须为数字'));
+                                        return;
+                                    }
+                                    callback();
+                                }
+                            }, trigger: 'change', required: true
+                        }
                     ]
                 }
             }
@@ -255,31 +291,32 @@
             },
 
             bannerEv() {
-                let obj = Object.assign(this.form,{picture: this.pictureUrl});
+                let obj = Object.assign(this.form, {picture: this.pictureUrl});
                 if (obj.link_type == 3) {
                     let linkObj = {
                         'voteId': 'game_votes',
                         'enrollId': 'game_apply',
-                        'contentId': 'game_news'
+                        'contentId': 'game_news',
+                        'videoId': 'hot_video',
                     }
                     obj['link'] = linkObj[this.checkType] + ':' + obj[this.checkType];
                 }
                 delete obj['voteId'];
                 delete obj['enrollId'];
                 delete obj['contentId'];
-
+                delete obj['videoId'];
                 !this.id ? this.createBannerEv(obj) : this.modifyBannerEv(obj);
 
             },
 
             createBannerEv(obj) {
                 console.log(obj)
-                this.ajax('/banners','post',obj).then((res) => {
+                this.ajax('/banners', 'post', obj).then((res) => {
                     res && res.data && this.$router.push({path: '/bannermanage'});
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data;
-                        for(var key in errors){
+                }, (err) => {
+                    if (err && err.response) {
+                        let errors = err.response.data;
+                        for (var key in errors) {
                             this.showErrorTip(errors[key][0]);
                         }
                     }
@@ -288,12 +325,12 @@
 
             modifyBannerEv(obj) {
                 obj.picture = this.picture;
-                this.ajax(`/banners/${this.id}`,'put',obj).then((res) => {
+                this.ajax(`/banners/${this.id}`, 'put', obj).then((res) => {
                     res && res.data && this.$router.push({path: '/bannermanage'});
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data;
-                        for(var key in errors){
+                }, (err) => {
+                    if (err && err.response) {
+                        let errors = err.response.data;
+                        for (var key in errors) {
                             this.showErrorTip(errors[key][0]);
                         }
                     }
@@ -301,21 +338,21 @@
             },
 
             getPageInfo() {
-                this.ajax(`/banners/${this.id}`,'get').then((res) => {
-                    if (res && res.data ) {
+                this.ajax(`/banners/${this.id}`, 'get').then((res) => {
+                    if (res && res.data) {
                         this.form = res.data;
                         this.picture = this.form.picture;
                         delete this.form['picture'];
 
                         this.form.link_type !== 3
-                            ? (this.form['voteId'] = this.form['enrollId'] = this.form['contentId'] = '') : this.setCheckType(res.data.link);
+                            ? (this.form['voteId'] = this.form['enrollId'] = this.form['contentId'] = this.form['videoId'] = '') : this.setCheckType(res.data.link);
                     }
 
                     console.log(this.form)
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
+                }, (err) => {
+                    if (err && err.response) {
+                        let errors = err.response.data
+                        for (var key in errors) {
                             this.showErrorTip(errors[key][0]);
                         }
                     }
@@ -323,7 +360,7 @@
             },
 
             checkUrl(url) {
-                let Expression=/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+                let Expression = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
                 return new RegExp(Expression).test(url);
             },
 
@@ -343,7 +380,8 @@
                 let obj = {
                     'game_votes': 'voteId',
                     'game_apply': 'enrollId',
-                    'game_news': 'contentId'
+                    'game_news': 'contentId',
+                    'hot_video': 'videoId',
                 }
                 for (let key in obj) {
                     let val = obj[key];

@@ -35,6 +35,22 @@ class CommentTestCase(APITestCase):
         self.assertEqual(self.comment2['user']['id'], self.test_user_2.id)
         self.assertEqual(self.msg2['content'], results[0]['content'])
 
+        # has unread comment list
+        response = self.client1.get(path="/unread_like_comment")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['has_unread_like'])
+        self.assertTrue(response.data['has_unread_comment'])
+
+        # read comment list
+        response = self.client1.get(path="/comment_me")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # not has unread comment list
+        response = self.client1.get(path="/unread_like_comment")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['has_unread_like'])
+        self.assertFalse(response.data['has_unread_comment'])
+
     def test_reply(self):
         self.prepare()
         reply_data = {
@@ -114,3 +130,15 @@ class CommentTestCase(APITestCase):
         res = self.anonymous_client.post('/messages/%s/comments/%s' % (self.message_id, self.comment1['id']),
                                          reply_data)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_comment_me(self):
+        self.prepare()
+        res = self.client1.get('/comment_me')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), 2)
+
+        comment_id = self.comment1['id']
+        msg3 = {'content': 'comment by user2 to user1'}
+        self.client2.post('/messages/%s/comments/%s' % (self.message_id, comment_id), msg3)
+        res = self.client1.get('/comment_me')
+        self.assertEqual(len(res.data['results']), 3)

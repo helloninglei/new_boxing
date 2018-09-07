@@ -4,7 +4,7 @@ from APISender import APISender
 from django.conf import settings
 from base.APIConstants import Constants
 from base.APIMessage import PushMessage
-from biz.constants import APP_JUMP_OBEJCT_NEWS
+from biz.constants import APP_JUMP_OBEJCT_NEWS, APP_JUMP_OBEJCT_HOT_VIDEO
 
 if settings.ENVIRONMENT == settings.PRODUCTION:
     Constants.use_official()
@@ -18,6 +18,11 @@ ios_sender = APISender(settings.XIAOMI_PUSH_APP_SECRET_IOS)
 def broadcast_news(news):
     return broadcast_message(news.title, f'{APP_JUMP_OBEJCT_NEWS}:{news.id}', start_time=news.start_time,
                              end_time=news.end_time)
+
+
+def broadcast_hot_video(hot_video):
+    return broadcast_message(hot_video.name, f'{APP_JUMP_OBEJCT_HOT_VIDEO}:{hot_video.id}', start_time=hot_video.start_time,
+                             end_time=hot_video.end_time)
 
 
 def push_message(mobile, content, jump_to=None, start_time=None, end_time=None):

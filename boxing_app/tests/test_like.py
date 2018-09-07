@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
+
+from biz import constants, models
 from biz.models import User, Message
+from biz.redis_client import redis_client
 
 
 class LikeTestCase(APITestCase):
@@ -15,6 +18,7 @@ class LikeTestCase(APITestCase):
         self.client2.login(username=self.test_user_2, password='password')
         self.client3 = self.client_class()
         self.client3.login(username=self.test_user_3, password='password')
+        redis_client.flushdb()
 
     def prepare(self):
         msg_data = {'content': 'message1'}
@@ -98,3 +102,50 @@ class LikeTestCase(APITestCase):
         for message in response.data['results']:
             is_like = message['is_like']
             self.assertFalse(is_like)
+
+    def test_like_me_list(self):
+        self.prepare()
+        self.client1.post('/messages/%s/like' % self.message_id1)
+        self.client1.post('/messages/%s/like' % self.message_id2)
+        self.client2.post('/messages/%s/like' % self.message_id2)
+        self.client3.post('/messages/%s/like' % self.message_id3)
+
+        # has unread like list
+        response = self.client1.get(path="/unread_like_comment")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['has_unread_comment'])
+        self.assertTrue(response.data['has_unread_like'])
+
+        # read like list
+        response = self.client1.get('/like_me')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data['results']), 4)
+
+        # not has unread like list
+        response = self.client1.get(path="/unread_like_comment")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(response.data['has_unread_like'])
+        self.assertFalse(response.data['has_unread_comment'])
+
+    def test_like_hot_video(self):
+        data = {
+            'name': 'test video1',
+            'description': 'test video1',
+            'price': 111,
+            'url': '/videos/111',
+            'try_url': '/videos/222',
+            'operator_id': self.test_user_1.id,
+            'cover': '/videos/333',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
+        }
+
+        video = models.HotVideo.objects.create(**data)
+        video.users.add(self.test_user_1.id)
+
+        res = self.client1.get(f'/users/{self.test_user_1.id}/hot_videos/{video.id}')
+        self.assertFalse(res.data['is_like'])
+
+        self.client1.post(f'/hot_videos/{video.id}/like')
+        res = self.client1.get(f'/users/{self.test_user_1.id}/hot_videos/{video.id}')
+        self.assertTrue(res.data['is_like'])

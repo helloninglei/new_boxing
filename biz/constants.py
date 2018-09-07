@@ -243,12 +243,14 @@ BANNER_LINK_TYPE = (
 )
 
 APP_JUMP_OBEJCT_NEWS = 'game_news'
+APP_JUMP_OBEJCT_HOT_VIDEO = 'hot_video'
 
 # banner 跳转对象model
 BANNER_LINK_MODEL_TYPE = (
     # 'game_votes',  # 赛事投票
     # 'game_apply',  # 赛事报名
     APP_JUMP_OBEJCT_NEWS,  # 赛事资讯
+    APP_JUMP_OBEJCT_HOT_VIDEO,  # 热门视频
 )
 
 WITHDRAW_STATUS_WAITING = 'WAITING'
@@ -306,3 +308,18 @@ DEFAULT_NICKNAME_FORMAT = "拳城{}"
 DEFAULT_AVATAR = ""
 
 MAX_HOT_VIDEO_BIND_USER_COUNT = 7
+
+HOT_VIDEO_TAG_DEFAULT = 1
+HOT_VIDEO_TAG_CHOICES = (
+    (HOT_VIDEO_TAG_DEFAULT, '拳城出击'),
+    (2, '徐晓冬'),
+    (3, '教学'),
+    (4, '街斗'),
+    (5, '搞笑'),
+    (6, '美女'),
+    (7, '国外'),
+    (8, '热点'),
+)
+
+HOT_VIDEO_TAG_ALL = 0
+HOT_VIDEO_TAG_CHOICES_FOR_FILTER = [(HOT_VIDEO_TAG_ALL, '全部')] + list(HOT_VIDEO_TAG_CHOICES)

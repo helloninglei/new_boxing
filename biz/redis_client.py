@@ -139,6 +139,35 @@ def get_message_forward_count(message_id):
     return int(redis_client.hget('msg_forward', message_id) or 0)
 
 
+def forward_hotvideo(video_id):
+    redis_client.hincrby('video_forward', video_id, 1)
+
+
+def get_hotvideo_forward_count(video_id):
+    return int(redis_client.hget('video_forward', video_id) or 0)
+
+
+def like_hot_video(current_user_id, video_id):
+    if current_user_id and video_id and not is_liking_hot_video(current_user_id, video_id):
+        redis_client.zadd(f'video_like_{video_id}', _get_timestamp(), current_user_id)
+        _update_hot_video_like_count(video_id)
+
+
+def unlike_hot_video(current_user_id, video_id):
+    redis_client.zrem(f'video_like_{video_id}', current_user_id)
+    _update_hot_video_like_count(video_id)
+
+
+def is_liking_hot_video(current_user_id, video_id):
+    return bool(redis_client.zscore(f'video_like_{video_id}', current_user_id))
+
+
+def _update_hot_video_like_count(video_id):
+    from boxing_app.tasks import set_hot_video_like_count
+    count = redis_client.zcard(f'video_like_{video_id}')
+    set_hot_video_like_count.delay(video_id, count)
+
+
 def set_user_title(user, title):
     return redis_client.set(f'user_{user.id}_title', title)
 
