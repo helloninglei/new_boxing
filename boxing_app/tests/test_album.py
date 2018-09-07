@@ -19,9 +19,7 @@ class AlbumTestCase(APITestCase):
     def test_album_list(self):
         res = self.client.get(reverse('album_list', kwargs={'pk': self.test_user.id}))
         self.assertEqual(res.data['count'], 0)
-        album = Album.objects.create(created_time=datetime.now(),
-                                     updated_time=datetime.now(),
-                                     name='他',
+        album = Album.objects.create(name='他',
                                      release_time=datetime.now(),
                                      is_show=True,
                                      related_account_id=self.test_user.id)
@@ -31,9 +29,7 @@ class AlbumTestCase(APITestCase):
         self.assertEqual(res.data['results'][0]['name'], '他')
 
     def test_album_detail(self):
-        album = Album.objects.create(created_time=datetime.now(),
-                                     updated_time=datetime.now(),
-                                     name='为长者续1秒',
+        album = Album.objects.create(name='为长者续1秒',
                                      release_time=datetime.now(),
                                      is_show=True,
                                      related_account_id=self.test_user.id)
@@ -48,9 +44,7 @@ class AlbumTestCase(APITestCase):
     def test_user_profile_has_album(self):
         res = self.client.get(reverse('user-profile', kwargs={'pk': self.test_user.id}))
         self.assertEqual(res.data['has_album'], False)
-        Album.objects.create(created_time=datetime.now(),
-                             updated_time=datetime.now(),
-                             name='沟里锅架绳四倚',
+        Album.objects.create(name='沟里锅架绳四倚',
                              release_time=datetime.now(),
                              is_show=True,
                              related_account_id=self.test_user.id)
