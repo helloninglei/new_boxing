@@ -55,7 +55,8 @@ class CommentMeListViewSet(mixins.ListModelMixin,
 
     def list(self, request, *args, **kwargs):
         self.queryset = models.Comment.objects.filter(Q(parent__user=request.user) |
-                                                      (Q(message__user=request.user) & Q(parent__isnull=True)))
+                                                      (Q(message__user=request.user) & Q(parent__isnull=True)))\
+            .order_by('-created_time')
         redis_client.delete(UNREAD_COMMENT.format(user_id=request.user.id))
         return super().list(request, *args, **kwargs)
 
