@@ -60,23 +60,25 @@ class BoxerMyCourseViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def get_course_base_info(dict, course):
-        dict['validity'] = course.validity
-        dict['boxer_id'] = course.boxer_id
-        dict['club_id'] = course.club.id
-        dict['club_name'] = course.club.name
-        dict['club_city'] = course.club.city
-        dict['club_address'] = course.club.address
-        dict['club_longitude'] = course.club.longitude
-        dict['club_latitude'] = course.club.latitude
+        if course:
+            dict['validity'] = course.validity
+            dict['boxer_id'] = course.boxer_id
+            dict['club_id'] = course.club.id
+            dict['club_name'] = course.club.name
+            dict['club_city'] = course.club.city
+            dict['club_address'] = course.club.address
+            dict['club_longitude'] = course.club.longitude
+            dict['club_latitude'] = course.club.latitude
         return dict
 
     @staticmethod
     def get_boxer_base_info(dict, boxer):
-        dict['order_count'] = CourseOrder.objects.filter(boxer=boxer, status__gt=COURSE_PAYMENT_STATUS_UNPAID).count()
-        dict['allowed_course'] = boxer.allowed_course
-        comment_count_and_avg_score = OrderComment.objects.filter(order__boxer=boxer) \
-            .aggregate(comments_count=Count('id'), avg_score=Round(Avg('score')))
-        dict.update(comment_count_and_avg_score)
+        if boxer:
+            dict['order_count'] = CourseOrder.objects.filter(boxer=boxer, status__gt=COURSE_PAYMENT_STATUS_UNPAID).count()
+            dict['allowed_course'] = boxer.allowed_course
+            comment_count_and_avg_score = OrderComment.objects.filter(order__boxer=boxer) \
+                .aggregate(comments_count=Count('id'), avg_score=Round(Avg('score')))
+            dict.update(comment_count_and_avg_score)
         return dict
 
 
@@ -95,6 +97,7 @@ class GetBoxerCourseByAnyOneViewSet(viewsets.ReadOnlyModelViewSet):
         response = super().list(request, *args, **kwargs)
         boxer = BoxerIdentification.objects.get(id=kwargs['boxer_id'])
         course = self.get_queryset().select_related('club').last()
-        BoxerMyCourseViewSet.get_course_base_info(dict=response.data, course=course)
+        if course:
+            BoxerMyCourseViewSet.get_course_base_info(dict=response.data, course=course)
         BoxerMyCourseViewSet.get_boxer_base_info(dict=response.data, boxer=boxer)
         return response
