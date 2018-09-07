@@ -3,7 +3,7 @@
         <TopBar v-if="isShowTop" firstTitle_name="相册管理" firstTitle_path="/albumdetail" :secondTitle_name="secondTitle_name" ></TopBar>
         <div class='container'>
             <el-row> 
-                <el-col :span="12">
+                <el-col :span="16">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
                         <el-form-item label="相册名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
@@ -24,6 +24,28 @@
                                     <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name.length}}</p>
                                 </li>
                             </ul>
+                        </el-form-item>
+                        <el-form-item label="图片" required>
+                            <el-upload
+                                    class="avatar-uploader"
+                                    :action=action
+                                    :show-file-list="false"
+                                    :on-success="handleAvatarSuccess"
+                                    list-type = 'text/picture/picture-card'
+                                    multiple="multiple"
+                                    style="position: relative;width: 100%;">
+                                <template v-for='picture in pictures'>
+                                    <div class="picture_container">
+                                        <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
+                                        <img :src="picture" class="avatar" width="100%">
+                                    </div>
+                                </template>
+                                <div class="picture_container plus" >
+                                    <i class="el-icon-plus"></i>
+                                </div>                            </el-upload>
+                            <div class="el-form-item__error" v-if="showError">
+                                请上传图片
+                            </div>
                         </el-form-item>
                         <el-form-item>
                             <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
@@ -81,6 +103,16 @@
     }
 </style>
 <style scope>
+    .picture_container{width: 80px;float:left;margin-right:15px;margin-bottom:15px;height:80px;overflow: hidden;position: relative;}
+    .picture_container.plus{
+        font-size: 34px;
+        padding: 19px;
+        color:#ccc;
+        box-sizing: border-box;
+        background: #FFFFFF;
+        border: 1px solid #DDDDDD;
+    }
+    .picture_container .close_btn{position:absolute;right:0;}
     .myDialog .el-dialog{position:fixed;left:50%;margin-left:-302px;width:604px;}
     .myUser .el-checkbox:first-child{margin-left:0px!important;}
     .myDialog .el-dialog__body{padding-top:10px;}
@@ -122,25 +154,9 @@
     import TopBar from 'components/topBar';
     import $      from 'jquery' 
     import Cropper from 'components/cropper';
+    import config from 'common/my_config'
     export default {
         data() {
-            var validateUrl = (rule, value, callback) => {
-                // console.log(this.tsurl,value)
-              if ((!this.tsurl )&&(!value)) {
-                callback(new Error('选择完整视频'));
-              } else {
-                
-                callback();
-              }
-            };
-            var validateTryUrl = (rule, value, callback) => {
-              if ((!this.try_ts_url) &&(!value)) {
-                callback(new Error('选择不完整视频'));
-              } else {
-                
-                callback();
-              }
-            };
             return {
                 isShowTop   : true,
                 tsurl       : '',
@@ -153,7 +169,10 @@
                 userImgIds  : [
                     
                 ],
-                videoTags   :[],
+                action: `${config.baseUrl}/upload`,
+                pictures: [],
+                pictureUrls: [],
+                showError: false,
                 dateArr:[],
                 isRequired:'',
                 tryTsurlProgress:0,
@@ -168,7 +187,7 @@
                         { required:true,message:'请选择用户id', trigger:'blur' }
                     ],
                     name:[
-                        { required:true,message:'请输入视频名称', trigger:'blur' }
+                        { required:true,message:'请输入相册名称', trigger:'blur' }
                     ],
                 },
                 inputId:'',
@@ -188,7 +207,7 @@
             if(this.id){
                 this.secondTitle_name = '修改相册'
                 this.btn_name = '修改'
-                this.getData(this.id)
+                // this.getData(this.id)
                 let tsurl = query.url
                 this.tsurl=query.url
                 let try_ts_url = query.try_url
@@ -209,9 +228,7 @@
                 this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
             }
             this.getDateTime();
-            this.getUserIds();
-            this.getVideoTags();
-            
+            this.getUserIds();            
         },
         watch:{
             "ruleForm.push_hot_video":function(val){
@@ -219,14 +236,6 @@
             }
         },
         methods: {
-            getFullVideo(){
-                var _this=this
-                var file=event.target.files;
-                var $this=this
-                this.upload(file[0],function(url){
-                    $this.tsurl = url
-                },2);
-            },
             getUserIds(){
                 let $this = this;
                 this.ajax('/hot_videos/users','get').then(function(res){
@@ -281,66 +290,28 @@
                     } 
                 })
             },
-            getVideoTags(){
-                let $this = this;
-                this.ajax('/hot_videos_tags','get').then(function(res){
-                    if(res&&res.data){
-                        $this.videoTags = res.data.result;
-                    }
-
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            $this.$message({
-                                message: errors[key][0],
-                                type: 'error'
-                            });
-                        } 
-                    } 
-                })
+            handleAvatarSuccess(res, file) {
+                console.log(res, file)
+                let picUrl = `${config.baseUrl}${res.urls[0]}`;
+                let image = new Image();
+                image.src = picUrl;
+                image.onload = () => {
+                    // if (image.width !== 1242 || image.height != 564) {
+                    //     this.showErrorTip('请上传符合尺寸的商品详情图');
+                    // }
+                    // else {
+                    //     this.picture = picUrl
+                    //     this.pictureUrl = res.urls[0];
+                    //     this.showError = false;
+                    // }
+                        this.pictures.push(picUrl)
+                        this.pictureUrls.push(res.urls[0]);
+                        // this.showError = false;
+                };
             },
             filterMethod(query, item){
                 return item.nick_name.indexOf(query) > -1;
 
-            },
-            getLittleVideo(){
-                var _this=this
-                var file=event.target.files;
-                var $this=this
-                this.upload(file[0],function(url){
-                    $this.try_ts_url = url
-                },1);
-            },
-            upload(file,fun,type){
-                // console.log(file)
-                let formData = new FormData() 
-                let $this = this;
-                formData.append('file', file) 
-                this.ajax('/upload','post',formData,{},{},function(val){
-                    if(type==1){
-                        $this.tryTsurlProgress = parseFloat(val)
-                    }
-                    if(type==2){
-                        $this.tsurlProgress = parseFloat(val)
-                    }
-                    
-                }).then(function(res){
-                    if(res&&res.data){
-                        fun(res.data.urls[res.data.urls.length-1])
-                    }
-
-                },function(err){
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            $this.$message({
-                                message: errors[key][0],
-                                type: 'error'
-                            });
-                        } 
-                    } 
-                })
             },
             close(){
                 this.showChangeUser = false;
@@ -367,15 +338,11 @@
                 let $this = this
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        let sendData = this.ruleForm;
-                        sendData.try_url = this.try_ts_url;
-                        sendData.url = this.tsurl;
-                        sendData.price = parseInt(sendData.price_int)*100
-                        console.log(sendData)
+                        let sendData = this.ruleForm;                        
                         let $this = this
                         if(this.id){
                             //编辑
-                            this.ajax('/hot_videos/'+this.id,'put',sendData).then(function(res){
+                            this.ajax('/'+this.id,'put',sendData).then(function(res){
                                 if(res&&res.data){
                                     $this.resetForm(formName)
                                 }
@@ -393,7 +360,7 @@
                             })
                         }else{
                             //新建
-                            this.ajax('/hot_videos','post',sendData).then(function(res){
+                            this.ajax('/','post',sendData).then(function(res){
                                 if(res&&res.data){
                                     $this.resetForm(formName)
                                 }
@@ -419,54 +386,6 @@
             resetForm(formName) {
                 this.$router.push({path: '/hotvideo'});
                 this.$refs[formName].resetFields();
-            },
-            addFullVideo(){
-                $('#full_video').click();
-            },
-            addLittleVideo(){
-                $('#little_video').click();
-            },
-            deleteUrl(type){
-                if(type==1){
-                    this.tsurl=''
-                    this.ruleForm.tsurl=''
-                }else{
-                    this.try_ts_url=''
-                    this.ruleForm.try_ts_url=''
-                }
-                
-            },
-            deleteTryUrl(){
-                this.try_ts_url=''
-                this.ruleForm.try_ts_url=''
-            },
-            //宣传图
-            getUrl(url,imgId){
-                this.changeUrl=false
-                this.src_avatar = this.config.baseUrl+url
-                this.ruleForm.cover = url
-            },
-            addImg(ele,imgId){
-                this.imgId=imgId;
-                $("#"+ele).click();
-            },
-            change(e){
-                let files = e.target.files || e.dataTransfer.files;  
-                if (!files.length) return;  
-                let picValue = files[0];  
-                this.url_f = this.getObjectURL(picValue); 
-                this.changeUrl=true
-            },
-            getObjectURL (file) {  
-                var url = null ;   
-                if (window.createObjectURL!=undefined) { // basic  
-                  url = window.createObjectURL(file) ;  
-                } else if (window.URL!=undefined) { // mozilla(firefox)  
-                  url = window.URL.createObjectURL(file) ;  
-                } else if (window.webkitURL!=undefined) { // webkit or chrome  
-                  url = window.webkitURL.createObjectURL(file) ;  
-                }  
-                return url ;  
             },
             getDateTime() {
                 this.ruleForm.start_time = this.dateArr?this.dateArr[0]:'';
