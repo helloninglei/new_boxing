@@ -80,8 +80,8 @@ class ReplyViewSet(CommentViewSet):
             'ancestor_id': obj.ancestor_id or obj.id,
         }
         instance = serializer.save(**kwargs)
-        EaseMobClient.send_passthrough_message([instance.user.id], msg_type="comment")
-        redis_client.lpush(UNREAD_COMMENT.format(user_id=instance.user.id), instance.id)
+        EaseMobClient.send_passthrough_message([instance.parent.user.id], msg_type="comment")
+        redis_client.lpush(UNREAD_COMMENT.format(user_id=instance.parent.user.id), instance.id)
 
 
 class CourseCommentsAboutBoxer(viewsets.ReadOnlyModelViewSet):
