@@ -8,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
 
-from biz.utils import comment_count_condition
+from biz.utils import comment_count_condition, get_object_or_404
 from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
 from boxing_app.serializers import HotVideoSerializer
 from boxing_app.tasks import incr_hot_video_views_count
@@ -26,7 +26,7 @@ def hot_video_redirect(request):
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_item_redirect(_, pk):
-    user_id = models.HotVideo.objects.get(pk=pk).users.first().id
+    user_id = get_object_or_404(models.HotVideo, pk=pk).id
     return redirect(f'/users/{user_id}/hot_videos/{pk}')
 
 
