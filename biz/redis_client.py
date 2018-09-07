@@ -159,7 +159,7 @@ def unlike_hot_video(current_user_id, video_id):
 
 
 def is_liking_hot_video(current_user_id, video_id):
-    return redis_client.zscore(f'video_like_{video_id}', current_user_id)
+    return bool(redis_client.zscore(f'video_like_{video_id}', current_user_id))
 
 
 def _update_hot_video_like_count(video_id):

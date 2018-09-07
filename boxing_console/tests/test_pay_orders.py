@@ -19,6 +19,8 @@ class PayOrderTestCase(APITestCase):
             'url': '/videos/111',
             'try_url': '/videos/222',
             'operator': self.user,
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
         hot_video = HotVideo.objects.create(**hot_video_data)
         hot_video.users.add(self.user)
