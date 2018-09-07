@@ -15,7 +15,7 @@
                 <div class="comments_container" v-for="(item, index) in comments" :key="index">
                     <template v-if="item.user">
                         <div class="portrait_container">
-                            <img class="portrait" :src="item.user.avatar ? 'http://qa.bituquanguan.com'+item.user.avatar + `${portraitQuery}` : avatar_default" />
+                            <img class="portrait" :src="item.user.avatar ? item.user.avatar + `${portraitQuery}` : avatar_default" />
                             <div class="sign_icon" :class="item.user.user_type"></div>
                         </div>
 

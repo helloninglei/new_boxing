@@ -10,15 +10,15 @@
                     <Video :url="videoObj.try_url" height="11.8rem" v-show="showVideo"></Video>
                 </div>
                 <div class="user-wrap clearfix" v-if="videoObj.bind_user">
-                    <div class="portrait"><img :src="'http://qa.bituquanguan.com'+videoObj.bind_user.avatar" alt=""></div>
+                    <div class="portrait"><img :src="videoObj.bind_user.avatar" alt=""></div>
                     <div class="user-info">
                         <div class="user-name">{{videoObj.bind_user.nick_name}}</div>
                         <div class="create-time" v-if="videoObj.bind_user.created_time">
                             {{videoObj.bind_user.created_time.substr(0,11)}}发布<span
                                 class="see">{{videoObj.bind_user.forward_count}}人观看</span></div>
                     </div>
-                    <div v-if="videoObj.is_like" class="follow already"></div>
-                    <div v-else class="follow"></div>
+                    <div v-if="videoObj.is_like" class="follow already" @click="openApp"></div>
+                    <div v-else class="follow" @click="openApp"></div>
                 </div>
                 <div class="text">
                     <h2 class="title">{{videoObj.name}}</h2>
@@ -29,7 +29,7 @@
                     <swiper :options="swiperOption" ref="mySwiper" class="user-list">
                         <swiper-slide v-for="(item,index) in videoObj.other_users" :key="index">
                             <div class="user-item">
-                                <div class="portrait"><img :src="'http://qa.bituquanguan.com'+item.avatar" alt=""></div>
+                                <div class="portrait"><img :src="item.avatar" alt=""></div>
                                 <p>{{item.nick_name}}</p>
                             </div>
                         </swiper-slide>
@@ -46,9 +46,9 @@
             <div class="title">更多推荐</div>
             <div class="video-list">
                 <div class="recommend-video" v-for="(item,index) in videoObj.recommend_videos" :key="index">
-                    <div class="is-pay">{{videoObj.price?'付费':'免费'}}</div>
+                    <div class="is-pay">{{item.price?'付费':'免费'}}</div>
                     <div class="play-btn" @click="playVideoEv(item.id,item.user_id)"></div>
-                    <img :src="'http://qa.bituquanguan.com'+item.url+'?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast'" :alt="item.name">
+                    <img :src="item.url+'?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast'" :alt="item.name">
                     <div class="video-name">{{item.name}}</div>
                 </div>
 
@@ -160,9 +160,12 @@
 
                     }
                 p {
+                    width: 3.3rem
                     margin-top: 0.5rem
                     text-align center
-                    overflow hidden
+                    overflow: hidden;
+                    text-overflow:ellipsis;
+                    white-space: nowrap;
                 }
 
     .portrait
@@ -236,7 +239,6 @@
     import TabBar from 'components/tabBar';
     import Modal from 'components/modal';
     import {wxConfig} from 'common/wechat';
-    import VueDPlayer from 'vue-dplayer'
     export default {
         data() {
             return {
@@ -260,8 +262,7 @@
             DownloadTip,
             Video,
             TabBar,
-            Modal,
-            'd-player': VueDPlayer
+            Modal
         },
         created() {
             this.id = this.$route.params.id;
@@ -287,20 +288,22 @@
         methods: {
             playVideo(){
                 console.log(document.querySelector('video'))
-                document.querySelector('video').play();
+                document.getElementsByTagName('video')[0].play();
             },
             playVideoEv(videoId,userId){
                 this.id = videoId.toString();
                 this.userId = userId.toString();
-                this.getData();
-                // location.href = `/#/hot_videos/${this.userId}/${this.id}`;
+                window.scrollTo(0,0)
+                this.getData(()=>{
+                    this.playVideo()
+                });
             },
-            getData() {
+            getData(callback) {
                 this.ajax(`/users/${this.userId}/hot_videos/${this.id}`, 'get').then((res) => {
                     if (res && res.data) {
                         this.videoObj = res.data;
                         this.$nextTick(()=>{
-                            this.playVideo()
+                            callback&&callback()
                         })
 
 
