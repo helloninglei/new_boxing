@@ -562,3 +562,13 @@ class AlbumPicture(models.Model):
         ordering = ('-created_time',)
         verbose_name = '照片'
 
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='feedback')
+    content = models.TextField(max_length=300)
+    images = StringListField(null=True)
+    mark = models.BooleanField(default=False)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_time',)
