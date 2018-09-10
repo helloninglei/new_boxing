@@ -10,6 +10,7 @@ from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
+from boxing_console.views.feedback import FeedbackViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet, hot_video_user_list, hot_video_tag_list
 from boxing_console.views.game_news import NewsViewSet
@@ -126,6 +127,12 @@ album_url = [
     path('pictures/<int:picture_id>', AlbumPictureViewSet.as_view({"delete": "delete"}), name='picture_delete')
 ]
 
+feedback = [
+    path('feedback', FeedbackViewSet.as_view({"get": "list"}), name="feedback_list"),
+    path('feedback/<int:pk>', FeedbackViewSet.as_view({"get": "retrieve"}), name="feedback_detail"),
+    re_path('^feedback/(?P<pk>\d+)/(?P<operate>(mark|unmark))$', FeedbackViewSet.as_view({"post": "do_mark"}), name="do_mark")
+]
+
 router.register(r"word_filters", WordFilterViewSet)
 
 urlpatterns = router.urls
@@ -144,6 +151,7 @@ urlpatterns += user_management_urls
 urlpatterns += official_account_change_logs_urls
 urlpatterns += message_urls
 urlpatterns += album_url
+urlpatterns += feedback
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
