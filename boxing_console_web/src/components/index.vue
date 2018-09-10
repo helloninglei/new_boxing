@@ -24,6 +24,9 @@
                     <el-menu-item index="/hotvideo" :disabled="disabled">
                         <div class='menu-item-inner'>视频管理</div>
                     </el-menu-item>
+                    <el-menu-item index="/album" :disabled="disabled">
+                        <div class='menu-item-inner'>相册管理</div>
+                    </el-menu-item>
                     <el-submenu index='2'>
                         <template slot="title" ><div class='mySubMenu'>约单管理</div></template>
                         <el-menu-item index="/classmanage" :disabled="disabled">

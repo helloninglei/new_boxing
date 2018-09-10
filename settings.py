@@ -20,6 +20,10 @@ PRODUCTION = 'production'
 TEST = 'test'
 DEVELOPMENT = 'development'
 
+
+
+
+
 ENVIRONMENT = DEVELOPMENT
 
 ALLOWED_HOSTS = [

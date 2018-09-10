@@ -7,12 +7,12 @@ from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
-
-from biz.utils import get_object_or_404
-from biz.utils import comment_count_condition
-from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES_FOR_FILTER
+from biz.constants import HOT_VIDEO_TAG_CHOICES_FOR_FILTER
 from boxing_app.filters import HotVideoFilter
-from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
+from boxing_app.serializers import HotVideoDetailSerializer
+from biz.utils import comment_count_condition, get_object_or_404
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
+from boxing_app.serializers import HotVideoSerializer
 from boxing_app.tasks import incr_hot_video_views_count
 
 

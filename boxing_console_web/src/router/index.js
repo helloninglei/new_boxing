@@ -21,6 +21,7 @@ import BannerContent    from 'page/bannercontent';
 import Cropper          from 'components/cropper';
 import Map1             from 'components/map';
 import Admin            from 'page/admin';
+import Album            from 'page/album';
 import Report           from 'page/report';
 import Hotvideo         from 'page/hot_videos';
 import Hotvideodetail   from 'page/hot_video_detail';
@@ -30,6 +31,7 @@ import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
 import Dynamic          from 'page/dynamic';
 import SensitiveWord    from 'page/sensitive_words';
+import AlbumDetail      from 'page/album_detail';
 
 
 export default [
@@ -136,6 +138,14 @@ export default [
             {
                 path: '/admin',
                 component: Admin,
+            },
+            {
+                path: '/album',
+                component: Album,
+            },
+            {
+                path: '/albumdetail',
+                component: AlbumDetail,
             },
             {
                 path: '/report',
