@@ -631,6 +631,7 @@ class WordFilterSerializer(serializers.ModelSerializer):
 
 class AlbumSerializer(serializers.ModelSerializer):
     nick_name = serializers.CharField(source='related_account.user_profile.nick_name', required=False, allow_blank=True)
+    avatar = serializers.CharField(source='related_account.user_profile.avatar', required=False, allow_blank=True)
 
     class Meta:
         model = Album
