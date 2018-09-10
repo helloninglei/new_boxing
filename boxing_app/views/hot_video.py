@@ -8,9 +8,16 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
 
+<<<<<<< HEAD
 from biz.utils import comment_count_condition, get_object_or_404
 from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
 from boxing_app.serializers import HotVideoSerializer
+=======
+from biz.utils import comment_count_condition
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES_FOR_FILTER
+from boxing_app.filters import HotVideoFilter
+from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
+>>>>>>> master_3.3.0
 from boxing_app.tasks import incr_hot_video_views_count
 
 
@@ -34,9 +41,10 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = HotVideoSerializer
     permission_classes = (permissions.AllowAny,)
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ("tag",)
+    filter_class = HotVideoFilter
 
     def retrieve(self, request, *args, **kwargs):
+        self.serializer_class = HotVideoDetailSerializer
         video_id = kwargs['pk']
         incr_hot_video_views_count.delay(video_id)
         return super().retrieve(request, *args, **kwargs)
@@ -57,4 +65,4 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_tag_list(_):
-    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES]})
+    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES_FOR_FILTER]})

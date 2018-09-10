@@ -34,6 +34,8 @@ class BannerTestCase(APITestCase):
             'try_url': '/videos/222',
             'cover': '/videos/333',
             'users': [self.test_user.id],
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
         }
 
         self.client.post('/hot_videos', hot_video_data)

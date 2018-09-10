@@ -30,7 +30,7 @@
                             <el-option :value="item.id" :label="item.name" v-for="item in videoTags">{{item.name}}</el-option>
                         </el-select>
                     </el-col>     
-                    <el-col :span='5'>
+                    <el-col :md="12" :lg="6" :xl='5'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click="filter()">查询</el-button>
                         <el-button  class='myButton_40 btn_width_95 myBtnHover_red margin_tp30' @click="reset()">重置</el-button>
                     </el-col>   
@@ -76,10 +76,10 @@
     @media screen and (max-width:1919px){
        .margin_top_30{margin-top:30px;margin-left:0!important;} 
     } 
-    @media screen and (min-width:1660px){
+    @media screen and (min-width:1681px){
        .margin_tp30{margin-top:0px!important;margin-left:0!important;} 
     }
-    @media screen and (max-width:1355px){
+    @media screen and (max-width:1333px){
        .videoTags{margin-top:30px!important;margin-left:0!important;} 
     } 
 </style>
