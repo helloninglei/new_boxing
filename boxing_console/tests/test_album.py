@@ -17,7 +17,12 @@ class AlbumTestCase(APITestCase):
         self.client.login(username=self.test_user, password='password')
         self.data_album = {"name": "他改变了中国", "release_time": "1926-08-17 20:12:01",
                            "is_show": False, "related_account": self.test_user.id}
-        self.data_picture = [{"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"}]
+        self.data_picture = [
+            {"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"},
+            {"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"},
+            {"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"},
+            {"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"},
+        ]
 
     def test_create_album(self):
         res = self.client.post(reverse('album_list'), self.data_album)
@@ -80,6 +85,7 @@ class AlbumTestCase(APITestCase):
     def test_add_picture_to_album(self):
         response = self.client.post(reverse('album_list'), self.data_album)
         album_id = response.data['id']
-        res = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=json.dumps(self.data_picture), content_type='application/json')
+        res = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=json.dumps(self.data_picture),
+                               content_type='application/json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res.data['saved'], 1)
+        self.assertEqual(res.data['saved'], len(self.data_picture))
