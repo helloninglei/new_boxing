@@ -254,7 +254,7 @@
                         $this.ruleForm.name    = res.data.name;
                         $this.ruleForm.is_show    = res.data.is_show;
                         $this.ruleForm.nick_name    = res.data.nick_name;
-                        $this.ruleForm.avatar= res.data.avatar;
+                        $this.ruleForm.avatar= res.data.avatar?res.data.avatar:' ';
                         $this.ruleForm.related_account_arr.push(res.data.related_account)
                         $this.ruleForm.related_account=res.data.related_account
                         $this.getPictures(res.data.id)
@@ -323,7 +323,7 @@
                 this.showChangeUser = false;
                 this.ruleForm.related_account = this.ruleForm.related_account_arr[0]
                 this.ruleForm.nick_name = this.userHash[this.ruleForm.related_account_arr[0]].nick_name
-                this.ruleForm.avatar = this.userHash[this.ruleForm.related_account_arr[0]].avatar
+                this.ruleForm.avatar = this.userHash[this.ruleForm.related_account_arr[0]].avatar?this.userHash[this.ruleForm.related_account_arr[0]].avatar:'';
             },
             conform1(id,index,file){
                 this.confirmData.isshow=false;
