@@ -9,7 +9,7 @@ from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
 
 from biz.utils import comment_count_condition
-from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES_FOR_FILTER
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_ALL, HOT_VIDEO_TAG_MAP
 from boxing_app.filters import HotVideoFilter
 from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
 from boxing_app.tasks import incr_hot_video_views_count
@@ -59,4 +59,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_tag_list(_):
-    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES_FOR_FILTER]})
+    tag_map = [{'id': HOT_VIDEO_TAG_ALL, 'name': '全部'}] + [{'id': i['tag'], 'name': HOT_VIDEO_TAG_MAP[i['tag']]} for i
+                                                           in models.HotVideo.objects.order_by('tag').values(
+            'tag').distinct()]
+    return Response({'result': tag_map})
