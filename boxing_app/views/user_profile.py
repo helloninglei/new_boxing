@@ -31,7 +31,7 @@ def bind_alipay_account(request):
 
 class UserProfileViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     serializer_class = UserProfileSerializer
-    queryset = UserProfile.objects.prefetch_related("user", "user__hot_videos")
+    queryset = UserProfile.objects.prefetch_related("user", "user__hot_videos", "user__albums")
 
     def get_object(self):
         return get_object_or_404(self.queryset, user=self.request.user)

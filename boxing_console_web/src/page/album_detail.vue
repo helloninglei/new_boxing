@@ -1,6 +1,6 @@
 <template>
     <div id="addHotvideo">
-        <TopBar v-if="isShowTop" firstTitle_name="相册管理" firstTitle_path="/albumdetail" :secondTitle_name="secondTitle_name" ></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="相册管理" firstTitle_path="/album" :secondTitle_name="secondTitle_name" ></TopBar>
         <div class='container'>
             <el-row> 
                 <el-col :span="16">
@@ -8,7 +8,7 @@
                         <el-form-item label="相册名称" prop="name">
                             <el-input v-model="ruleForm.name"  :maxlength="30" placeholder='限制30字数'></el-input>
                         </el-form-item>
-                        <el-form-item label="关联用户" prop='related_account'>
+                        <el-form-item label="关联用户" prop='related_account_arr'>
                             <ul>
                                 <li class='lf'>
                                     <p style='border-radius: 50%;width:50px;height:50px;overflow: hidden;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
@@ -16,12 +16,12 @@
                                     </p>
                                     <p style='text-align: center'>编辑关联用户</p>
                                 </li>
-                                <li class='lf' v-for="item in userImgIds" style='width:80px'>
+                                <li class='lf'style='width:80px'>
                                     <p style='border-radius: 50%;overflow: hidden;width:50px;height:50px;margin-left:15px'>
-                                        <img :src="config.baseUrl+item.avatar" alt="" width="100%">
+                                        <img :src="config.baseUrl+ruleForm.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
-                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name}}</p>
+                                    <p style='text-align: center'>{{ruleForm.nick_name.length>5?ruleForm.nick_name.slice(0,5)+'..':ruleForm.nick_name}}</p>
                                 </li>
                             </ul>
                         </el-form-item>
@@ -35,10 +35,10 @@
                                     multiple="multiple"
                                     :on-remove="handleRemove"
                                     style="position: relative;width: 100%;">
-                                <template v-for='(item,index) in pictureUrls'>
+                                <template v-for='(item,index) in pictures'>
                                     <div class="picture_container" >
                                         <i class="el-icon-circle-close close_btn" @click.stop="handleRemove" :id="index"></i>
-                                        <img :src="item.picture" class="avatar" width="100%">
+                                        <img :src="config.baseUrl+item.picture" class="avatar" width="100%">
                                     </div>
                                 </template>
                                 <div class="picture_container plus" >
@@ -48,11 +48,11 @@
                                 请上传图片
                             </div>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item v-if="!id">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="submitForm('ruleForm',false)">保存</el-button>
                             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm',true)">发布</el-button>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item v-else>
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="resetForm('ruleForm')">取消</el-button>
                             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">保存</el-button>
                         </el-form-item>
@@ -74,7 +74,7 @@
                   label: 'nick_name',
 
                 }"
-                v-model="ruleForm.related_account" 
+                v-model="ruleForm.related_account_arr" 
                 :data="userIds"></el-transfer>
             </template>
           </div>
@@ -83,7 +83,7 @@
             <el-button  class='myButton_40 btn_width_95 border_raduis_100' @click="close()">取消</el-button>
           </div>
         </el-dialog>
-
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
     </div>
 </template>
 
@@ -156,16 +156,15 @@
 </style>
 <script>
     import TopBar from 'components/topBar';
-    import $      from 'jquery' 
-    import Cropper from 'components/cropper';
     import config from 'common/my_config'
+    import Confirm     from "components/confirm"
     export default {
         data() {
             return {
                 isShowTop   : true,
                 tsurl       : '',
                 try_ts_url  : '',
-                secondTitle_name:'添加视频',
+                secondTitle_name:'新增相册',
                 id          :'',
                 btn_name    : '发布',
                 userIds     : [],
@@ -183,11 +182,12 @@
                 tsurlProgress:0,
                 showChangeUser:false,
                 ruleForm: {
-                    related_account   : [],
+                    related_account_arr   : [],
                     name    : '',
+                    nick_name:'',
                 },
                 rules:{
-                    related_account:[
+                    related_account_arr:[
                         { required:true,message:'请选择用户id', trigger:'blur' }
                     ],
                     name:[
@@ -199,28 +199,24 @@
                 changeUrl:false,
                 imgId :'',
                 src_avatar:'',
+                confirmData:{
+                    isshow: false,
+                    id    :'',
+                    content:'确认删除该图片？'
+                },
             }
         },
         components: {
-            TopBar,
-            Cropper
+            TopBar,            
+            Confirm
         },
         created() {
             let query     = this.$route.query
             this.id = query.id
             if(this.id){
                 this.secondTitle_name = '修改相册'
-                this.getData(this.id)                
-                console.log(query)
-            }else{
-                // 2018-06-12 08:06:08
-                let startDate = new Date();
-                let endDate   = new Date();
-                startDate.setMinutes(startDate.getMinutes()+5);
-                endDate.setDate(endDate.getDate()+1);
-                this.dateArr=[startDate.Format("yyyy-MM-dd hh:mm:ss"),endDate.Format("yyyy-MM-dd hh:mm:ss")]
+                this.getData(this.id)             
             }
-            this.getDateTime();
             this.getUserIds();            
         },
         watch:{
@@ -257,13 +253,11 @@
                     if(res&&res.data){
                         $this.ruleForm.name    = res.data.name;
                         $this.ruleForm.is_show    = res.data.is_show;
-                        $this.userImgIds = res.data.name;
-                        for(var i=0;i<$this.userImgIds.length;i++){
-                            $this.ruleForm.related_account.push($this.userImgIds[i].id)
-                            if($this.userImgIds[i].id==10){
-                               $this.ruleForm.push_to_hotvideo = true;
-                            }
-                        }
+                        $this.ruleForm.nick_name    = res.data.nick_name;
+                        $this.ruleForm.avatar= res.data.avatar;
+                        $this.ruleForm.related_account_arr.push(res.data.related_account)
+                        $this.ruleForm.related_account=res.data.related_account
+                        $this.getPictures(res.data.id)
 
                     }
 
@@ -279,44 +273,66 @@
                     } 
                 })
             },
+            getPictures(id){
+                let $this = this
+                this.pictures = []
+                this.pictureUrls = []
+                this.ajax('/albums/'+id+'/pictures','get').then(function(res){
+                    if(res&&res.data){
+                        $this.pictures=res.data                                         }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                })
+            },
             handleAvatarSuccess(res, file) {
-                console.log(res, file)
                 let picUrl = `${config.baseUrl}${res.urls[0]}`;
                 let image = new Image();
                 image.src = picUrl;
                 image.onload = () => {
-                    this.pictures.push({picture:res.urls[0]})                        
-                    this.pictureUrls.push({picture:picUrl});
-                };
+                    this.pictures.push({picture:res.urls[0]})                   };
             },
             handleRemove(file) {
-                this.pictureUrls.splice(file.target.id,1)
-                this.pictures.splice(file.target.id,1)
+                this.confirmData.index = file.target.id
+                this.confirmData.isshow = true ;
+                
             },
             filterMethod(query, item){
                 return item.nick_name.indexOf(query) > -1;
-
             },
             close(){
                 this.showChangeUser = false;
             },
             confirm(){
-                if(this.ruleForm.related_account.length>1){
+                if(this.ruleForm.related_account_arr.length>1){
                     this.$message({
                         message: '关联用户最多只能选1个',
                         type: 'warning'
                     })
                     return;
                 }
+                console.log(this.userHash[this.ruleForm.related_account_arr[0]])
                 this.showChangeUser = false;
-                // console.log(this.ruleForm.related_account)
-                let userImgIds = []
-                for(var i=0;i<this.ruleForm.related_account.length;i++){
-                    userImgIds.push(this.userHash[this.ruleForm.related_account[i]])
-                }
-                console.log(this.ruleForm.related_account)
-                console.log(userImgIds)
-                this.userImgIds = userImgIds
+                this.ruleForm.related_account = this.ruleForm.related_account_arr[0]
+                this.ruleForm.nick_name = this.userHash[this.ruleForm.related_account_arr[0]].nick_name
+                this.ruleForm.avatar = this.userHash[this.ruleForm.related_account_arr[0]].avatar
+            },
+            conform1(id,index,file){
+                this.confirmData.isshow=false;
+                this.pictures.splice(index,1)
+
+            },
+            cancel1(val){
+                this.confirmData.isshow=val;
+                this.confirmData.index = '';
             },
             submitForm(formName,isshow) {
                 let $this = this
@@ -329,7 +345,7 @@
                             console.log('编辑',sendData)
                             this.ajax('/albums/'+this.id,'patch',sendData).then(function(res){
                                 if(res&&res.data){
-                                    $this.resetForm(formName)
+                                    $this.addPictures(res.data.id,formName)
                                 }
 
                             },function(err){
@@ -345,25 +361,26 @@
                             })
                         }else{
                             //新建
-                            sendData.release_time = now().Format("yyyy-MM-dd hh:mm:ss");
+
+                            sendData.release_time = new Date().Format("yyyy-MM-dd hh:mm:ss");
                             sendData.is_show = isshow;
                             console.log('新建',sendData)
-                            // this.ajax('/','post',sendData).then(function(res){
-                            //     if(res&&res.data){
-                            //         $this.resetForm(formName)
-                            //     }
+                            this.ajax('/albums','post',sendData).then(function(res){
+                                if(res&&res.data){
+                                    $this.addPictures(res.data.id,formName)
+                                }
 
-                            // },function(err){
-                            //     if(err&&err.response){
-                            //         let errors=err.response.data
-                            //         for(var key in errors){
-                            //             $this.$message({
-                            //                 message: errors[key][0],
-                            //                 type: 'error'
-                            //             });
-                            //         } 
-                            //     } 
-                            // })
+                            },function(err){
+                                if(err&&err.response){
+                                    let errors=err.response.data
+                                    for(var key in errors){
+                                        $this.$message({
+                                            message: errors[key][0],
+                                            type: 'error'
+                                        });
+                                    } 
+                                } 
+                            })
                         }
                     } else {
                         console.log('error submit!!');
@@ -371,13 +388,29 @@
                     }
                 });
             },
+            addPictures(id,formName){
+                let $this = this ;
+               this.ajax('/albums/'+id+'/pictures','post',this.pictures).then(function(res){
+                    if(res&&res.data){
+                        $this.resetForm(formName)
+                        console.log(res.data)
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            $this.$message({
+                                message: errors[key][0],
+                                type: 'error'
+                            });
+                        } 
+                    } 
+                }) 
+            },
             resetForm(formName) {
                 this.$router.push({path: '/album'});
                 this.$refs[formName].resetFields();
-            },
-            getDateTime() {
-                this.ruleForm.start_time = this.dateArr?this.dateArr[0]:'';
-                this.ruleForm.end_time = this.dateArr?this.dateArr[1]:'';
             },
         },
     }

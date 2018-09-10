@@ -2,7 +2,7 @@
     <div >
         <TopBar v-if="isShowTop" firstTitle_name="相册管理" firstTitle_path="/admin" disNone="disNone"></TopBar>
         <nav  id="admin">
-            <el-button type="danger" class='myColor_red myButton_40 btn_width_95' style="margin-bottom: 20px" @click="dialog_label_data.isshow=true">新增相册</el-button>            
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_95' style="margin-bottom: 20px" @click="addAlbum">新增相册</el-button>            
             <template>
                 <el-table
                   :data="tableData"
@@ -109,22 +109,21 @@
             },
             getData(page){
                 var $this=this;
-                // this.ajax('/albums','get',{},{page:page}).then(function(res){
-                //     if(res&&res.data){
-                //         console.log(res.data)
-                //         $this.tableData = res.data.results
-                //         $this.total = res.data.total
-                //     }
+                this.ajax('/albums','get',{},{page:page}).then(function(res){
+                    if(res&&res.data){
+                        $this.tableData = res.data.results
+                        $this.total = res.data.total
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
             changePage(val){
                 // 要看第几页
@@ -135,14 +134,14 @@
                 //修改详情页
                 this.$router.push({path: '/albumdetail', query:row});
             },
+            addAlbum(){
+                this.$router.push({path: '/albumdetail'});
+            },
             changeShow(row,index){
                 // 显示隐藏
-                console.log(row.is_show)
-                console.log(!row.is_show)
                 let $this = this;
-                this.ajax('/hot_videos/'+row.id,'patch',{is_show:!row.is_show}).then(function(res){
+                this.ajax('/albums/'+row.id,'patch',{is_show:!row.is_show}).then(function(res){
                     if(res&&res.data){
-                        console.log(res.data)
                         row.is_show= res.data.is_show
                         row.is_show_name = res.data.is_show?'显示':'隐藏'
                         // $this.tableData.splice(index,1,row);

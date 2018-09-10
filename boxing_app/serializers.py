@@ -570,6 +570,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
+    has_album = serializers.BooleanField(source='user.albums.count', read_only=True)
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
@@ -820,3 +821,9 @@ class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Album
         fields = ['id', 'name', 'total', 'pictures']
+
+
+class AlbumPictureSerilizer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AlbumPicture
+        fields = ['id', 'picture']
