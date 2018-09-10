@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from biz.models import User, Feedback
+from biz.models import User, Feedback, UserProfile
 
 
 class FeedbackTestCase(APITestCase):
@@ -26,13 +26,33 @@ class FeedbackTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data['results']), feedback_count)
 
+        # search by mobile
+        res = self.client2.get(reverse('feedback_list'), data={'search': self.user1.mobile})
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['results']), feedback_count)
+        res = self.client2.get(reverse('feedback_list'), data={'search': self.user2.mobile})
+        self.assertEqual(len(res.data['results']), 0)
+
+        # search by nick_name
+        UserProfile.objects.filter(user=self.user1).update(nick_name="张三")
+        UserProfile.objects.filter(user=self.user2).update(nick_name="张四")
+        self.user1.refresh_from_db()
+        self.user2.refresh_from_db()
+        res = self.client2.get(reverse('feedback_list'), data={'search': self.user1.user_profile.nick_name})
+        self.assertEqual(len(res.data['results']), feedback_count)
+        res = self.client2.get(reverse('feedback_list'), data={'search': self.user2.user_profile.nick_name})
+        self.assertEqual(len(res.data['results']), 0)
+
+
+
+
     def test_get_feedback_detail(self):
         fd = Feedback.objects.create(**self.feedback_data)
         res = self.client2.get(reverse('feedback_detail', kwargs={"pk": fd.id}))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         for key in self.feedback_data:
             if key == "user":
-                self.assertEqual(res.data[key], self.user1.id)
+                self.assertEqual(res.data[key]['id'], self.user1.id)
             else:
                 self.assertEqual(res.data[key], self.feedback_data[key])
 

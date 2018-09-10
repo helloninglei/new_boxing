@@ -1,4 +1,4 @@
-from rest_framework import status, mixins
+from rest_framework import status, mixins, filters
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
@@ -12,6 +12,9 @@ class FeedbackViewSet(mixins.RetrieveModelMixin,
                       GenericViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ("user__mobile", "user__user_profile__nick_name")
+
 
     def do_mark(self, request, *args, **kwargs):
         mark = True if self.kwargs.get('operate') == "mark" else False

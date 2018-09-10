@@ -648,6 +648,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Feedback
+        depth = 1
         fields = "__all__"
 
 
