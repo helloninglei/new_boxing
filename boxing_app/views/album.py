@@ -29,3 +29,4 @@ class AlbumPictureViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return AlbumPicture.objects.filter(album_id=self.kwargs['pk'])
+
