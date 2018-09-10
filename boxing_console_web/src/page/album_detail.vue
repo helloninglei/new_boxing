@@ -6,9 +6,9 @@
                 <el-col :span="16">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
                         <el-form-item label="相册名称" prop="name">
-                            <el-input v-model="ruleForm.name"  :maxlength="40" placeholder='限制40字数'></el-input>
+                            <el-input v-model="ruleForm.name"  :maxlength="30" placeholder='限制30字数'></el-input>
                         </el-form-item>
-                        <el-form-item label="关联用户" prop='users'>
+                        <el-form-item label="关联用户" prop='related_account'>
                             <ul>
                                 <li class='lf'>
                                     <p style='border-radius: 50%;width:50px;height:50px;overflow: hidden;margin-left:15px;cursor: pointer' @click='showChangeUser=true'>
@@ -21,7 +21,7 @@
                                         <img :src="config.baseUrl+item.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
-                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name.length}}</p>
+                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name}}</p>
                                 </li>
                             </ul>
                         </el-form-item>
@@ -33,11 +33,12 @@
                                     :on-success="handleAvatarSuccess"
                                     list-type = 'text/picture/picture-card'
                                     multiple="multiple"
+                                    :on-remove="handleRemove"
                                     style="position: relative;width: 100%;">
-                                <template v-for='picture in pictures'>
-                                    <div class="picture_container">
-                                        <i class="el-icon-circle-close close_btn" @click.stop="removeImageEv"></i>
-                                        <img :src="picture" class="avatar" width="100%">
+                                <template v-for='(item,index) in pictureUrls'>
+                                    <div class="picture_container" >
+                                        <i class="el-icon-circle-close close_btn" @click.stop="handleRemove" :id="index"></i>
+                                        <img :src="item.picture" class="avatar" width="100%">
                                     </div>
                                 </template>
                                 <div class="picture_container plus" >
@@ -48,9 +49,12 @@
                             </div>
                         </el-form-item>
                         <el-form-item>
-                            <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
-                             <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">{{btn_name}}</el-button>
-                             <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="resetForm('ruleForm')">取消</el-button>
+                            <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="submitForm('ruleForm',false)">保存</el-button>
+                            <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm',true)">发布</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button class='myButton_40 btn_width_95 myBtnHover_red' @click="resetForm('ruleForm')">取消</el-button>
+                            <el-button type="danger" class='myColor_red myButton_40 btn_width_95' @click="submitForm('ruleForm')">保存</el-button>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -70,7 +74,7 @@
                   label: 'nick_name',
 
                 }"
-                v-model="ruleForm.users" 
+                v-model="ruleForm.related_account" 
                 :data="userIds"></el-transfer>
             </template>
           </div>
@@ -179,11 +183,11 @@
                 tsurlProgress:0,
                 showChangeUser:false,
                 ruleForm: {
-                    users   : [],
+                    related_account   : [],
                     name    : '',
                 },
                 rules:{
-                    users:[
+                    related_account:[
                         { required:true,message:'请选择用户id', trigger:'blur' }
                     ],
                     name:[
@@ -206,19 +210,8 @@
             this.id = query.id
             if(this.id){
                 this.secondTitle_name = '修改相册'
-                this.btn_name = '修改'
-                // this.getData(this.id)
-                let tsurl = query.url
-                this.tsurl=query.url
-                let try_ts_url = query.try_url
-                this.try_ts_url= query.try_url
-                this.ruleForm.tag = query.tag
-                this.ruleForm.push_hot_video = query.push_hot_video
-                $('#full_video').val(tsurl) 
-                $('#little_video').val(try_ts_url) 
-                this.dateArr=[query.start_time?query.start_time:'',query.end_time?query.end_time:'']
+                this.getData(this.id)                
                 console.log(query)
-                console.log(this.dateArr)
             }else{
                 // 2018-06-12 08:06:08
                 let startDate = new Date();
@@ -260,21 +253,17 @@
             },
             getData(id){
                 let $this = this;
-                this.ajax('/hot_videos/'+id,'get').then(function(res){
+                this.ajax('/albums/'+id,'get').then(function(res){
                     if(res&&res.data){
                         $this.ruleForm.name    = res.data.name;
-                        $this.ruleForm.price_int   = parseInt(res.data.price)/100;
-                        $this.ruleForm.description = res.data.description;
-                        $this.ruleForm.cover = res.data.cover;
-                        $this.ruleForm.stay_top = res.data.stay_top
-                        $this.userImgIds = res.data.user_list;
+                        $this.ruleForm.is_show    = res.data.is_show;
+                        $this.userImgIds = res.data.name;
                         for(var i=0;i<$this.userImgIds.length;i++){
-                            $this.ruleForm.users.push($this.userImgIds[i].id)
+                            $this.ruleForm.related_account.push($this.userImgIds[i].id)
                             if($this.userImgIds[i].id==10){
                                $this.ruleForm.push_to_hotvideo = true;
                             }
                         }
-                        $this.src_avatar = $this.config.baseUrl + res.data.cover;
 
                     }
 
@@ -296,18 +285,13 @@
                 let image = new Image();
                 image.src = picUrl;
                 image.onload = () => {
-                    // if (image.width !== 1242 || image.height != 564) {
-                    //     this.showErrorTip('请上传符合尺寸的商品详情图');
-                    // }
-                    // else {
-                    //     this.picture = picUrl
-                    //     this.pictureUrl = res.urls[0];
-                    //     this.showError = false;
-                    // }
-                        this.pictures.push(picUrl)
-                        this.pictureUrls.push(res.urls[0]);
-                        // this.showError = false;
+                    this.pictures.push({picture:res.urls[0]})                        
+                    this.pictureUrls.push({picture:picUrl});
                 };
+            },
+            handleRemove(file) {
+                this.pictureUrls.splice(file.target.id,1)
+                this.pictures.splice(file.target.id,1)
             },
             filterMethod(query, item){
                 return item.nick_name.indexOf(query) > -1;
@@ -317,24 +301,24 @@
                 this.showChangeUser = false;
             },
             confirm(){
-                if(this.ruleForm.users.length>7){
+                if(this.ruleForm.related_account.length>1){
                     this.$message({
-                        message: '关联用户最多只能选7个',
+                        message: '关联用户最多只能选1个',
                         type: 'warning'
                     })
                     return;
                 }
                 this.showChangeUser = false;
-                // console.log(this.ruleForm.users)
+                // console.log(this.ruleForm.related_account)
                 let userImgIds = []
-                for(var i=0;i<this.ruleForm.users.length;i++){
-                    userImgIds.push(this.userHash[this.ruleForm.users[i]])
+                for(var i=0;i<this.ruleForm.related_account.length;i++){
+                    userImgIds.push(this.userHash[this.ruleForm.related_account[i]])
                 }
-                console.log(this.ruleForm.users)
+                console.log(this.ruleForm.related_account)
                 console.log(userImgIds)
                 this.userImgIds = userImgIds
             },
-            submitForm(formName) {
+            submitForm(formName,isshow) {
                 let $this = this
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -342,7 +326,8 @@
                         let $this = this
                         if(this.id){
                             //编辑
-                            this.ajax('/'+this.id,'put',sendData).then(function(res){
+                            console.log('编辑',sendData)
+                            this.ajax('/albums/'+this.id,'patch',sendData).then(function(res){
                                 if(res&&res.data){
                                     $this.resetForm(formName)
                                 }
@@ -360,22 +345,25 @@
                             })
                         }else{
                             //新建
-                            this.ajax('/','post',sendData).then(function(res){
-                                if(res&&res.data){
-                                    $this.resetForm(formName)
-                                }
+                            sendData.release_time = now().Format("yyyy-MM-dd hh:mm:ss");
+                            sendData.is_show = isshow;
+                            console.log('新建',sendData)
+                            // this.ajax('/','post',sendData).then(function(res){
+                            //     if(res&&res.data){
+                            //         $this.resetForm(formName)
+                            //     }
 
-                            },function(err){
-                                if(err&&err.response){
-                                    let errors=err.response.data
-                                    for(var key in errors){
-                                        $this.$message({
-                                            message: errors[key][0],
-                                            type: 'error'
-                                        });
-                                    } 
-                                } 
-                            })
+                            // },function(err){
+                            //     if(err&&err.response){
+                            //         let errors=err.response.data
+                            //         for(var key in errors){
+                            //             $this.$message({
+                            //                 message: errors[key][0],
+                            //                 type: 'error'
+                            //             });
+                            //         } 
+                            //     } 
+                            // })
                         }
                     } else {
                         console.log('error submit!!');
@@ -384,7 +372,7 @@
                 });
             },
             resetForm(formName) {
-                this.$router.push({path: '/hotvideo'});
+                this.$router.push({path: '/album'});
                 this.$refs[formName].resetFields();
             },
             getDateTime() {
