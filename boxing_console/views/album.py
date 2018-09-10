@@ -27,8 +27,3 @@ class AlbumPictureViewSet(viewsets.ViewSet):
             return Response(data={'saved': len(serializer.data)}, status=201)
 
         return Response(status=400)
-
-    def delete(self, request, picture_id):
-        models.AlbumPicture.objects.filter(id=picture_id).delete()
-        return Response(status=200)
-

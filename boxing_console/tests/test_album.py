@@ -1,9 +1,11 @@
 # -*- coding:utf-8 -*-
+import json
+
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User
-from biz.models import UserProfile
+from biz.models import UserProfile, AlbumPicture
 
 
 class AlbumTestCase(APITestCase):
@@ -15,7 +17,7 @@ class AlbumTestCase(APITestCase):
         self.client.login(username=self.test_user, password='password')
         self.data_album = {"name": "他改变了中国", "release_time": "1926-08-17 20:12:01",
                            "is_show": False, "related_account": self.test_user.id}
-        self.data_picture = {"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"}
+        self.data_picture = [{"picture": "/uploads/52/a9/a96d7356a482ecc732c8b1f67b372717fb80.jpg"}]
 
     def test_create_album(self):
         res = self.client.post(reverse('album_list'), self.data_album)
@@ -70,7 +72,7 @@ class AlbumTestCase(APITestCase):
         response = self.client.post(reverse('album_list'), self.data_album)
         album_id = response.data['id']
         for i in range(picture_num):
-            self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=self.data_picture)
+            AlbumPicture.objects.create(album_id=album_id, picture=self.data_picture[0])
         res = self.client.get(reverse('picture_list', kwargs={"album_id": album_id}))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), picture_num)
@@ -78,14 +80,6 @@ class AlbumTestCase(APITestCase):
     def test_add_picture_to_album(self):
         response = self.client.post(reverse('album_list'), self.data_album)
         album_id = response.data['id']
-        res = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=self.data_picture)
+        res = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=json.dumps(self.data_picture), content_type='application/json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertIsNotNone(res.data)
-
-    def test_delete_picture(self):
-        response = self.client.post(reverse('album_list'), self.data_album)
-        album_id = response.data['id']
-        response = self.client.post(reverse('picture_list', kwargs={"album_id": album_id}), data=self.data_picture)
-        picture_id = int(response.data)
-        res = self.client.delete(reverse('picture_delete', kwargs={'picture_id': picture_id}))
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['saved'], 1)
