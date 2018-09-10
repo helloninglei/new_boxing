@@ -36,7 +36,7 @@ class AlbumTestCase(APITestCase):
         res = self.client.get(reverse('album_detail', kwargs={'pk': album.id}))
         self.assertEqual(len(res.data), 0)
         pic = AlbumPicture.objects.create(picture='/path/to/pic.jog', created_time=datetime.now(), album=album)
-        res = self.client.get(reverse('album_detail', kwargs={'pk': album.id}))
+        res = self.client.get(reverse('picture_list', kwargs={'pk': album.id}))
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data[0]['id'], pic.id)
         self.assertEqual(res.data[0]['picture'], pic.picture)

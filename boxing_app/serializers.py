@@ -742,9 +742,3 @@ class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Album
         fields = ['id', 'name', 'total', 'pictures']
-
-
-class AlbumPictureSerilizer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AlbumPicture
-        fields = ['id', 'picture']
