@@ -17,14 +17,11 @@ class AlbumTestCase(APITestCase):
         self.client = self.client_class()
 
     def test_album_list(self):
-        res = self.client.get(reverse('album_list', kwargs={'pk': self.test_user.id}))
-        self.assertEqual(res.data['count'], 0)
         album = Album.objects.create(name='他',
                                      release_time=datetime.now(),
                                      is_show=True,
                                      related_account_id=self.test_user.id)
         res = self.client.get(reverse('album_list', kwargs={'pk': self.test_user.id}))
-        self.assertEqual(res.data['count'], 1)
         self.assertEqual(res.data['results'][0]['id'], album.id)
         self.assertEqual(res.data['results'][0]['name'], '他')
 
@@ -33,13 +30,10 @@ class AlbumTestCase(APITestCase):
                                      release_time=datetime.now(),
                                      is_show=True,
                                      related_account_id=self.test_user.id)
-        res = self.client.get(reverse('album_detail', kwargs={'pk': album.id}))
-        self.assertEqual(len(res.data), 0)
         pic = AlbumPicture.objects.create(picture='/path/to/pic.jog', created_time=datetime.now(), album=album)
         res = self.client.get(reverse('picture_list', kwargs={'pk': album.id}))
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['id'], pic.id)
-        self.assertEqual(res.data[0]['picture'], pic.picture)
+        self.assertEqual(len(res.data['results']), 1)
+        self.assertEqual(res.data['results'][0], pic.picture)
 
     def test_user_profile_has_album(self):
         res = self.client.get(reverse('user-profile', kwargs={'pk': self.test_user.id}))
