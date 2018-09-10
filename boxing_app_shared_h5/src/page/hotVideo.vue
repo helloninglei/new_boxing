@@ -286,9 +286,15 @@
 
         },
         methods: {
+            isIos() {
+                let u = navigator.userAgent, app = navigator.appVersion;
+                return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+            },
             playVideo(){
-                console.log(document.querySelector('video'))
-                document.getElementsByTagName('video')[0].play();
+                if(this.isIos()){
+                    document.querySelector('video').play();
+                }
+
             },
             playVideoEv(videoId,userId){
                 this.id = videoId.toString();

@@ -9,14 +9,25 @@ from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
 
 <<<<<<< HEAD
-from biz.utils import comment_count_condition
-from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES_FOR_FILTER
-from boxing_app.filters import HotVideoFilter
-from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
+<<<<<<< HEAD
 =======
 from biz.utils import comment_count_condition, get_object_or_404
 from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
 from boxing_app.serializers import HotVideoSerializer
+=======
+>>>>>>> master_3.4.0
+from biz.utils import comment_count_condition
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES_FOR_FILTER
+from boxing_app.filters import HotVideoFilter
+from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
+<<<<<<< HEAD
+=======
+from biz.utils import comment_count_condition, get_object_or_404
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_CHOICES
+from boxing_app.serializers import HotVideoSerializer
+>>>>>>> master_3.4.0
+=======
+>>>>>>> master_3.3.0
 >>>>>>> master_3.4.0
 from boxing_app.tasks import incr_hot_video_views_count
 

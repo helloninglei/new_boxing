@@ -12,7 +12,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course, Album, AlbumPicture, Message, Comment
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
@@ -821,9 +821,3 @@ class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Album
         fields = ['id', 'name', 'total', 'pictures']
-
-
-class AlbumPictureSerilizer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AlbumPicture
-        fields = ['id', 'picture']
