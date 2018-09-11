@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment, Album, AlbumPicture
+    OrderComment, Album, AlbumPicture, Feedback
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -650,4 +650,14 @@ class AlbumPictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumPicture
         exclude = ('created_time', 'album')
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    images = serializers.ListField()
+
+    class Meta:
+        model = models.Feedback
+        depth = 1
+        fields = "__all__"
+
 

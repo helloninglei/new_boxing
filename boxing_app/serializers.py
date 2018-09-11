@@ -821,3 +821,12 @@ class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Album
         fields = ['id', 'name', 'total', 'pictures']
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    images = serializers.ListField(child=serializers.CharField(max_length=200), max_length=8, required=False)
+
+    class Meta:
+        model = models.Feedback
+        fields = "__all__"
