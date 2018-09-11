@@ -654,10 +654,11 @@ class AlbumPictureSerializer(serializers.ModelSerializer):
 
 class FeedbackSerializer(serializers.ModelSerializer):
     images = serializers.ListField()
+    user_nick_name = serializers.CharField(source='user.user_profile.nick_name')
+    user_mobile = serializers.CharField(source='user.mobile')
 
     class Meta:
         model = models.Feedback
-        depth = 1
         fields = "__all__"
 
 

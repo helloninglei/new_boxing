@@ -43,18 +43,14 @@ class FeedbackTestCase(APITestCase):
         res = self.client2.get(reverse('feedback_list'), data={'search': self.user2.user_profile.nick_name})
         self.assertEqual(len(res.data['results']), 0)
 
-
-
-
     def test_get_feedback_detail(self):
         fd = Feedback.objects.create(**self.feedback_data)
         res = self.client2.get(reverse('feedback_detail', kwargs={"pk": fd.id}))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        for key in self.feedback_data:
-            if key == "user":
-                self.assertEqual(res.data[key]['id'], self.user1.id)
-            else:
-                self.assertEqual(res.data[key], self.feedback_data[key])
+        self.assertEqual(res.data['content'], self.feedback_data['content'])
+        self.assertEqual(res.data['images'], self.feedback_data['images'])
+        self.assertEqual(res.data['user_nick_name'], self.feedback_data['user'].user_profile.nick_name)
+        self.assertEqual(res.data['user_mobile'], self.feedback_data['user'].mobile)
 
     def test_do_mark(self):
         fd = Feedback.objects.create(**self.feedback_data)
