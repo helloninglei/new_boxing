@@ -25,6 +25,8 @@ class Feedback(APITestCase):
         }
         res = self.client1.post(reverse('create_feedback'), data=feedback_data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        for key in feedback_data:
+            self.assertEqual(res.data[key], feedback_data[key])
 
     def test_create_feedback_fail_because_more_than_8_images(self):
         feedback_data = {
