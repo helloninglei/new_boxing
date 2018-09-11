@@ -248,6 +248,11 @@ class CommentMeSerializer(serializers.ModelSerializer):
     def get_reply_or_comment(self, instance):
         return 'reply' if instance.parent else 'comment'
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['created_time'] = instance.created_time.strftime('%Y-%m-%d %H:%M')
+        return ret
+
     class Meta:
         model = models.Comment
         fields = ['content', 'user', 'obj_type', 'to_object', 'object_id', 'created_time', 'reply_or_comment']
@@ -255,6 +260,11 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['created_time'] = instance.created_time.strftime('%Y-%m-%d %H:%M')
+        return ret
 
     class Meta:
         model = models.Like
