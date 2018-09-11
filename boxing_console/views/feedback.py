@@ -15,8 +15,7 @@ class FeedbackViewSet(mixins.RetrieveModelMixin,
     filter_backends = (filters.SearchFilter, )
     search_fields = ("user__mobile", "user__user_profile__nick_name")
 
-
     def do_mark(self, request, *args, **kwargs):
-        mark = True if self.kwargs.get('operate') == "mark" else False
+        mark = self.kwargs.get('operate') == "mark"
         Feedback.objects.filter(id=self.kwargs.get('pk')).update(mark=mark)
         return Response(status=status.HTTP_200_OK)
