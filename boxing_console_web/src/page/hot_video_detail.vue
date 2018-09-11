@@ -70,7 +70,7 @@
                                         <img :src="config.baseUrl+item.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
                                     </p>
-                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name.length}}</p>
+                                    <p style='text-align: center'>{{item.nick_name.length>5?item.nick_name.slice(0,5)+'..':item.nick_name}}</p>
                                 </li>
                             </ul>
                         </el-form-item>
@@ -351,11 +351,10 @@
                 this.try_ts_url= query.try_url
                 this.ruleForm.tag = query.tag
                 this.ruleForm.push_hot_video = query.push_hot_video
+                this.ruleForm.push_to_hotvideo = query.push_to_hotvideo
                 $('#full_video').val(tsurl) 
                 $('#little_video').val(try_ts_url) 
                 this.dateArr=[query.start_time?query.start_time:'',query.end_time?query.end_time:'']
-                console.log(query)
-                console.log(this.dateArr)
             }else{
                 // 2018-06-12 08:06:08
                 let startDate = new Date();
@@ -415,6 +414,9 @@
                         $this.ruleForm.cover = res.data.cover;
                         $this.ruleForm.stay_top = res.data.stay_top
                         $this.userImgIds = res.data.user_list;
+                        $this.ruleForm.tag = res.data.tag
+                        $this.ruleForm.push_hot_video = res.data.push_hot_video
+                        $this.ruleForm.push_to_hotvideo = res.data.push_to_hotvideo
                         for(var i=0;i<$this.userImgIds.length;i++){
                             $this.ruleForm.users.push($this.userImgIds[i].id)
                             if($this.userImgIds[i].id==10){
