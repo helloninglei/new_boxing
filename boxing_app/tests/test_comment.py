@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User
+from biz.models import User, Message
 
 
 class CommentTestCase(APITestCase):
@@ -142,3 +142,11 @@ class CommentTestCase(APITestCase):
         self.client2.post('/messages/%s/comments/%s' % (self.message_id, comment_id), msg3)
         res = self.client1.get('/comment_me')
         self.assertEqual(len(res.data['results']), 3)
+
+        # if message is delete comment should not show in list
+        message = Message.objects.get(id=self.message_id)
+        message.soft_delete()
+        message.save()
+        res = self.client1.get('/comment_me')
+        self.assertEqual(len(res.data['results']), 0)
+

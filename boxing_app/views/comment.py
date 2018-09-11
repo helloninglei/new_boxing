@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Avg, Q
 from rest_framework import status, permissions, mixins
 from rest_framework import viewsets
@@ -54,8 +55,11 @@ class CommentMeListViewSet(mixins.ListModelMixin,
     serializer_class = CommentMeSerializer
 
     def list(self, request, *args, **kwargs):
+        message_content_type = ContentType.objects.get(app_label="biz", model="Message")
+        deleted_message = Message.all_objects.filter(is_deleted=True).values_list('id', flat=True)
         self.queryset = models.Comment.objects.filter(Q(parent__user=request.user) |
                                                       (Q(message__user=request.user) & Q(parent__isnull=True)))\
+            .exclude(content_type=message_content_type, object_id__in=deleted_message)\
             .order_by('-created_time')
         redis_client.delete(UNREAD_COMMENT.format(user_id=request.user.id))
         return super().list(request, *args, **kwargs)
