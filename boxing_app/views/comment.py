@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.viewsets import GenericViewSet
 
 from biz import models
-from biz.models import OrderComment, Message
+from biz.models import OrderComment, Message, HotVideo
 from biz.utils import get_model_class_by_name, get_object_or_404, Round
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from boxing_app.serializers import CommentSerializer, OrderCommentSerializer, CommentMeSerializer
@@ -56,10 +56,13 @@ class CommentMeListViewSet(mixins.ListModelMixin,
 
     def list(self, request, *args, **kwargs):
         message_content_type = ContentType.objects.get(app_label="biz", model="Message")
+        video_content_type = ContentType.objects.get(app_label="biz", model="HotVideo")
         deleted_message = Message.all_objects.filter(is_deleted=True).values_list('id', flat=True)
+        hidden_video = HotVideo.objects.filter(is_show=False).values_list('id', flat=True)
         self.queryset = models.Comment.objects.filter(Q(parent__user=request.user) |
                                                       (Q(message__user=request.user) & Q(parent__isnull=True)))\
-            .exclude(content_type=message_content_type, object_id__in=deleted_message)\
+            .exclude(Q(content_type=message_content_type, object_id__in=deleted_message) |
+                     Q(content_type=video_content_type, object_id__in=hidden_video))\
             .order_by('-created_time')
         redis_client.delete(UNREAD_COMMENT.format(user_id=request.user.id))
         return super().list(request, *args, **kwargs)
