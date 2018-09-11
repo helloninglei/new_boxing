@@ -4,7 +4,7 @@ from APISender import APISender
 from django.conf import settings
 from base.APIConstants import Constants
 from base.APIMessage import PushMessage
-from biz.constants import APP_JUMP_OBEJCT_NEWS
+from biz.constants import APP_JUMP_OBEJCT_NEWS, APP_JUMP_OBEJCT_HOT_VIDEO
 
 if settings.ENVIRONMENT == settings.PRODUCTION:
     Constants.use_official()

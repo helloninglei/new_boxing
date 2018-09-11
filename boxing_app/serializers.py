@@ -2,6 +2,7 @@
 import re
 from datetime import datetime
 
+from django.db.models import Q
 from django.forms import model_to_dict
 from django.utils import timezone
 from django.conf import settings
@@ -11,10 +12,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course, Album, AlbumPicture, Message, Comment
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.constants import PAYMENT_TYPE
 from biz.constants import REPORT_OTHER_REASON
-from biz.redis_client import follower_count, following_count, get_user_title
+from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
 from biz.redis_client import is_following, get_object_location, set_user_title
@@ -115,18 +116,22 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
                             'real_name', 'allowed_course', 'city', 'title']
 
 
+def serialize_user(user, context):
+    profile = user.user_profile
+
+    return {
+        'id': user.id,
+        'identity': user.identity,
+        'is_following': bool(is_following(context['request'].user.id, user.id)),
+        'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+        'avatar': profile.avatar,
+        "user_type": user.get_user_type_display()
+    }
+
+
 class DiscoverUserField(serializers.RelatedField):
     def to_representation(self, user):
-        profile = user.user_profile
-
-        return {
-            'id': user.id,
-            'identity': user.identity,
-            'is_following': bool(is_following(self.context['request'].user.id, user.id)),
-            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
-            'avatar': profile.avatar,
-            "user_type": user.get_user_type_display()
-        }
+        return serialize_user(user, self.context)
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -189,15 +194,53 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_time',)
 
 
+class CommentMeMessageSerializer(serializers.ModelSerializer):
+    images = serializers.ListField(child=serializers.CharField(max_length=200), required=False)
+    user = serializers.SerializerMethodField()
+
+    def get_user(self, instance):
+        user = instance.user
+        profile = user.user_profile
+        return {
+            'id': user.id,
+            'identity': user.identity,
+            'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
+            'avatar': profile.avatar,
+            "user_type": user.get_user_type_display()
+        }
+
+    class Meta:
+        model = models.Message
+        fields = ['id', 'content', 'images', 'video', 'created_time', 'user']
+
+
+class CommentMeHotVideoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.HotVideo
+        fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover')
+
+
+class CommentMeNewsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.GameNews
+        fields = ('id', 'title', 'sub_title', 'picture', 'share_content')
+
+
 class CommentMeSerializer(serializers.ModelSerializer):
     content = serializers.CharField(read_only=True)
     user = DiscoverUserField(read_only=True)
     to_object = serializers.SerializerMethodField()
     obj_type = serializers.SerializerMethodField()
     reply_or_comment = serializers.SerializerMethodField()
-    
+
     def get_to_object(self, instance):
-        return model_to_dict(instance.content_object)
+        serializer_choice = {"动态": CommentMeMessageSerializer,
+                             "热门视频": CommentMeHotVideoSerializer,
+                             "赛事资讯": CommentMeNewsSerializer}
+        serializer = serializer_choice.get(instance.content_type.name)
+        return serializer(instance.content_object).data
 
     def get_obj_type(self, instance):
         return instance.content_type.name
@@ -207,7 +250,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Comment
-        fields = ['content', 'user', 'to_object', 'obj_type', 'object_id', 'created_time', 'reply_or_comment']
+        fields = ['content', 'user', 'obj_type', 'to_object', 'object_id', 'created_time', 'reply_or_comment']
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -222,8 +265,12 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
+        user_serializer = type('UserSerializer', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
+        message_user = user_serializer.to_representation(instance.message.user)
         get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
-        return model_to_dict(instance.message, fields=get_fields)
+        message_dict = model_to_dict(instance.message, fields=get_fields)
+        message_dict.update(user=message_user)
+        return message_dict
 
     class Meta:
         model = models.Like
@@ -319,8 +366,26 @@ class HotVideoSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
-    users = DiscoverUserField(read_only=True, many=True)
     try_url = serializers.SerializerMethodField()
+    is_like = serializers.SerializerMethodField()
+    bind_user = serializers.SerializerMethodField()
+    other_users = serializers.SerializerMethodField()
+
+    def get_bind_user(self, instance):
+        user_id = self.context['view'].kwargs.get('user_id')
+        user = instance.users.first()
+        if user_id:
+            user = list(filter(lambda u: u.id == user_id, instance.users.all()))[0]
+        return serialize_user(user, self.context)
+
+    def get_other_users(self, instance):
+        user_id = self.context['view'].kwargs.get('user_id')
+        if not user_id:
+            user_id = instance.users.first().id
+        return [serialize_user(user, self.context) for user in filter(lambda u: u.id != user_id, instance.users.all())]
+
+    def get_is_like(self, instance):
+        return is_liking_hot_video(self.context['request'].user.id, instance.id)
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -340,7 +405,21 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users')
+
+
+class HotVideoDetailSerializer(HotVideoSerializer):
+    recommend_videos = serializers.SerializerMethodField()
+
+    def get_recommend_videos(self, instance):
+        return [{'id': v.id, 'name': v.name, 'url': v.url, 'user_id': v.users.first().id, 'price': v.price} for v in
+                models.HotVideo.objects.filter(Q(tag=instance.tag) & Q(is_show=True) & ~Q(id=instance.id))[:5]]
+
+    class Meta:
+        model = models.HotVideo
+        fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users',
+                  'recommend_videos')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
@@ -491,6 +570,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
+    has_album = serializers.BooleanField(source='user.albums.count', read_only=True)
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
@@ -741,12 +821,6 @@ class AlbumSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Album
         fields = ['id', 'name', 'total', 'pictures']
-
-
-class AlbumPictureSerilizer(serializers.ModelSerializer):
-    class Meta:
-        model = models.AlbumPicture
-        fields = ['id', 'picture']
 
 
 class FeedbackSerializer(serializers.ModelSerializer):

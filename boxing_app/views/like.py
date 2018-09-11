@@ -57,6 +57,6 @@ class LikeMeListViewSet(mixins.ListModelMixin,
     serializer_class = LikeMeListSerializer
 
     def list(self, request, *args, **kwargs):
-        self.queryset = Like.objects.filter(message__user=request.user.id).select_related('user', 'message')
+        self.queryset = Like.objects.filter(message__is_deleted=False, message__user=request.user.id).select_related('user', 'message')
         redis_client.delete(UNREAD_LIKE.format(user_id=request.user.id))
         return super().list(request, *args, **kwargs)

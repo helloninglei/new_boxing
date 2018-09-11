@@ -1,16 +1,15 @@
 # -*- coding:utf-8 -*-
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+
 from biz.models import Album, AlbumPicture
-from boxing_app.serializers import AlbumSerializer, AlbumPictureSerilizer
-from rest_framework.pagination import PageNumberPagination
+from boxing_app.serializers import AlbumSerializer
+from boxing_app.pagination import BoxingPagination
 
 
-class AlbumPageNumberPagination(PageNumberPagination):
+class AlbumPageNumberPagination(BoxingPagination):
     page_size = 5
-
-
-class AlbumPicturePageNumberPagination(PageNumberPagination):
-    page_size = None
 
 
 class AlbumViewSet(viewsets.ModelViewSet):
@@ -19,13 +18,10 @@ class AlbumViewSet(viewsets.ModelViewSet):
     pagination_class = AlbumPageNumberPagination
 
     def get_queryset(self):
-        return Album.objects.filter(related_account_id=self.kwargs['pk']).prefetch_related('pictures')
+        return Album.objects.filter(related_account_id=self.kwargs['pk'], is_show=True).prefetch_related('pictures')
 
 
-class AlbumPictureViewSet(viewsets.ModelViewSet):
-    serializer_class = AlbumPictureSerilizer
-    permission_classes = (permissions.AllowAny,)
-    pagination_class = AlbumPicturePageNumberPagination
-
-    def get_queryset(self):
-        return AlbumPicture.objects.filter(album_id=self.kwargs['pk'])
+@api_view(['GET'])
+@permission_classes([])
+def picture_list(request, pk):
+    return Response({'results': AlbumPicture.objects.filter(album_id=pk).values_list('picture', flat=True)})

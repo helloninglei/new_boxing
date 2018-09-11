@@ -20,6 +20,10 @@ PRODUCTION = 'production'
 TEST = 'test'
 DEVELOPMENT = 'development'
 
+
+
+
+
 ENVIRONMENT = DEVELOPMENT
 
 ALLOWED_HOSTS = [
@@ -204,20 +208,6 @@ DATABASES = {
             'CHARSET': 'utf8mb4',
         }
     },
-    'old_boxing': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': DB_MYSQL_DATABASE_OLD,
-        'HOST': DB_MYSQL_HOST,
-        'PORT': DB_MYSQL_PORT,
-        'USER': DB_MYSQL_USER_OLD,
-        'PASSWORD': DB_MYSQL_PASSWORD_OLD,
-        'OPTIONS': {
-            'charset': 'utf8mb4'
-        },
-        'TEST': {
-            'CHARSET': 'utf8mb4',
-        }
-    }
 }
 
 # Password validation
