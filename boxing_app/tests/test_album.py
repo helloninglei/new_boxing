@@ -5,7 +5,6 @@ from biz.models import Album
 from biz.models import AlbumPicture
 from django.urls import reverse
 from rest_framework.test import APITestCase
-from datetime import datetime
 from django.utils import timezone
 
 
@@ -19,7 +18,7 @@ class AlbumTestCase(APITestCase):
 
     def test_album_list(self):
         album = Album.objects.create(name='他',
-                                     release_time=datetime.now(tz=timezone.utc),
+                                     release_time=timezone.now(),
                                      is_show=True,
                                      related_account_id=self.test_user.id)
         res = self.client.get(reverse('album_list', kwargs={'pk': self.test_user.id}))
@@ -28,11 +27,11 @@ class AlbumTestCase(APITestCase):
 
     def test_album_detail(self):
         album = Album.objects.create(name='为长者续1秒',
-                                     release_time=datetime.now(tz=timezone.utc),
+                                     release_time=timezone.now(),
                                      is_show=True,
                                      related_account_id=self.test_user.id)
         pic = AlbumPicture.objects.create(picture='/path/to/pic.jog',
-                                          created_time=datetime.now(tz=timezone.utc),
+                                          created_time=timezone.now(),
                                           album=album)
         res = self.client.get(reverse('picture_list', kwargs={'pk': album.id}))
         self.assertEqual(len(res.data['results']), 1)
@@ -43,7 +42,7 @@ class AlbumTestCase(APITestCase):
         res = self.client.get(reverse('user-profile', kwargs={'pk': self.test_user.id}))
         self.assertEqual(res.data['has_album'], False)
         Album.objects.create(name='沟里锅架绳四倚',
-                             release_time=datetime.now(tz=timezone.utc),
+                             release_time=timezone.now(),
                              is_show=True,
                              related_account_id=self.test_user.id)
         res = self.client.get(reverse('user-profile', kwargs={'pk': self.test_user.id}))
