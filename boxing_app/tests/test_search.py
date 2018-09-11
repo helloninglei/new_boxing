@@ -138,9 +138,11 @@ class SearchCase(APITestCase):
         v_name1 = "测试1"
         v_name2 = "测试2"
         self.video_data['name'] = v_name1
-        HotVideo.objects.create(**self.video_data)
+        video1 = HotVideo.objects.create(**self.video_data)
+        video1.users.add(self.test_user_1.id)
         self.video_data['name'] = v_name2
-        HotVideo.objects.create(**self.video_data)
+        video2 = HotVideo.objects.create(**self.video_data)
+        video2.users.add(self.test_user_2.id)
 
         res = self.client.get('/search/all', data={"keywords": '测试'})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
