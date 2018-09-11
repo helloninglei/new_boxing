@@ -215,14 +215,12 @@ class CommentMeMessageSerializer(serializers.ModelSerializer):
 
 
 class CommentMeHotVideoSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover')
 
 
 class CommentMeNewsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'picture', 'share_content')
@@ -265,7 +263,8 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
-        user_serializer = type('UserSerializer', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
+        user_serializer = type('UserSerializer', (DiscoverUserField,), {'context': self.context})(
+            queryset=User.objects.all())
         message_user = user_serializer.to_representation(instance.message.user)
         get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
         message_dict = model_to_dict(instance.message, fields=get_fields)
@@ -400,7 +399,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users',
+                  'push_hot_video',)
 
 
 class HotVideoDetailSerializer(HotVideoSerializer):
@@ -414,7 +414,7 @@ class HotVideoDetailSerializer(HotVideoSerializer):
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
                   'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users',
-                  'recommend_videos')
+                  'push_hot_video', 'recommend_videos')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):
