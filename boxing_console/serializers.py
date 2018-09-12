@@ -662,3 +662,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Schedule
+        fields = ["name", "race_date", "id"]
