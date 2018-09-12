@@ -594,30 +594,22 @@ class Player(BaseAuditModel):
 
 
 class Schedule(BaseAuditModel):
-    STATUS = (
-        (1, "未发布"),
-        (2, "已发布")
-    )
     name = models.CharField(max_length=127)
-    status = models.PositiveSmallIntegerField(choices=STATUS, default=STATUS[0][0])
+    status = models.PositiveSmallIntegerField(choices=constants.SCHEDULE_STATUS_CHOICES,
+                                              default=constants.SCHEDULE_STATUS_NOT_PUBLISH)
     race_date = models.DateField()
+
+    class Meta:
+        db_table = "schedule"
 
 
 class Match(BaseAuditModel):
-    MATCH_CHOICES = (
-        (1, "泰拳"),
-        (2, "拳击"),
-        (3, "MMA")
-    )
-    RESULT_CHOICES = (
-        (1, "红方胜"),
-        (2, "蓝方胜"),
-        (3, "红方KO蓝方"),
-        (4, "蓝方KO红方")
-    )
     red_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_red")
     blue_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_blue")
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name="matches")
-    category = models.PositiveSmallIntegerField(choices=MATCH_CHOICES)
+    category = models.PositiveSmallIntegerField(choices=constants.MATCH_CATEGORY_CHOICES)
     level = models.PositiveSmallIntegerField()  # todo 待产品给出详细等级
-    result = models.PositiveSmallIntegerField(choices=RESULT_CHOICES)
+    result = models.PositiveSmallIntegerField(choices=constants.MATCH_RESULT_CHOICES)
+
+    class Meta:
+        db_table = "match"
