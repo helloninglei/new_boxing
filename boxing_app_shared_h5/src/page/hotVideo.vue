@@ -41,7 +41,7 @@
             <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
 
-        <TabBar :id="id" :ifShowPraise=true :praiseNum="videoObj.like_count" commentType="hot_videos" @openApp="openApp"></TabBar>
+        <TabBar :id="id" :ifShowPraise=true :praiseNum="videoObj.like_count" commentType="hot_videos"></TabBar>
         <div class="more-recommend" v-if="videoObj.recommend_videos.length">
             <div class="title">更多推荐</div>
             <div class="video-list">
