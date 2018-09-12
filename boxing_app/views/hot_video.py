@@ -19,7 +19,7 @@ from boxing_app.tasks import incr_hot_video_views_count
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_redirect(request):
-    url = f'users/{HOT_VIDEO_USER_ID}/hot_videos?page={request.GET.get("page") or 1}&tag={request.GET.get("tag")}'
+    url = f'users/{HOT_VIDEO_USER_ID}/hot_videos?page={request.GET.get("page") or 1}&tag={request.GET.get("tag","")}'
     return redirect(url)
 
 
