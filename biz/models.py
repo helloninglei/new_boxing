@@ -574,7 +574,7 @@ class Feedback(models.Model):
         ordering = ('-created_time',)
 
 
-class Player(BaseModel):
+class Player(BaseAuditModel):
     """参赛拳手"""
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="player_info")
     name = models.CharField(max_length=30)
