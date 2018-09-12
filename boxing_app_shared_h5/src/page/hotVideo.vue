@@ -24,7 +24,7 @@
                     <h2 class="title">{{videoObj.name}}</h2>
                     <div class="desc">{{videoObj.description}}</div>
                 </div>
-                <div class="relevant-recommendations" v-if="videoObj.other_users">
+                <div class="relevant-recommendations" v-if="videoObj.other_users.length">
                     <div class="title">相关推荐</div>
                     <swiper :options="swiperOption" ref="mySwiper" class="user-list">
                         <swiper-slide v-for="(item,index) in videoObj.other_users" :key="index">
@@ -41,8 +41,8 @@
             <div class="seeVideo" v-if="videoObj.price" @click="openApp">{{videoObj.price / 100}}元观看完整视频</div>
         </div>
 
-        <TabBar :id="id" :ifShowPraise=false commentType="hot_videos" @openApp="openApp"></TabBar>
-        <div class="more-recommend" v-if="videoObj.recommend_videos">
+        <TabBar :id="id" :ifShowPraise=false :praiseNum="videoObj.like_count" commentType="hot_videos" @openApp="openApp"></TabBar>
+        <div class="more-recommend" v-if="videoObj.recommend_videos.length">
             <div class="title">更多推荐</div>
             <div class="video-list">
                 <div class="recommend-video" v-for="(item,index) in videoObj.recommend_videos" :key="index">
@@ -213,6 +213,9 @@
                     color #fff
                     font-size: 0.6rem
                     padding-left: 1.4rem
+                    padding-right: 1.4rem
+                    line-height 0.8rem
+                    text-align left
                     box-sizing border-box
                 img {
                     height: 100%

@@ -5,7 +5,7 @@
             评论 {{commentNum}}
             <span class="underline"></span>
         </span>
-        <span class="item praise" v-if="ifShowPraise">
+        <span class="item praise" v-if="ifShowPraise" @click="openApp">
             点赞 {{praiseNum}}
             <span class="underline"></span>
         </span>
