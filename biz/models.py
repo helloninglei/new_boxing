@@ -541,7 +541,7 @@ class WordFilter(BaseModel):
 
 
 class Album(BaseModel):
-    name = models.CharField(max_length=32)   # 相册名称
+    name = models.CharField(max_length=32)  # 相册名称
     related_account = models.ForeignKey(User, on_delete=models.CASCADE, related_name='albums')  # 关联用户
     release_time = models.DateTimeField()  # 发布时间
     is_show = models.BooleanField()  # 是否显示在APP端
@@ -572,3 +572,44 @@ class Feedback(models.Model):
 
     class Meta:
         ordering = ('-created_time',)
+
+
+class Player(BaseAuditModel):
+    """参赛拳手"""
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="player_info")
+    name = models.CharField(max_length=30)
+    mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
+                              error_messages={'unique': "手机号已存在。"})
+    avatar = models.CharField(max_length=256)  # 头像
+    stamina = models.PositiveIntegerField()  # 耐力
+    skill = models.PositiveIntegerField()  # 技术
+    attack = models.PositiveIntegerField()  # 进攻
+    defence = models.PositiveIntegerField()  # 防守
+    strength = models.PositiveIntegerField()  # 力量
+    willpower = models.PositiveIntegerField()  # 意志力
+
+    class Meta:
+        db_table = 'player'
+        ordering = ('-created_time',)
+
+
+class Schedule(BaseAuditModel):
+    name = models.CharField(max_length=127)
+    status = models.PositiveSmallIntegerField(choices=constants.SCHEDULE_STATUS_CHOICES,
+                                              default=constants.SCHEDULE_STATUS_NOT_PUBLISHED)
+    race_date = models.DateField()
+
+    class Meta:
+        db_table = "schedule"
+
+
+class Match(BaseAuditModel):
+    red_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_red")
+    blue_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_blue")
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name="matches")
+    category = models.PositiveSmallIntegerField(choices=constants.MATCH_CATEGORY_CHOICES)
+    level = models.PositiveSmallIntegerField()  # todo 待产品给出详细等级
+    result = models.PositiveSmallIntegerField(choices=constants.MATCH_RESULT_CHOICES)
+
+    class Meta:
+        db_table = "match"
