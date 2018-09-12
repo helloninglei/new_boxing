@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo, GameNews, UserProfile
+from biz.models import Message, HotVideo, GameNews, UserProfile, User
 from biz.redis_client import incr_number_of_share, forward_message, forward_hotvideo
 from biz.utils import get_model_class_by_name, get_share_img_url, get_object_or_404
 from biz.weixin_public_client import Sign
@@ -42,7 +42,7 @@ def _truncate_text(s, length):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
-def share_view(_, object_type, object_id):
+def share_view(request, object_type, object_id):
     model_class = get_model_class_by_name(object_type)
     obj = get_object_or_404(model_class, pk=object_id)
     sub_title = picture = ''
@@ -61,7 +61,11 @@ def share_view(_, object_type, object_id):
         sub_title = _truncate_text(sub_title, 20)
         forward_message(object_id)
     elif isinstance(obj, HotVideo):
-        user = obj.users.first()
+        user_id = request.GET.get('user_id')
+        if user_id:
+            user = get_object_or_404(User, pk=user_id)
+        else:
+            user = obj.users.first()
         title = obj.name
         sub_title = f'来自拳城出击的热门视频'
         picture = get_share_img_url(obj.cover) or get_share_img_url(obj.try_url, is_video=True)
