@@ -11,6 +11,7 @@ from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
 from boxing_console.views.feedback import FeedbackViewSet
+from boxing_console.views.player import PlayerViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet, hot_video_user_list, hot_video_tag_list
 from boxing_console.views.game_news import NewsViewSet
@@ -132,6 +133,10 @@ feedback = [
     re_path('^feedback/(?P<pk>\d+)/(?P<operate>(mark|unmark))$', FeedbackViewSet.as_view({"post": "do_mark"}), name="do_mark")
 ]
 
+player = [
+    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player")
+]
+
 router.register(r"word_filters", WordFilterViewSet)
 
 urlpatterns = router.urls
@@ -151,6 +156,7 @@ urlpatterns += official_account_change_logs_urls
 urlpatterns += message_urls
 urlpatterns += album_url
 urlpatterns += feedback
+urlpatterns += player
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
