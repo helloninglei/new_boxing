@@ -11,10 +11,9 @@ from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
-from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
-from biz.models import OrderComment, BoxingClub, User, Course, Message, Comment, HotVideo, GameNews
-from biz.constants import PAYMENT_TYPE
-from biz.constants import REPORT_OTHER_REASON
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
+    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON
+from biz.models import OrderComment, BoxingClub, User, Course
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
@@ -380,18 +379,26 @@ class HotVideoSerializer(serializers.ModelSerializer):
     bind_user = serializers.SerializerMethodField()
     other_users = serializers.SerializerMethodField()
 
-    def get_bind_user(self, instance):
+    def _filter_users(self, instance):
         user_id = self.context['view'].kwargs.get('user_id')
-        user = instance.users.first()
+        all_users = instance.users.all()
+        # 如果绑定了多于一个用户，列表不显示热门视频用户
+        if len(all_users) > 1:
+            all_users = [user for user in all_users if user.id != HOT_VIDEO_USER_ID]
+
+        # 如果指定了绑定用户，保证用户在列表首位
         if user_id:
-            user = list(filter(lambda u: u.id == user_id, instance.users.all()))[0]
+            all_users = sorted(all_users, key=lambda u: u.id != user_id)
+
+        return all_users
+
+    def get_bind_user(self, instance):
+        user = self._filter_users(instance)[0]
         return serialize_user(user, self.context)
 
     def get_other_users(self, instance):
-        user_id = self.context['view'].kwargs.get('user_id')
-        if not user_id:
-            user_id = instance.users.first().id
-        return [serialize_user(user, self.context) for user in filter(lambda u: u.id != user_id, instance.users.all())]
+        users = self._filter_users(instance)[1:]
+        return [serialize_user(user, self.context) for user in users]
 
     def get_is_like(self, instance):
         return is_liking_hot_video(self.context['request'].user.id, instance.id)
