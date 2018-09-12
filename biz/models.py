@@ -572,3 +572,17 @@ class Feedback(models.Model):
 
     class Meta:
         ordering = ('-created_time',)
+
+
+class Player(models.Model):
+    """参赛拳手"""
+    name = models.CharField(max_length=30)
+    mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
+                              error_messages={'unique': "手机号已存在。"})
+    avatar = models.CharField(max_length=256)  # 头像
+    stamina = models.PositiveIntegerField()  # 耐力
+    skill = models.PositiveIntegerField()  # 技术
+    attack = models.PositiveIntegerField()  # 进攻
+    defence = models.PositiveIntegerField()  # 防守
+    strength = models.PositiveIntegerField()  # 力量
+    willpower = models.PositiveIntegerField()  # 意志力
