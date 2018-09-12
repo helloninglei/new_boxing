@@ -541,7 +541,7 @@ class WordFilter(BaseModel):
 
 
 class Album(BaseModel):
-    name = models.CharField(max_length=32)   # 相册名称
+    name = models.CharField(max_length=32)  # 相册名称
     related_account = models.ForeignKey(User, on_delete=models.CASCADE, related_name='albums')  # 关联用户
     release_time = models.DateTimeField()  # 发布时间
     is_show = models.BooleanField()  # 是否显示在APP端
@@ -591,3 +591,33 @@ class Player(BaseAuditModel):
     class Meta:
         db_table = 'player'
         ordering = ('-created_time',)
+
+
+class Schedule(BaseAuditModel):
+    STATUS = (
+        (1, "未发布"),
+        (2, "已发布")
+    )
+    name = models.CharField(max_length=127)
+    status = models.PositiveSmallIntegerField(choices=STATUS, default=STATUS[0][0])
+    race_date = models.DateField()
+
+
+class Match(BaseAuditModel):
+    MATCH_CHOICES = (
+        (1, "泰拳"),
+        (2, "拳击"),
+        (3, "MMA")
+    )
+    RESULT_CHOICES = (
+        (1, "红方胜"),
+        (2, "蓝方胜"),
+        (3, "红方KO蓝方"),
+        (4, "蓝方KO红方")
+    )
+    red_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_red")
+    blue_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_blue")
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name="matches")
+    category = models.PositiveSmallIntegerField(choices=MATCH_CHOICES)
+    level = models.PositiveSmallIntegerField()  # todo 待产品给出详细等级
+    result = models.PositiveSmallIntegerField(choices=RESULT_CHOICES)
