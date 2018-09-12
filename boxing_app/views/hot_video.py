@@ -59,6 +59,6 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_tag_list(_):
-    queryset = models.HotVideo.objects.order_by('tag').values_list('tag', flat=True).distinct()
+    queryset = models.HotVideo.objects.filter(users__id=HOT_VIDEO_USER_ID).order_by('tag').values_list('tag', flat=True).distinct()
     tag_map = [{'id': HOT_VIDEO_TAG_ALL, 'name': '全部'}] + [{'id': i, 'name': HOT_VIDEO_TAG_MAP[i]} for i in queryset]
     return Response({'result': tag_map})
