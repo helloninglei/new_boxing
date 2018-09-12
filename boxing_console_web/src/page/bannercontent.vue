@@ -6,7 +6,7 @@
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="form.name" placeholder="限制20字" :maxlength="20"></el-input>
                 </el-form-item>
-                <el-form-item label="序号" prop="order_number" required>
+                <el-form-item label="序号" prop="order_number">
                     <el-input v-model="form.order_number" placeholder="请输入正整数，数字越大，排序越靠前"></el-input>
                 </el-form-item>
                 <el-form-item label="打开方式" prop="link_type" required>
@@ -143,7 +143,9 @@
                     order_number: [
                         {
                             validator: (rule, value, callback) => {
-                                if (value === '') callback(new Error('请输入序号'))
+                                if (value === ''){
+                                    callback(new Error('请输入序号'))
+                                } 
                                 else {
                                     if (value < 0 || !/^[0-9]*$/.test(value)) {
                                         callback(new Error('只能输入正整数'));
@@ -151,7 +153,7 @@
                                     }
                                     callback();
                                 }
-                            }, trigger: 'blur',
+                            }, trigger: 'blur',required: true,
                         }
                     ],
                     link: [
@@ -175,7 +177,7 @@
                                 if (value === '') {
                                     callback(new Error('请输入投票ID'));
                                 } else {
-                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                    if (parseFloat(value) < 0 || !/^[0-9]*$/.test(parseFloat(value))) {
                                         callback(new Error('投票ID必须为数字'));
                                         return;
                                     }
@@ -223,7 +225,8 @@
                                 if (value === '') {
                                     callback(new Error('请输入热门ID'));
                                 } else {
-                                    if (value < 0 || !/^[0-9]*$/.test(value)) {
+                                    
+                                    if (parseFloat(value) < 0 || !/^[0-9]*$/.test(parseFloat(value))) {
                                         callback(new Error('热门视频ID必须为数字'));
                                         return;
                                     }
@@ -333,6 +336,7 @@
                         for (var key in errors) {
                             this.showErrorTip(errors[key][0]);
                         }
+                        this.setCheckType(obj.link)
                     }
                 })
             },
@@ -348,7 +352,6 @@
                             ? (this.form['voteId'] = this.form['enrollId'] = this.form['contentId'] = this.form['videoId'] = '') : this.setCheckType(res.data.link);
                     }
 
-                    console.log(this.form)
                 }, (err) => {
                     if (err && err.response) {
                         let errors = err.response.data

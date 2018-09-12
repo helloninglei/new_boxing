@@ -23,7 +23,7 @@
                         placeholder="发布结束时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>
                     </el-col> 
-                    <el-col :span="5" style='margin-right:25px;width:245px' class='videoTags'>
+                    <el-col :span="5" style='margin-right:25px;width:248px' class='videoTags'>
                         <div class="inlimeLabel lf" style='margin:10px'>标签</div>
                         <el-select v-model="sendData.tag" >
                             <el-option value="" label="全部">全部</el-option>
