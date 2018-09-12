@@ -305,7 +305,6 @@
                     ],
                     end_time: [
                         { validator: (rule, value, callback) => {
-                            console.log(this.ruleForm.push_hot_video)
                             if(this.ruleForm.push_hot_video){
                                if(this.ruleForm.start_time===''){
                                 callback(new Error('请选择发送的开始时间'));
@@ -416,7 +415,6 @@
                         $this.userImgIds = res.data.user_list;
                         $this.ruleForm.tag = res.data.tag
                         $this.ruleForm.push_hot_video = res.data.push_hot_video
-                        $this.ruleForm.push_to_hotvideo = res.data.push_to_hotvideo
                         for(var i=0;i<$this.userImgIds.length;i++){
                             $this.ruleForm.users.push($this.userImgIds[i].id)
                             if($this.userImgIds[i].id==10){
@@ -517,8 +515,6 @@
                 for(var i=0;i<this.ruleForm.users.length;i++){
                     userImgIds.push(this.userHash[this.ruleForm.users[i]])
                 }
-                console.log(this.ruleForm.users)
-                console.log(userImgIds)
                 this.userImgIds = userImgIds
             },
             submitForm(formName) {
@@ -529,7 +525,6 @@
                         sendData.try_url = this.try_ts_url;
                         sendData.url = this.tsurl;
                         sendData.price = parseInt(sendData.price_int)*100
-                        console.log(sendData)
                         let $this = this
                         if(this.id){
                             //编辑
