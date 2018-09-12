@@ -574,7 +574,7 @@ class Feedback(models.Model):
         ordering = ('-created_time',)
 
 
-class Player(models.Model):
+class Player(BaseModel):
     """参赛拳手"""
     name = models.CharField(max_length=30)
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
@@ -586,3 +586,7 @@ class Player(models.Model):
     defence = models.PositiveIntegerField()  # 防守
     strength = models.PositiveIntegerField()  # 力量
     willpower = models.PositiveIntegerField()  # 意志力
+
+    class Meta:
+        db_table = 'player'
+        ordering = ('-created_time',)
