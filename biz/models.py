@@ -596,7 +596,7 @@ class Player(BaseAuditModel):
 class Schedule(BaseAuditModel):
     name = models.CharField(max_length=127)
     status = models.PositiveSmallIntegerField(choices=constants.SCHEDULE_STATUS_CHOICES,
-                                              default=constants.SCHEDULE_STATUS_NOT_PUBLISH)
+                                              default=constants.SCHEDULE_STATUS_NOT_PUBLISHED)
     race_date = models.DateField()
 
     class Meta:
