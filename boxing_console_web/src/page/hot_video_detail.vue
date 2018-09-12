@@ -65,7 +65,7 @@
                                     </p>
                                     <p style='text-align: center'>编辑关联用户</p>
                                 </li>
-                                <li class='lf' v-for="item in userImgIds" style='width:80px'>
+                                <li class='lf' v-for="item in userImgIds" style='width:80px' v-if='item'>
                                     <p style='border-radius: 50%;overflow: hidden;width:50px;height:50px;margin-left:15px'>
                                         <img :src="config.baseUrl+item.avatar" alt="" width="100%">
                                         <!-- <img src="/static/img/edit_user_img.png" alt="" width="100%"> -->
@@ -348,9 +348,6 @@
                 this.tsurl=query.url
                 let try_ts_url = query.try_url
                 this.try_ts_url= query.try_url
-                this.ruleForm.tag = query.tag
-                this.ruleForm.push_hot_video = query.push_hot_video
-                this.ruleForm.push_to_hotvideo = query.push_to_hotvideo
                 $('#full_video').val(tsurl) 
                 $('#little_video').val(try_ts_url) 
                 this.dateArr=[query.start_time?query.start_time:'',query.end_time?query.end_time:'']
@@ -416,10 +413,12 @@
                         $this.ruleForm.tag = res.data.tag
                         $this.ruleForm.push_hot_video = res.data.push_hot_video
                         for(var i=0;i<$this.userImgIds.length;i++){
-                            $this.ruleForm.users.push($this.userImgIds[i].id)
                             if($this.userImgIds[i].id==10){
                                $this.ruleForm.push_to_hotvideo = true;
+                               delete $this.userImgIds[i]
+                               continue;
                             }
+                            $this.ruleForm.users.push($this.userImgIds[i].id)
                         }
                         $this.src_avatar = $this.config.baseUrl + res.data.cover;
 
@@ -527,6 +526,7 @@
                         sendData.price = parseInt(sendData.price_int)*100
                         let $this = this
                         if(this.id){
+                            console.log(sendData)
                             //编辑
                             this.ajax('/hot_videos/'+this.id,'put',sendData).then(function(res){
                                 if(res&&res.data){
