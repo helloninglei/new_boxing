@@ -576,6 +576,7 @@ class Feedback(models.Model):
 
 class Player(BaseModel):
     """参赛拳手"""
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="player_info")
     name = models.CharField(max_length=30)
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
                               error_messages={'unique': "手机号已存在。"})
