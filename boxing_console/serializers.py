@@ -664,6 +664,12 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 class PlayerSerializer(serializers.ModelSerializer):
     operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    stamina = serializers.IntegerField(min_value=1, max_value=100)
+    skill = serializers.IntegerField(min_value=1, max_value=100)
+    attack = serializers.IntegerField(min_value=1, max_value=100)
+    defence = serializers.IntegerField(min_value=1, max_value=100)
+    strength = serializers.IntegerField(min_value=1, max_value=100)
+    willpower = serializers.IntegerField(min_value=1, max_value=100)
 
     def validate_mobile(self, value):
         if not User.objects.filter(mobile=value).exists():
