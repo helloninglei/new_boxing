@@ -13,7 +13,6 @@ class ScheduleTestCase(APITestCase):
     def test_should_create_schedule(self):
         data = {"name": "终极格斗冠军赛", "race_date": "2018-09-21"}
         response = self.client.post(path="/schedules", data=data, format="json")
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         schedule = Schedule.objects.filter(operator=self.user).first()
         self.assertEqual(schedule.name, data['name'])
