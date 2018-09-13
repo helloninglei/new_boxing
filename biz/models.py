@@ -232,7 +232,7 @@ class BoxerIdentification(BaseModel):
 
 class Comment(SoftDeleteModel):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey('content_type', 'object_id')
     content = models.CharField(max_length=140)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
