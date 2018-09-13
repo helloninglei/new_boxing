@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment, Album, AlbumPicture, Feedback
+    OrderComment, Album, AlbumPicture, Feedback, Player
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -660,6 +660,27 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Feedback
         fields = "__all__"
+
+
+class PlayerSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    stamina = serializers.IntegerField(min_value=1, max_value=100)
+    skill = serializers.IntegerField(min_value=1, max_value=100)
+    attack = serializers.IntegerField(min_value=1, max_value=100)
+    defence = serializers.IntegerField(min_value=1, max_value=100)
+    strength = serializers.IntegerField(min_value=1, max_value=100)
+    willpower = serializers.IntegerField(min_value=1, max_value=100)
+
+    def validate_mobile(self, value):
+        if not User.objects.filter(mobile=value).exists():
+            raise ValidationError("该手机号的用户不存在")
+        if Player.objects.filter(mobile=value).exists():
+            raise ValidationError("该手机号已被其他参赛选手注册")
+        return value
+
+    class Meta:
+        model = Player
+        exclude = ("user",)
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
