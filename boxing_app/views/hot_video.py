@@ -8,7 +8,6 @@ from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
-
 from biz.constants import HOT_VIDEO_TAG_ALL, HOT_VIDEO_TAG_MAP
 from boxing_app.filters import HotVideoFilter
 from boxing_app.serializers import HotVideoDetailSerializer

@@ -7,6 +7,7 @@ from django.urls import include, path, re_path
 from django.conf import settings
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
+from boxing_console.views.check_mobile import check_player_mobile
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
@@ -25,7 +26,7 @@ from boxing_console.views.official_account_change_logs import OfficialAccountCha
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
-from boxing_console.views.schedule import ScheduleCreateApiView
+from boxing_console.views.schedule import ScheduleListCreateApiView
 
 router = SimpleRouter()
 
@@ -136,13 +137,14 @@ feedback = [
 ]
 
 player = [
-    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player")
+    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player"),
+    path('check_player_mobile', check_player_mobile, name='check_player_mobile')
 ]
 
 router.register(r"word_filters", WordFilterViewSet)
 
 schedule_urls = [
-    path("schedules", ScheduleCreateApiView.as_view(), name="schedules"),
+    path("schedules", ScheduleListCreateApiView.as_view(), name="schedules"),
 ]
 
 urlpatterns = router.urls
