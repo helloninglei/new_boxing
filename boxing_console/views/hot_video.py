@@ -42,10 +42,13 @@ class HotVideoViewSet(viewsets.ModelViewSet):
         if hot_video.push_hot_video:
             broadcast_hot_video(hot_video)
 
+    perform_update = perform_create
+
 
 @api_view(['GET'])
 def hot_video_user_list(_):
-    serializer = HotVideoUserSerializer(models.User.objects.filter(user_type__isnull=False).exclude(pk=HOT_VIDEO_USER_ID), many=True)
+    serializer = HotVideoUserSerializer(
+        models.User.objects.filter(user_type__isnull=False).exclude(pk=HOT_VIDEO_USER_ID), many=True)
     return Response(serializer.data)
 
 

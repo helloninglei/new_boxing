@@ -24,4 +24,4 @@ class AlbumViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([])
 def picture_list(request, pk):
-    return Response({'results': AlbumPicture.objects.filter(album_id=pk).values_list('picture', flat=True)})
+    return Response({'results': [{'id': item.id, 'picture': item.picture} for item in AlbumPicture.objects.filter(album_id=pk)]})
