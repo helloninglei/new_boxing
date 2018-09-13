@@ -683,7 +683,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         exclude = ("user",)
 
 
-class ScheduleSerializer(serializers.ModelSerializer):
+class ScheduleCommonSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:

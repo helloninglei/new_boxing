@@ -32,3 +32,18 @@ class ScheduleTestCase(APITestCase):
         self.assertEqual(result[1]['id'], schedule1.id)
         self.assertEqual(result[1]['name'], schedule1.name)
         self.assertEqual(result[1]['status'], "未发布")
+
+    def test_should_update_schedule_list(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        data = {"name": "世界职业拳击比赛", "race_date": "2018-10-21"}
+        response = self.client.put(path=f"/schedules/{schedule.id}", data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        schedule.refresh_from_db()
+        self.assertEqual(schedule.name, data['name'])
+        self.assertEqual(schedule.race_date, datetime.strptime(data['race_date'], "%Y-%m-%d").date())
+        data = {"name": "终极格斗冠军赛", "race_date": "2018-09-21"}
+        response = self.client.patch(path=f"/schedules/{schedule.id}", data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        schedule.refresh_from_db()
+        self.assertEqual(schedule.name, data['name'])
+        self.assertEqual(schedule.race_date, datetime.strptime(data['race_date'], "%Y-%m-%d").date())
