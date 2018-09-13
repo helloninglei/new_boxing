@@ -418,7 +418,7 @@ class CourseOrder(SoftDeleteModel):
 
 class OrderComment(SoftDeleteModel):
     score = models.PositiveSmallIntegerField()
-    content = models.CharField(max_length=200)
+    content = models.CharField(max_length=300)
     images = StringListField(null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
