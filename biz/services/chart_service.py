@@ -12,14 +12,15 @@ from django.conf import settings
 # radar chart
 def make_radar(args):
     '''
-    :param args:a list that contains 6 positive integers, each integer less than 100
+    :param args:a list that contains 6 positive integers, each integer less than 100,
+    Each element in the list represents:tech, strength, defense, willpower, offense, endurance
     :return:PNG type image binary content or None
     '''
     if isinstance(args, list) and len(args) == 6:
         value = args
     else:
         return None
-    font = FontProperties(fname=settings.FONT, size=23)
+    font = FontProperties(fname=settings.PINGFANG_FONT, size=23)
     plt.figure(figsize=(4.8, 4.8))  # 图片大小
     name = ['技术\n', '力量     ', '防守     ', '\n意志力', '     进攻 ', '     耐力 ']  # 标签
     theta = np.linspace(0, 2 * np.pi, len(name), endpoint=False)  # 将圆周根据标签的个数等比分
