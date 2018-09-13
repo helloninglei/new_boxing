@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from urllib.parse import urlencode
 from django.db.models import Count, Q
 from django.shortcuts import redirect
 from rest_framework.response import Response
@@ -20,8 +21,8 @@ from boxing_app.tasks import incr_hot_video_views_count
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_redirect(request):
-    url = f'users/{HOT_VIDEO_USER_ID}/hot_videos?page={request.GET.get("page") or 1}'
-    return redirect(url)
+    param_string = urlencode(request.GET.dict())
+    return redirect(f'users/{HOT_VIDEO_USER_ID}/hot_videos?{param_string}')
 
 
 @api_view(['GET'])
@@ -60,4 +61,7 @@ class HotVideoViewSet(viewsets.ReadOnlyModelViewSet):
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_tag_list(_):
-    return Response({'result': [{'id': k, 'name': v} for k, v in HOT_VIDEO_TAG_CHOICES_FOR_FILTER]})
+    queryset = models.HotVideo.objects.filter(users__id=HOT_VIDEO_USER_ID).order_by('tag').values_list('tag',
+                                                                                                       flat=True).distinct()
+    tag_map = [{'id': HOT_VIDEO_TAG_ALL, 'name': '全部'}] + [{'id': i, 'name': HOT_VIDEO_TAG_MAP[i]} for i in queryset]
+    return Response({'result': tag_map})
