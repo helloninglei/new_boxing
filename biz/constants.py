@@ -309,16 +309,17 @@ DEFAULT_AVATAR = ""
 
 MAX_HOT_VIDEO_BIND_USER_COUNT = 7
 
-HOT_VIDEO_TAG_DEFAULT = 1
+HOT_VIDEO_TAG_DEFAULT = 3
 HOT_VIDEO_TAG_CHOICES = (
-    (HOT_VIDEO_TAG_DEFAULT, '拳城出击'),
-    (2, '徐晓冬'),
-    (3, '教学'),
-    (4, '街斗'),
-    (5, '搞笑'),
-    (6, '美女'),
-    (7, '国外'),
-    (8, '热点'),
+    (1, '徐晓冬'),
+    (2, '冬哥辣评'),
+    (3, '拳城出击'),
+    (4, '教学'),
+    (5, '街斗'),
+    (6, '搞笑'),
+    (7, '美女'),
+    (8, '国外'),
+    (9, '热点'),
 )
 
 HOT_VIDEO_TAG_ALL = 0
