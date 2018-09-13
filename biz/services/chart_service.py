@@ -3,6 +3,7 @@
 import io
 import numpy as np
 import matplotlib
+
 matplotlib.use('Agg')
 from matplotlib.pylab import plt
 from matplotlib.font_manager import FontProperties
@@ -10,16 +11,13 @@ from django.conf import settings
 
 
 # radar chart
-def make_radar(args):
+def make_radar(skill: int, strength: int, defence: int, willpower: int, attack: int, stamina: int):
     '''
-    :param args:a list that contains 6 positive integers, each integer less than 100,
-    Each element in the list represents:tech, strength, defense, willpower, offense, endurance
-    :return:PNG type image binary content or None
+    :return: PNG type image binary content
     '''
-    if isinstance(args, list) and len(args) == 6:
-        value = args
-    else:
-        return None
+    value = [skill, strength, defence, willpower, attack, stamina]
+    if not all(map(lambda x: isinstance(x, int) and 0 < x <= 100, value)):
+        return
     font = FontProperties(fname=settings.PINGFANG_FONT, size=23)
     plt.figure(figsize=(4.8, 4.8))  # 图片大小
     name = ['技术\n', '力量     ', '防守     ', '\n意志力', '     进攻 ', '     耐力 ']  # 标签
@@ -28,7 +26,7 @@ def make_radar(args):
     value = np.concatenate((value, [value[0]]))  # 闭合
     ax = plt.subplot(111, projection='polar')  # 构建图例
     ax.set_theta_zero_location('N')  # 设置极轴方向
-    ax.fill(theta, value, color="#EF2D55", alpha=0.20)  # 填充
+    ax.fill(theta, value, color="#EF2D55", alpha=0.25)  # 填充
     for i in [20, 40, 60, 80, 100]:  # 绘等分线
         ax.plot(theta, [i] * (6 + 1), 'k-', lw=1, color='#8989A1')  # 之所以 n +1，是因为要闭合！
     ax.plot(theta, value, 'ro-', 'k-', lw=1, alpha=0.75, color='#FF465C')  # 绘数据图
