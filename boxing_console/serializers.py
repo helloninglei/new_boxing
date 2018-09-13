@@ -663,6 +663,8 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="get_status_display", read_only=True)
+
     class Meta:
         model = models.Schedule
-        fields = ["name", "race_date", "id"]
+        fields = ["name", "race_date", "id", "status"]
