@@ -25,7 +25,7 @@ from boxing_console.views.official_account_change_logs import OfficialAccountCha
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
-
+from boxing_console.views.schedule import ScheduleCreateApiView
 
 router = SimpleRouter()
 
@@ -124,13 +124,15 @@ message_urls = [
 album_url = [
     path('albums', AlbumViewSet.as_view({"get": "list", "post": "create"}), name='album_list'),
     path('albums/<int:pk>', AlbumViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name='album_modify'),
-    path('albums/<int:album_id>/pictures', AlbumPictureViewSet.as_view({"get": "list", "post": "create"}), name='picture_list'),
+    path('albums/<int:album_id>/pictures', AlbumPictureViewSet.as_view({"get": "list", "post": "create"}),
+         name='picture_list'),
 ]
 
 feedback = [
     path('feedback', FeedbackViewSet.as_view({"get": "list"}), name="feedback_list"),
     path('feedback/<int:pk>', FeedbackViewSet.as_view({"get": "retrieve"}), name="feedback_detail"),
-    re_path('^feedback/(?P<pk>\d+)/(?P<operate>(mark|unmark))$', FeedbackViewSet.as_view({"post": "do_mark"}), name="do_mark")
+    re_path('^feedback/(?P<pk>\d+)/(?P<operate>(mark|unmark))$', FeedbackViewSet.as_view({"post": "do_mark"}),
+            name="do_mark")
 ]
 
 player = [
@@ -138,6 +140,10 @@ player = [
 ]
 
 router.register(r"word_filters", WordFilterViewSet)
+
+schedule_urls = [
+    path("schedules", ScheduleCreateApiView.as_view(), name="schedules"),
+]
 
 urlpatterns = router.urls
 urlpatterns += boxer_url
@@ -157,6 +163,7 @@ urlpatterns += message_urls
 urlpatterns += album_url
 urlpatterns += feedback
 urlpatterns += player
+urlpatterns += schedule_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

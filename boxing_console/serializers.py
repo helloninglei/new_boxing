@@ -681,3 +681,9 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         exclude = ("user",)
+
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Schedule
+        fields = ["name", "race_date", "id"]
