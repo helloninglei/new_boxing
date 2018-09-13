@@ -25,7 +25,7 @@ from boxing_console.views.official_account_change_logs import OfficialAccountCha
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
-from boxing_console.views.schedule import ScheduleCreateApiView
+from boxing_console.views.schedule import ScheduleListCreateApiView
 
 router = SimpleRouter()
 
@@ -142,7 +142,7 @@ player = [
 router.register(r"word_filters", WordFilterViewSet)
 
 schedule_urls = [
-    path("schedules", ScheduleCreateApiView.as_view(), name="schedules"),
+    path("schedules", ScheduleListCreateApiView.as_view(), name="schedules"),
 ]
 
 urlpatterns = router.urls
