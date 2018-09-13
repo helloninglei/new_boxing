@@ -187,7 +187,7 @@ class SoftDeleteModel(models.Model):
 # 动态
 class Message(SoftDeleteModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='messages')
-    content = models.CharField(max_length=140, null=True, blank=True)
+    content = models.CharField(max_length=1500, null=True, blank=True)
     images = StringListField(null=True)
     video = models.CharField(max_length=200, null=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
@@ -235,7 +235,7 @@ class Comment(SoftDeleteModel):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
-    content = models.CharField(max_length=140)
+    content = models.CharField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='comments')
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='+')
     ancestor = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='+')
@@ -418,7 +418,7 @@ class CourseOrder(SoftDeleteModel):
 
 class OrderComment(SoftDeleteModel):
     score = models.PositiveSmallIntegerField()
-    content = models.TextField(max_length=300)
+    content = models.CharField(max_length=200)
     images = StringListField(null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     is_deleted = models.BooleanField(default=False)
