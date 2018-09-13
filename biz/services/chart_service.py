@@ -2,6 +2,8 @@
 
 import io
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib.pylab import plt
 from matplotlib.font_manager import FontProperties
 from django.conf import settings
