@@ -12,6 +12,5 @@ def check_player_mobile(request):
     is_user = User.objects.filter(mobile=mobile).exists()
     avatar = None
     if is_user:
-        user = User.objects.get(mobile=mobile)
-        avatar = user.user_profile.avatar
+        avatar = User.objects.get(mobile=mobile).user_profile.avatar
     return Response(data={"is_user": is_user, "is_player": is_player, "avatar": avatar}, status=status.HTTP_200_OK)
