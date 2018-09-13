@@ -11,10 +11,9 @@ from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
-from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
+    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON
 from biz.models import OrderComment, BoxingClub, User, Course
-from biz.constants import PAYMENT_TYPE
-from biz.constants import REPORT_OTHER_REASON
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
@@ -215,14 +214,12 @@ class CommentMeMessageSerializer(serializers.ModelSerializer):
 
 
 class CommentMeHotVideoSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover')
 
 
 class CommentMeNewsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'picture', 'share_content')
@@ -248,6 +245,11 @@ class CommentMeSerializer(serializers.ModelSerializer):
     def get_reply_or_comment(self, instance):
         return 'reply' if instance.parent else 'comment'
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['created_time'] = instance.created_time.strftime('%Y-%m-%d %H:%M')
+        return ret
+
     class Meta:
         model = models.Comment
         fields = ['content', 'user', 'obj_type', 'to_object', 'object_id', 'created_time', 'reply_or_comment']
@@ -255,6 +257,11 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['created_time'] = instance.created_time.strftime('%Y-%m-%d %H:%M')
+        return ret
 
     class Meta:
         model = models.Like
@@ -265,7 +272,8 @@ class LikeMeListSerializer(LikeSerializer):
     message = serializers.SerializerMethodField()
 
     def get_message(self, instance):
-        user_serializer = type('UserSerializer', (DiscoverUserField, ), {'context': self.context})(queryset=User.objects.all())
+        user_serializer = type('UserSerializer', (DiscoverUserField,), {'context': self.context})(
+            queryset=User.objects.all())
         message_user = user_serializer.to_representation(instance.message.user)
         get_fields = ['id', 'user', 'content', 'images', 'video', 'created_time']
         message_dict = model_to_dict(instance.message, fields=get_fields)
@@ -371,18 +379,26 @@ class HotVideoSerializer(serializers.ModelSerializer):
     bind_user = serializers.SerializerMethodField()
     other_users = serializers.SerializerMethodField()
 
-    def get_bind_user(self, instance):
+    def _filter_users(self, instance):
         user_id = self.context['view'].kwargs.get('user_id')
-        user = instance.users.first()
+        all_users = instance.users.all()
+        # 如果绑定了多于一个用户，列表不显示热门视频用户
+        if len(all_users) > 1:
+            all_users = [user for user in all_users if user.id != HOT_VIDEO_USER_ID]
+
+        # 如果指定了绑定用户，保证用户在列表首位
         if user_id:
-            user = list(filter(lambda u: u.id == user_id, instance.users.all()))[0]
+            all_users = sorted(all_users, key=lambda u: u.id != user_id)
+
+        return all_users
+
+    def get_bind_user(self, instance):
+        user = self._filter_users(instance)[0]
         return serialize_user(user, self.context)
 
     def get_other_users(self, instance):
-        user_id = self.context['view'].kwargs.get('user_id')
-        if not user_id:
-            user_id = instance.users.first().id
-        return [serialize_user(user, self.context) for user in filter(lambda u: u.id != user_id, instance.users.all())]
+        users = self._filter_users(instance)[1:]
+        return [serialize_user(user, self.context) for user in users]
 
     def get_is_like(self, instance):
         return is_liking_hot_video(self.context['request'].user.id, instance.id)
@@ -405,7 +421,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
-                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users')
+                  'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users',
+                  'push_hot_video',)
 
 
 class HotVideoDetailSerializer(HotVideoSerializer):
@@ -419,7 +436,7 @@ class HotVideoDetailSerializer(HotVideoSerializer):
         model = models.HotVideo
         fields = ('id', 'name', 'description', 'is_paid', 'comment_count', 'url', 'try_url', 'price', 'created_time',
                   'cover', 'views_count', 'like_count', 'forward_count', 'is_like', 'bind_user', 'other_users',
-                  'recommend_videos')
+                  'push_hot_video', 'recommend_videos')
 
 
 class LoginIsNeedCaptchaSerializer(serializers.Serializer):

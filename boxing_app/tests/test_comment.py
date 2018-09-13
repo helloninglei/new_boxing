@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.contrib.contenttypes.models import ContentType
 from rest_framework.test import APITestCase
 from rest_framework import status
-from biz.models import User
+
+from biz import constants
+from biz.models import User, Message, HotVideo, Comment
 
 
 class CommentTestCase(APITestCase):
@@ -131,7 +134,7 @@ class CommentTestCase(APITestCase):
                                          reply_data)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_comment_me(self):
+    def test_comment_me_for_message(self):
         self.prepare()
         res = self.client1.get('/comment_me')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -142,3 +145,51 @@ class CommentTestCase(APITestCase):
         self.client2.post('/messages/%s/comments/%s' % (self.message_id, comment_id), msg3)
         res = self.client1.get('/comment_me')
         self.assertEqual(len(res.data['results']), 3)
+
+        # if message is delete comment should not show in list
+        message = Message.objects.get(id=self.message_id)
+        message.soft_delete()
+        message.save()
+        res = self.client1.get('/comment_me')
+        self.assertEqual(len(res.data['results']), 0)
+
+        # test comment on hot_video
+        hot_video_data = {
+            'name': 'test video1',
+            'description': 'test video1',
+            'price': 111,
+            'url': '/videos/111',
+            'try_url': '/videos/222',
+            'operator_id': self.test_user_1.id,
+            'cover': '/videos/333',
+            "push_hot_video": False,
+            "tag": constants.HOT_VIDEO_TAG_DEFAULT,
+        }
+
+        video = HotVideo.objects.create(**hot_video_data)
+        video.users.add(self.test_user_1.id)
+        comment1 = Comment.objects.create(**{
+            "content_type": ContentType.objects.get(app_label="biz", model="HotVideo"),
+            "object_id": video.id,
+            "content": "comment on video %s" % video.id,
+            "user": self.test_user_1
+        })
+        Comment.objects.create(**{
+            "content_type": ContentType.objects.get(app_label="biz", model="HotVideo"),
+            "object_id": video.id,
+            "content": "comment on video %s" % video.id,
+            "user": self.test_user_2,
+            "parent": comment1,
+            "ancestor": comment1
+        })
+        res = self.client1.get('/comment_me')
+        self.assertEqual(len(res.data['results']), 1)
+
+        # if video is hidden, comment should disappear
+        video.is_show = False
+        video.save()
+        video.refresh_from_db()
+        res = self.client1.get('/comment_me')
+        self.assertEqual(len(res.data['results']), 0)
+
+
