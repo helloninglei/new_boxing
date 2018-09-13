@@ -7,6 +7,7 @@ from django.urls import include, path, re_path
 from django.conf import settings
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
+from boxing_console.views.check_mobile import check_player_mobile
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
@@ -136,7 +137,8 @@ feedback = [
 ]
 
 player = [
-    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player")
+    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player"),
+    path('check_player_mobile', check_player_mobile, name='check_player_mobile')
 ]
 
 router.register(r"word_filters", WordFilterViewSet)
