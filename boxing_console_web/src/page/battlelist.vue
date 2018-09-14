@@ -3,10 +3,12 @@
         <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infolist" secondTitle_path="/metchlist" secondTitle_name="赛程管理" thirdTitle_name="对战表"></TopBar>
         <div class="container">
             <header>
-                <p class='battle_title'>赛事信息</p>
+                <p class='battle_title'>赛事信息 <span class='edit_icon' @click="editMetch"></span></p>
+                <p class="battle_content"><span style='color:#909399;margin-right:20px'>比赛日期</span><span style='color:#1D1D27;'>{{editmetch.race_date}}</span></p>
+                <p class="battle_content" style="margin-bottom:35px"><span style='color:#909399;margin-right:20px'>赛事名称</span><span style='color:#1D1D27;'>{{editmetch.name}}</span></p>
                 <p class='battle_title'>对战信息</p>
             </header>
-            <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_bt20' @click.native="addMatchEv">添加对战</el-button>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_bt20' @click.native="addBattleEv">添加对战</el-button>
             <template>
                 <el-table
                         :data="tableData"
@@ -52,7 +54,8 @@
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
-        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
+        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
+        <Metchdialog :isshow="editmetch.isshow" @confirm="conform" @cancel="cancel()" content_title="编辑赛程" :name="editmetch.name" :race_date="editmetch.race_date"></Metchdialog>
     </div>
 </template>
 
@@ -64,12 +67,27 @@
         letter-spacing: 0;
         margin-bottom:20px;
     }
+    .battle_content{
+        font-family: PingFangSC-Regular;
+        font-size: 14px;
+        margin-bottom:20px;
+    }
+    .edit_icon{
+        display:inline-block;
+        width:14px;
+        height:14px;
+        background:red;
+    }
+    .font_14{
+        font-size:14px
+    }
 </style>
 
 <script >
     import TopBar from 'components/topBar';
     import Pagination  from 'components/pagination';
     import Confirm from "components/confirm"
+    import Metchdialog from "components/metch_add_dialog"
     export default {
         data() {
             return {
@@ -105,12 +123,18 @@
                     id    :'',
                     content:'确认删除该条资讯？'
                 },
+                editmetch:{
+                    isshow:false,
+                    race_date:'2018-3-4',
+                    name:'lalal'
+                }
             }
         },
         components: {
             TopBar,
             Pagination,
-            Confirm
+            Confirm,
+            Metchdialog
         },
         created() {
             this.getData();
@@ -140,7 +164,10 @@
                     }
                 })
             },
-            addMatchEv() {
+            addBattleEv() {
+            },
+            editMetch(){
+                this.editmetch.isshow=true
             },
             handleEdit(index, row) {
             },
@@ -149,11 +176,19 @@
                 this.confirmData.index = row.index
                 this.confirmData.isshow=true;
             },
-            cancel1(val){
+            cancel(val){
                 this.confirmData.isshow=val;
+                this.editmetch.isshow=val;
             },
             conform1(id,index){
                 this.deleteData(id,index);
+            },
+            conform(data){
+                 this.editmetch={
+                    isshow:false,
+                    race_date:data.race_date,
+                    name:data.name
+                }
             },
             changePage(page) {
                 this.page = page;
