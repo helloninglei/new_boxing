@@ -53,6 +53,12 @@
                         <el-menu-item index="/infoList" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>资讯</div>
                         </el-menu-item>
+                        <el-menu-item index="/boxerlist" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>参赛选手管理</div>
+                        </el-menu-item>
+                        <el-menu-item index="/metchlist" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>赛程管理</div>
+                        </el-menu-item>
                         <!-- <el-menu-item index="/" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>添加报名</div>
                         </el-menu-item> -->
