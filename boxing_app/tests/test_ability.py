@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
-from biz.models import User
 from rest_framework.test import APITestCase
-from biz.models import Player
+from biz.models import Player, User
 
 
 class AbilityTest(APITestCase):

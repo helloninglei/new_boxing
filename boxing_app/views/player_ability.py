@@ -12,9 +12,8 @@ from biz.models import Match
 @permission_classes([])
 @authentication_classes([])
 def ability_chart(request, pk):
-    players = Player.objects.filter(user_id=pk)
-    if players.exists():
-        player = players[0]
+    player = Player.objects.filter(user_id=pk).first()
+    if player:
         ret = make_radar(skill=player.skill,  strength=player.strength,
                          defence=player.defence, willpower=player.willpower,
                          attack=player.attack, stamina=player.stamina)
