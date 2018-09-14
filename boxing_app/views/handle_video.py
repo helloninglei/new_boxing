@@ -42,19 +42,42 @@ def video_resolution(request):
     video_path = urlparse(video_url).path
     if redis_client.hexists(VIDEO_RESOLUTION, video_path):
         data = json.loads(redis_client.hget(VIDEO_RESOLUTION, video_path))
-        return Response({"height": data['height'], "width": data['width']})
+        try:
+            return Response({"height": data['height'], "width": data['width'], "size": data['size']})
+        except KeyError:
+            pass
 
     pipe = sp.Popen(
-        ["ffprobe", "-v", "error", "-of", "flat=s=_", "-select_streams", "v:0", "-show_entries", "stream=height,width",
-         f"{video_url}"], stdout=sp.PIPE)
+        ["ffprobe", "-print_format", "json", "-show_format", "-show_streams", "-i", f"{video_url}"],
+        stdout=sp.PIPE)
+
     pipe.wait()
     if pipe.returncode is not 0:
         return Response(status=status.HTTP_400_BAD_REQUEST)
     std_out = pipe.communicate()[0]
-
-    rex = re.compile(r"[^=]*=(\d+)[^=]*=(\d+).*")
-
-    width, height = rex.match(str(std_out)).groups()
-    data = {"height": height, "width": width}
+    """
+    std_out data like this:
+    {
+        "streams": {
+            {...},
+            {
+            ...
+            "width":960,
+            "height":540,
+            ...
+            },
+        }
+        "format": {
+            ...
+            "size":"537296",
+            ...
+        }
+    }
+    """
+    video_info = json.loads(std_out.decode('utf-8'))
+    height = video_info['streams'][1]['height']
+    width = video_info['streams'][1]['width']
+    size = int(video_info['format']['size']) / 1024 / 1024
+    data = {"height": height, "width": width, "size": size}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
     return Response(data)
