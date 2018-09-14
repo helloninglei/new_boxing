@@ -269,7 +269,7 @@ feedback = [
 ]
 
 
-merits_url = [
+ability_url = [
     path('players/<int:pk>/ability', ability_chart, name='player_ability'),
 ]
 
@@ -306,7 +306,7 @@ urlpatterns += like_urls
 urlpatterns += search_urls
 urlpatterns += album_url
 urlpatterns += feedback
-urlpatterns += merits_url
+urlpatterns += ability_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
