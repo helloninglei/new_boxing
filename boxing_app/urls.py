@@ -270,7 +270,7 @@ feedback = [
 
 
 ability_url = [
-    path('players/<int:pk>/ability', ability_chart, name='player_ability'),
+    path('players/<int:pk>/ability_chart', ability_chart, name='player_ability'),
 ]
 
 urlpatterns = []

@@ -7,7 +7,7 @@ class AbilityTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(mobile='11111111111', password='password')
 
-    def test_ability(self):
+    def test_ability_chart(self):
         res = self.client.get('/players/{}/ability'.format(self.user.id))
         self.assertEqual(res.status_code, 404)
         self.player = Player.objects.create(user_id=self.user.id, name='膜法师', mobile='11111111111',
