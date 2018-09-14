@@ -27,6 +27,7 @@ from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
 from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateApiView, MatchCreateApiView, players
+from boxing_console.views.ability import ability_chart
 
 router = SimpleRouter()
 
@@ -153,6 +154,10 @@ match_urls = [
     path("players", players)
 ]
 
+ability_url = [
+    path('ability', ability_chart, name='player_ability'),
+]
+
 urlpatterns = router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
@@ -173,6 +178,7 @@ urlpatterns += feedback
 urlpatterns += player
 urlpatterns += schedule_urls
 urlpatterns += match_urls
+urlpatterns += ability_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
