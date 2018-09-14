@@ -22,12 +22,10 @@ def ability_chart(request):
     attack = request.GET.get('attack', '')
     stamina = request.GET.get('stamina', '')
 
-    value = [skill, strength, defence, willpower, attack, stamina]
-    if all(map(lambda x: x.isdigit(), value)):
-        if all(map(lambda x: 0 < int(x) <= 100, value)):
-            ret = make_radar(skill=int(skill), strength=int(strength), defence=int(defence),
-                             willpower=int(willpower), attack=int(attack), stamina=int(stamina))
-            if ret is not None:
-                return StreamingHttpResponse(ret, content_type="image/png", status=status.HTTP_200_OK)
+    values = [skill, strength, defence, willpower, attack, stamina]
+    if all(map(lambda x: x.isdigit() and 0 < int(x) <= 100, values)):
+        result = make_radar(*map(int, values))
+        if result:
+            return StreamingHttpResponse(result, content_type="image/png", status=status.HTTP_200_OK)
 
     return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
