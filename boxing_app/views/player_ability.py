@@ -3,9 +3,7 @@ from django.http import StreamingHttpResponse, HttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from biz.services.chart_service import make_radar
-from biz.models import Player
-from biz.models import Schedule
-from biz.models import Match
+from biz.models import Player, Schedule, Match
 
 
 @api_view(['GET'])
