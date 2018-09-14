@@ -50,6 +50,7 @@ from boxing_app.views.album import AlbumViewSet
 from boxing_app.views.album import picture_list
 from boxing_app.views.handle_video import cover_picture, video_resolution
 from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
+from boxing_app.views.player_ability import ability_chart
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -267,6 +268,11 @@ feedback = [
     path('feedback', FeedbackViewSet.as_view({"post": "create"}), name="create_feedback")
 ]
 
+
+merits_url = [
+    path('players/<int:pk>/ability', ability_chart, name='player_ability'),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -300,7 +306,7 @@ urlpatterns += like_urls
 urlpatterns += search_urls
 urlpatterns += album_url
 urlpatterns += feedback
-
+urlpatterns += merits_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]
