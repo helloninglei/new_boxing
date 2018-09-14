@@ -50,7 +50,7 @@ from boxing_app.views.album import AlbumViewSet
 from boxing_app.views.album import picture_list
 from boxing_app.views.handle_video import cover_picture, video_resolution
 from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
-from boxing_app.views.player_ability import ability_chart
+from boxing_app.views.player_ability import ability_chart, ability_details
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -270,7 +270,8 @@ feedback = [
 
 
 ability_url = [
-    path('players/<int:pk>/ability_chart', ability_chart, name='player_ability'),
+    path('players/<int:pk>/ability_chart', ability_chart, name='player_ability_chart'),
+    path('players/<int:pk>/ability_details', ability_details, name='player_ability_details'),
 ]
 
 urlpatterns = []
