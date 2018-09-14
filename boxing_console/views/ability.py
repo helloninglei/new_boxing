@@ -12,7 +12,7 @@ def ability_chart(request):
     '''
     :param request:
     eg:
-        http://host:port/path?skill=50&strength=80&defence=90&willpower=76&attack=80
+        http://host:port/path?skill=50&strength=80&defence=90&willpower=76&attack=86&stamina=83
     :return:
     '''
     skill = request.GET.get('skill', '')
