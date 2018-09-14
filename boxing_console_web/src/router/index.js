@@ -27,6 +27,9 @@ import Hotvideo         from 'page/hot_videos';
 import Hotvideodetail   from 'page/hot_video_detail';
 import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infolist';
+import Metchlist        from 'page/metchlist';
+import Battlelist        from 'page/battlelist';
+import Boxerlist         from 'page/boxerlist';
 import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
 import Dynamic          from 'page/dynamic';
@@ -166,6 +169,18 @@ export default [
             {
                 path: '/infoList',
                 component: InfoList,
+            },
+            {
+                path: '/metchlist',
+                component: Metchlist,
+            },
+            {
+                path: '/battlelist',
+                component: Battlelist,
+            },
+            {
+                path: '/boxerlist',
+                component: Boxerlist,
             },
             {
                 path: '/infodetail',

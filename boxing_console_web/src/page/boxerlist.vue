@@ -1,6 +1,6 @@
 <template>
     <div class="banner_manage" style="calc(100vw - 230px)">
-        <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infolist" secondTitle_name="资讯"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infoList" secondTitle_name="参赛选手管理"></TopBar>
         <div class="container">
             <header>
                 <el-date-picker
