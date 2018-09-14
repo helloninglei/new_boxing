@@ -257,11 +257,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['created_time'] = instance.created_time.strftime('%Y-%m-%d %H:%M')
-        return ret
+    created_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
 
     class Meta:
         model = models.Like
