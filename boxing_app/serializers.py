@@ -257,7 +257,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
-    created_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    created_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
 
     class Meta:
         model = models.Like
