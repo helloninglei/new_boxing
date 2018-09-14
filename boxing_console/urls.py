@@ -26,7 +26,7 @@ from boxing_console.views.official_account_change_logs import OfficialAccountCha
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
-from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateApiView
+from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateApiView, MatchCreateApiView, players
 
 router = SimpleRouter()
 
@@ -148,6 +148,11 @@ schedule_urls = [
     path("schedules/<int:pk>", ScheduleUpdateApiView.as_view())
 ]
 
+match_urls = [
+    path("matches", MatchCreateApiView.as_view()),
+    path("players", players)
+]
+
 urlpatterns = router.urls
 urlpatterns += boxer_url
 urlpatterns += course_url
@@ -167,6 +172,7 @@ urlpatterns += album_url
 urlpatterns += feedback
 urlpatterns += player
 urlpatterns += schedule_urls
+urlpatterns += match_urls
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
 from django.utils import timezone
-
 import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,9 +8,8 @@ from django.db import transaction
 from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment, Album, AlbumPicture, Feedback, Player
+    OrderComment, Album, AlbumPicture, Player
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -689,3 +687,29 @@ class ScheduleCommonSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Schedule
         fields = ["name", "race_date", "id", "status"]
+
+
+class MatchCreateSerializer(serializers.ModelSerializer):
+    category = serializers.ChoiceField(choices=constants.MATCH_CATEGORY_CHOICES,
+                                       error_messages={"invalid_choice": "对战类型不符合要求!"})
+    result = serializers.ChoiceField(choices=constants.MATCH_RESULT_CHOICES,
+                                     error_messages={"invalid_choice": "对战结果不符合要求!"})
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    level_min = serializers.IntegerField(min_value=1)
+    level_max = serializers.IntegerField(max_value=100)
+
+    def to_representation(self, instance):
+        return dict(red_name=instance.red_player.name, blue_name=instance.blue_player.name,
+                    category=instance.get_category_display(), schedule=instance.schedule.id,
+                    level_min=instance.level_min, level_max=instance.level_max, result=instance.get_result_display())
+
+    def validate(self, attrs):
+        if attrs['red_player'] == attrs['blue_player']:
+            raise ValidationError("红方和蓝方不能是同一拳手!")
+        if attrs['level_max'] <= attrs['level_min']:
+            raise ValidationError("项目级别不符合要求!")
+        return attrs
+
+    class Meta:
+        model = models.Match
+        fields = ["blue_player", "red_player", "schedule", "category", "level_min", "level_max", "result", "operator"]

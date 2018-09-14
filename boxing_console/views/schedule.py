@@ -1,6 +1,8 @@
 from rest_framework import generics
-from boxing_console.serializers import ScheduleCommonSerializer
-from biz.models import Schedule
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from boxing_console.serializers import ScheduleCommonSerializer, MatchCreateSerializer
+from biz.models import Schedule, Player
 
 
 class ScheduleListCreateApiView(generics.ListCreateAPIView):
@@ -14,3 +16,12 @@ class ScheduleListCreateApiView(generics.ListCreateAPIView):
 class ScheduleUpdateApiView(generics.UpdateAPIView):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleCommonSerializer
+
+
+class MatchCreateApiView(generics.CreateAPIView):
+    serializer_class = MatchCreateSerializer
+
+
+@api_view(['GET'])
+def players(_):
+    return Response({"results": Player.objects.values("id", "name", "mobile")})
