@@ -13,5 +13,5 @@ class AbilityTest(APITestCase):
         self.player = Player.objects.create(user_id=self.user.id, name='膜法师', mobile='11111111111',
                                             avatar='/path/to/face.jpg', stamina=50, skill=50, attack=50,
                                             defence=50, strength=60, willpower=70)
-        res = self.client.get('/players/{}/ability'.format(self.user.id))
+        res = self.client.get('/players/{}/ability_chart'.format(self.user.id))
         self.assertEqual(res.status_code, 200)
