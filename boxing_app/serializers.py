@@ -588,6 +588,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
     has_album = serializers.BooleanField(source='user.albums.count', read_only=True)
+    has_merits = serializers.BooleanField(source='user.player_info.count', read_only=True)
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
