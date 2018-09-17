@@ -55,12 +55,13 @@ def get_winner(result):
 @authentication_classes([])
 def player_match(request, pk):
     player = Player.objects.filter(user_id=int(pk)).first()
-    win = 0
-    ko = 0
-    results = []
-    res = {'total': 0, 'win': 0, 'ko': 0, 'results': []}
+    response_data = {'total': 0, 'win': 0, 'ko': 0, 'results': []}
 
     if player:
+        pk = int(pk)
+        win = 0
+        ko = 0
+        results = []
         match_qs = Match.objects.filter(Q(red_player=player) | Q(blue_player=player), schedule__status=SCHEDULE_STATUS_PUBLISHED)
         for m in match_qs:
             record = {}
@@ -77,15 +78,15 @@ def player_match(request, pk):
             record['time'] = m.created_time.strftime('%Y-%m-%d')
             record['ko'] = get_ko_er(m.result)
             record['win'] = get_winner(m.result)
-            if int(pk) == record['red_player'] and m.result == MATCH_RESULT_RED_KO_BLUE:
+            if pk == record['red_player'] and m.result == MATCH_RESULT_RED_KO_BLUE:
                 ko += 1
-            if int(pk) == record['blue_player'] and m.result == MATCH_RESULT_BLUE_KO_RED:
+            if pk == record['blue_player'] and m.result == MATCH_RESULT_BLUE_KO_RED:
                 ko += 1
-            if int(pk) == record['red_player'] and m.result in (MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_RED_SUCCESS):
+            if pk == record['red_player'] and m.result in (MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_RED_SUCCESS):
                 win += 1
-            if int(pk) == record['blue_player'] and m.result in (MATCH_RESULT_BLUE_KO_RED, MATCH_RESULT_BLUE_SUCCESS):
+            if pk == record['blue_player'] and m.result in (MATCH_RESULT_BLUE_KO_RED, MATCH_RESULT_BLUE_SUCCESS):
                 win += 1
             results.append(record)
-        res = {'total': len(results), 'win': win, 'ko': ko, 'results': results}
+        response_data = {'total': len(results), 'win': win, 'ko': ko, 'results': results}
 
-    return Response(data=res, status=status.HTTP_200_OK)
+    return Response(data=response_data, status=status.HTTP_200_OK)
