@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from boxing_console.serializers import ScheduleCommonSerializer, MatchCreateSerializer
-from biz.models import Schedule, Player, Match
+from biz.models import Schedule, Player
 
 
 class ScheduleListCreateApiView(generics.ListCreateAPIView):
