@@ -34,7 +34,7 @@ def ability_details(request, pk):
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-def get_ko_er(result):
+def get_ko_player(result):
     if result == MATCH_RESULT_RED_KO_BLUE:
         return 'red'
     elif result == MATCH_RESULT_BLUE_KO_RED:
@@ -77,7 +77,7 @@ def player_match(request, pk):
             record['level_min'] = match.level_min
             record['level_max'] = match.level_max
             record['time'] = match.created_time.strftime('%Y-%m-%d')
-            record['ko'] = get_ko_er(match.result)
+            record['ko'] = get_ko_player(match.result)
             record['win'] = get_winner(match.result)
             if pk == record['red_player'] and match.result == MATCH_RESULT_RED_KO_BLUE:
                 ko += 1
