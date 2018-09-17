@@ -117,10 +117,12 @@ class PlayerTestCase(APITestCase):
 
     def test_update_player(self):
         self.player_data.update(user=self.user1)
-        player = Player.objects.create(**self.player_data)
+        player1 = Player.objects.create(**self.player_data)
+        self.player_data.update(user=self.user2, mobile=self.user2.mobile)
+        player2 = Player.objects.create(**self.player_data)
         update_data = {
             "name": "赵六",
-            "mobile": "11111111112",
+            "mobile": self.user2.mobile,
             "avatar": "avatar2.png",
             "stamina": 1,
             "skill": 1,
@@ -129,7 +131,17 @@ class PlayerTestCase(APITestCase):
             "strength": 1,
             "willpower": 1
         }
-        res = self.client.post(f'/player/{player.id}', data=update_data)
+        # mobile is another player
+        res = self.client.post(f'/player/{player1.id}', data=update_data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        # mobile is not user
+        update_data.update(mobile="11011011000")
+        res = self.client.post(f'/player/{player1.id}', data=update_data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # mobile is validate
+        update_data.update(mobile=self.user1.mobile)
+        res = self.client.post(f'/player/{player1.id}', data=update_data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         for key in update_data:
             self.assertEqual(res.data[key], update_data[key])
