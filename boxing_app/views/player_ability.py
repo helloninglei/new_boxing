@@ -62,29 +62,30 @@ def player_match(request, pk):
         win = 0
         ko = 0
         results = []
-        match_qs = Match.objects.filter(Q(red_player=player) | Q(blue_player=player), schedule__status=SCHEDULE_STATUS_PUBLISHED)
-        for m in match_qs:
+        match_qs = Match.objects.filter(Q(red_player=player) | Q(blue_player=player),
+                                        schedule__status=SCHEDULE_STATUS_PUBLISHED).select_related('schedule', 'red_player', 'blue_player')
+        for match in match_qs:
             record = {}
-            record['red_player'] = m.red_player.user.id
-            record['red_avatar'] = m.red_player.avatar
-            record['red_name'] = m.red_player.name
-            record['blue_player'] = m.blue_player.user.id
-            record['blue_avatar'] = m.blue_player.avatar
-            record['blue_name'] = m.blue_player.name
-            record['schedule'] = m.schedule.name
-            record['category'] = m.get_category_display()
-            record['level_min'] = m.level_min
-            record['level_max'] = m.level_max
-            record['time'] = m.created_time.strftime('%Y-%m-%d')
-            record['ko'] = get_ko_er(m.result)
-            record['win'] = get_winner(m.result)
-            if pk == record['red_player'] and m.result == MATCH_RESULT_RED_KO_BLUE:
+            record['red_player'] = match.red_player.user.id
+            record['red_avatar'] = match.red_player.avatar
+            record['red_name'] = match.red_player.name
+            record['blue_player'] = match.blue_player.user.id
+            record['blue_avatar'] = match.blue_player.avatar
+            record['blue_name'] = match.blue_player.name
+            record['schedule'] = match.schedule.name
+            record['category'] = match.get_category_display()
+            record['level_min'] = match.level_min
+            record['level_max'] = match.level_max
+            record['time'] = match.created_time.strftime('%Y-%m-%d')
+            record['ko'] = get_ko_er(match.result)
+            record['win'] = get_winner(match.result)
+            if pk == record['red_player'] and match.result == MATCH_RESULT_RED_KO_BLUE:
                 ko += 1
-            if pk == record['blue_player'] and m.result == MATCH_RESULT_BLUE_KO_RED:
+            if pk == record['blue_player'] and match.result == MATCH_RESULT_BLUE_KO_RED:
                 ko += 1
-            if pk == record['red_player'] and m.result in (MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_RED_SUCCESS):
+            if pk == record['red_player'] and match.result in (MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_RED_SUCCESS):
                 win += 1
-            if pk == record['blue_player'] and m.result in (MATCH_RESULT_BLUE_KO_RED, MATCH_RESULT_BLUE_SUCCESS):
+            if pk == record['blue_player'] and match.result in (MATCH_RESULT_BLUE_KO_RED, MATCH_RESULT_BLUE_SUCCESS):
                 win += 1
             results.append(record)
         response_data = {'total': len(results), 'win': win, 'ko': ko, 'results': results}
