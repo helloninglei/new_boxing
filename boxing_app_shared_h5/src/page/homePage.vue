@@ -162,6 +162,7 @@
         created() {
             this.userId = this.$route.params.userId;
             this.getUserInfo();
+            this.getRadarChart();
         },
         methods: {
             getUserInfo() {
@@ -182,6 +183,18 @@
                         }
 
                         this.userInfo = userInfo;
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        console.log(errors);
+                    }
+                })
+            },
+            getRadarChart() {
+                this.ajax(`http://qa2.htop.info:50000/players/${this.userId}/ability_chart`,'get').then((res) => {
+                    if (res && res.data) {
+
                     }
                 },(err) => {
                     if(err&&err.response){
