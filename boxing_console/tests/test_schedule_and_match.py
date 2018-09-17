@@ -89,6 +89,25 @@ class ScheduleMatchTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['message'][0], "项目级别不符合要求!")
 
+    def test_should_get_retrieve_of_schedule(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        response = self.client.get(path=f"/schedules/{schedule.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], schedule.name)
+        self.assertEqual(response.data['race_date'], schedule.race_date)
+
+    def test_should_delete_schedule_and_match(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        player1 = Player.objects.create(**self.player_data, mobile=self.user2.mobile)
+        player2 = Player.objects.create(mobile=self.user.mobile, **self.player_data)
+        Match.objects.create(blue_player=player1, red_player=player2, schedule=schedule,
+                             category=MATCH_CATEGORY_BOXING, level_min=20, level_max=100,
+                             result=MATCH_RESULT_BLUE_SUCCESS)
+        response = self.client.delete(path=f"/schedules/{schedule.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Schedule.objects.filter(pk=schedule.id).exists())
+        self.assertFalse(Match.objects.filter(schedule=schedule).exists())
+
     @property
     def player_data(self):
         return {

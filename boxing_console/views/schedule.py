@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from boxing_console.serializers import ScheduleCommonSerializer, MatchCreateSerializer
-from biz.models import Schedule, Player
+from biz.models import Schedule, Player, Match
 
 
 class ScheduleListCreateApiView(generics.ListCreateAPIView):
@@ -13,9 +13,13 @@ class ScheduleListCreateApiView(generics.ListCreateAPIView):
         serializer.save(operator=self.request.user)
 
 
-class ScheduleUpdateApiView(generics.UpdateAPIView):
+class ScheduleUpdateApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleCommonSerializer
+
+    def perform_destroy(self, instance):
+        instance.matches.all().delete()
+        instance.delete()
 
 
 class MatchCreateApiView(generics.CreateAPIView):
