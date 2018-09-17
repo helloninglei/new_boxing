@@ -613,3 +613,4 @@ class Match(BaseAuditModel):
 
     class Meta:
         db_table = "match"
+        ordering = ("-created_time",)
