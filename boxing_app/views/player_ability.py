@@ -43,6 +43,7 @@ def get_ko_player(result):
     else:
         return ''
 
+
 # 获取胜利者
 def get_winner(result):
     if result in (MATCH_RESULT_RED_SUCCESS, MATCH_RESULT_RED_KO_BLUE):
