@@ -100,7 +100,8 @@ class PlayerTestCase(APITestCase):
             "blue_player": player2,
             "schedule": schedule,
             "category": constants.MATCH_CATEGORY_MMA,
-            "level": 1,
+            "level_min": 100,
+            "level_max": 120,
             "result": constants.MATCH_RESULT_RED_SUCCESS
         })
         res = self.client.delete(f'/player/{player1.pk}')
