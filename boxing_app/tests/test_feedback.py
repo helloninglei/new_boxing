@@ -23,10 +23,21 @@ class Feedback(APITestCase):
                        "image007.png",
                        "image008.png"]
         }
-        res = self.client1.post(reverse('create_feedback'), data=feedback_data)
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        res1 = self.client1.post(reverse('create_feedback'), data=feedback_data)
+        self.assertEqual(res1.status_code, status.HTTP_201_CREATED)
         for key in feedback_data:
-            self.assertEqual(res.data[key], feedback_data[key])
+            self.assertEqual(res1.data[key], feedback_data[key])
+        # limited create feedback 5/day
+        res2 = self.client1.post(reverse('create_feedback'), data=feedback_data)
+        self.assertEqual(res2.status_code, status.HTTP_201_CREATED)
+        res3 = self.client1.post(reverse('create_feedback'), data=feedback_data)
+        self.assertEqual(res3.status_code, status.HTTP_201_CREATED)
+        res4 = self.client1.post(reverse('create_feedback'), data=feedback_data)
+        self.assertEqual(res4.status_code, status.HTTP_201_CREATED)
+        res5 = self.client1.post(reverse('create_feedback'), data=feedback_data)
+        self.assertEqual(res5.status_code, status.HTTP_201_CREATED)
+        res6 = self.client1.post(reverse('create_feedback'), data=feedback_data)
+        self.assertEqual(res6.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
 
     def test_create_feedback_fail_because_more_than_8_images(self):
         feedback_data = {
