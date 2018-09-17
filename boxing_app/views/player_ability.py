@@ -34,6 +34,7 @@ def ability_details(request, pk):
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+# 获取ko效果player
 def get_ko_player(result):
     if result == MATCH_RESULT_RED_KO_BLUE:
         return 'red'
@@ -42,7 +43,7 @@ def get_ko_player(result):
     else:
         return ''
 
-
+# 获取胜利者
 def get_winner(result):
     if result in (MATCH_RESULT_RED_SUCCESS, MATCH_RESULT_RED_KO_BLUE):
         return 'red'
@@ -79,6 +80,7 @@ def player_match(request, pk):
             record['time'] = match.created_time.strftime('%Y-%m-%d')
             record['ko'] = get_ko_player(match.result)
             record['win'] = get_winner(match.result)
+            # 根据当前用户id判断角色(红方还是蓝方)统计ko场数和总胜利场数
             if pk == record['red_player'] and match.result == MATCH_RESULT_RED_KO_BLUE:
                 ko += 1
             if pk == record['blue_player'] and match.result == MATCH_RESULT_BLUE_KO_RED:
