@@ -6,6 +6,7 @@ from biz.services.chart_service import make_radar
 from rest_framework.response import Response
 from biz.models import Player, Match
 from django.db.models import Q
+from django.utils import timezone
 from biz.constants import SCHEDULE_STATUS_PUBLISHED, MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_BLUE_KO_RED, \
     MATCH_RESULT_BLUE_SUCCESS, MATCH_RESULT_RED_SUCCESS
 
@@ -78,7 +79,7 @@ def player_match(request, pk):
             record['category'] = match.get_category_display()
             record['level_min'] = match.level_min
             record['level_max'] = match.level_max
-            record['time'] = match.created_time.strftime('%Y-%m-%d')
+            record['time'] = timezone.localtime(match.created_time).strftime('%Y-%m-%d')
             record['ko'] = get_ko_player(match.result)
             record['win'] = get_winner(match.result)
             # 根据当前用户id判断角色(红方还是蓝方)统计ko场数和总胜利场数
