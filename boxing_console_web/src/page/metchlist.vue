@@ -82,7 +82,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    content:'删除后不可恢复，是否确认删除？'
+                    content:'删除后连同赛程内的对战表一同删除，且不可恢复，是否确认删除？'
                 },
                 addDialog:{
                     isshow:false
