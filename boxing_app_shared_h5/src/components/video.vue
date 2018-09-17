@@ -44,6 +44,11 @@
         },
         components: {
             'd-player': VueDPlayer
+        },
+        created() {
+            if (!this.options.video.pic) {
+                this.options.video.pic = (this.url.indexOf('http') === 0 ? '' : `${config.baseUrl}`) + this.url + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast'
+            }
         }
     }
 </script>
