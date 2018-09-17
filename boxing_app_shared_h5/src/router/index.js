@@ -39,7 +39,7 @@ export default [
         }
     },
     {
-        path: '/homePage',
+        path: '/homePage/:userId',
         component: HomePage,
         meta: {
             title: '拳城出击'
