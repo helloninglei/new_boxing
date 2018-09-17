@@ -608,7 +608,8 @@ class Match(BaseAuditModel):
     blue_player = models.ForeignKey(Player, on_delete=models.PROTECT, related_name="matches_blue")
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name="matches")
     category = models.PositiveSmallIntegerField(choices=constants.MATCH_CATEGORY_CHOICES)
-    level = models.PositiveSmallIntegerField()  # todo 待产品给出详细等级
+    level_min = models.IntegerField()  # kg
+    level_max = models.IntegerField()  # kg
     result = models.PositiveSmallIntegerField(choices=constants.MATCH_RESULT_CHOICES)
 
     class Meta:
