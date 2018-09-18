@@ -23,7 +23,7 @@
         </div>
         <div class="fight">
             <div class="title">战绩</div>
-            <component :is="tabView" class="content_wrapper"></component>
+            <component :is="tabView" class="content_wrapper" :user-id="userId"></component>
             <div class="handle_btn_wrapper">
                 <span v-for="(tab ,index) in tabs" class="tab" :class="{current:current==index,current_tab: index ===0}" @click="tabChange(index)">
                     <span class="tab_name">{{tab.name}}</span>
@@ -142,6 +142,7 @@
     import AbilityNumber from 'components/abilityNumber';
     import MatchData from 'components/matchData';
     import DownloadTip from 'components/downloadTip';
+    import { mapState, mapMutations } from 'vuex';
     export default {
         data() {
             return {
@@ -161,8 +162,8 @@
         },
         created() {
             this.userId = this.$route.params.userId;
+            this.storeHomePageId(this.userId);
             this.getUserInfo();
-            this.getRadarChart();
         },
         methods: {
             getUserInfo() {
@@ -191,18 +192,7 @@
                     }
                 })
             },
-            getRadarChart() {
-                this.ajax(`http://qa2.htop.info:50000/players/${this.userId}/ability_chart`,'get').then((res) => {
-                    if (res && res.data) {
-
-                    }
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data;
-                        console.log(errors);
-                    }
-                })
-            },
+            ...mapMutations(["storeHomePageId"]),
             tabChange(e) {
                 this.tabView = e == 0 ? 'AbilityPic' : 'AbilityNumber';
                 this.current = e;

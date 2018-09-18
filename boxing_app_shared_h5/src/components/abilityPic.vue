@@ -1,6 +1,6 @@
 <template>
     <div>
-        <img class="pic" src="" alt="">
+        <img class="pic" :src="imgSrc" alt="">
     </div>
 </template>
 
@@ -10,13 +10,23 @@
         margin 1.9rem auto 1.35rem auto
         width 11rem
         height 11rem
-        background red
 </style>
 
 <script type="text/ecmascript-6">
     export default {
         data() {
-            return {}
+            return {
+                imgSrc: ''
+            }
+        },
+        props: {
+            userId: {
+                type: [String,Number]
+            }
+        },
+        created() {
+            this.imgSrc = `/players/${this.userId}/ability_chart`;
+//            this.imgSrc = 'http://qa2.htop.info:50000/players/10158/ability_chart'; // todo
         }
     }
 </script>
