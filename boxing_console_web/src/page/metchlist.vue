@@ -100,31 +100,35 @@
             this.getData();
         },
         methods: {
-            getData(ifBtn) {
-                // this.ajax('/schedules','get',{},{page:this.page}).then((res) => {
-                //     if(res&&res.data){
-                //         this.tableData = res.data.results;
-                //         this.total = res.data.count;
-                //     }
-                // })
+            getData() {
+                this.ajax('/schedules','get',{},{page:this.page}).then((res) => {
+                    if(res&&res.data){
+                        this.tableData = res.data.results;
+                        this.total = res.data.count;
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
             },
             deleteData() {
                 let $this = this;
-                console.log(this.confirmData.id,this.confirmData.index)
-                $this.tableData.splice(this.confirmData.index,1)
-                $this.confirmData.isshow=false;
-                // this.ajax(``,'delete').then((res) => {
-                //     $this.confirmData.isshow=false;
-                //     $this.tableData.splice(index,1)
-                //     $this.confirmData.isshow=false;
-                // },(err) => {
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             this.showErrorTip(errors[key][0])
-                //         }
-                //     }
-                // })
+                this.ajax(`/schedules/${this.confirmData.id}`,'delete').then((res) => {
+                    $this.confirmData.isshow=false;
+                    $this.tableData.splice(this.confirmData.index,1)
+                    $this.confirmData.isshow=false;
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
             },
             
             handleEdit(index, row) {
@@ -174,8 +178,7 @@
                 this.addDialog.isshow = true
             },
             addmetch(data){
-                
-                console.log(data)
+                this.getData();
                 this.addDialog.isshow = false;
             },
             changeShow(row,index){
