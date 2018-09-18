@@ -686,7 +686,15 @@ class ScheduleCommonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Schedule
-        fields = ["name", "race_date", "id", "status"]
+        fields = ("name", "race_date", "id", "status")
+
+
+class SchedulePatchUpdateSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(choices=constants.SCHEDULE_STATUS_CHOICES)
+
+    class Meta:
+        model = models.Schedule
+        fields = ('status',)
 
 
 class MatchCreateSerializer(serializers.ModelSerializer):
