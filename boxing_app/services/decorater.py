@@ -15,7 +15,7 @@ def limit_success_frequency(frequency, period):
             key = f"{func.__module__}__{func.__qualname__}__{request.user.id}"
             posted_frequency = redis_client.get(key)
             if posted_frequency and int(posted_frequency) >= frequency:
-                return Response(data="24小时内只能提交5次反馈建议，请稍后再试", status=status.HTTP_429_TOO_MANY_REQUESTS)
+                return Response(data=f"{period/3600}小时内只能提交{frequency}次反馈建议，请稍后再试", status=status.HTTP_429_TOO_MANY_REQUESTS)
             res = func(viewset, request, *args, **kwargs)
             if str(res.status_code)[0] != "2":
                 return res
