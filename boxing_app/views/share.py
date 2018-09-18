@@ -3,8 +3,8 @@ from django.conf import settings
 from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from biz.models import Message, HotVideo, GameNews, UserProfile, User
-from biz.redis_client import incr_number_of_share, forward_message, forward_hotvideo
+from biz.models import Message, HotVideo, GameNews, UserProfile, User, Player
+from biz.redis_client import incr_number_of_share, forward_message, forward_hotvideo, follower_count, following_count
 from biz.utils import get_model_class_by_name, get_share_img_url, get_object_or_404
 from biz.weixin_public_client import Sign
 
@@ -77,6 +77,14 @@ def share_view(request, object_type, object_id):
         picture = get_share_img_url(obj.picture)
         user = obj.operator
         url = f'{h5_base_url}game_news/{object_id}/0'  # 0 不在app内打开
+    elif isinstance(obj, Player):
+        title = f'分享{obj.user.user_profile.nick_name}的个人战绩'
+        user = obj.user
+        follower = follower_count(user.id)
+        following = following_count(user.id)
+        sub_title = f'已关注: {following},粉丝数: {follower}'
+        picture = get_share_img_url(obj.avatar)
+        url = f'{h5_base_url}players/{obj.id}'
     else:
         title = '我在拳城出击发现了一个很棒的拳击教练，一起去约课吧～'
         sub_title = '上拳城，玩转拳击'
