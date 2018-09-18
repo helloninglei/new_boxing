@@ -94,8 +94,8 @@ class ShareTestCase(APITestCase):
         self.assertEqual(data['sub_title'], '来自拳城出击的lerry')
         self.assertEqual(data['picture'], f'{oss_base_url}{self.test_user.user_profile.avatar}{img_prefix}')
 
-        data = self.client.get(f'/players/{self.test_user.id}/share').data
-        # self.assertEqual(data['title'], '分享lerry的个人战绩')
+        data = self.client.get(f'/players/{self.test_user.id}/{self.test_user.id}/share').data
+        self.assertEqual(data['title'], '分享lerry的个人战绩')
         self.assertEqual(data['sub_title'], "已关注: 0,粉丝数: 0")
         self.assertEqual(data['picture'], f'{oss_base_url}{self.test_player.avatar}{img_prefix}')
         self.assertEqual(data['url'], f'{h5_base_url}players/{self.test_user.id}')
