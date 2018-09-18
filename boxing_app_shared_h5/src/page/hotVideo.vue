@@ -7,7 +7,7 @@
             </div>
             <div class="video_info_wrapper">
                 <div v-if="videoObj.try_url || videoObj.url" class="video" id="videoBox" ref="videoBox">
-                    <Video :url="videoObj.try_url" height="11.8rem" v-show="showVideo"></Video>
+                    <Video :url="videoObj.try_url" height="11.8rem" v-show="showVideo" :cover="videoObj.cover"></Video>
                 </div>
                 <div class="user-wrap clearfix" v-if="videoObj.bind_user">
                     <div class="portrait"><img :src="videoObj.bind_user.avatar" alt=""></div>

@@ -2,7 +2,8 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import Schedule, User, Player, Match
 from datetime import datetime
-from biz.constants import SCHEDULE_STATUS_PUBLISHED, MATCH_CATEGORY_BOXING, MATCH_RESULT_BLUE_SUCCESS
+from biz.constants import SCHEDULE_STATUS_PUBLISHED, MATCH_CATEGORY_BOXING, MATCH_RESULT_BLUE_SUCCESS, \
+    SCHEDULE_STATUS_NOT_PUBLISHED
 
 
 class ScheduleMatchTestCase(APITestCase):
@@ -19,6 +20,7 @@ class ScheduleMatchTestCase(APITestCase):
         schedule = Schedule.objects.filter(operator=self.user).first()
         self.assertEqual(schedule.name, data['name'])
         self.assertEqual(schedule.race_date, datetime.strptime(data['race_date'], "%Y-%m-%d").date())
+        self.assertEqual(schedule.operator, self.user)
 
     def test_should_get_order_schedule_list(self):
         schedule1 = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
@@ -34,7 +36,7 @@ class ScheduleMatchTestCase(APITestCase):
         self.assertEqual(result[1]['name'], schedule1.name)
         self.assertEqual(result[1]['status'], "未发布")
 
-    def test_should_update_schedule_list(self):
+    def test_should_update_schedule(self):
         schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
         data = {"name": "世界职业拳击比赛", "race_date": "2018-10-21"}
         response = self.client.put(path=f"/schedules/{schedule.id}", data=data, format="json")
@@ -42,12 +44,7 @@ class ScheduleMatchTestCase(APITestCase):
         schedule.refresh_from_db()
         self.assertEqual(schedule.name, data['name'])
         self.assertEqual(schedule.race_date, datetime.strptime(data['race_date'], "%Y-%m-%d").date())
-        data = {"name": "终极格斗冠军赛", "race_date": "2018-09-21"}
-        response = self.client.patch(path=f"/schedules/{schedule.id}", data=data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        schedule.refresh_from_db()
-        self.assertEqual(schedule.name, data['name'])
-        self.assertEqual(schedule.race_date, datetime.strptime(data['race_date'], "%Y-%m-%d").date())
+        self.assertEqual(schedule.operator, self.user)
 
     def test_should_get_player_list(self):
         player = Player.objects.create(**self.player_data, mobile=self.user.mobile)
@@ -88,6 +85,41 @@ class ScheduleMatchTestCase(APITestCase):
         response = self.client.post(path="/matches", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['message'][0], "项目级别不符合要求!")
+
+    def test_should_get_retrieve_of_schedule(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        response = self.client.get(path=f"/schedules/{schedule.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], schedule.name)
+        self.assertEqual(response.data['race_date'], schedule.race_date)
+
+    def test_should_delete_schedule_and_match(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        player1 = Player.objects.create(**self.player_data, mobile=self.user2.mobile)
+        player2 = Player.objects.create(mobile=self.user.mobile, **self.player_data)
+        Match.objects.create(blue_player=player1, red_player=player2, schedule=schedule,
+                             category=MATCH_CATEGORY_BOXING, level_min=20, level_max=100,
+                             result=MATCH_RESULT_BLUE_SUCCESS)
+        response = self.client.delete(path=f"/schedules/{schedule.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Schedule.objects.filter(pk=schedule.id).exists())
+        self.assertFalse(Match.objects.filter(schedule=schedule).exists())
+
+    def test_should_publish_or_hide_schedule(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        self.assertEqual(schedule.status, SCHEDULE_STATUS_NOT_PUBLISHED)
+        response = self.client.patch(path=f"/schedules/{schedule.id}", data={"status": SCHEDULE_STATUS_PUBLISHED},
+                                     format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        schedule.refresh_from_db()
+        self.assertEqual(schedule.status, SCHEDULE_STATUS_PUBLISHED)
+        self.assertEqual(schedule.operator, self.user)
+
+    def test_should_fail_of_publish_or_hide_schedule(self):
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        response = self.client.patch(path=f"/schedules/{schedule.id}", data={"status": "5"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['status'][0], "“5” 不是合法选项。")
 
     @property
     def player_data(self):

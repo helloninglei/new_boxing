@@ -672,7 +672,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     def validate_mobile(self, value):
         if not User.objects.filter(mobile=value).exists():
             raise ValidationError("该手机号的用户不存在")
-        if Player.objects.filter(mobile=value).exists():
+        if Player.objects.filter(mobile=value).exists() and self.instance.mobile != value:
             raise ValidationError("该手机号已被其他参赛选手注册")
         return value
 
@@ -686,7 +686,15 @@ class ScheduleCommonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Schedule
-        fields = ["name", "race_date", "id", "status"]
+        fields = ("name", "race_date", "id", "status")
+
+
+class SchedulePatchUpdateSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(choices=constants.SCHEDULE_STATUS_CHOICES)
+
+    class Meta:
+        model = models.Schedule
+        fields = ('status',)
 
 
 class MatchCreateSerializer(serializers.ModelSerializer):

@@ -26,7 +26,7 @@ from boxing_console.views.official_account_change_logs import OfficialAccountCha
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
-from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateApiView, MatchCreateApiView, players
+from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateRetrieveDestroyApiView, MatchCreateApiView, players
 from boxing_console.views.ability import ability_chart
 
 router = SimpleRouter()
@@ -138,7 +138,9 @@ feedback = [
 ]
 
 player = [
-    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player"),
+    path('player', PlayerViewSet.as_view({"post": "create", "get": "list"}), name="create_player"),
+    path('player/<int:pk>', PlayerViewSet.as_view({"post": "update", "get": "retrieve", 'delete': 'destroy'}),
+         name="player_detail"),
     path('check_player_mobile', check_player_mobile, name='check_player_mobile')
 ]
 
@@ -146,7 +148,7 @@ router.register(r"word_filters", WordFilterViewSet)
 
 schedule_urls = [
     path("schedules", ScheduleListCreateApiView.as_view(), name="schedules"),
-    path("schedules/<int:pk>", ScheduleUpdateApiView.as_view())
+    path("schedules/<int:pk>", ScheduleUpdateRetrieveDestroyApiView.as_view())
 ]
 
 match_urls = [

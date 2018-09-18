@@ -166,7 +166,7 @@
                         var src = arr[i].match(srcReg);
 
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controlsList="nodownload" controls="controls" src="' + config.baseUrl+src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
+                            str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controlsList="nodownload" controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                         }
                     }
                 }
@@ -175,7 +175,7 @@
                     for (var i = 0; i < imgArr.length; i++) {
                         var src = imgArr[i].match(srcReg);
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(imgArr[i],'<img src="' + config.baseUrl+src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 17.25)}"  @click="showZoomImage" class="myImg" data-index="${i}"/>`)                       
+                            str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 17.25)}"  @click="showZoomImage" class="myImg" data-index="${i}"/>`)
                         }
                         this.imgs[i] = `${src[1]}?x-oss-process=image/resize,w_${parseInt(baseSize * 18.75)}`
                     }                }

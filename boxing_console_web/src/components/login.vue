@@ -41,7 +41,7 @@
     /*login里面的style*/
     body{
         /*font-family: 'PingFang SC', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;*/
-        font-family: 'PingFangSC-Light;', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
+        font-family: 'PingFangSC-Light', 'Microsoft Yahei', 'WenQuanYi Micro Hei', Arial, Verdana, sans-serif;
     }
     .login_bg .el-input__inner,.el-form-item__label{
         height:60px!important;
