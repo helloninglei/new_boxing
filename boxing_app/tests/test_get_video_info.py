@@ -6,7 +6,7 @@ from biz.models import User
 
 # 测试视频
 video_url = "http://qa.bituquanguan.com/uploads/5b/df/f2d60475f18bf0d4a304351215b686a5fd4d.mp4"
-video_size = 537296 / 1024 / 1024  # 单位：M
+video_size = int(537296 / 1024 / 1024)  # 单位：M
 video_width = 960
 video_height = 540
 
