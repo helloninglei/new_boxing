@@ -13,6 +13,10 @@ class ShareTestCase(APITestCase):
     def setUp(self):
         self.test_user = models.User.objects.create_superuser(mobile='11111111111', password='password')
         self.test_user2 = models.User.objects.create_superuser(mobile='11111111112', password='password')
+        self.test_player = models.Player.objects.create(user=self.test_user, name='香港记者', mobile='22222222222',
+                                                        avatar='/path/to/face.jpg', stamina=88, skill=90, attack=90,
+                                                        defence=90, strength=90, willpower=79)
+
         self.nick_name = 'lerry'
         self.test_user.user_profile.nick_name = self.nick_name
         self.test_user.user_profile.save()
@@ -89,6 +93,12 @@ class ShareTestCase(APITestCase):
         self.test_user.refresh_from_db()
         self.assertEqual(data['sub_title'], '来自拳城出击的lerry')
         self.assertEqual(data['picture'], f'{oss_base_url}{self.test_user.user_profile.avatar}{img_prefix}')
+
+        data = self.client.get(f'/players/{self.test_user.id}/share').data
+        self.assertEqual(data['title'], '分享lerry的个人战绩')
+        self.assertEqual(data['sub_title'], "已关注: 0,粉丝数: 0")
+        self.assertEqual(data['picture'], f'{oss_base_url}{self.test_player.avatar}{img_prefix}')
+        self.assertEqual(data['url'], f'{h5_base_url}players/{self.test_user.id}')
 
     def test_title_content(self):
         self.news_data['title'] = '1' * 14
