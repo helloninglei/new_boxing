@@ -138,7 +138,9 @@ feedback = [
 ]
 
 player = [
-    path('player', PlayerViewSet.as_view({"post": "create"}), name="create_player"),
+    path('player', PlayerViewSet.as_view({"post": "create", "get": "list"}), name="create_player"),
+    path('player/<int:pk>', PlayerViewSet.as_view({"post": "update", "get": "retrieve", 'delete': 'destroy'}),
+         name="player_detail"),
     path('check_player_mobile', check_player_mobile, name='check_player_mobile')
 ]
 
