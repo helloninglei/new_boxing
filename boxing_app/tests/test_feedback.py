@@ -43,9 +43,6 @@ class Feedback(APITestCase):
         self.assertEqual(res5.status_code, status.HTTP_201_CREATED)
         res6 = self.client1.post(reverse('create_feedback'), data=feedback_data)
         self.assertEqual(res6.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-        time.sleep(1)
-        res7 = self.client1.post(reverse('create_feedback'), data=feedback_data)
-        self.assertEqual(res7.status_code, status.HTTP_201_CREATED)
 
     def test_create_feedback_fail_because_more_than_8_images(self):
         redis_client.flushdb()
