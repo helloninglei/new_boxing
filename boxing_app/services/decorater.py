@@ -12,7 +12,7 @@ def limit_success_frequency(frequency, period):
     def decorater(func):
         @functools.wraps(func)
         def wrapper(viewset, request, *args, **kwargs):
-            key = func.__module__ + "__" + func.__qualname__ + "__" + str(request.user.id)
+            key = f"{func.__module__}__{func.__qualname__}__{request.user.id}"
             posted_frequency = redis_client.get(key)
             if posted_frequency and int(posted_frequency) >= frequency:
                 return Response(data="24小时内只能提交5次反馈建议，请稍后再试", status=status.HTTP_429_TOO_MANY_REQUESTS)
