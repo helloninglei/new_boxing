@@ -185,21 +185,22 @@
                 // 状态改变
                 let $this = this;
                 console.log(row,index)
-                row.status= row.status
-                // this.ajax(''+row.id,'patch',{}).then(function(res){
-                //     if(res&&res.data){
-                //         row.status= res.data.status
-                //     }
+                // row.status= row.status
+                let status = row.status=='已发布'?1:2
+                this.ajax('/schedules/'+row.id,'patch',{status:status}).then(function(res){
+                    if(res&&res.data){
+                        row.status= res.data.status=='1'?"未发布":"已发布"
+                    }
 
-                // },function(err){
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             console.log(errors[key])
-                //             // return
-                //         } 
-                //     } 
-                // })
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
+                })
             },
         }
     }
