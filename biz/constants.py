@@ -174,6 +174,7 @@ SHARE_OBJECT_LIST = (
     'hot_video',
     'game_news',
     'boxer',
+    'player'
 )
 
 # 支付
