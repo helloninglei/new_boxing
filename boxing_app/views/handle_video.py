@@ -1,11 +1,9 @@
-import logging
 import subprocess as sp
 import json
 from rest_framework.response import Response
 from rest_framework import status
 from biz.redis_client import redis_client
 from urllib.parse import urlparse
-import re
 
 from django.http import StreamingHttpResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -39,7 +37,6 @@ def cover_picture(request):
 def video_resolution(request):
     video_url = request.data.get('video_url')
     if not video_url:
-        logging.info("not video_url")
         return Response(status.HTTP_400_BAD_REQUEST)
     video_path = urlparse(video_url).path
     if redis_client.hexists(VIDEO_RESOLUTION, video_path):
@@ -56,23 +53,23 @@ def video_resolution(request):
 
     pipe.wait()
     if pipe.returncode is not 0:
-        logging.info("pipe.returncode is 0")
         return Response(status=status.HTTP_400_BAD_REQUEST)
     std_out = pipe.communicate()[0]
     """
     std_out data like this:
     {
-        "programs": [
-    
-        ],
-        "streams": [
+        "streams": {
             {
-                "width": 640,
-                "height": 360
-            }
-        ],
+            ...
+            "width":960,
+            "height":540,
+            ...
+            },
+        }
         "format": {
-            "size": "1126695"
+            ...
+            "size":"537296",
+            ...
         }
     }
     """
