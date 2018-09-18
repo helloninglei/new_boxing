@@ -13,13 +13,9 @@ class ScheduleListCreateApiView(generics.ListCreateAPIView):
         serializer.save(operator=self.request.user)
 
 
-class ScheduleUpdateApiView(generics.RetrieveUpdateDestroyAPIView):
+class ScheduleUpdateRetrieveDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleCommonSerializer
-
-    def perform_destroy(self, instance):
-        instance.matches.all().delete()
-        instance.delete()
 
 
 class MatchCreateApiView(generics.CreateAPIView):
