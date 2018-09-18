@@ -94,7 +94,9 @@ class ShareTestCase(APITestCase):
         self.test_player = models.Player.objects.create(user=self.test_user, name='香港记者', mobile='22222222222',
                                                         avatar='/path/to/face.jpg', stamina=88, skill=90, attack=90,
                                                         defence=90, strength=90, willpower=79)
-        data = self.client.get(f'/players/{self.test_user.id}/share').data
+        res = self.client.get(f'/players/{self.test_user.id}/share')
+        print(res.status_code)
+        data = res.data
         self.assertEqual(data['title'], '分享lerry的个人战绩')
         self.assertEqual(data['sub_title'], "已关注: 0,粉丝数: 0")
         self.assertEqual(data['picture'], f'{oss_base_url}{self.test_player.avatar}{img_prefix}')
