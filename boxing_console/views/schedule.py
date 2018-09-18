@@ -13,7 +13,7 @@ class ScheduleListCreateApiView(generics.ListCreateAPIView):
         serializer.save(operator=self.request.user)
 
 
-class ScheduleUpdateApiView(generics.UpdateAPIView):
+class ScheduleUpdateRetrieveDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleCommonSerializer
 
