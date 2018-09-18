@@ -63,6 +63,8 @@ class ScheduleMatchTestCase(APITestCase):
         response = self.client.post(path="/matches", data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(Match.objects.filter(blue_player=player1).exists())
+        match = Match.objects.filter(schedule=schedule, red_player=player2, blue_player=player1).first()
+        self.assertEqual(match.operator, self.user)
 
     def test_should_not_create_match(self):
         schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
@@ -120,6 +122,25 @@ class ScheduleMatchTestCase(APITestCase):
         response = self.client.patch(path=f"/schedules/{schedule.id}", data={"status": "5"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data['status'][0], "“5” 不是合法选项。")
+
+    def test_should_get_retrieve_of_match(self):
+        player1 = Player.objects.create(**self.player_data, mobile=self.user2.mobile)
+        player2 = Player.objects.create(mobile=self.user.mobile, **self.player_data)
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        match = Match.objects.create(blue_player=player1, red_player=player2, schedule=schedule,
+                                     category=MATCH_CATEGORY_BOXING, level_min=20, level_max=100,
+                                     result=MATCH_RESULT_BLUE_SUCCESS)
+        response = self.client.get(path=f"/matches/{match.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        resp_data = response.data
+        self.assertEqual(resp_data['id'], match.id)
+        self.assertEqual(resp_data['blue_player'], match.blue_player.name)
+        self.assertEqual(resp_data['red_player'], match.red_player.name)
+        self.assertEqual(resp_data['schedule'], match.schedule_id)
+        self.assertEqual(resp_data['category'], match.get_category_display())
+        self.assertEqual(resp_data['level_min'], match.level_min)
+        self.assertEqual(resp_data['level_max'], match.level_max)
+        self.assertEqual(resp_data['result'], match.get_result_display())
 
     @property
     def player_data(self):
