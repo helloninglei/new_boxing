@@ -1,3 +1,4 @@
+import logging
 import subprocess as sp
 import json
 from rest_framework.response import Response
@@ -38,6 +39,7 @@ def cover_picture(request):
 def video_resolution(request):
     video_url = request.data.get('video_url')
     if not video_url:
+        logging.info("not video_url")
         return Response(status.HTTP_400_BAD_REQUEST)
     video_path = urlparse(video_url).path
     if redis_client.hexists(VIDEO_RESOLUTION, video_path):
@@ -48,28 +50,29 @@ def video_resolution(request):
             pass
 
     pipe = sp.Popen(
-        ["ffprobe", "-print_format", "json", "-show_format", "-show_streams", "-i", f"{video_url}"],
+        ["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-show_entries", "format=size",
+         "-of", "json", "-i", f"{video_url}"],
         stdout=sp.PIPE)
 
     pipe.wait()
     if pipe.returncode is not 0:
+        logging.info("pipe.returncode is 0")
         return Response(status=status.HTTP_400_BAD_REQUEST)
     std_out = pipe.communicate()[0]
     """
     std_out data like this:
     {
-        "streams": {
+        "programs": [
+    
+        ],
+        "streams": [
             {
-            ...
-            "width":960,
-            "height":540,
-            ...
-            },
-        }
+                "width": 640,
+                "height": 360
+            }
+        ],
         "format": {
-            ...
-            "size":"537296",
-            ...
+            "size": "1126695"
         }
     }
     """

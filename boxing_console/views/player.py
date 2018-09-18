@@ -14,7 +14,7 @@ class PlayerViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         user = User.objects.get(mobile=serializer.validated_data["mobile"])
-        serializer.save(user=user)
+        serializer.save(id=user.id, user=user)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
