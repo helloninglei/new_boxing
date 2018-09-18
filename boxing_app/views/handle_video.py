@@ -59,7 +59,6 @@ def video_resolution(request):
     std_out data like this:
     {
         "streams": {
-            {...},
             {
             ...
             "width":960,
@@ -75,8 +74,8 @@ def video_resolution(request):
     }
     """
     video_info = json.loads(std_out.decode('utf-8'))
-    height = video_info['streams'][1]['height']
-    width = video_info['streams'][1]['width']
+    height = video_info['streams'][0]['height']
+    width = video_info['streams'][0]['width']
     size = int(video_info['format']['size']) / 1024 / 1024
     data = {"height": height, "width": width, "size": int(size)}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
