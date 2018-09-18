@@ -9,6 +9,7 @@ class BlackListTestCase(APILoginTestCase):
     def setUp(self):
         self.client.credentials(**self.authorization_header)
         mobile = 13300000000
+        #  跳过因前几次测试而导致此次创建的用户ID为官方ID
         while True:
             self.user2 = User.objects.create_user(mobile=str(mobile), password="password")
             if self.user2.id not in dict(USER_IDENTITY_DICT).values():
