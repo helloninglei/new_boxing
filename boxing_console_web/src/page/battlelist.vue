@@ -67,7 +67,7 @@
             </footer>
         </div>
         <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
-        <Metchdialog :isshow="editmetch.isshow" @confirm="conform" @cancel="cancel()" content_title="编辑赛程" :name="editmetch.name" :race_date="editmetch.race_date"></Metchdialog>
+        <Metchdialog :isshow="editmetch.isshow" @confirm="conform" @cancel="cancel()" content_title="编辑赛程" :id="form.schedule" :name="editmetch.name" :race_date="editmetch.race_date"></Metchdialog>
         <el-dialog  :visible.sync="showBattleDialog" class='myDialog'>
             <div class="dialog_title">编辑对战表</div>
             <div class="dialog_content" >
@@ -160,7 +160,9 @@
         display:inline-block;
         width:14px;
         height:14px;
-        background:red;
+        background:url('./img/edit.png') no-repeat center center;
+        background-size:contain;
+        cursor:pointer;
     }
     .font_14{
         font-size:14px
@@ -217,8 +219,8 @@
                 tableData: [
                     {
                         id:1,
-                        red_player:'张大胜',
-                        blue_player:'李世民',
+                        red_player:1,
+                        blue_player:2,
                         category:2,
                         level_min:'55',
                         level_max:'60',
@@ -226,8 +228,8 @@
                     },
                     {
                         id:2,
-                        red_player:'张大胜',
-                        blue_player:'李世民',
+                        red_player:2,
+                        blue_player:2,
                         category:1,
                         level_min:'55',
                         level_max:'60',
@@ -253,8 +255,8 @@
                 },
                 editmetch:{
                     isshow:false,
-                    race_date:'2018-3-4',
-                    name:'lalal'
+                    race_date:'',
+                    name:''
                 },
                 form:{
                     red_player:'',
@@ -306,7 +308,6 @@
                     ],
                     level_max: [
                         { validator: (rule, value, callback) => {
-                            console.log(this.form.level_min)
                             if(value===''){
                                 callback(new Error('请输入项目级别最大值'));
                             }else if(!/^[0-9]*$/.test(value)||value>100||value==0){
@@ -341,6 +342,7 @@
             this.editmetch.race_date = this.$route.query.race_date
             this.editmetch.name = this.$route.query.name
             this.getData();
+            this.getUsers();
             this.src = this.config.baseUrl+'/ability?skill=45&strength=67&defence=44&willpower=78&attack=55&stamina=61'
         },
         watch:{
@@ -350,7 +352,7 @@
                     this.form={
                         red_player:'',
                         blue_player:'',
-                        schedule:'',
+                        schedule:this.$route.query.id,
                         category:'',
                         level_min:'',
                         level_max:'',
@@ -370,24 +372,35 @@
             },
             deleteData(id,index) {
                 let $this = this;
-                this.ajax(`//${id}`,'delete').then((res) => {
-                    $this.confirmData.isshow=false;
-                    // res && String (res.status).indexOf('2') > -1 && this.getData();
-                    $this.tableData.splice(index,1)
-                    $this.confirmData.isshow=false;
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            this.showErrorTip(errors[key][0])
-                        }
-                    }
-                })
+                // this.ajax(`//${id}`,'delete').then((res) => {
+                //     $this.confirmData.isshow=false;
+                //     $this.tableData.splice(index,1)
+                //     $this.confirmData.isshow=false;
+                // },(err) => {
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             this.showErrorTip(errors[key][0])
+                //         }
+                //     }
+                // })
             },
             saveBettle(){
                 this.$refs["form"].validate((valid) => {
                     if (valid) {
-                       console.log(this.form)
+                        let url = this.form.id?'/matches/'+this.form.id:'/matches'
+                        this.ajax(`${url}`,'post',this.form).then((res) => {
+                            if(res&&res.data){
+                                this.showBattleDialog = false
+                            }
+                        },(err) => {
+                            if(err&&err.response){
+                                let errors=err.response.data
+                                for(var key in errors){
+                                    this.showErrorTip(errors[key][0])
+                                }
+                            }
+                        })
                     } else {
                         console.log('error submit!!');
                         return false;
@@ -396,7 +409,6 @@
             },
             addBattleEv() {
                 this.battleDialogTitle = '添加对战表'
-                this.form.id = '';
                 this.showBattleDialog=true;
             },
             handleEdit(index, row) {
@@ -444,6 +456,20 @@
                     message: text,
                     type: 'error'
                 });
+            },
+            getUsers(){
+                this.ajax('/players').then((res) => {
+                    if(res&&res.data){
+                        this.players=res.data.results;
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
             }
         }
     }
