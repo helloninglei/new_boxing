@@ -223,6 +223,13 @@
         watch:{
             "ruleForm.push_hot_video":function(val){
                 this.isRequired = val?'is-required':''
+            },
+            pictures:function(pictures){
+                if(pictures&&pictures.length>0){
+                    this.showError = false
+                }else{
+                    this.showError = true
+                }
             }
         },
         methods: {
