@@ -672,7 +672,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     def validate_mobile(self, value):
         if not User.objects.filter(mobile=value).exists():
             raise ValidationError("该手机号的用户不存在")
-        if Player.objects.filter(mobile=value).exists():
+        if Player.objects.filter(mobile=value).exists() and self.instance.mobile != value:
             raise ValidationError("该手机号已被其他参赛选手注册")
         return value
 
@@ -686,20 +686,28 @@ class ScheduleCommonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Schedule
-        fields = ["name", "race_date", "id", "status"]
+        fields = ("name", "race_date", "id", "status")
 
 
-class MatchCreateSerializer(serializers.ModelSerializer):
+class SchedulePatchUpdateSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(choices=constants.SCHEDULE_STATUS_CHOICES)
+
+    class Meta:
+        model = models.Schedule
+        fields = ('status',)
+
+
+class MatchCommonSerializer(serializers.ModelSerializer):
     category = serializers.ChoiceField(choices=constants.MATCH_CATEGORY_CHOICES,
                                        error_messages={"invalid_choice": "对战类型不符合要求!"})
     result = serializers.ChoiceField(choices=constants.MATCH_RESULT_CHOICES,
                                      error_messages={"invalid_choice": "对战结果不符合要求!"})
-    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault(), write_only=True)
     level_min = serializers.IntegerField(min_value=1)
     level_max = serializers.IntegerField(max_value=100)
 
     def to_representation(self, instance):
-        return dict(red_name=instance.red_player.name, blue_name=instance.blue_player.name,
+        return dict(id=instance.id, red_player=instance.red_player.name, blue_player=instance.blue_player.name,
                     category=instance.get_category_display(), schedule=instance.schedule.id,
                     level_min=instance.level_min, level_max=instance.level_max, result=instance.get_result_display())
 
@@ -712,4 +720,5 @@ class MatchCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Match
-        fields = ["blue_player", "red_player", "schedule", "category", "level_min", "level_max", "result", "operator"]
+        fields = ["id", "blue_player", "red_player", "schedule", "category", "level_min", "level_max", "result",
+                  "operator"]

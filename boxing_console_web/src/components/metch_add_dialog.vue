@@ -98,6 +98,9 @@
             type : String,
             default:"",
           },
+          id:{
+            default:"",
+          },
         },
         watch:{
           isshow(newval,oldval){
@@ -130,18 +133,21 @@
             },
             confirm1(data){
                 let $this=this;
-                console.log(data)
-                $this.$emit('confirm',{name:data.name,race_date:data.race_date}) 
-                // this.ajax(`/schedules/${this.id}`,'PATCH',data).then((res) => {
-                //     console.log(res)
-                // },(err) => {
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             this.showErrorTip(errors[key][0])
-                //         }
-                //     }
-                // })
+                // console.log(this.id)
+                let url = this.id?'/schedules/'+this.id:'/schedules'
+                let type = this.id?'PUT':'POST'
+                this.ajax(url,type,data).then((res) => {
+                    if(res&&res.data){
+                      $this.$emit('confirm',{name:res.data.name,race_date:res.data.race_date}) 
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
             },
             close(){
               this.resetForm();

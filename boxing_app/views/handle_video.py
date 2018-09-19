@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from biz.redis_client import redis_client
 from urllib.parse import urlparse
-import re
 
 from django.http import StreamingHttpResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -48,7 +47,8 @@ def video_resolution(request):
             pass
 
     pipe = sp.Popen(
-        ["ffprobe", "-print_format", "json", "-show_format", "-show_streams", "-i", f"{video_url}"],
+        ["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-show_entries", "format=size",
+         "-of", "json", "-i", f"{video_url}"],
         stdout=sp.PIPE)
 
     pipe.wait()
@@ -59,7 +59,6 @@ def video_resolution(request):
     std_out data like this:
     {
         "streams": {
-            {...},
             {
             ...
             "width":960,
@@ -75,9 +74,13 @@ def video_resolution(request):
     }
     """
     video_info = json.loads(std_out.decode('utf-8'))
-    height = video_info['streams'][1]['height']
-    width = video_info['streams'][1]['width']
+    width, height = 640, 360
+    for info in video_info['streams']:
+        if info.get('height') and info.get('width'):
+            width = info.get('width')
+            height = info.get('height')
+            break
     size = int(video_info['format']['size']) / 1024 / 1024
-    data = {"height": height, "width": width, "size": size}
+    data = {"height": height, "width": width, "size": int(size)}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
     return Response(data)
