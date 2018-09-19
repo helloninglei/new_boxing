@@ -192,7 +192,6 @@
             }
             .el-dialog__footer{margin-top:0!important}
             .el-checkbox:first-child{margin-left:0}
-            .el-input__inner{border-radius:0}
         }
     }
 </style>
