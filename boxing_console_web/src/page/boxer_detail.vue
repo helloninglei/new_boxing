@@ -4,7 +4,7 @@
         <div class="container">
             <el-row> 
                 <el-col :span="12" style='min-width:800px'>
-                    <el-form :model="form" label-width="90px" :rules="rules" ref="ruleForm">
+                    <el-form :model="form" label-width="82px" :rules="rules" ref="ruleForm">
                         <p class='content_title'>添加参赛拳手</p>
                         <p class='title'>拳手信息</p>
                         <el-row>
@@ -24,55 +24,51 @@
                             <el-input v-model="form.picture" type='hidden'></el-input>
                             <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='100' :height='100'></Cropper>
 
-                            <div class='show' @click="addImg('inputId2','img2')">  
+                            <div class='show' @click="addImg('inputId2','img2')" style='width:100px;height:100px;border:1px solid #ccc'>  
                                <img :src="config.baseUrl+imgUrl" alt="" width='100%' id='img2' v-if='imgUrl'> 
-                               <div>  
-                                   <input type="file" id="inputId2" style='display:none' accept="image" @change="change">  
+                               <div style='display:none'>  
+                                   <input type="file" id="inputId2"  accept="image" @change="change">  
                                    <label for="inputId2"></label>  
                                 </div> 
                             </div>
-                            
-                            <div style='width:100px;height:100px;border:1px solid #ccc' @click="addImg('inputId2','img2')">
-                               
-                            </div>
                             <div class="el-form-item__error" v-if="showError">
-                                请上传资讯主题图
+                                请上传拳手头像
                             </div>
                         </el-form-item>
                         <p class='title'>能力雷达图 <el-button type="danger" class='myColor_red margin_rt25 border_raduis_100' style='width:60px;height:30px;line-height:30px;padding:0'>预览</el-button></p>
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="耐力" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入" :maxlength="20"></el-input>
+                                    <el-input v-model="form.title" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="技术" prop="title">
-                                    <el-input v-model="form.title"  placeholder="请输入" :maxlength="11"></el-input>
+                                    <el-input v-model="form.title"  placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="进攻" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入" :maxlength="20"></el-input>
+                                    <el-input v-model="form.title" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="防守" prop="title">
-                                    <el-input v-model="form.title"  placeholder="请输入" :maxlength="11"></el-input>
+                                    <el-input v-model="form.title"  placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="力量" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入" :maxlength="20"></el-input>
+                                    <el-input v-model="form.title" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="意志力" prop="title">
-                                    <el-input v-model="form.title"  placeholder="请输入" :maxlength="11"></el-input>
+                                    <el-input v-model="form.title"   placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
@@ -103,16 +99,12 @@
 </template>
 
 <style lang="stylus" scoped>
-
     .el-icon-circle-close {
         position absolute
         right  0
         top 0
         font-size 20px
     }
-</style>
-<style scope>
-  
     .dialog-modal{
         position: absolute;
         z-index: 5;
@@ -156,6 +148,7 @@
         font-family: PingFangSC-Regular;
         font-size: 16px;
         color: #000000;
+        margin:30px 0 27px;
     }
     .title{
         font-family: PingFangSC-Regular;
@@ -163,20 +156,24 @@
         color: #000000;
     }
 </style>
-<style>
+<style lang="stylus">
     #boxer_detail .el-checkbox__label,#boxer_detail .el-radio__label,#boxer_detail .el-form-item__label{
         font-family: PingFangSC-Regular;
         font-size: 14px!important;
         color: #606266;
     }
-    #boxer_detail .show{
-        width: 100px;  
-        height: 100px;  
-        overflow: hidden;  
-        position: relative;  
-        float:left;
-        z-index:20;
-        /*border: 1px solid #d5d5d5; */
+    #boxer_detail{
+        .show{
+            width: 100px;  
+            height: 100px;  
+            overflow: hidden;  
+            position: relative;  
+            float:left;
+            z-index:20;
+        }
+        .el-form-item{
+            margin-bottom:30px
+        }
     }
 </style>
 <script>
