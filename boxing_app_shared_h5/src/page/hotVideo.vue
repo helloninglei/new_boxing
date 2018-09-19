@@ -6,8 +6,10 @@
                 <div class="close_btn" @click="closePayTipEv"></div>
             </div>
             <div class="video_info_wrapper">
-                <div v-if="videoObj.try_url || videoObj.url" class="video" id="videoBox" ref="videoBox">
-                    <Video :url="videoObj.try_url" height="11.8rem" v-show="showVideo"></Video>
+
+                <div v-if="videoObj.try_url || videoObj.url" class="video">
+                    <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem" v-show="showVideo"></Video>
+
                 </div>
                 <div class="user-wrap clearfix" v-if="videoObj.bind_user">
                     <div class="portrait"><img :src="videoObj.bind_user.avatar" alt=""></div>
@@ -307,9 +309,15 @@
                 this.id = videoId.toString();
                 this.userId = userId.toString();
                 window.scrollTo(0,0)
-                this.getData(()=>{
-                    this.playVideo()
-                });
+                // this.getData(()=>{
+                //     this.playVideo()
+                // });
+
+               this.$router.push({path: `/hot_videos/${this.userId}/${this.id}`})
+                location.reload()
+
+
+
             },
             getData(callback) {
                 this.ajax(`/users/${this.userId}/hot_videos/${this.id}`, 'get').then((res) => {
@@ -431,6 +439,11 @@
                 let imgUrl = data.picture;
                 let url = data.url;
                 this.dataObj = {title, desc, url, imgUrl};
+            }
+        },
+        watch: {
+            '$route' (to,from) {
+                this.getData();
             }
         }
     }

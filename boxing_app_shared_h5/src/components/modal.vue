@@ -1,7 +1,7 @@
 <template>
     <div class="modal_bg" v-if="ifShow">
         <div class="modal">
-            <div class="title">下载拳城出击APP，<br/>跟小伙伴们一起玩转拳击</div>
+            <div class="title">该功能暂时无法使用，<br/>打开拳城出击APP，体验更多功能！</div>
             <div class="cancel" @click="cancleEv">暂不下载</div>
             <div class="confirm" @click="confirmEv">立即下载</div>
         </div>

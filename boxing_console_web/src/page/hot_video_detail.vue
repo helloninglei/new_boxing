@@ -524,6 +524,10 @@
                         sendData.try_url = this.try_ts_url;
                         sendData.url = this.tsurl;
                         sendData.price = parseInt(sendData.price_int)*100
+                        if(!this.ruleForm.push_hot_video){
+                           delete this.ruleForm['start_time']; 
+                           delete this.ruleForm['end_time']; 
+                        }
                         let $this = this
                         if(this.id){
                             console.log(sendData)

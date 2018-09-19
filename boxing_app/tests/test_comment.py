@@ -4,7 +4,8 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 
 from biz import constants
-from biz.models import User, Message, HotVideo, Comment
+from biz.constants import PAYMENT_STATUS_PAID
+from biz.models import User, Message, HotVideo, Comment, PayOrder
 
 
 class CommentTestCase(APITestCase):
@@ -168,6 +169,15 @@ class CommentTestCase(APITestCase):
 
         video = HotVideo.objects.create(**hot_video_data)
         video.users.add(self.test_user_1.id)
+        PayOrder.objects.create(**{
+            "user": self.test_user_1,
+            "content_type": ContentType.objects.get(app_label="biz", model="HotVideo"),
+            "object_id": video.id,
+            "status": PAYMENT_STATUS_PAID,
+            "out_trade_no": 201809140001,
+            "amount": 100,
+            "device": constants.DEVICE_PLATFORM_IOS,
+        })
         comment1 = Comment.objects.create(**{
             "content_type": ContentType.objects.get(app_label="biz", model="HotVideo"),
             "object_id": video.id,
@@ -184,6 +194,7 @@ class CommentTestCase(APITestCase):
         })
         res = self.client1.get('/comment_me')
         self.assertEqual(len(res.data['results']), 1)
+        self.assertTrue(res.data['results'][0]['to_object']['is_paid'])
 
         # if video is hidden, comment should disappear
         video.is_show = False
