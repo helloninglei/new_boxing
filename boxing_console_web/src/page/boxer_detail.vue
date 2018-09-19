@@ -1,10 +1,12 @@
 <template>
-    <div id="info_detail">
+    <div id="boxer_detail">
         <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infolist" secondTitle_name="资讯"></TopBar>
         <div class="container">
             <el-row> 
                 <el-col :span="12" style='min-width:800px'>
-                    <el-form :model="form" label-width="110px" :rules="rules" ref="ruleForm">
+                    <el-form :model="form" label-width="90px" :rules="rules" ref="ruleForm">
+                        <p class='content_title'>添加参赛拳手</p>
+                        <p class='title'>拳手信息</p>
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="拳手姓名" prop="title">
@@ -20,7 +22,7 @@
                         
                         <el-form-item label="拳手头像" prop="picture">
                             <el-input v-model="form.picture" type='hidden'></el-input>
-                            <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='244' :height='144'></Cropper>
+                            <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='100' :height='100'></Cropper>
 
                             <div class='show' @click="addImg('inputId2','img2')">  
                                <img :src="config.baseUrl+imgUrl" alt="" width='100%' id='img2' v-if='imgUrl'> 
@@ -30,14 +32,50 @@
                                 </div> 
                             </div>
                             
-                            <div style='width:244px;height:144px;border:1px solid #ccc' @click="addImg('inputId2','img2')">
-                                <i class="el-icon-plus avatar-uploader-icon"></i>
-                                <div class="upload_tip_text">尺寸大小：244*144</div>
+                            <div style='width:100px;height:100px;border:1px solid #ccc' @click="addImg('inputId2','img2')">
+                               
                             </div>
                             <div class="el-form-item__error" v-if="showError">
                                 请上传资讯主题图
                             </div>
                         </el-form-item>
+                        <p class='title'>能力雷达图 <el-button type="danger" class='myColor_red margin_rt25 border_raduis_100' style='width:60px;height:30px;line-height:30px;padding:0'>预览</el-button></p>
+                        <el-row>
+                            <el-col :span="11">
+                                <el-form-item label="耐力" prop="title">
+                                    <el-input v-model="form.title" placeholder="请输入" :maxlength="20"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item label="技术" prop="title">
+                                    <el-input v-model="form.title"  placeholder="请输入" :maxlength="11"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>  
+                        <el-row>
+                            <el-col :span="11">
+                                <el-form-item label="进攻" prop="title">
+                                    <el-input v-model="form.title" placeholder="请输入" :maxlength="20"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item label="防守" prop="title">
+                                    <el-input v-model="form.title"  placeholder="请输入" :maxlength="11"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>  
+                        <el-row>
+                            <el-col :span="11">
+                                <el-form-item label="力量" prop="title">
+                                    <el-input v-model="form.title" placeholder="请输入" :maxlength="20"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="11" :offset="2">
+                                <el-form-item label="意志力" prop="title">
+                                    <el-input v-model="form.title"  placeholder="请输入" :maxlength="11"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>  
                         <div style='text-align: center'>
                             <el-button class="myButton_40 myBtnHover_red btn_width_200" @click="cancelEv('ruleForm')">取消</el-button>
                             <el-button type="danger" class='btn_width_200 myColor_red' @click="submitForm('ruleForm')">{{confirmText}}</el-button>
@@ -72,66 +110,8 @@
         top 0
         font-size 20px
     }
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        position:absolute;
-        left:0;
-        width: 244px;
-        height: 144px;
-        line-height: 144px;
-        text-align: center;
-        z-index:2;
-    }
-    .avatar {
-        display: block;
-        width: 244px;
-        height 144px;
-        z-index:2;
-    }
-    .handle_btn {
-        margin-top 60px
-        .cancel {
-            margin-right 30px
-        }
-    }
-    .upload_tip_text {
-        width 244px
-        text-align center
-        position absolute
-        bottom 0
-        color #909399
-    }
-    .info{
-        border-radius: 10px;
-        line-height: 20px;
-        padding: 10px;
-        margin: 10px;
-        background-color: #ffffff;
-    }
-    .udeitor_content,.udeitor_title{width:105%;margin-left:30px}
-    .udeitor_title{
-        margin-bottom:20px;
-    }
-    .udeitor_content{
-        margin-bottom:60px
-    }
-    .prev_title{font-size:20px;margin-bottom:10px}
-    .prev_time{font-size:14px}
 </style>
 <style scope>
-    .drop-enter-active {
-      transition: all .5s;
-    }
-    .drop-leave-active {
-      transition: all .3s;
-    }
-    .drop-enter {
-      transform: translateY(-500px);
-    }
-    .drop-leave-active {
-      transform: translateY(-500px);
-    }   
   
     .dialog-modal{
         position: absolute;
@@ -153,11 +133,9 @@
         left: 0;
         bottom: 0;
         right: 0;
-      
-    }
-    .dialog-wrapper{
         background-color: #000;
         opacity: .5;
+      
     }
     .dialog-container{
         position: fixed;
@@ -168,45 +146,38 @@
         color:#fff;
         box-shadow: 0 5px 15px rgba(0,0,0,.5);
     }
-    span.close-btn{
-        padding: 0 5px;
-        float: right;
-        cursor: pointer;
-        font-size: 18px;
-        font-weight: bold;
-    }
     .content{
         height:calc(100% - 80px);
         overflow-y: auto;
         margin-bottom:10px;
         margin-top:10px;
     }
-</style>
-<style>
-    #info_detail .el-checkbox__label,#info_detail .el-radio__label,#info_detail .el-form-item__label,.udeitor_title{
+    .content_title{
         font-family: PingFangSC-Regular;
         font-size: 16px;
         color: #000000;
     }
-    #info_detail .show{
-        width: 244px;  
-        height: 144px;  
+    .title{
+        font-family: PingFangSC-Regular;
+        font-size: 14px;
+        color: #000000;
+    }
+</style>
+<style>
+    #boxer_detail .el-checkbox__label,#boxer_detail .el-radio__label,#boxer_detail .el-form-item__label{
+        font-family: PingFangSC-Regular;
+        font-size: 14px!important;
+        color: #606266;
+    }
+    #boxer_detail .show{
+        width: 100px;  
+        height: 100px;  
         overflow: hidden;  
         position: relative;  
         float:left;
         z-index:20;
-        border: 1px solid #d5d5d5; 
+        /*border: 1px solid #d5d5d5; */
     }
-    #priv_content{line-height:24px;}
-    #priv_content img,#priv_content video{width:100%;}
-    #prevShow{z-index:-1!important}
-    .v-modal.addIndex{z-index:-1!important}
-    .v-modal.addIndex.removeIndex{z-index:2001!important}
-    #prevShow.addIndex{z-index:2002!important}
-    .ql-video{width:100%;height:220px;}
-    .ql-align-center{text-align: center}
-    .ql-align-right{text-align: right}
-    #priv_content iframe{width:100%;height:220px;}
 </style>
 <script>
     import TopBar   from 'components/topBar';
@@ -248,8 +219,8 @@
                     share_content: '',
                 },
                 rules: {
-                    title    : [{ required: true, message: '请输入主标题', trigger: 'blur' }],
-                    sub_title: [{ required: true, message: '请输入副标题', trigger: 'blur' }],
+                    title    : [{ message: '请输入主标题', trigger: 'blur' }],
+                    sub_title: [{ message: '请输入副标题', trigger: 'blur' }],
                     picture: [
                         { validator: (rule, value, callback) => {
                             if (value==='') {
@@ -257,40 +228,9 @@
                             } else {
                                 callback();
                             }
-                        }, trigger: 'blur', required: true}
+                        }, trigger: 'blur',}
                     ],
-                    stay_top: [{ required: true, message: '请选择是否置顶', trigger: 'blur' }],
-                    end_time: [
-                        { validator: (rule, value, callback) => {
-                            if(this.form.push_news=='false'||!this.form.push_news){
-                                callback();
-                            }else if(this.form.start_time===''){
-                                callback(new Error('请选择发送的开始时间'));
-                            }else if (value==='') {
-                                callback(new Error('请选择发送的结束时间'));
-                            }else if(new Date(this.form.start_time)-new Date()<0){
-                                callback(new Error('开始发送时间不能小于当前时间'));
-                            }else if(new Date(value)-new Date(this.form.start_time)<0){
-                                callback(new Error('结束时间不能早于开始时间'));
-                            }else if(new Date(value)-new Date(this.form.start_time)> 60*60*24*14*1000){
-                                callback(new Error('推送有效时间不能超过14天'));
-                            } else {
-                                callback();
-                            }
-                        }, trigger: 'blur', }
-                    ],
-                    initial_views_count: [
-                        { validator: (rule, value, callback) => {
-                            if (value === '') callback(new Error('请输入初始阅读量'))
-                            else {
-                                if (value < 0 || !/^[0-9]*$/.test(value)) {
-                                    callback(new Error('只能输入正整数'));
-                                    return;
-                                }
-                                callback();
-                            }
-                        }, trigger: 'blur',required: true }
-                    ],  
+                    stay_top: [{ message: '请选择是否置顶', trigger: 'blur' }],
                 },
             }
         },
