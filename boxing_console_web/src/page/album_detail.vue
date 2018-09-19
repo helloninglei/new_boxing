@@ -38,12 +38,13 @@
                                 <template v-for='(item,index) in pictures'>
                                     <div class="picture_container" >
                                         <i class="el-icon-circle-close close_btn" @click.stop="handleRemove" :id="index"></i>
-                                        <img :src="config.baseUrl+item.picture" class="avatar" width="100%">
+                                        <img :src="config.baseUrl+item.picture" class="avatar" width="100%" @click.stop=''>
                                     </div>
                                 </template>
                                 <div class="picture_container plus" >
                                     <i class="el-icon-plus"></i>
-                                </div>                            </el-upload>
+                                </div>                            
+                            </el-upload>
                             <div class="el-form-item__error" v-if="showError">
                                 请上传图片
                             </div>
@@ -340,6 +341,10 @@
                     if (valid) {
                         let sendData = this.ruleForm;                        
                         let $this = this
+                        if(!this.pictures||this.pictures.length==0){
+                            this.showError=true;
+                            return
+                        }
                         if(this.id){
                             //编辑
                             console.log('编辑',sendData)
