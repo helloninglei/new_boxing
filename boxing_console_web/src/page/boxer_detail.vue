@@ -6,25 +6,25 @@
                 <el-col :span="12" style='min-width:800px'>
                     <el-form :model="form" label-width="82px" :rules="rules" ref="ruleForm">
                         <p class='content_title'>添加参赛拳手</p>
-                        <p class='title'>拳手信息</p>
+                        <p class='title' style='padding-left:15px'>拳手信息</p>
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="拳手姓名" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入姓名" :maxlength="20"></el-input>
+                                    <el-input v-model="form.name" placeholder="请输入姓名" :maxlength="20"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="拳手手机号" prop="title">
-                                    <el-input v-model="form.title"  placeholder="请输入手机号" :maxlength="11"></el-input>
+                                    <el-input v-model="form.mobile"  placeholder="请输入手机号" :maxlength="11"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
                         
-                        <el-form-item label="拳手头像" prop="picture">
-                            <el-input v-model="form.picture" type='hidden'></el-input>
+                        <el-form-item label="拳手头像" prop="avatar">
+                            <el-input v-model="form.avatar" type='hidden'></el-input>
                             <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='100' :height='100'></Cropper>
 
-                            <div class='show' @click="addImg('inputId2','img2')" style='width:100px;height:100px;border:1px solid #ccc'>  
+                            <div class='show' @click="addImg('inputId2','img2')" style='width:100px;height:100px;border:1px solid #ccc;margin-top:-40px'>  
                                <img :src="config.baseUrl+imgUrl" alt="" width='100%' id='img2' v-if='imgUrl'> 
                                <div style='display:none'>  
                                    <input type="file" id="inputId2"  accept="image" @change="change">  
@@ -39,42 +39,42 @@
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="耐力" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
+                                    <el-input v-model="form.stamina" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="技术" prop="title">
-                                    <el-input v-model="form.title"  placeholder="请输入" type='number' :min="0" :max="101"></el-input>
+                                    <el-input v-model="form.skill"  placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="进攻" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
+                                    <el-input v-model="form.attack" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="防守" prop="title">
-                                    <el-input v-model="form.title"  placeholder="请输入" type='number' :min="0" :max="101"></el-input>
+                                    <el-input v-model="form.defence"  placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="力量" prop="title">
-                                    <el-input v-model="form.title" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
+                                    <el-input v-model="form.strength" placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="意志力" prop="title">
-                                    <el-input v-model="form.title"   placeholder="请输入" type='number' :min="0" :max="101"></el-input>
+                                    <el-input v-model="form.willpower"   placeholder="请输入" type='number' :min="0" :max="101"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>  
-                        <div style='text-align: center'>
-                            <el-button class="myButton_40 myBtnHover_red btn_width_200" @click="cancelEv('ruleForm')">取消</el-button>
-                            <el-button type="danger" class='btn_width_200 myColor_red' @click="submitForm('ruleForm')">{{confirmText}}</el-button>
+                        <div style='text-align: left;margin-left:40px'>
+                            <el-button class="myButton_40 myBtnHover_red" @click="cancelEv('ruleForm')" style='width:100px'>取消</el-button>
+                            <el-button type="danger" class=' myColor_red' @click="submitForm('ruleForm')" style='width:100px'>确定</el-button>
                         </div>
                     </el-form>
                 </el-col>
@@ -154,6 +154,7 @@
         font-family: PingFangSC-Regular;
         font-size: 14px;
         color: #000000;
+        margin-bottom:22px;
     }
 </style>
 <style lang="stylus">
@@ -170,6 +171,7 @@
             position: relative;  
             float:left;
             z-index:20;
+            background:url('./img/person_img.png') no-repeat center center;
         }
         .el-form-item{
             margin-bottom:30px
@@ -204,16 +206,15 @@
                 type:'',//1正文 2 外文
                 prevVisible:true,//是否显示预览
                 form: {
-                    title: '',
-                    sub_title: '',
-                    initial_views_count: '',
-                    picture: '',
-                    stay_top: false,
-                    push_news: false,
-                    start_time: '',
-                    end_time: '',
-                    app_content: '',
-                    share_content: '',
+                    "stamina": 10,
+                    "skill": 10,
+                    "attack": 10,
+                    "defence": 10,
+                    "strength": 10,
+                    "willpower": 10,
+                    "name": "张三",
+                    "mobile": "13625802580",
+                    "avatar": ""
                 },
                 rules: {
                     title    : [{ message: '请输入主标题', trigger: 'blur' }],
