@@ -3,11 +3,12 @@ import json
 from rest_framework.response import Response
 from rest_framework import status
 from biz.redis_client import redis_client
-from urllib.parse import urlparse
-import re
+from urllib.parse import urlparse, urljoin
 
 from django.http import StreamingHttpResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+
+from settings import OSS_CONFIG
 
 FFMPEG_BIN = "ffmpeg"
 VIDEO_RESOLUTION = "video_resolution"
@@ -36,6 +37,7 @@ def cover_picture(request):
 @permission_classes([])
 @authentication_classes([])
 def video_resolution(request):
+
     video_url = request.data.get('video_url')
     if not video_url:
         return Response(status.HTTP_400_BAD_REQUEST)
@@ -46,9 +48,9 @@ def video_resolution(request):
             return Response({"height": data['height'], "width": data['width'], "size": data['size']})
         except KeyError:
             pass
-
+    file_oss_url = _get_file_oss_url(video_url)
     pipe = sp.Popen(
-        ["ffprobe", "-print_format", "json", "-show_format", "-show_streams", "-i", f"{video_url}"],
+        ["ffprobe", "-print_format", "json", "-show_format", "-show_streams", "-i", f"{file_oss_url}"],
         stdout=sp.PIPE)
 
     pipe.wait()
@@ -80,3 +82,12 @@ def video_resolution(request):
     data = {"height": height, "width": width, "size": int(size)}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
     return Response(data)
+
+
+def _get_file_oss_url(url):
+    oss_url = OSS_CONFIG.get('url')
+    oss_bucket = OSS_CONFIG.get('bucket')
+    origin_ret = urlparse(url)
+    oss_ret = urlparse(oss_url)
+    return urljoin(origin_ret.scheme + "://" + oss_bucket + "." + oss_ret.netloc, origin_ret.path)
+

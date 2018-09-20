@@ -107,6 +107,7 @@ db.sqlite3
 node_modules
 settings_local.py
 .vscode
+soraka
 
 share_h5/
 console_h5/
