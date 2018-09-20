@@ -74,6 +74,9 @@
                         <el-menu-item index="/report" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>举报处理</div>
                         </el-menu-item>
+                        <el-menu-item index="/feedback" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>反馈建议</div>
+                        </el-menu-item>
                     </el-submenu>
                     <el-menu-item index="/admin" :disabled="disabled">
                         <div class='menu-item-inner'>管理员</div>
