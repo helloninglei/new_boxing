@@ -121,7 +121,7 @@ router.register(r"word_filters", WordFilterViewSet)
 
 appversion_url = [
     path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'patch': 'partial_update'}))
+    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get':'retrieve', 'patch': 'partial_update'}))
 ]
 
 urlpatterns = router.urls
