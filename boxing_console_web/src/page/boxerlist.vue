@@ -3,7 +3,7 @@
         <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infoList" secondTitle_name="参赛选手管理"></TopBar>
         <div class="container">
             <header style='margin:20px 0'>
-                <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
+                <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入拳手姓名／手机号' style='width:280px' @keyup.enter.native="searchEv"></el-input>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click.native="searchEv">查询</el-button>
             </header>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_tp30 margin_bt20' @click.native="addMatchEv">新增</el-button>
@@ -65,7 +65,6 @@
                 dateArr: [],
                 start_date: '',
                 end_date: '',
-                stay_top: '',
                 hasSearch: false,
                 tableData: [
 
@@ -88,15 +87,12 @@
         methods: {
             getData(ifBtn) {
                 ifBtn && (this.page = 1);
-                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date,stay_top: this.stay_top};
+                let param = {page: this.page, search: this.search};
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/player','get',{},param).then((res) => {
                     if(res&&res.data){
                         console.log(res.data)
                         this.tableData = res.data.results;
-                        // for(var i=0;i<res.data.results.length;i++){
-                        //     res.data.results[i].stay_top_name = res.data.results[i].stay_top ? '是' : '否'
-                        // }
                         this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
@@ -121,7 +117,7 @@
                 this.$router.push({path: '/boxerdetail'});
             },
             handleEdit(index, row) {
-                this.$router.push({path: '/boxerdetail', query:row.id});
+                this.$router.push({path: '/boxerdetail', query:{id:row.id}});
             },
             handleDelete(index, row) {
                 this.confirmData.id = row.id
@@ -152,17 +148,6 @@
             searchEv() {
                 this.hasSearch = true
                 this.getData(true);
-            },
-            getDateTime() {
-                console.log(this.dateArr)
-                if (this.dateArr) {
-                    this.start_date = this.dateArr[0];
-                    this.end_date = this.dateArr[1];
-                }
-                else {
-                    this.start_date = '';
-                    this.end_date = '';
-                }
             },
             showErrorTip(text) {
                 this.$message({

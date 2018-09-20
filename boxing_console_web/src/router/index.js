@@ -36,6 +36,7 @@ import Dynamic          from 'page/dynamic';
 import SensitiveWord    from 'page/sensitive_words';
 import AlbumDetail      from 'page/album_detail';
 import BoxerDetail      from 'page/boxer_detail';
+import Feedback         from 'page/feedback';
 
 
 export default [
@@ -202,6 +203,10 @@ export default [
             {
                 path: '/sensitiveword',
                 component: SensitiveWord,
+            },
+            {
+                path: '/feedback',
+                component: Feedback,
             },
         ]
     },
