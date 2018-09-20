@@ -2,26 +2,9 @@
     <div class="banner_manage" style="calc(100vw - 230px)">
         <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/infoList" secondTitle_name="参赛选手管理"></TopBar>
         <div class="container">
-            <header>
-                <el-date-picker
-                        class="margin_rt25"
-                        v-model="dateArr"
-                        type="datetimerange"
-                        range-separator="至"
-                        start-placeholder="起始日期"
-                        end-placeholder="结束日期"
-                        @change="getDateTime"
-                        :clearable=false
-                        :editable=false
-                        value-format="yyyy-MM-dd HH:mm:ss">
-                </el-date-picker>
+            <header style='margin:20px 0'>
                 <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
-                <el-select v-model="stay_top" class="margin_tp30 margin_rt60">
-                    <el-option value="all" label="全部">全部</el-option>
-                    <el-option :value="true" label="置顶">置顶</el-option>
-                    <el-option :value="false" label="不置顶">不置顶</el-option>
-                </el-select>
-                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click.native="searchEv">查询</el-button>
+                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click.native="searchEv">查询</el-button>
             </header>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_tp30 margin_bt20' @click.native="addMatchEv">新增</el-button>
             <template>
@@ -29,39 +12,21 @@
                         :data="tableData"
                         style="width: 100%">
                     <el-table-column
-                            prop="id"
-                            label="ID">
+                            prop="name"
+                            label="拳手名称">
                     </el-table-column>
                     <el-table-column
-                            prop="title"
-                            label="资讯标题">
+                            prop="mobile"
+                            label="拳手手机号">
                     </el-table-column>
                     <el-table-column
-                            prop="author"
-                            label="发布作者">
+                            width="350"
+                            label="拳手能力值">
+                            <template slot-scope="scope">
+                                <span>{{`耐力：${scope.row.stamina}，技术：${scope.row.skill}，进攻：${scope.row.attack}，防守：${scope.row.defence}，力量：${scope.row.strength}`}}</span>
+                            </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="views_count"
-                            label="阅读人数">
-                    </el-table-column>
-                    <el-table-column
-                            prop="initial_views_count"
-                            label="真实阅读量">
-                    </el-table-column>
-                    <el-table-column
-                            prop="comment_count"
-                            label="评论">
-                    </el-table-column>
-                    <el-table-column
-                            prop="stay_top_name"
-                            label="是否置顶">
-                    </el-table-column>
-                    <el-table-column
-                            prop="pub_time"
-                            label="发布时间"
-                            width="170">
-                    </el-table-column>
-                    <el-table-column label="操作" width='220'>
+                    <el-table-column label="操作" width='200'>
                         <template slot-scope="scope">
                             <el-button
                                     size="mini"
@@ -69,7 +34,7 @@
                             <el-button
                                     size="mini"
                                     type="danger"
-                                    @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+                                    @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -102,11 +67,13 @@
                 end_date: '',
                 stay_top: '',
                 hasSearch: false,
-                tableData: [],
+                tableData: [
+
+                ],
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    content:'确认删除该条资讯？'
+                    content:'参赛拳手资料删除后不可恢复，是否确认删除？？'
                 },
             }
         },
@@ -123,12 +90,13 @@
                 ifBtn && (this.page = 1);
                 let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date,stay_top: this.stay_top};
                 !this.hasSearch && (param = {page: this.page});
-                this.ajax('/game_news','get',{},param).then((res) => {
+                this.ajax('/player','get',{},param).then((res) => {
                     if(res&&res.data){
+                        console.log(res.data)
                         this.tableData = res.data.results;
-                        for(var i=0;i<res.data.results.length;i++){
-                            res.data.results[i].stay_top_name = res.data.results[i].stay_top ? '是' : '否'
-                        }
+                        // for(var i=0;i<res.data.results.length;i++){
+                        //     res.data.results[i].stay_top_name = res.data.results[i].stay_top ? '是' : '否'
+                        // }
                         this.total = res.data.count;
                         ifBtn && (this.hasSearch = true);
                     }
@@ -136,28 +104,38 @@
             },
             deleteData(id,index) {
                 let $this = this;
-                this.ajax(`/game_news/${id}`,'delete').then((res) => {
-                    $this.confirmData.isshow=false;
-                    // res && String (res.status).indexOf('2') > -1 && this.getData();
-                    $this.tableData.splice(index,1)
-                    $this.confirmData.isshow=false;
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data
-                        for(var key in errors){
-                            this.showErrorTip(errors[key][0])
-                        }
-                    }
-                })
+                // this.ajax(`//${id}`,'delete').then((res) => {
+                //     $this.confirmData.isshow=false;
+                //     $this.tableData.splice(index,1)
+                //     $this.confirmData.isshow=false;
+                // },(err) => {
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             this.showErrorTip(errors[key][0])
+                //         }
+                //     }
+                // })
             },
             addMatchEv() {
-                this.$router.push({path: '/infodetail'});
+                this.$router.push({path: '/boxerdetail'});
             },
             handleEdit(index, row) {
-                this.$router.push({path: '/infodetail', query:row});
+                this.$router.push({path: '/boxerdetail', query:row.id});
             },
             handleDelete(index, row) {
                 this.confirmData.id = row.id
+                //点击删除，则判断该拳手是否还有赛程记录，若有赛程，则弹窗提示用户：“请先删除该参赛拳手的所有赛程再删除拳手记录“，按钮只有一个“我知道了”，
+                // this.ajax('','').then((res)=>{
+                //     console.log(res)
+                // },(err)=>{
+                //     if(err&&err.response){
+                //         let errors=err.response.data
+                //         for(var key in errors){
+                //             this.showErrorTip(errors[key][0])
+                //         }
+                //     }
+                // })
                 this.confirmData.index = row.index
                 this.confirmData.isshow=true;
             },
