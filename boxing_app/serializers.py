@@ -588,7 +588,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
-    has_album = serializers.BooleanField(source='user.albums.count', read_only=True)
+    has_album = serializers.SerializerMethodField(read_only=True)
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
@@ -615,6 +615,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_boxer_info(self, instance):
         boxer = models.BoxerIdentification.objects.filter(user=instance.user).first()
         return BoxerInfoReadOnlySerializer(boxer, context=self.context).data
+
+    def get_has_album(self, instance):
+        return instance.user.albums.filter(is_show=True).exists()
 
     def validate(self, attrs):
         if attrs.get("nick_name"):
