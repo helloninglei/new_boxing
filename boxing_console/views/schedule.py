@@ -25,11 +25,14 @@ class ScheduleUpdateRetrieveDestroyApiView(generics.RetrieveUpdateDestroyAPIView
         return super(ScheduleUpdateRetrieveDestroyApiView, self).partial_update(request, *args, **kwargs)
 
 
-class MatchCreateApiView(generics.CreateAPIView):
+class MatchListCreateApiView(generics.ListCreateAPIView):
     serializer_class = MatchCommonSerializer
 
+    def get_queryset(self):
+        return Match.objects.filter(schedule=self.request.query_params.get("schedule")).order_by("-created_time")
 
-class MatchRetrieveApiView(generics.RetrieveUpdateAPIView):
+
+class MatchRetrieveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Match.objects.all()
     serializer_class = MatchCommonSerializer
 

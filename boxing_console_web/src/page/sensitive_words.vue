@@ -101,7 +101,7 @@
                 if(page){
                     sendData.page=page
                 }
-                this.ajax('/word_filters/','get',{},sendData).then(function(res){
+                this.ajax('/word_filters','get',{},sendData).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData = res.data.results
@@ -135,7 +135,7 @@
             confirm(val){
                 var $this = this;
                 if(this.confirmData.row&&this.confirmData.row.id){
-                    this.ajax('/word_filters/'+this.confirmData.row.id+'/','put',{sensitive_word:val}).then(function(res){
+                    this.ajax('/word_filters/'+this.confirmData.row.id,'put',{sensitive_word:val}).then(function(res){
                         if(res&&res.data){
                             // console.log(res.data)
                             $this.confirmData.row. sensitive_word= res.data.sensitive_word;
@@ -154,7 +154,7 @@
                         } 
                     })
                 }else{
-                    this.ajax('/word_filters/','post',{sensitive_word:val},{}).then(function(res){
+                    this.ajax('/word_filters','post',{sensitive_word:val},{}).then(function(res){
                         if(res&&res.data){
                             // console.log(res.data)
                             $this.tableData.unshift(res.data);
@@ -197,7 +197,7 @@
             deleteSensitive(id,index){
                 let $this=this;
                 // console.log(index)
-                this.ajax('/word_filters/'+id+'/','delete').then(function(res){
+                this.ajax('/word_filters/'+id,'delete').then(function(res){
                     if(res&&res.status==204){
                         $this.tableData.splice(index,1)
                         $this.confirmData.isshow=false;

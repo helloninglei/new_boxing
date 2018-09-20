@@ -27,10 +27,10 @@ from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
 from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateRetrieveDestroyApiView, \
-    MatchCreateApiView, players, MatchRetrieveApiView
+    MatchListCreateApiView, players, MatchRetrieveUpdateDestroyApiView
 from boxing_console.views.ability import ability_chart
 
-router = SimpleRouter()
+router = SimpleRouter(trailing_slash=False)
 
 boxer_url = [
     path('boxer/identification', BoxerIdentificationViewSet.as_view({'get': 'list'}), name='boxer_identification_list'),
@@ -153,9 +153,9 @@ schedule_urls = [
 ]
 
 match_urls = [
-    path("matches", MatchCreateApiView.as_view()),
+    path("matches", MatchListCreateApiView.as_view()),
     path("players", players),
-    path("matches/<int:pk>", MatchRetrieveApiView.as_view())
+    path("matches/<int:pk>", MatchRetrieveUpdateDestroyApiView.as_view())
 ]
 
 ability_url = [
