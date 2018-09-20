@@ -22,14 +22,15 @@ from boxing_app.tasks import incr_hot_video_views_count
 @authentication_classes([])
 def hot_video_redirect(request):
     param_string = urlencode(request.GET.dict())
-    return redirect(f'users/{HOT_VIDEO_USER_ID}/hot_videos?{param_string}')
+    param_string = param_string and f'?{param_string}'
+    return redirect(f'/users/{HOT_VIDEO_USER_ID}/hot_videos{param_string}')
 
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_item_redirect(_, pk):
-    user_id = get_object_or_404(models.HotVideo, pk=pk).id
+    user_id = get_object_or_404(models.HotVideo, pk=pk).users.first().id
     return redirect(f'/users/{user_id}/hot_videos/{pk}')
 
 
