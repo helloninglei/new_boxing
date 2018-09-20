@@ -29,7 +29,7 @@ class MatchCreateApiView(generics.CreateAPIView):
     serializer_class = MatchCommonSerializer
 
 
-class MatchRetrieveApiView(generics.RetrieveAPIView):
+class MatchRetrieveApiView(generics.RetrieveUpdateAPIView):
     queryset = Match.objects.all()
     serializer_class = MatchCommonSerializer
 
