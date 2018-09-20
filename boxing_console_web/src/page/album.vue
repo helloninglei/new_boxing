@@ -58,7 +58,7 @@
         data() {
             return {
                 isShowTop : true,
-                total     : 1000,
+                total     : 0,
                 showImg   : false,
                 imgSrc    : '',
                 page      :1,
@@ -72,22 +72,7 @@
                     content:'确认删除管理员？'
                 },
                 tableData : [
-                    {
-                        "id": 12,
-                        "nick_name": "朵法拉",
-                        "name": "vtvp",
-                        "release_time": "2019-10-02 09:31:00",
-                        "is_show": true,
-                        "related_account": 10158
-                    },
-                    {
-                        "id": 11,
-                        "nick_name": "朵法拉",
-                        "name": "w22",
-                        "release_time": "2007-11-05 19:46:00",
-                        "is_show": false,
-                        "related_account": 10158
-                    },
+                    
                 ],
             }
         },

@@ -26,7 +26,8 @@ from boxing_console.views.official_account_change_logs import OfficialAccountCha
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
-from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateRetrieveDestroyApiView, MatchCreateApiView, players
+from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateRetrieveDestroyApiView, \
+    MatchCreateApiView, players, MatchRetrieveApiView
 from boxing_console.views.ability import ability_chart
 
 router = SimpleRouter()
@@ -153,7 +154,8 @@ schedule_urls = [
 
 match_urls = [
     path("matches", MatchCreateApiView.as_view()),
-    path("players", players)
+    path("players", players),
+    path("matches/<int:pk>", MatchRetrieveApiView.as_view())
 ]
 
 ability_url = [

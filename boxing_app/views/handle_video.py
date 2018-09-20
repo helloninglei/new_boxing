@@ -2,6 +2,8 @@ import subprocess as sp
 import json
 from rest_framework.response import Response
 from rest_framework import status
+
+import settings
 from biz.redis_client import redis_client
 from urllib.parse import urlparse, urljoin
 
@@ -48,9 +50,11 @@ def video_resolution(request):
             return Response({"height": data['height'], "width": data['width'], "size": data['size']})
         except KeyError:
             pass
-    file_oss_url = _get_file_oss_url(video_url)
+    if settings.ENVIRONMENT != settings.DEVELOPMENT:
+        video_url = _get_file_oss_url(video_url)
     pipe = sp.Popen(
-        ["ffprobe", "-print_format", "json", "-show_format", "-show_streams", "-i", f"{file_oss_url}"],
+        ["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-show_entries", "format=size",
+         "-of", "json", "-i", f"{video_url}"],
         stdout=sp.PIPE)
 
     pipe.wait()
@@ -76,8 +80,12 @@ def video_resolution(request):
     }
     """
     video_info = json.loads(std_out.decode('utf-8'))
-    height = video_info['streams'][0]['height']
-    width = video_info['streams'][0]['width']
+    width, height = 640, 360
+    for info in video_info['streams']:
+        if info.get('height') and info.get('width'):
+            width = info.get('width')
+            height = info.get('height')
+            break
     size = int(video_info['format']['size']) / 1024 / 1024
     data = {"height": height, "width": width, "size": int(size)}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))

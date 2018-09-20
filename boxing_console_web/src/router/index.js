@@ -35,6 +35,7 @@ import BoxBean          from 'page/boxBean';
 import Dynamic          from 'page/dynamic';
 import SensitiveWord    from 'page/sensitive_words';
 import AlbumDetail      from 'page/album_detail';
+import BoxerDetail      from 'page/boxer_detail';
 
 
 export default [
@@ -171,6 +172,10 @@ export default [
                 component: InfoList,
             },
             {
+                path: '/infodetail',
+                component: InfoDetail,
+            },
+            {
                 path: '/metchlist',
                 component: Metchlist,
             },
@@ -183,8 +188,8 @@ export default [
                 component: Boxerlist,
             },
             {
-                path: '/infodetail',
-                component: InfoDetail,
+                path: '/boxerdetail',
+                component: BoxerDetail,
             },
             {
                 path: '/boxBean',
