@@ -121,7 +121,7 @@
                 this.$router.push({path: '/boxerdetail'});
             },
             handleEdit(index, row) {
-                this.$router.push({path: '/boxerdetail', query:row.id});
+                this.$router.push({path: '/boxerdetail', query:{id:row.id}});
             },
             handleDelete(index, row) {
                 this.confirmData.id = row.id
