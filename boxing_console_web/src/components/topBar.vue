@@ -82,8 +82,7 @@
         },
         methods: {
             getParams(){
-                let routerParams = this.$route.params.dataobj
-                this.getMsg      = routerParams
+                this.getMsg = this.$route.params.dataobj;
             },
             openConfirm(){
                 this.confirmData.isshow=true

@@ -174,6 +174,37 @@ class ScheduleMatchTestCase(APITestCase):
         self.assertEqual(match.level_max, data['level_max'])
         self.assertEqual(match.result, data['result'])
 
+    def test_should_get_matches(self):
+        player1 = Player.objects.create(**self.player_data, mobile=self.user2.mobile)
+        player2 = Player.objects.create(mobile=self.user.mobile, **self.player_data)
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        match = Match.objects.create(blue_player=player1, red_player=player2, schedule=schedule,
+                                     category=MATCH_CATEGORY_BOXING, level_min=20, level_max=100,
+                                     result=MATCH_RESULT_BLUE_SUCCESS)
+        response = self.client.get(path="/matches", data={"schedule": schedule.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        resp_data = response.data['results']
+        self.assertEqual(len(resp_data), Match.objects.filter(schedule=schedule).count())  # 默认测试数据不会大于一页。
+        self.assertEqual(resp_data[0]['id'], match.id)
+        self.assertEqual(resp_data[0]['red_player'], match.red_player.name)
+        self.assertEqual(resp_data[0]['blue_player'], match.blue_player.name)
+        self.assertEqual(resp_data[0]['category'], match.get_category_display())
+        self.assertEqual(resp_data[0]['schedule'], match.schedule_id)
+        self.assertEqual(resp_data[0]['level_min'], match.level_min)
+        self.assertEqual(resp_data[0]['level_max'], match.level_max)
+        self.assertEqual(resp_data[0]['result'], match.get_result_display())
+
+    def test_should_delete_match(self):
+        player1 = Player.objects.create(**self.player_data, mobile=self.user2.mobile)
+        player2 = Player.objects.create(mobile=self.user.mobile, **self.player_data)
+        schedule = Schedule.objects.create(name="终极格斗冠军赛", race_date="2018-09-21")
+        match = Match.objects.create(blue_player=player1, red_player=player2, schedule=schedule,
+                                     category=MATCH_CATEGORY_BOXING, level_min=20, level_max=100,
+                                     result=MATCH_RESULT_BLUE_SUCCESS)
+        response = self.client.delete(path=f"/matches/{match.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertTrue(not Match.objects.filter(pk=match.id).exists())
+
     @property
     def player_data(self):
         return {
