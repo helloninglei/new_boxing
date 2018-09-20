@@ -39,7 +39,6 @@ def cover_picture(request):
 @permission_classes([])
 @authentication_classes([])
 def video_resolution(request):
-
     video_url = request.data.get('video_url')
     if not video_url:
         return Response(status.HTTP_400_BAD_REQUEST)
