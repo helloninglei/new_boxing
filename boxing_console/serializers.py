@@ -638,8 +638,6 @@ class WordFilterSerializer(serializers.ModelSerializer):
 
 
 class AppVersionSerializer(serializers.ModelSerializer):
-    platform = serializers.CharField(source='get_platform_display')
-    status = serializers.CharField(source='get_status_display')
 
     class Meta:
         model = models.AppVersion
