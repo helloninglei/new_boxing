@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment
+    OrderComment, AppVersion
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -635,3 +635,12 @@ class WordFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WordFilter
         fields = ['id', "sensitive_word"]
+
+
+class AppVersionSerializer(serializers.ModelSerializer):
+    platform = serializers.CharField(source='get_platform_display')
+    status = serializers.CharField(source='get_status_display')
+
+    class Meta:
+        model = models.AppVersion
+        exclude = ('operator', 'created_time')
