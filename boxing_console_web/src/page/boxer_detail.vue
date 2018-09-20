@@ -5,7 +5,7 @@
             <el-row> 
                 <el-col :span="12" style='min-width:800px'>
                     <el-form :model="form" label-width="82px" :rules="rules" ref="ruleForm">
-                        <p class='content_title'>添加参赛拳手</p>
+                        <p class='content_title'>{{content_title}}</p>
                         <p class='title' style='padding-left:15px'>拳手信息</p>
                         <el-row>
                             <el-col :span="11">
@@ -286,6 +286,7 @@
             if(this.query.id){
                 //编辑
                 this.getData(this.query.id)
+                this.content_title = '编辑参赛拳手'
             }else{
                 
             }
