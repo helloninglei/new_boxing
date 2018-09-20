@@ -12,7 +12,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
-    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON
+    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, PAYMENT_STATUS_PAID
 from biz.models import OrderComment, BoxingClub, User, Course
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
@@ -214,9 +214,14 @@ class CommentMeMessageSerializer(serializers.ModelSerializer):
 
 
 class CommentMeHotVideoSerializer(serializers.ModelSerializer):
+    is_paid = serializers.SerializerMethodField()
+
+    def get_is_paid(self, instance):
+        return instance.orders.filter(status=PAYMENT_STATUS_PAID, user_id=self.context['request'].user).exists()
+
     class Meta:
         model = models.HotVideo
-        fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover')
+        fields = ('id', 'name', 'description', 'url', 'try_url', 'price', 'created_time', 'cover', 'is_paid')
 
 
 class CommentMeNewsSerializer(serializers.ModelSerializer):
@@ -237,7 +242,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
                              "热门视频": CommentMeHotVideoSerializer,
                              "赛事资讯": CommentMeNewsSerializer}
         serializer = serializer_choice.get(instance.content_type.name)
-        return serializer(instance.content_object).data
+        return serializer(instance.content_object, context=self.context).data
 
     def get_obj_type(self, instance):
         return instance.content_type.name
@@ -257,11 +262,7 @@ class CommentMeSerializer(serializers.ModelSerializer):
 
 class LikeSerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['created_time'] = instance.created_time.strftime('%Y-%m-%d %H:%M')
-        return ret
+    created_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
 
     class Meta:
         model = models.Like
