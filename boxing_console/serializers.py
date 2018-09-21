@@ -708,6 +708,7 @@ class MatchCommonSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return dict(id=instance.id, red_player=instance.red_player.name, blue_player=instance.blue_player.name,
+                    red_player_id=instance.red_player.id, blue_player_id=instance.blue_player.id,
                     category=instance.get_category_display(), schedule=instance.schedule.id,
                     level_min=instance.level_min, level_max=instance.level_max, result=instance.get_result_display())
 

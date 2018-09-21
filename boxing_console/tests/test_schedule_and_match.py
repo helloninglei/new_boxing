@@ -141,6 +141,8 @@ class ScheduleMatchTestCase(APITestCase):
         self.assertEqual(resp_data['level_min'], match.level_min)
         self.assertEqual(resp_data['level_max'], match.level_max)
         self.assertEqual(resp_data['result'], match.get_result_display())
+        self.assertEqual(resp_data['blue_player_id'], match.blue_player_id)
+        self.assertEqual(resp_data['red_player_id'], match.red_player_id)
 
     def test_should_update_match(self):
         player1 = Player.objects.create(**self.player_data, mobile=self.user2.mobile)
