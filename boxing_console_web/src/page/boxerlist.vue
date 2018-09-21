@@ -102,17 +102,17 @@
                 let $this = this;
                 this.ajax(`/player/${id}`,'delete').then((res) => {
                     $this.confirmData.isshow=false;
-                    $this.tableData.splice(index,1)
+                    $this.tableData.splice(index,1);
                     $this.confirmData.isshow=false;
                 },(err) => {
                     if(err&&err.response){
-                        let errors=err.response.data
+                        let errors=err.response.data;
                         if((typeof errors=='string')&&errors.constructor==String){
                             this.showErrorTip(errors)
                         }else{
-                           for(var key in errors){
-                                this.showErrorTip(errors[key][0])
-                            } 
+                           for(let key in errors){
+                                this.showErrorTip(errors[key])
+                            }
                         }
                     }
 
