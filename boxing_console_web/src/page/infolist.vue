@@ -138,7 +138,6 @@
                 let $this = this;
                 this.ajax(`/game_news/${id}`,'delete').then((res) => {
                     $this.confirmData.isshow=false;
-                    // res && String (res.status).indexOf('2') > -1 && this.getData();
                     $this.tableData.splice(index,1)
                     $this.confirmData.isshow=false;
                 },(err) => {
@@ -158,7 +157,7 @@
             },
             handleDelete(index, row) {
                 this.confirmData.id = row.id
-                this.confirmData.index = row.index
+                this.confirmData.index = index
                 this.confirmData.isshow=true;
             },
             cancel1(val){
