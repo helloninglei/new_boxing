@@ -66,18 +66,7 @@
                 stay_top: '',
                 hasSearch: false,
                 tableData: [
-                    {
-                        "name": "世界职业拳击比赛",
-                        "race_date": "2018-10-21",
-                        "id": 2,
-                        "status": "已发布"
-                    },
-                    {
-                        "name": "终极格斗冠军赛",
-                        "race_date": "2018-09-21",
-                        "id": 1,
-                        "status": "未发布"
-                    }
+                    
                 ],
                 confirmData:{
                     isshow: false,

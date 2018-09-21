@@ -377,7 +377,8 @@
                 this.$refs["form"].validate((valid) => {
                     if (valid) {
                         let url = this.form.id?'/matches/'+this.form.id:'/matches'
-                        this.ajax(`${url}`,'post',this.form).then((res) => {
+                        let type = this.form.id?'put':'post'
+                        this.ajax(`${url}`,type,this.form).then((res) => {
                             if(res&&res.data){
                                 this.showBattleDialog = false
                                 this.getData();
@@ -403,8 +404,8 @@
             handleEdit(index, row) {
                 this.battleDialogTitle = '编辑对战表';
                 this.form={
-                    red_player:row.red_player,
-                    blue_player:row.blue_player,
+                    red_player:row.red_player_id,
+                    blue_player:row.blue_player_id,
                     schedule:this.form.schedule,
                     category:row.category=='自由搏击'?1:row.category=='拳击'?2:row.category=='MMA'?3:'',
                     level_min:row.level_min,
