@@ -19,5 +19,5 @@ class PlayerViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.matches_red.exists() or instance.matches_blue.exists():
-            return Response(data="请先删除该参赛拳手的所有赛程再删除拳手记录", status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"delete_err": ["请先删除该参赛拳手的所有赛程再删除拳手记录。"]}, status=status.HTTP_400_BAD_REQUEST)
         return super().destroy(request, *args, **kwargs)
