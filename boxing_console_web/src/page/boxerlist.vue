@@ -39,7 +39,7 @@
                     </el-table-column>
                 </el-table>
             </template>
-            <footer>
+            <footer v-if='total>10'>
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
@@ -100,18 +100,18 @@
             },
             deleteData(id,index) {
                 let $this = this;
-                // this.ajax(`//${id}`,'delete').then((res) => {
-                //     $this.confirmData.isshow=false;
-                //     $this.tableData.splice(index,1)
-                //     $this.confirmData.isshow=false;
-                // },(err) => {
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             this.showErrorTip(errors[key][0])
-                //         }
-                //     }
-                // })
+                this.ajax(`/player/${id}`,'delete').then((res) => {
+                    $this.confirmData.isshow=false;
+                    $this.tableData.splice(index,1)
+                    $this.confirmData.isshow=false;
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
             },
             addMatchEv() {
                 this.$router.push({path: '/boxerdetail'});
@@ -122,16 +122,6 @@
             handleDelete(index, row) {
                 this.confirmData.id = row.id
                 // 点击删除，则判断该拳手是否还有赛程记录，若有赛程，则弹窗提示用户：“请先删除该参赛拳手的所有赛程再删除拳手记录“，按钮只有一个“我知道了”，
-                // this.ajax('','').then((res)=>{
-                //     console.log(res)
-                // },(err)=>{
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             this.showErrorTip(errors[key][0])
-                //         }
-                //     }
-                // })
                 this.confirmData.index = row.index
                 this.confirmData.isshow=true;
             },
