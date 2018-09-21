@@ -22,7 +22,7 @@ from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, E
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
-from boxing_console.views.app_version import AppVersionViewSet
+from boxing_console.views.app_version import AppVersionViewSet, release_version
 
 router = SimpleRouter()
 
@@ -120,8 +120,9 @@ message_urls = [
 router.register(r"word_filters", WordFilterViewSet)
 
 appversion_url = [
-    path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get':'retrieve', 'patch': 'partial_update'}))
+    path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'}), name='app_versions'),
+    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get':'retrieve', 'patch': 'partial_update'}), name='app_version'),
+    path('app_release', release_version, name='app_release')
 ]
 
 urlpatterns = router.urls
