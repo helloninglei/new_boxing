@@ -150,12 +150,10 @@
                 for(var i=0;i<ele.length;i++){
                     ele[i].onclick = function(e){
                         // $this.showZoomImage(e.currentTarget.dataset.index)
-                        console.log(1111)
                         let u = navigator.userAgent, app = navigator.appVersion;
                         let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
                         let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
                         if(isAndroid||isIOS){
-                            console.log($this.imgs,e.currentTarget.dataset.index)
                             boxing.previewImage($this.imgs,e.currentTarget.dataset.index)
                         }else{
                             $this.showZoomImage(e.currentTarget.dataset.index)
