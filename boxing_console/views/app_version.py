@@ -7,11 +7,7 @@ from boxing_app.pagination import BoxingPagination
 from boxing_console.serializers import AppVersionSerializer
 from biz.models import AppVersion
 from biz.constants import ANDROID, IOS, APPVERSION_FUTURE, APPVERSION_NOW, APPVERSION_PAST, VERSION_MANAGER_GROUP
-
-
-class VersionReleasePermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.id in VERSION_MANAGER_GROUP
+from boxing_console.permissions import VersionReleasePermission
 
 
 class AppVersionViewSet(viewsets.ModelViewSet):

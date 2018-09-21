@@ -10,13 +10,14 @@ class AppVersionTest(APITestCase):
                                              is_staff=True, is_active=True, is_superuser=True)
         self.client = self.client_class()
         self.client.login(username=self.user, password='p@sSvV0rd')
+        AppVersion.objects.all().delete()
         AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW,
                                   message='android-3-3-1', inner_number=1, force=True, package='/path/to/app.apk')
         AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, force=True)
 
     def test_app_version_list(self):
         res = self.client.get('/app_versions')
-        # self.assertNotEqual(len(res.data['results']), 0)
+        self.assertNotEqual(len(res.data['results']), 0)
         self.assertEqual(res.status_code, 200)
 
     def test_app_version_add(self):
