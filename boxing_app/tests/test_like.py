@@ -20,6 +20,9 @@ class LikeTestCase(APITestCase):
         self.client3 = self.client_class()
         self.client3.login(username=self.test_user_3, password='password')
         redis_client.flushdb()
+        self.patcher = mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message", return_value="")
+        self.patcher.start()
+        self.addCleanup(self.patcher.stop)
 
     def prepare(self):
         msg_data = {'content': 'message1'}
@@ -32,9 +35,7 @@ class LikeTestCase(APITestCase):
         res = self.client1.post('/messages', msg_data)
         self.message_id3 = res.data['id']
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_create_like(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_create_like(self):
         self.prepare()
         res = self.client1.post(f'/messages/{self.message_id2}/like')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -72,9 +73,7 @@ class LikeTestCase(APITestCase):
             else:
                 self.assertEqual(like_count, 0 + initial_like_count)
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_hot_message(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_hot_message(self):
         self.prepare()
         self.client1.post('/messages/%s/like' % self.message_id1)
         self.client1.post('/messages/%s/like' % self.message_id2)
@@ -108,9 +107,7 @@ class LikeTestCase(APITestCase):
             is_like = message['is_like']
             self.assertFalse(is_like)
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_like_me_list(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_like_me_list(self):
         self.prepare()
         self.client1.post('/messages/%s/like' % self.message_id1)
         self.client1.post('/messages/%s/like' % self.message_id2)

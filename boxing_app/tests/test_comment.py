@@ -17,6 +17,9 @@ class CommentTestCase(APITestCase):
         self.client2 = self.client_class()
         self.client2.login(username=self.test_user_2, password='password')
         self.anonymous_client = self.client_class()
+        self.patcher = mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message", return_value="")
+        self.patcher.start()
+        self.addCleanup(self.patcher.stop)
 
     def prepare(self):
         res = self.client1.post('/messages', {'content': 'message1'})
@@ -28,9 +31,7 @@ class CommentTestCase(APITestCase):
         self.comment1 = res1.data
         self.comment2 = res2.data
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_create_comment(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_create_comment(self):
         self.prepare()
         response = self.client1.get(path='/messages/%s/comments' % self.message_id)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -57,9 +58,7 @@ class CommentTestCase(APITestCase):
         self.assertFalse(response.data['has_unread_like'])
         self.assertFalse(response.data['has_unread_comment'])
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_reply(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_reply(self):
         self.prepare()
         reply_data = {
             'content': 'reply to comment 1'
@@ -88,9 +87,7 @@ class CommentTestCase(APITestCase):
                         self.assertEqual(reply['user']['id'], self.test_user_2.id)
                         self.assertEqual(reply['to_user']['id'], self.test_user_1.id)
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_delete(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_delete(self):
         self.prepare()
 
         res = self.client2.delete('/messages/%s/comments/%s' % (self.message_id, self.comment1['id']))
@@ -128,9 +125,7 @@ class CommentTestCase(APITestCase):
         self.assertEqual(reply['id'], reply_to_reply_id)
         self.assertIsNotNone(reply['to_user'])
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_permission(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_permission(self):
         self.prepare()
         res = self.anonymous_client.get(f'/messages/{self.message_id}/comments')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -143,9 +138,7 @@ class CommentTestCase(APITestCase):
                                          reply_data)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
-    def test_comment_me_for_message(self, send_passthrough_message):
-        send_passthrough_message.return_value = ""
+    def test_comment_me_for_message(self):
         self.prepare()
         res = self.client1.get('/comment_me')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -212,5 +205,3 @@ class CommentTestCase(APITestCase):
         video.refresh_from_db()
         res = self.client1.get('/comment_me')
         self.assertEqual(len(res.data['results']), 0)
-
-
