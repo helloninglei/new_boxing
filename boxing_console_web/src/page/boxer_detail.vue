@@ -15,7 +15,7 @@
                             </el-col>
                             <el-col :span="11" :offset="2">
                                 <el-form-item label="拳手手机号" prop="mobile">
-                                    <el-input v-model="form.mobile"  placeholder="请输入手机号" :maxlength="11" :disabled='form.id'></el-input>
+                                    <el-input v-model="form.mobile"  placeholder="请输入手机号" :maxlength="11" :disabled='form.id?true:false'></el-input>
                                     <div class="el-form-item__error" v-if="phoneError">
                                         {{phone_error_con}}
                                     </div>
@@ -29,8 +29,7 @@
 
                             <div class='show' @click="addImg('inputId2','img2')" style='width:100px;height:100px;border:1px solid #ccc;margin-top:-40px;cursor: pointer'>  
                                <img :src="config.baseUrl+form.avatar" alt="" width='100%' id='img2' v-if='form.avatar'> 
-                               <img src="./img/person_img.png" alt="" width='100%' id='img2' v-else> 
-                               <div class='imgModel'>更换头像</div>
+                               <div class='imgModel'>{{form.avatar?'更换头像':'添加头像'}}</div>
                                <div style='display:none'>  
                                    <input type="file" id="inputId2"  accept="image" @change="change">  
                                    <label for="inputId2"></label>  
@@ -314,7 +313,7 @@
                                     this.phoneError = true
                                     return;
                                 }
-                                this.form.avatar = res.data.avatar;
+                                this.form.avatar = res.data.avatar?res.data.avatar:'';
 
 
                             }
@@ -392,6 +391,9 @@
                                 } 
                             }, trigger: 'blur'}
                         ] 
+                this.rules.avatar= [
+                            { required:true,message:'请添加拳手头像', trigger:'blur' }
+                        ] 
                 this.$refs[formName].validate((valid) => {
                     if (valid&&!this.phoneError) {
                         let url = '';
@@ -461,6 +463,7 @@
             prevImg(formName){
                 delete this.rules['name']
                 delete this.rules['mobile']
+                delete this.rules['avatar']
                 this.$refs[formName].validate((valid) => {
                     console.log(valid)
                     if(valid){

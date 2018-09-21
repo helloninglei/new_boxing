@@ -377,7 +377,8 @@
                 this.$refs["form"].validate((valid) => {
                     if (valid) {
                         let url = this.form.id?'/matches/'+this.form.id:'/matches'
-                        this.ajax(`${url}`,'post',this.form).then((res) => {
+                        let type = this.form.id?'put':'post'
+                        this.ajax(`${url}`,type,this.form).then((res) => {
                             if(res&&res.data){
                                 this.showBattleDialog = false
                                 this.getData();
