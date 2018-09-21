@@ -638,7 +638,6 @@ class WordFilterSerializer(serializers.ModelSerializer):
 
 
 class AppVersionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.AppVersion
         exclude = ('operator', 'created_time')
