@@ -155,7 +155,6 @@
                         let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
                         let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
                         if(isAndroid||isIOS){
-                            console.log($this.imgs,e.currentTarget.dataset.index)
                             boxing.previewImage($this.imgs,e.currentTarget.dataset.index)
                         }else{
                             $this.showZoomImage(e.currentTarget.dataset.index)
