@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
+from unittest import mock
 
 from biz import constants, models
 from biz.models import User, Message
@@ -31,7 +32,9 @@ class LikeTestCase(APITestCase):
         res = self.client1.post('/messages', msg_data)
         self.message_id3 = res.data['id']
 
-    def test_create_like(self):
+    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
+    def test_create_like(self, send_passthrough_message):
+        send_passthrough_message.return_value = ""
         self.prepare()
         res = self.client1.post(f'/messages/{self.message_id2}/like')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -69,7 +72,9 @@ class LikeTestCase(APITestCase):
             else:
                 self.assertEqual(like_count, 0 + initial_like_count)
 
-    def test_hot_message(self):
+    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
+    def test_hot_message(self, send_passthrough_message):
+        send_passthrough_message.return_value = ""
         self.prepare()
         self.client1.post('/messages/%s/like' % self.message_id1)
         self.client1.post('/messages/%s/like' % self.message_id2)
@@ -103,7 +108,9 @@ class LikeTestCase(APITestCase):
             is_like = message['is_like']
             self.assertFalse(is_like)
 
-    def test_like_me_list(self):
+    @mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message")
+    def test_like_me_list(self, send_passthrough_message):
+        send_passthrough_message.return_value = ""
         self.prepare()
         self.client1.post('/messages/%s/like' % self.message_id1)
         self.client1.post('/messages/%s/like' % self.message_id2)
