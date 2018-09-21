@@ -3,15 +3,15 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from biz.constants import APPVERSION_FUTURE
+from biz.constants import ANDROID, IOS, APPVERSION_NOW
 
 
 # 添加app初始化版本号
 def make_init_app_version(apps, schema_editor):
     AppVersion = apps.get_model("biz", "AppVersion")
-    AppVersion.objects.create(version='3.3.0', platform='android', status='NOW', message='version:3.3.0',
+    AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW, message='version:3.3.0',
                               inner_number=44, force=True, package='/path/to/file.apk')
-    AppVersion.objects.create(version='3.3.0', platform='ios', status='NOW', message='version:3.3.0', force=True)
+    AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, message='version:3.3.0', force=True)
 
 
 class Migration(migrations.Migration):
@@ -28,12 +28,11 @@ class Migration(migrations.Migration):
                 ('updated_time', models.DateTimeField(auto_now=True)),
                 ('version', models.CharField(max_length=16)),
                 ('platform', models.CharField(choices=[('android', '安卓'), ('ios', 'IOS')], max_length=16)),
-                ('status', models.CharField(choices=[('PAST', '历史版本'), ('NOW', '当前版本'), ('FUTURE', '未上线')],
-                                            max_length=16, default=APPVERSION_FUTURE)),
+                ('status', models.CharField(choices=[('PAST', '历史版本'), ('NOW', '当前版本'), ('FUTURE', '未上线')], max_length=16)),
                 ('message', models.CharField(max_length=1024)),
-                ('inner_number', models.IntegerField(null=True)),
+                ('inner_number', models.IntegerField(null=True, blank=True)),
                 ('force', models.BooleanField()),
-                ('package', models.CharField(max_length=256, null=True)),
+                ('package', models.CharField(max_length=256, null=True, blank=True)),
                 ('operator', models.ForeignKey(db_index=False, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+',
                                                to=settings.AUTH_USER_MODEL)),
             ],
