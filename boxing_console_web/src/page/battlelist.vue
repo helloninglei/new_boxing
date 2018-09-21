@@ -404,8 +404,8 @@
             handleEdit(index, row) {
                 this.battleDialogTitle = '编辑对战表'
                 this.form={
-                    red_player:row.red_player,
-                    blue_player:row.blue_player,
+                    red_player:row.red_player_id,
+                    blue_player:row.blue_player_id,
                     schedule:this.form.schedule,
                     category:row.category=='自由搏击'?1:row.category=='拳击'?2:row.category=='MMA'?3:'',
                     level_min:row.level_min,
