@@ -108,21 +108,6 @@ BROKER_REDIS_DB = "0"
 BAIDU_MAP_URL = 'http://api.map.baidu.com/geocoder/v2/'
 BAIDU_MAP_AK = 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
 
-# version conf
-ANDROID_VERSION = {
-    'version': '3.3.0',
-    'version_code': '44',
-    'url': '',
-    'message': '3.3.0',
-    'force': True
-}
-
-IOS_VERSION = {
-    'version': '3.3.0',
-    'message': '3.3.0',
-    'force': True
-}
-
 OSS_BASE_URL = 'http://39.105.73.10'
 
 WEIXIN_PUBLIC_PLATFORM_CONF = {
