@@ -69,5 +69,4 @@ class AppVersionTest(APITestCase):
         version = AppVersion.objects.create(version='3.3.3', platform=IOS, message='apple-3-3-3', status=APPVERSION_FUTURE, force=True)
         data = {'id': version.id}
         res = self.client.post('/app_release', data=data)
-        print(res.data)
         self.assertEqual(res.status_code, 200)
