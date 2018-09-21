@@ -97,7 +97,7 @@
                 this.ajax('/albums','get',{},{page:page}).then(function(res){
                     if(res&&res.data){
                         $this.tableData = res.data.results
-                        $this.total = res.data.total
+                        $this.total = res.data.count
                     }
 
                 },function(err){

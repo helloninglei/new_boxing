@@ -149,7 +149,16 @@
             if(ele){
                 for(var i=0;i<ele.length;i++){
                     ele[i].onclick = function(e){
-                        $this.showZoomImage(e.currentTarget.dataset.index)
+                        // $this.showZoomImage(e.currentTarget.dataset.index)
+                        let u = navigator.userAgent, app = navigator.appVersion;
+                        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
+                        let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+                        if(isAndroid||isIOS){
+                            boxing.previewImage(this.imgs,e.currentTarget.dataset.index)
+                        }else{
+                            $this.showZoomImage(e.currentTarget.dataset.index)
+                        }
+                        
                     }
                 } 
             }
@@ -175,7 +184,7 @@
                     for (var i = 0; i < imgArr.length; i++) {
                         var src = imgArr[i].match(srcReg);
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 34.5)}"  @click="showZoomImage" class="myImg" data-index="${i}"/>`)
+                            str = str.replace(imgArr[i],'<img src="'+config.baseUrl + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 34.5)}"  @click="showZoomImage" class="myImg" data-index="${i}"/>`)
                         }
                         this.imgs[i] = `${src[1]}?x-oss-process=image/resize,w_${parseInt(baseSize * 37.5)}`
                     }                }
