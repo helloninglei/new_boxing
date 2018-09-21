@@ -27,12 +27,8 @@
                             label="蓝方姓名">
                     </el-table-column>
                     <el-table-column
+                            prop="category"
                             label="项目类型">
-                            <template slot-scope="scope">
-                                <span v-if="scope.row.category==1">自由搏击</span>
-                                <span v-if="scope.row.category==2">拳击</span>
-                                <span v-if="scope.row.category==3">MMA</span>
-                            </template>
                     </el-table-column>
                     <el-table-column
                             label="项目级别">
@@ -41,13 +37,8 @@
                             </template>
                     </el-table-column>
                     <el-table-column
+                            prop="result"
                             label="胜负">
-                            <template slot-scope="scope">
-                                <span v-if="scope.row.result==1">红方胜</span>
-                                <span v-if="scope.row.result==2">蓝方胜</span>
-                                <span v-if="scope.row.result==3">红方KO蓝方</span>
-                                <span v-if="scope.row.result==4">蓝方KO红方</span>
-                            </template>
                     </el-table-column>
                     <el-table-column label="操作" width='220'>
                         <template slot-scope="scope">
@@ -62,7 +53,7 @@
                     </el-table-column>
                 </el-table>
             </template>
-            <footer>
+            <footer v-if='total>10'>
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
@@ -342,7 +333,6 @@
             this.editmetch.name = this.$route.query.name
             this.getData();
             this.getUsers();
-            this.src = this.config.baseUrl+'/ability?skill=45&strength=67&defence=44&willpower=78&attack=55&stamina=61'
         },
         watch:{
             showBattleDialog(isshow){
@@ -362,27 +352,26 @@
         },
         methods: {
             getData() {
-                // this.ajax('/schedules','get',{},{page:this.page}).then((res) => {
-                //     if(res&&res.data){
-                //         this.tableData = res.data.results;
-                //         this.total = res.data.count;
-                //     }
-                // })
+                this.ajax('/matches?schedule='+this.form.schedule,'get',{},{page:this.page}).then((res) => {
+                    if(res&&res.data){
+                        this.tableData = res.data.results;
+                        this.total = res.data.count;
+                    }
+                })
             },
             deleteData(id,index) {
                 let $this = this;
-                // this.ajax(`//${id}`,'delete').then((res) => {
-                //     $this.confirmData.isshow=false;
-                //     $this.tableData.splice(index,1)
-                //     $this.confirmData.isshow=false;
-                // },(err) => {
-                //     if(err&&err.response){
-                //         let errors=err.response.data
-                //         for(var key in errors){
-                //             this.showErrorTip(errors[key][0])
-                //         }
-                //     }
-                // })
+                this.ajax(`/matches/${id}`,'delete').then((res) => {
+                    $this.tableData.splice(index,1)
+                    $this.confirmData.isshow=false;
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
             },
             saveBettle(){
                 this.$refs["form"].validate((valid) => {
@@ -391,6 +380,7 @@
                         this.ajax(`${url}`,'post',this.form).then((res) => {
                             if(res&&res.data){
                                 this.showBattleDialog = false
+                                this.getData();
                             }
                         },(err) => {
                             if(err&&err.response){
@@ -416,10 +406,10 @@
                     red_player:row.red_player,
                     blue_player:row.blue_player,
                     schedule:this.form.schedule,
-                    category:row.category,
+                    category:row.category=='自由搏击'?1:row.category=='拳击'?2:row.category=='MMA'?3:'',
                     level_min:row.level_min,
                     level_max:row.level_max,
-                    result:row.result,
+                    result:row.result=='红方胜'?1:row.category=='蓝方胜'?2:row.category=='红方KO蓝方'?3:row.category=='蓝方KO红方'?4:'',
                     id:row.id
                 },
                 this.showBattleDialog=true;
@@ -429,7 +419,7 @@
             },
             handleDelete(index, row) {
                 this.confirmData.id = row.id
-                this.confirmData.index = row.index
+                this.confirmData.index = index
                 this.confirmData.isshow=true;
             },
             cancel(val){
