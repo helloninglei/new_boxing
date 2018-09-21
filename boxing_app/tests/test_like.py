@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework.test import APITestCase
 from rest_framework import status
+from unittest import mock
 
 from biz import constants, models
 from biz.models import User, Message
@@ -19,6 +20,9 @@ class LikeTestCase(APITestCase):
         self.client3 = self.client_class()
         self.client3.login(username=self.test_user_3, password='password')
         redis_client.flushdb()
+        self.patcher = mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message", return_value="")
+        self.patcher.start()
+        self.addCleanup(self.patcher.stop)
 
     def prepare(self):
         msg_data = {'content': 'message1'}
