@@ -107,10 +107,15 @@
                 },(err) => {
                     if(err&&err.response){
                         let errors=err.response.data
-                        for(var key in errors){
-                            this.showErrorTip(errors[key][0])
+                        if((typeof errors=='string')&&errors.constructor==String){
+                            this.showErrorTip(errors)
+                        }else{
+                           for(var key in errors){
+                                this.showErrorTip(errors[key][0])
+                            } 
                         }
                     }
+
                 })
             },
             addMatchEv() {
