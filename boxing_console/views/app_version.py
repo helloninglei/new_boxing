@@ -9,21 +9,21 @@ from biz.models import AppVersion
 from biz.constants import ANDROID, IOS, APPVERSION_FUTURE, APPVERSION_NOW, APPVERSION_PAST, VERSION_MANAGER_GROUP
 
 
+class VersionReleasePermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.id in VERSION_MANAGER_GROUP
+
+
 class AppVersionViewSet(viewsets.ModelViewSet):
     serializer_class = AppVersionSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (VersionReleasePermission,)
     pagination_class = BoxingPagination
     queryset = AppVersion.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
-        if request.user.id not in VERSION_MANAGER_GROUP:
-            return Response(data={'detail': '此账户无版本管理权限'}, status=403)
         return super(AppVersionViewSet, self).retrieve(request, *args, **kwargs)
 
     def create(self, request):
-        if request.user.id not in VERSION_MANAGER_GROUP:
-            return Response(data={'detail': '此账户无版本管理权限'}, status=403)
-
         serializer = AppVersionSerializer(data=request.data)
         if serializer.is_valid():
             if serializer.validated_data['status'] != APPVERSION_FUTURE:
@@ -57,8 +57,6 @@ class AppVersionViewSet(viewsets.ModelViewSet):
         return Response(status=400)
 
     def update(self, request, *args, **kwargs):
-        if request.user.id not in VERSION_MANAGER_GROUP:
-            return Response(data={'detail': '此账户无版本管理权限'}, status=403)
         serializer = AppVersionSerializer(data=request.data)
         if serializer.is_valid():
             if serializer.validated_data['status'] != APPVERSION_FUTURE:
