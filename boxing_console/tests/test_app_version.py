@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from rest_framework.test import APITestCase
 from biz.models import User, AppVersion
-from biz.constants import APPVERSION_FUTURE, IOS, ANDROID, VERSION_MANAGER_GROUP
+from biz.constants import APPVERSION_FUTURE, IOS, ANDROID, VERSION_MANAGER_GROUP, APPVERSION_NOW
 
 
 class AppVersionTest(APITestCase):
@@ -10,6 +10,9 @@ class AppVersionTest(APITestCase):
                                              is_staff=True, is_active=True, is_superuser=True)
         self.client = self.client_class()
         self.client.login(username=self.user, password='p@sSvV0rd')
+        AppVersion.objects.create(version='3.3.1', platform=ANDROID, status=APPVERSION_NOW,
+                                  message='android-3-3-1', inner_number=1, force=True, package='/path/to/app.apk')
+        AppVersion.objects.create(version='3.3.1', platform=IOS, status=APPVERSION_NOW, force=True)
 
     def test_app_version_list(self):
         res = self.client.get('/app_versions')
