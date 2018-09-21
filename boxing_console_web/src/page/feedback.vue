@@ -43,7 +43,16 @@
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
-        <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel1()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
+        <Confirm :isshow="confirmData.isshow" @confirm="confirm" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
+        <el-dialog  :visible.sync="showDetail" class='myDialog'>
+            <div class="dialog_title">编辑对战表</div>
+            <div class="dialog_content" >
+                
+            </div>
+            <div slot="footer" class="dialog-footer" style='text-align:center'>
+                <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 border_raduis_100' @click="showDetail=false">关闭</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -67,9 +76,15 @@
                 end_date: '',
                 stay_top: '',
                 hasSearch: false,
+                showDetail:false,
                 tableData: [
                     
                 ],
+                confirmData:{
+                    isshow: false,
+                    id    :'',
+                    content:'确认删除该条资讯？'
+                },
             }
         },
         components: {
@@ -94,15 +109,24 @@
                     }
                 })
             },
-            toDetail(){
-
-            },
             handleEdit(index, row) {
                 this.$router.push({path: '/boxerdetail', query:{id:row.id}});
             },
             toDetail(index, row) {
+                this.ajax(`/game_news/${id}`,'delete').then((res) => {
+                    this.showDetail = true;
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            this.showErrorTip(errors[key][0])
+                        }
+                    }
+                })
                 
             },
+            confirm(){},
+            cancel(){},
             changePage(page) {
                 this.page = page;
                 this.getData();
