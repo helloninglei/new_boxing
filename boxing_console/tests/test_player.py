@@ -106,7 +106,7 @@ class PlayerTestCase(APITestCase):
         })
         res = self.client.delete(f'/player/{player1.pk}')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['delete_err'], ["请先删除该参赛拳手的所有赛程再删除拳手记录。"])
+        self.assertEqual(res.data['message'], "请先删除该参赛拳手的所有赛程再删除拳手记录。")
         self.assertEqual(Player.objects.all().count(), 2)
 
         # delete success if delete math
