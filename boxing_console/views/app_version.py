@@ -91,7 +91,6 @@ class AppVersionViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-@authentication_classes([permissions.IsAuthenticated])
 @permission_classes([VersionReleasePermission])
 def release_version(request):
     if 'id' in request.data.keys():
