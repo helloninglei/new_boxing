@@ -14,9 +14,13 @@ class VersionTestCase(APITestCase):
                                                          message='android-3-3-1', inner_number=1, force=True, package='/path/to/app.apk')
         self.ios_version = AppVersion.objects.create(version='3.3.1', platform=IOS, status=APPVERSION_NOW,  force=True)
         self.android_data = {'version': self.android_version.version,
-                             'message': self.android_version.message, 'force': self.android_version.force}
+                             'inner_number': self.android_version.inner_number,
+                             'package': self.android_version.package,
+                             'message': self.android_version.message,
+                             'force': self.android_version.force}
         self.ios_data = {'version': self.ios_version.version,
-                         'message': self.ios_version.message, 'force': self.ios_version.force}
+                         'message': self.ios_version.message,
+                         'force': self.ios_version.force}
 
     def test_version(self):
         # ios
@@ -34,4 +38,5 @@ class VersionTestCase(APITestCase):
         self.assertEqual(response.data['version'], self.android_data['version'])
         self.assertEqual(response.data['message'], self.android_data['message'])
         self.assertEqual(response.data['force'], self.android_data['force'])
-
+        self.assertEqual(response.data['version_code'], self.android_data['inner_number'])
+        self.assertEqual(response.data['url'], self.android_data['package'])

@@ -91,11 +91,9 @@ class AppVersionViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([permissions.IsAuthenticated])
+@permission_classes([VersionReleasePermission])
 def release_version(request):
-    if request.user.id not in VERSION_MANAGER_GROUP:
-        return Response(data={'detail': '此账户无版本管理权限'}, status=403)
-
     if 'id' in request.data.keys():
         release_id = int(request.data['id'])
         release = AppVersion.objects.get(id=release_id)
