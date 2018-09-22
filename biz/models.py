@@ -552,3 +552,4 @@ class AppVersion(BaseAuditModel):
     class Meta:
         db_table = 'app_version'
         ordering = ("-updated_time",)
+        indexes = [models.Index(fields=['platform', 'status']), ]
