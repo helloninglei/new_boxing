@@ -11,9 +11,9 @@ class AppVersionTest(APITestCase):
         self.client = self.client_class()
         self.client.login(username=self.user, password='p@sSvV0rd')
         AppVersion.objects.all().delete()
-        AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW,
-                                  message='android-3-3-1', inner_number=1, force=True, package='/path/to/app.apk')
-        AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, force=True)
+        AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW, message='android-3-3-1', force=True,
+                                  inner_number=1, package='/path/to/app.apk')
+        AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, message='apple-3-3-1', force=True)
 
     def test_app_version_list(self):
         res = self.client.get('/app_versions')
@@ -51,6 +51,8 @@ class AppVersionTest(APITestCase):
             "status": APPVERSION_FUTURE,
             "message": "apple-3-3-3",
             "force": False,
+            'inner_number': 0,
+            'package': ''
         }
         res = self.client.patch(f'/app_versions/{version_ios.id}', data=data)
         self.assertEqual(res.status_code, 200)
@@ -71,6 +73,5 @@ class AppVersionTest(APITestCase):
 
     def test_app_version_release(self):
         version = AppVersion.objects.create(version='3.3.4', platform=IOS, message='apple-3-3-4', status=APPVERSION_FUTURE, force=True)
-        data = {'id': version.id}
-        res = self.client.post('/app_release', data=data)
+        res = self.client.post(f'/app_release/{version.id}')
         self.assertEqual(res.status_code, 200)

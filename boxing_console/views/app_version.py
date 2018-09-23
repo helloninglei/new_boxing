@@ -2,7 +2,6 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from distutils.version import StrictVersion
 from boxing_app.pagination import BoxingPagination
 from boxing_console.serializers import AppVersionSerializer
 from biz.models import AppVersion
@@ -38,12 +37,9 @@ class AppVersionViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         serializer = AppVersionSerializer(data=request.data)
         if serializer.is_valid():
-            if 'id' in request.data.keys() and isinstance(request.data['id'], int):
-                release = AppVersion.objects.filter(id=request.data['id']).first()
-                if not release:
-                    return Response(data={'detail': '版本记录不存在'}, status=400)
-            else:
-                return Response(data={'detail': '未指定ID'}, status=400)
+            release = AppVersion.objects.filter(id=kwargs['pk']).first()
+            if not release:
+                return Response(data={'detail': '版本记录不存在'}, status=400)
 
             if serializer.validated_data['platform'] == ANDROID:
                 android_future = AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=ANDROID).first()
@@ -59,8 +55,8 @@ class AppVersionViewSet(viewsets.ModelViewSet):
             release.message = serializer.validated_data['message']
             release.force = serializer.validated_data['force']
             release.platform = serializer.validated_data['platform']
-            release.inner_number = serializer.validated_data['inner_number']
             release.package = serializer.validated_data['package']
+            release.inner_number = serializer.validated_data['inner_number']
             release.save()
             return Response(status=200)
         return Response(status=400)
@@ -68,18 +64,16 @@ class AppVersionViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 @permission_classes([VersionReleasePermission])
-def release_version(request):
-    if 'id' in request.data.keys() and isinstance(request.data['id'], int):
-        release = AppVersion.objects.filter(id=int(request.data['id'])).first()
-        if not release:
-            return Response(data={'detail': '版本记录不存在'}, status=400)
-        if release.status != APPVERSION_FUTURE:
-            return Response(data={'detail': '当前状态不是未发布，不可更改'}, status=400)
+def release_version(request, pk):
+    release = AppVersion.objects.filter(id=pk).first()
+    if not release:
+        return Response(data={'detail': '版本记录不存在'}, status=400)
+    if release.status != APPVERSION_FUTURE:
+        return Response(data={'detail': '版本记录状态不是未发布'}, status=400)
 
-        current = AppVersion.objects.get(platform=release.platform, status=APPVERSION_NOW)
-        current.status = APPVERSION_PAST
-        release.status = APPVERSION_NOW
-        current.save()
-        release.save()
-        return Response(status=200)
-    return Response(status=400)
+    current = AppVersion.objects.get(platform=release.platform, status=APPVERSION_NOW)
+    current.status = APPVERSION_PAST
+    release.status = APPVERSION_NOW
+    current.save()
+    release.save()
+    return Response(status=200)
