@@ -38,7 +38,7 @@ class AppVersionViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         serializer = AppVersionSerializer(data=request.data)
         if serializer.is_valid():
-            if 'id' in request.data.keys() and request.data['id'].isdigit():
+            if 'id' in request.data.keys() and isinstance(request.data['id'], int):
                 release = AppVersion.objects.filter(id=request.data['id']).first()
                 if not release:
                     return Response(data={'detail': '版本记录不存在'}, status=400)
@@ -49,8 +49,6 @@ class AppVersionViewSet(viewsets.ModelViewSet):
                 android_future = AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=ANDROID).first()
                 if android_future and android_future.id != release.id:
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)
-                release.package = serializer.validated_data['package']
-                release.inner_number = serializer.validated_data['inner_number']
 
             if serializer.validated_data['platform'] == IOS:
                 ios_future = AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=IOS).first()
@@ -61,6 +59,8 @@ class AppVersionViewSet(viewsets.ModelViewSet):
             release.message = serializer.validated_data['message']
             release.force = serializer.validated_data['force']
             release.platform = serializer.validated_data['platform']
+            release.inner_number = serializer.validated_data['inner_number']
+            release.package = serializer.validated_data['package']
             release.save()
             return Response(status=200)
         return Response(status=400)
@@ -69,7 +69,7 @@ class AppVersionViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([VersionReleasePermission])
 def release_version(request):
-    if 'id' in request.data.keys() and request.data['id'].isdigit():
+    if 'id' in request.data.keys() and isinstance(request.data['id'], int):
         release = AppVersion.objects.filter(id=int(request.data['id'])).first()
         if not release:
             return Response(data={'detail': '版本记录不存在'}, status=400)
