@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
 from django.utils import timezone
-
+from distutils.version import StrictVersion
 import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,7 +20,7 @@ from biz.redis_client import get_number_of_share, get_message_forward_count, get
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
-    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT, HOT_VIDEO_USER_ID
+    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT, HOT_VIDEO_USER_ID, APPVERSION_FUTURE, APPVERSION_NOW, ANDROID, IOS
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -638,6 +638,31 @@ class WordFilterSerializer(serializers.ModelSerializer):
 
 
 class AppVersionSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        if attrs['status'] != APPVERSION_FUTURE:
+            raise ValidationError(detail='只允许未发布版本')
+
+        try:
+            StrictVersion(attrs['version'])
+        except ValueError:
+            raise ValidationError(detail={'detail': '版本号格式错误 eg: x.y.z'})
+
+        if attrs['platform'] == ANDROID:
+            if not attrs['platform']:
+                raise ValidationError(detail={'detail': '软件包地址不能为空'})
+            current = AppVersion.objects.get(status=APPVERSION_NOW, platform=ANDROID)
+            if StrictVersion(attrs['version']) <= StrictVersion(current.version):
+                raise ValidationError(detail={'detail': '发布版本号不得低于当前版本'})
+            if attrs['inner_number'] <= current.inner_number:
+                raise ValidationError(detail={'detail': '内部版本号不得小于当前版本'})
+
+        if attrs['platform'] == IOS:
+            current = AppVersion.objects.get(status=APPVERSION_NOW, platform=IOS)
+            if StrictVersion(attrs['version']) <= StrictVersion(current.version):
+                raise ValidationError(detail={'detail': '发布版本号不得低于当前版本'})
+
+        return attrs
+
     class Meta:
         model = models.AppVersion
         exclude = ('operator', 'created_time')

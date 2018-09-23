@@ -22,30 +22,13 @@ class AppVersionViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = AppVersionSerializer(data=request.data)
         if serializer.is_valid():
-            if serializer.validated_data['status'] != APPVERSION_FUTURE:
-                return Response(data={'detail': '只能创建未发布版本'}, status=400)
-            try:
-                StrictVersion(serializer.validated_data['version'])
-            except ValueError:
-                return Response(data={'detail': '版本号格式错误 eg: x.y.z'}, status=400)
-
             if serializer.validated_data['platform'] == ANDROID:
                 if AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=ANDROID).exists():
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)
-                if not serializer.validated_data['package']:
-                    return Response(data={'detail': '软件包地址不能为空'}, status=400)
-                current = AppVersion.objects.get(status=APPVERSION_NOW, platform=ANDROID)
-                if StrictVersion(serializer.validated_data['version']) <= StrictVersion(current.version):
-                    return Response(data={'detail': '发布版本号不得低于当前版本'}, status=400)
-                if serializer.validated_data['inner_number'] <= current.inner_number:
-                    return Response(data={'detail': '内部版本号不得小于当前版本'}, status=400)
 
             if serializer.validated_data['platform'] == IOS:
                 if AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=IOS).exists():
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)
-                current = AppVersion.objects.get(status=APPVERSION_NOW, platform=IOS)
-                if StrictVersion(serializer.validated_data['version']) <= StrictVersion(current.version):
-                    return Response(data={'detail': '发布版本号不得低于当前版本'}, status=400)
 
             serializer.save()
             return Response(status=201)
@@ -55,13 +38,6 @@ class AppVersionViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         serializer = AppVersionSerializer(data=request.data)
         if serializer.is_valid():
-            if serializer.validated_data['status'] != APPVERSION_FUTURE:
-                return Response(data={'detail': '非未发布状态不可改变'}, status=400)
-            try:
-                StrictVersion(serializer.validated_data['version'])
-            except ValueError:
-                return Response(data={'detail': '版本号格式错误 eg: x.y.z'}, status=400)
-
             if 'id' in request.data.keys() and request.data['id'].isdigit():
                 release = AppVersion.objects.filter(id=request.data['id']).first()
                 if not release:
@@ -73,13 +49,6 @@ class AppVersionViewSet(viewsets.ModelViewSet):
                 android_future = AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=ANDROID).first()
                 if android_future and android_future.id != release.id:
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)
-                if not serializer.validated_data['package']:
-                    return Response(data={'detail': '软件包地址不能为空'}, status=400)
-                current = AppVersion.objects.get(status=APPVERSION_NOW, platform=ANDROID)
-                if StrictVersion(serializer.validated_data['version']) <= StrictVersion(current.version):
-                    return Response(data={'detail': '版本号不得低于当前版本'}, status=400)
-                if serializer.validated_data['inner_number'] <= current.inner_number:
-                    return Response(data={'detail': '内部版本号不得小于当前版本'}, status=400)
                 release.package = serializer.validated_data['package']
                 release.inner_number = serializer.validated_data['inner_number']
 
@@ -87,9 +56,6 @@ class AppVersionViewSet(viewsets.ModelViewSet):
                 ios_future = AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=IOS).first()
                 if ios_future and ios_future.id != release.id:
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)
-                current = AppVersion.objects.get(status=APPVERSION_NOW, platform=IOS)
-                if StrictVersion(serializer.validated_data['version']) <= StrictVersion(current.version):
-                    return Response(data={'detail': '发布版本号不得低于当前版本'}, status=400)
 
             release.version = serializer.validated_data['version']
             release.message = serializer.validated_data['message']

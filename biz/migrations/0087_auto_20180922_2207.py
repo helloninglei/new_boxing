@@ -8,9 +8,10 @@ from biz.constants import APPVERSION_NOW, ANDROID, IOS
 
 def make_init_app_version(apps, schema_editor):
     AppVersion = apps.get_model("biz", "AppVersion")
-    AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW, message='version:3.3.0',
-                              inner_number=44, force=True, package='/path/to/file.apk')
-    AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, message='version:3.3.0', force=True)
+    AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW, message='version:3.3.0', force=True,
+                              inner_number=44, package='/path/to/file.apk')
+    AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, message='version:3.3.0', force=True,
+                              inner_number=0, package='')
 
 
 class Migration(migrations.Migration):
