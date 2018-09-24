@@ -39,7 +39,7 @@ class AppVersionViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             release = AppVersion.objects.filter(id=kwargs['pk']).first()
             if not release:
-                return Response(data={'detail': '版本记录不存在'}, status=400)
+                return Response(data={'detail': '版本记录不存在'}, status=404)
 
             if serializer.validated_data['platform'] == ANDROID:
                 android_future = AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=ANDROID).first()
@@ -67,7 +67,7 @@ class AppVersionViewSet(viewsets.ModelViewSet):
 def release_version(request, pk):
     release = AppVersion.objects.filter(id=pk).first()
     if not release:
-        return Response(data={'detail': '版本记录不存在'}, status=400)
+        return Response(data={'detail': '版本记录不存在'}, status=404)
     if release.status != APPVERSION_FUTURE:
         return Response(data={'detail': '版本记录状态不是未发布'}, status=400)
 
