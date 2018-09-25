@@ -847,7 +847,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class FeedbackSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    images = serializers.ListField(child=serializers.CharField(max_length=200), max_length=8, required=False)
+    images = serializers.ListField(child=serializers.CharField(max_length=200), max_length=9, required=False)
 
     class Meta:
         model = models.Feedback
