@@ -114,6 +114,7 @@
                                 <el-input type="number" v-model="form.level_max" style="width: 100%;"></el-input>
                               </el-form-item>
                             </el-col>
+                            <el-col class="line" :span="2" style='text-align: center'>KG</el-col>
                         </el-form-item>
                     </el-row>
                     <el-form-item label="赛事结果" prop="result">
@@ -241,7 +242,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    content:'确认删除该条资讯？'
+                    content:'删除后不可恢复，是否确认删除？？'
                 },
                 editmetch:{
                     isshow:false,

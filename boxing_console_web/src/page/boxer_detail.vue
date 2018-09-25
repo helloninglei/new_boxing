@@ -28,7 +28,7 @@
                             <Cropper @getUrl='getUrl' :url_f='url_f' :changeUrl='changeUrl' :imgId='imgId' :width='100' :height='100'></Cropper>
 
                             <div class='show' @click="addImg('inputId2','img2')" style='width:100px;height:100px;border:1px solid #ccc;margin-top:-40px;cursor: pointer'>  
-                               <img :src="config.baseUrl+form.avatar" alt="" width='100%' id='img2' v-if='form.avatar'> 
+                               <img :src="form.avatar" alt="" width='100%' id='img2' v-if='form.avatar'> 
                                <div class='imgModel'>{{form.avatar?'更换头像':'添加头像'}}</div>
                                <div style='display:none'>  
                                    <input type="file" id="inputId2"  accept="image" @change="change">  
