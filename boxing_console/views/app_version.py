@@ -46,13 +46,7 @@ class AppVersionViewSet(viewsets.ModelViewSet):
                 if ios_future and ios_future.id != release.id:
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)
 
-            release.version = serializer.validated_data['version']
-            release.message = serializer.validated_data['message']
-            release.force = serializer.validated_data['force']
-            release.platform = serializer.validated_data['platform']
-            release.package = serializer.validated_data['package']
-            release.inner_number = serializer.validated_data['inner_number']
-            release.save()
+            super().update(request, *args, **kwargs)
             return Response(status=200)
         return Response(status=400)
 
