@@ -2,7 +2,6 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from boxing_app.pagination import BoxingPagination
 from boxing_console.serializers import AppVersionSerializer
 from biz.models import AppVersion
 from biz.constants import ANDROID, IOS, APPVERSION_FUTURE, APPVERSION_NOW, APPVERSION_PAST
@@ -12,11 +11,7 @@ from boxing_console.permissions import VersionReleasePermission
 class AppVersionViewSet(viewsets.ModelViewSet):
     serializer_class = AppVersionSerializer
     permission_classes = (VersionReleasePermission,)
-    pagination_class = BoxingPagination
     queryset = AppVersion.objects.all()
-
-    def retrieve(self, request, *args, **kwargs):
-        return super(AppVersionViewSet, self).retrieve(request, *args, **kwargs)
 
     def create(self, request):
         serializer = AppVersionSerializer(data=request.data)
