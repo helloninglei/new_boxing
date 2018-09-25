@@ -399,11 +399,11 @@
                 });
             },
             addBattleEv() {
-                this.battleDialogTitle = '添加对战表'
+                this.battleDialogTitle = '添加对战表';
                 this.showBattleDialog=true;
             },
             handleEdit(index, row) {
-                this.battleDialogTitle = '编辑对战表'
+                this.battleDialogTitle = '编辑对战表';
                 this.form={
                     red_player:row.red_player_id,
                     blue_player:row.blue_player_id,
@@ -411,17 +411,17 @@
                     category:row.category=='自由搏击'?1:row.category=='拳击'?2:row.category=='MMA'?3:'',
                     level_min:row.level_min,
                     level_max:row.level_max,
-                    result:row.result=='红方胜'?1:row.category=='蓝方胜'?2:row.category=='红方KO蓝方'?3:row.category=='蓝方KO红方'?4:'',
+                    result:row.result=='红方胜'?1:row.result=='蓝方胜'?2:row.result=='红方KO蓝方'?3:row.result=='蓝方KO红方'?4:'',
                     id:row.id
-                },
+                };
                 this.showBattleDialog=true;
             },
             editMetch(){
                 this.editmetch.isshow=true
             },
             handleDelete(index, row) {
-                this.confirmData.id = row.id
-                this.confirmData.index = index
+                this.confirmData.id = row.id;
+                this.confirmData.index = index;
                 this.confirmData.isshow=true;
             },
             cancel(val){
