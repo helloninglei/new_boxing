@@ -9,7 +9,7 @@ from biz.constants import APPVERSION_NOW, ANDROID, IOS
 def make_init_app_version(apps, schema_editor):
     AppVersion = apps.get_model("biz", "AppVersion")
     AppVersion.objects.create(version='3.3.0', platform=ANDROID, status=APPVERSION_NOW, message='version:3.3.0', force=True,
-                              inner_number=44, package='/path/to/file.apk')
+                              inner_number=44, package='/uploads/4b/d6/bff520d758f3f0cb1c6f584a1675811a67eb.apk')
     AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, message='version:3.3.0', force=True,
                               inner_number=0, package='')
 

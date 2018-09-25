@@ -32,6 +32,8 @@ class AppVersionTest(APITestCase):
         }
         res = self.client.post('/app_versions', data=data)
         self.assertEqual(res.status_code, 201)
+        AppVersion.objects.get(platform=ANDROID, status=APPVERSION_FUTURE)
+
         data = {
             "version": "3.3.1",
             "platform": IOS,
@@ -41,6 +43,7 @@ class AppVersionTest(APITestCase):
         }
         res = self.client.post('/app_versions', data=data)
         self.assertEqual(res.status_code, 201)
+        AppVersion.objects.get(platform=IOS, status=APPVERSION_FUTURE)
 
     def test_app_version_edit(self):
         version_ios = AppVersion.objects.create(version='3.3.2', platform=IOS, message='apple-3-3-2', status=APPVERSION_FUTURE, force=True)
