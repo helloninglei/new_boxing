@@ -10,8 +10,8 @@ def make_init_app_version(apps, schema_editor):
     AppVersion = apps.get_model("biz", "AppVersion")
     AppVersion.objects.create(version='3.3.1', platform=ANDROID, status=APPVERSION_NOW, message='优化了图片加载速度', force=True,
                               inner_number=45, package='/uploads/4b/d6/bff520d758f3f0cb1c6f584a1675811a67eb.apk')
-    AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, message='version:3.3.0', force=True,
-                              inner_number=0, package='')
+    AppVersion.objects.create(version='3.3.0', platform=IOS, status=APPVERSION_NOW, force=True, inner_number=0, package='',
+                              message='1.在消息列表页增加他人点赞、评论的消息提醒，再也不错过任何一次互动。\n2.热门视频增加标签分类，更轻易找到喜欢的视频。', )
 
 
 class Migration(migrations.Migration):
