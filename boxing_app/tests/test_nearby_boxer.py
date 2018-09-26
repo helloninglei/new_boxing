@@ -53,7 +53,7 @@ class NearbyBoxerTestCase(APITestCase):
             "competition_video": 'https://baidu.com',
             "is_accept_order": True,
             "allowed_course": [constants.BOXER_ALLOWED_COURSES_BOXING, constants.BOXER_ALLOWED_COURSES_MMA,
-                               constants.BOXER_ALLOWED_COURSES_THAI_BOXING]
+                               constants.BOXER_ALLOWED_COURSES_FREE_BOXING]
         }
         self.club1_data = {
             "name": "北京大学拳馆",

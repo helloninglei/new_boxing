@@ -26,7 +26,8 @@ class Feedback(APITestCase):
                        "image005.png",
                        "image006.png",
                        "image007.png",
-                       "image008.png"]
+                       "image008.png",
+                       "image009.png"]
         }
         res1 = self.client1.post(reverse('create_feedback'), data=feedback_data)
         self.assertEqual(res1.status_code, status.HTTP_201_CREATED)
@@ -57,6 +58,7 @@ class Feedback(APITestCase):
                        "image007.png",
                        "image008.png",
                        "image009.png",
+                       "image010.png",
                        ]
         }
         res = self.client1.post(reverse('create_feedback'), data=feedback_data)
