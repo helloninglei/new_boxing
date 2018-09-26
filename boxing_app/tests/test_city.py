@@ -34,7 +34,7 @@ class CityTestCase(APITestCase):
             "honor_certificate_images": ['http://img1.com', 'http://img2.com', 'http://img3.com'],
             "competition_video": 'https://baidu.com',
             "allowed_course": [constants.BOXER_ALLOWED_COURSES_BOXING, constants.BOXER_ALLOWED_COURSES_MMA,
-                               constants.BOXER_ALLOWED_COURSES_THAI_BOXING],
+                               constants.BOXER_ALLOWED_COURSES_FREE_BOXING],
             "is_accept_order": True,
             "authentication_state": constants.BOXER_AUTHENTICATION_STATE_APPROVED
         }

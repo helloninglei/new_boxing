@@ -78,7 +78,7 @@ class CourseTestCase(APITestCase):
                  }
 
         data3 = {"boxer": identification_list[3],
-                 "course_name": constants.BOXER_ALLOWED_COURSES_THAI_BOXING,
+                 "course_name": constants.BOXER_ALLOWED_COURSES_FREE_BOXING,
                  "price": 130,
                  "duration": 120,
                  "validity": "2018-08-25",
@@ -153,7 +153,7 @@ class CourseTestCase(APITestCase):
         # 拳手的信息
         update_data = {"real_name": "老王",
                        "mobile": '10000000000',
-                       "allowed_course": [constants.BOXER_ALLOWED_COURSES_THAI_BOXING,
+                       "allowed_course": [constants.BOXER_ALLOWED_COURSES_FREE_BOXING,
                                           constants.BOXER_ALLOWED_COURSES_BOXING,
                                           constants.BOXER_ALLOWED_COURSES_MMA],
                        "is_professional_boxer": True
