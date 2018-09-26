@@ -70,7 +70,7 @@
         },
         methods: {
            getData() {
-               let url = `/player/${this.userId}`;
+               let url = `/players/${this.userId}/ability_detail`;
 //               url = 'http://qa2.htop.info:50000/players/10158/ability_detail'; // todo
                this.ajax(url,'get').then((res) => {
                    this.data = res.data;

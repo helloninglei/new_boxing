@@ -1,7 +1,7 @@
 <template>
     <div class="homePage_container" :class="{hasClose: ifClose}">
         <div class="header_info" v-if="userInfo">
-            <img class="avatar" :src="userInfo.avatar" />
+            <img class="avatar" :src="userInfo.avatar ? userInfo.avatar : avatar_default" />
             <div class="info_container">
                 <div class="name_info">
                     <div class="name">{{userInfo.nick_name}}</div>
@@ -153,7 +153,8 @@
                 current: 0,
                 tabView: 'AbilityPic',
                 ifClose: false,
-                dataObj: {}
+                dataObj: {},
+                avatar_default: require('../assets/images/portrait_default.png'),
             }
         },
         components: {
