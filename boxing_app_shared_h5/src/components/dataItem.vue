@@ -2,7 +2,7 @@
     <div class="list_item">
         <div class="left_player player_avatar">
             <div class="player_avatar_img_wrapper">
-                <img class="player_avatar_img" src="http://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83epVIYEfibfiboxWz4KLvy3YuUuB7b6jKkyfnr5ZnGUfpn0BsoYUQgRiazuDj82tkbic1zPTCpQCk9cZiaQ/132" alt="">
+                <img class="player_avatar_img" :src="data.red_avatar" alt="">
                 <div class="mark_icon" :class="{icon_ko: data.ko === 'red',icon_win: data.win==='red'}"></div>
             </div>
             <div class="player_name">{{data.red_name}}</div>
@@ -10,14 +10,14 @@
         <div class="icon_vs"></div>
         <div class="right_player player_avatar">
             <div class="player_avatar_img_wrapper">
-                <img class="player_avatar_img" src="http://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83epVIYEfibfiboxWz4KLvy3YuUuB7b6jKkyfnr5ZnGUfpn0BsoYUQgRiazuDj82tkbic1zPTCpQCk9cZiaQ/132" alt="">
+                <img class="player_avatar_img" :src="data.blue_avatar" alt="">
                 <div class="mark_icon" :class="{icon_ko: data.ko === 'blue',icon_win: data.win==='blue'}"></div>
             </div>
             <div class="player_name">{{data.blue_name}}</div>
         </div>
         <div class="item_desc">
             <div class="area">{{data.schedule}}</div>
-            <div class="kind">泰拳 <span class="level">{{data.level_min}}-{{data.level_max}}KG</span></div>
+            <div class="kind">{{data.category}} <span class="level">{{data.level_min}}-{{data.level_max}}KG</span></div>
             <div class="time">{{data.time}}</div>
         </div>
     </div>

@@ -4,7 +4,7 @@
             <img class="avatar" :src="userInfo.avatar" />
             <div class="info_container">
                 <div class="name_info">
-                    <div class="name">拳皇</div>
+                    <div class="name">{{userInfo.nick_name}}</div>
                     <div class="sex" :class="userInfo.gender ? 'lady' : 'gentleman'"/>
                 </div>
                 <div class="desc">{{userInfo.bio}}</div>
