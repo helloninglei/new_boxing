@@ -15,7 +15,7 @@ class AppVersionViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         serializer = AppVersionSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             if serializer.validated_data['platform'] == ANDROID:
                 if AppVersion.objects.filter(status=APPVERSION_FUTURE, platform=ANDROID).exists():
                     return Response(data={'detail': '当前平台已有一个未发布版本'}, status=400)

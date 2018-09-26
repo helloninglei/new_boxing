@@ -640,30 +640,28 @@ class WordFilterSerializer(serializers.ModelSerializer):
 class AppVersionSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['status'] != APPVERSION_FUTURE:
-            raise ValidationError(detail='只允许未发布版本')
+            raise ValidationError('只允许未发布版本')
 
         try:
             StrictVersion(attrs['version'])
         except ValueError:
-            raise ValidationError(detail={'detail': '版本号格式错误 eg: x.y.z'})
+            raise ValidationError('版本号格式错误 eg: x.y.z')
 
         if attrs['platform'] == ANDROID:
             if not attrs['package']:
-                raise ValidationError(detail={'detail': '软件包地址不能为空'})
+                raise ValidationError('软件包地址不能为空')
             current = AppVersion.objects.get(status=APPVERSION_NOW, platform=ANDROID)
             if StrictVersion(attrs['version']) <= StrictVersion(current.version):
-                raise ValidationError({'detail': '发布版本号不得低于当前版本'})
+                raise ValidationError('发布版本号不得低于当前版本')
             if not attrs['inner_number']:
-                raise ValidationError({'detail': '内部版本号不得为空'})
-            if not isinstance(attrs['inner_number'], int):
-                raise ValidationError({'detail': '内部版本号类型错误'})
+                raise ValidationError('内部版本号不得为空')
             if attrs['inner_number'] <= current.inner_number:
-                raise ValidationError({'detail': '内部版本号不得低于当前内部版本号'})
+                raise ValidationError('内部版本号不得低于当前内部版本号')
 
         if attrs['platform'] == IOS:
             current = AppVersion.objects.get(status=APPVERSION_NOW, platform=IOS)
             if StrictVersion(attrs['version']) <= StrictVersion(current.version):
-                raise ValidationError({'detail': '发布版本号不得低于当前版本'})
+                raise ValidationError('发布版本号不得低于当前版本')
             attrs['inner_number'] = 0
             attrs['package'] = ''
 
