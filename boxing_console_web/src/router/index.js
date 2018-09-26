@@ -37,6 +37,8 @@ import SensitiveWord    from 'page/sensitive_words';
 import AlbumDetail      from 'page/album_detail';
 import BoxerDetail      from 'page/boxer_detail';
 import Feedback         from 'page/feedback';
+import Versionlist         from 'page/versionlist';
+import VersionDetail         from 'page/version_detail';
 
 
 export default [
@@ -191,6 +193,14 @@ export default [
             {
                 path: '/boxerdetail',
                 component: BoxerDetail,
+            },
+            {
+                path: '/versionlist',
+                component: Versionlist,
+            },
+            {
+                path: '/versiondetail',
+                component: VersionDetail,
             },
             {
                 path: '/boxBean',
