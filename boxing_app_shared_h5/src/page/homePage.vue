@@ -213,7 +213,7 @@
                     wechat.wxConfig();
                     this.inWxShare();
                     let url = `/players/${this.userId}/share`;
-//                    url = 'http://qa2.htop.info:50000/players/10158/share';
+                    url = 'http://qa2.htop.info:50000/players/10158/share';
                     this.ajax(url,'get').then((res) => {
                         if (res && res.data) {
                             this.initShare(res.data);
