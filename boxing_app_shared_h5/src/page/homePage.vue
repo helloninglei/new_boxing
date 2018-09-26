@@ -23,7 +23,7 @@
         </div>
         <div class="fight">
             <div class="title">战绩</div>
-            <component :is="tabView" class="content_wrapper"></component>
+            <component :is="tabView" class="content_wrapper" :user-id="userId"></component>
             <div class="handle_btn_wrapper">
                 <span v-for="(tab ,index) in tabs" class="tab" :class="{current:current==index,current_tab: index ===0}" @click="tabChange(index)">
                     <span class="tab_name">{{tab.name}}</span>
@@ -142,6 +142,8 @@
     import AbilityNumber from 'components/abilityNumber';
     import MatchData from 'components/matchData';
     import DownloadTip from 'components/downloadTip';
+    import {wxConfig} from 'common/wechat';
+    import { mapState, mapMutations } from 'vuex';
     export default {
         data() {
             return {
@@ -151,6 +153,7 @@
                 current: 0,
                 tabView: 'AbilityPic',
                 ifClose: false,
+                dataObj: {}
             }
         },
         components: {
@@ -161,8 +164,12 @@
         },
         created() {
             this.userId = this.$route.params.userId;
-            this.getUserInfo();
-            this.getRadarChart();
+            if (this.userId) {
+                this.storeHomePageId(this.userId);
+                this.getUserInfo();
+                this.sharePage();
+            }
+
         },
         methods: {
             getUserInfo() {
@@ -191,24 +198,67 @@
                     }
                 })
             },
-            getRadarChart() {
-                this.ajax(`http://qa2.htop.info:50000/players/${this.userId}/ability_chart`,'get').then((res) => {
-                    if (res && res.data) {
-
-                    }
-                },(err) => {
-                    if(err&&err.response){
-                        let errors=err.response.data;
-                        console.log(errors);
-                    }
-                })
-            },
+            ...mapMutations(["storeHomePageId"]),
             tabChange(e) {
                 this.tabView = e == 0 ? 'AbilityPic' : 'AbilityNumber';
                 this.current = e;
             },
             closeEv(val) {
                 this.ifClose = val;
+            },
+            sharePage() {
+                if (navigator.userAgent.indexOf('MicroMessenger') > -1) {
+                    let wechat = require('../common/wechat');
+                    this.wx = require('weixin-js-sdk');
+                    wechat.wxConfig();
+                    this.inWxShare();
+                    let url = `/players/${this.userId}/share`;
+                    url = 'http://qa2.htop.info:50000/players/10158/share';
+                    this.ajax(url,'get').then((res) => {
+                        if (res && res.data) {
+                            this.initShare(res.data);
+                        }
+                    },(err) => {
+                        if(err&&err.response){
+                            let errors=err.response.data;
+                            console.log(errors);
+                        }
+                    })
+                }
+            },
+            initShare(data) {
+                let title = data.title;
+                let desc = data.sub_title;
+                let imgUrl = data.picture;
+                let url = data.url;
+                this.dataObj = {title, desc, url, imgUrl};
+            },
+            inWxShare () {
+                let Timer = '';
+                this.dataObj = '';
+                this.wx.ready(() => {
+                    Timer = setInterval(() => {
+                        if (this.dataObj) {
+                            clearInterval(Timer);
+                            let obj = this.dataObj;
+                            this.wx.onMenuShareAppMessage({
+                                title: obj.title,
+                                desc: obj.desc,
+                                link: obj.url,
+                                imgUrl: obj.imgUrl,
+                            });
+                            this.wx.onMenuShareTimeline({
+                                title: obj.title,
+                                link: obj.url,
+                                imgUrl: obj.imgUrl,
+                            });
+                        }
+                        else {
+                            clearInterval(Timer);
+                        }
+                    },300)
+                })
+
             },
         },
 

@@ -3,21 +3,22 @@
         <div class="left_player player_avatar">
             <div class="player_avatar_img_wrapper">
                 <img class="player_avatar_img" src="http://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83epVIYEfibfiboxWz4KLvy3YuUuB7b6jKkyfnr5ZnGUfpn0BsoYUQgRiazuDj82tkbic1zPTCpQCk9cZiaQ/132" alt="">
-                <div class="mark_icon icon_ko"></div>
+                <div class="mark_icon" :class="{icon_ko: data.ko === 'red',icon_win: data.win==='red'}"></div>
             </div>
-            <div class="player_name">拳皇</div>
+            <div class="player_name">{{data.red_name}}</div>
         </div>
         <div class="icon_vs"></div>
         <div class="right_player player_avatar">
             <div class="player_avatar_img_wrapper">
                 <img class="player_avatar_img" src="http://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83epVIYEfibfiboxWz4KLvy3YuUuB7b6jKkyfnr5ZnGUfpn0BsoYUQgRiazuDj82tkbic1zPTCpQCk9cZiaQ/132" alt="">
+                <div class="mark_icon" :class="{icon_ko: data.ko === 'blue',icon_win: data.win==='blue'}"></div>
             </div>
-            <div class="player_name">李世民</div>
+            <div class="player_name">{{data.blue_name}}</div>
         </div>
         <div class="item_desc">
-            <div class="area">拳城出击-北京赛区</div>
-            <div class="kind">泰拳 <span class="level">55-60KG</span></div>
-            <div class="time">2018-7-29</div>
+            <div class="area">{{data.schedule}}</div>
+            <div class="kind">泰拳 <span class="level">{{data.level_min}}-{{data.level_max}}KG</span></div>
+            <div class="time">{{data.time}}</div>
         </div>
     </div>
 </template>
@@ -46,11 +47,11 @@
             width 1rem
             height 1rem
             border-radius 50%
-            &.icon_ko
-                background url("../assets/images/icon_ko.png") no-repeat
-                background-size contain
             &.icon_win
                 background url("../assets/images/icon_win.png") no-repeat
+                background-size contain
+            &.icon_ko.icon_win
+                background url("../assets/images/icon_ko.png") no-repeat
                 background-size contain
 
     .player_avatar_img
@@ -96,6 +97,12 @@
     export default {
         data() {
             return {}
+        },
+        props: {
+            data: {
+                type: Object,
+                default: {}
+            }
         }
     }
 </script>
