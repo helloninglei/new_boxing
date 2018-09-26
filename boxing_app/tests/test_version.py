@@ -7,6 +7,7 @@ from biz.constants import IOS, ANDROID, APPVERSION_NOW
 class VersionTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(mobile="19909999999", password="password")
+        self.prefix = PKG_URL = 'http://qa.bituquanguan.com'
         self.client = self.client_class()
         self.client.login(username=self.user.mobile, password="password")
         AppVersion.objects.all().delete()
@@ -39,4 +40,5 @@ class VersionTestCase(APITestCase):
         self.assertEqual(response.data['message'], self.android_data['message'])
         self.assertEqual(response.data['force'], self.android_data['force'])
         self.assertEqual(response.data['version_code'], self.android_data['inner_number'])
-        self.assertEqual(response.data['url'], self.android_data['package'])
+        self.assertEqual(response.data['url'], self.prefix + self.android_data['package'])
+
