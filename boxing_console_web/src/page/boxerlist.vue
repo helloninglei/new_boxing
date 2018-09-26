@@ -13,17 +13,17 @@
                         style="width: 100%">
                     <el-table-column
                             prop="name"
-                            label="拳手名称">
+                            label="拳手姓名">
                     </el-table-column>
                     <el-table-column
                             prop="mobile"
                             label="拳手手机号">
                     </el-table-column>
                     <el-table-column
-                            width="350"
+                            width="450"
                             label="拳手能力值">
                             <template slot-scope="scope">
-                                <span>{{`耐力：${scope.row.stamina}，技术：${scope.row.skill}，进攻：${scope.row.attack}，防守：${scope.row.defence}，力量：${scope.row.strength}`}}</span>
+                                <span>{{`耐力：${scope.row.stamina}，技术：${scope.row.skill}，进攻：${scope.row.attack}，防守：${scope.row.defence}，力量：${scope.row.strength}，意志力：${scope.row.willpower}`}}</span>
                             </template>
                     </el-table-column>
                     <el-table-column label="操作" width='200'>

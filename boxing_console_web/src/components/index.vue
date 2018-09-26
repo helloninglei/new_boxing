@@ -71,11 +71,14 @@
                         <el-menu-item index="/dynamic" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>动态列表</div>
                         </el-menu-item>
-                        <el-menu-item index="/report" :disabled="disabled">
-                            <div class="menu-item-inner" ><div class='_hr'></div>举报处理</div>
-                        </el-menu-item>
+                    </el-submenu>
+                    <el-submenu index='6'>
+                        <template slot="title" ><div class='mySubMenu'>反馈建议</div></template>
                         <el-menu-item index="/feedback" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>反馈建议</div>
+                        </el-menu-item>
+                        <el-menu-item index="/report" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>举报处理</div>
                         </el-menu-item>
                     </el-submenu>
                     <el-menu-item index="/admin" :disabled="disabled">

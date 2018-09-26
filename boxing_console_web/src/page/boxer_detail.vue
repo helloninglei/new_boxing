@@ -428,6 +428,7 @@
             getData(id){
                 this.ajax('/player/'+id).then((res)=>{
                     if(res&&res.data){
+                        console.log(res.data.stamina)
                         this.form={
                             id:id,
                             "stamina":res.data.stamina,
@@ -467,7 +468,8 @@
                 this.$refs[formName].validate((valid) => {
                     console.log(valid)
                     if(valid){
-                        this.src = this.config.baseUrl+`/ability?skill=${this.form.skill}&strength=${this.form.strength}&defence=${this.form.defence}&willpower=${this.form.willpower}&attack=${this.form.attack}&stamina=${this.form.attack}`
+                        this.src = this.config.baseUrl+`/ability?skill=${this.form.skill}&strength=${this.form.strength}&defence=${this.form.defence}&willpower=${this.form.willpower}&attack=${this.form.attack}&stamina=${this.form.stamina}`
+
                         this.prevVisible = true;
                     }
                 })

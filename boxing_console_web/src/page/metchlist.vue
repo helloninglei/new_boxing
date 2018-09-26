@@ -124,10 +124,17 @@
                 this.$router.push({path: '/battlelist', query:row});
             },
             handleDelete(index, row) {
-                console.log(index,row)
-                this.confirmData.id = row.id
-                this.confirmData.index = index
-                this.confirmData.isshow=true;
+                if(row.status=='已发布'){
+                    this.$message({
+                        message: '当前是已发布状态，请隐藏后再删除',
+                        type: 'warning'
+                    });
+                }else{
+                    this.confirmData.id = row.id
+                    this.confirmData.index = index
+                    this.confirmData.isshow=true;
+                }
+                
             },
             cancel1(val){
                 this.confirmData.isshow=val;
