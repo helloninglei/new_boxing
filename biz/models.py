@@ -10,7 +10,7 @@ from django.db.transaction import atomic
 
 from biz import validator, constants
 from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE, HOT_VIDEO_TAG_CHOICES, \
-    HOT_VIDEO_TAG_DEFAULT, PLATFORM_CHOICE, APPVERSION_STATUS_CHOICE, APPVERSION_FUTURE
+    HOT_VIDEO_TAG_DEFAULT, PLATFORM_CHOICE, APPVERSION_STATUS_CHOICE
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -538,6 +538,29 @@ class WordFilter(BaseModel):
     class Meta:
         db_table = "word_filter"
         ordering = ("-updated_time",)
+
+
+class Album(BaseModel):
+    name = models.CharField(max_length=32)   # 相册名称
+    related_account = models.ForeignKey(User, on_delete=models.CASCADE, related_name='albums')  # 关联用户
+    release_time = models.DateTimeField()  # 发布时间
+    is_show = models.BooleanField()  # 是否显示在APP端
+
+    class Meta:
+        db_table = 'album'
+        ordering = ('-created_time',)
+        verbose_name = '相册'
+
+
+class AlbumPicture(models.Model):
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='pictures')
+    picture = models.CharField(max_length=200)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'picture'
+        ordering = ('-created_time',)
+        verbose_name = '照片'
 
 
 class AppVersion(BaseAuditModel):

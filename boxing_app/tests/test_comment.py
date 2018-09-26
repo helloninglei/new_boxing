@@ -2,7 +2,7 @@
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.test import APITestCase
 from rest_framework import status
-
+from unittest import mock
 from biz import constants
 from biz.constants import PAYMENT_STATUS_PAID
 from biz.models import User, Message, HotVideo, Comment, PayOrder
@@ -17,6 +17,9 @@ class CommentTestCase(APITestCase):
         self.client2 = self.client_class()
         self.client2.login(username=self.test_user_2, password='password')
         self.anonymous_client = self.client_class()
+        self.patcher = mock.patch("biz.easemob_client.EaseMobClient.send_passthrough_message", return_value="")
+        self.patcher.start()
+        self.addCleanup(self.patcher.stop)
 
     def prepare(self):
         res = self.client1.post('/messages', {'content': 'message1'})
@@ -202,5 +205,3 @@ class CommentTestCase(APITestCase):
         video.refresh_from_db()
         res = self.client1.get('/comment_me')
         self.assertEqual(len(res.data['results']), 0)
-
-

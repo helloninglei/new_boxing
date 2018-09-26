@@ -45,6 +45,8 @@ from boxing_app.views.boxer import boxer_info_to_share
 from boxing_app.views.official_accounts import get_official_accounts_info
 from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
+from boxing_app.views.album import AlbumViewSet
+from boxing_app.views.album import picture_list
 from boxing_app.views.handle_video import cover_picture, video_resolution
 from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
 
@@ -219,6 +221,7 @@ search_urls = [
     path("search/news", NewsViewSet.as_view({'get': 'search_news'})),
     path("search/video", SearchVewSet.as_view({'get': 'search_video'})),
     path("search/user", SearchVewSet.as_view({'get': 'search_user'})),
+    path("search/all", SearchVewSet.as_view({'get': 'search_all'}))
 ]
 
 version_urls = [
@@ -254,6 +257,11 @@ like_urls = [
     path("unread_like_comment", has_unread_like_and_comment)
 ]
 
+album_url = [
+    path('users/<int:pk>/albums', AlbumViewSet.as_view({"get": "list"}), name='album_list'),
+    path('albums/<int:pk>', picture_list, name='picture_list')
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -285,6 +293,7 @@ urlpatterns += shutup_list_urls
 urlpatterns += cover_picture_urls
 urlpatterns += like_urls
 urlpatterns += search_urls
+urlpatterns += album_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

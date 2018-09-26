@@ -404,6 +404,11 @@ class HotVideoSerializer(serializers.ModelSerializer):
     def get_is_like(self, instance):
         return is_liking_hot_video(self.context['request'].user.id, instance.id)
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['is_hot'] = instance.operator.id == constants.HOT_VIDEO_USER_ID
+        return ret
+
     def get_forward_count(self, instance):
         return get_hotvideo_forward_count(instance.id)
 
@@ -583,6 +588,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
+    has_album = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
@@ -609,6 +615,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_boxer_info(self, instance):
         boxer = models.BoxerIdentification.objects.filter(user=instance.user).first()
         return BoxerInfoReadOnlySerializer(boxer, context=self.context).data
+
+    def get_has_album(self, instance):
+        return instance.user.albums.filter(is_show=True).exists()
 
     def validate(self, attrs):
         if attrs.get("nick_name"):
@@ -821,3 +830,15 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class ShutUpWriteOnlySerializer(serializers.Serializer):
     user_ids = serializers.ListField(child=serializers.IntegerField())
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    total = serializers.IntegerField(source="pictures.count")
+    pictures = serializers.SerializerMethodField()
+
+    def get_pictures(self, instance):
+        return [{'id': item.id, 'picture': item.picture} for item in instance.pictures.all()[:9]]  # APP相册列表页最多显示9张照片
+
+    class Meta:
+        model = models.Album
+        fields = ['id', 'name', 'total', 'pictures']

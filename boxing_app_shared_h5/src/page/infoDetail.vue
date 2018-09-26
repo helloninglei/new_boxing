@@ -10,6 +10,7 @@
         <TabBar :id="id" :ifShowPraise=false commentType="game_news" @openApp="openApp" v-if="inApp == 0"></TabBar>
         <DownloadTip @closeEv="closeEv" v-if="inApp == 0" page="game_news" :id="id"></DownloadTip>
         <Modal :ifShow='showModal' @modalEv="modalEv"></Modal>
+        <ZoomImage @hideSwiper="hideSwiper" :showSwiper="showSwiper" :imageArr="imgs" :slideIndex="slideIndex"></ZoomImage>
     </div>
 </template>
 
@@ -74,7 +75,34 @@
         overflow hidden
 
 </style>
+<style>
+    .el-carousel__item h3 {
+        color: #475669;
+        font-size: 14px;
+        opacity: 0.75;
+        line-height: 150px;
+        margin: 0;
+      }
 
+      .el-carousel__item:nth-child(2n) {
+         background-color: #99a9bf;
+      }
+      
+      .el-carousel__item:nth-child(2n+1) {
+         background-color: #d3dce6;
+      }
+      .imgsblock{
+        width: 100%;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #ccc;
+      }
+      .infoDetail_container .zoom-container{
+        background:#000;
+      }
+</style>
 <script>
     import config from 'common/my_config';
     import TabBar from 'components/tabBar';
@@ -94,7 +122,10 @@
                 wx: '',
                 dataObj: '',
                 str: '',
-                showVideo: true
+                showVideo: true,
+                showSwiper:false,
+                slideIndex:1,
+                imgs:[]
             }
         },
         components: {
@@ -112,6 +143,30 @@
                 this.sharePage();
             };
         },
+        updated(){
+            let ele = document.getElementsByClassName('myImg')
+            let $this = this
+            if(ele){
+                for(var i=0;i<ele.length;i++){
+                    ele[i].onclick = function(e){
+                        // $this.showZoomImage(e.currentTarget.dataset.index)
+                        let u = navigator.userAgent, app = navigator.appVersion;
+                        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
+                        let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+                        let arr={
+                            imgs:$this.imgs,
+                            index:e.currentTarget.dataset.index
+                        }
+                        if(isAndroid||isIOS){
+                            boxing.previewImage(JSON.stringify(arr))
+                        }else{
+                            $this.showZoomImage(e.currentTarget.dataset.index)
+                        }
+                        
+                    }
+                } 
+            }
+        },
         methods: {
             getSrc(str) {
                 var iframeReg = /<iframe.*?(?:>|\/>)/gi;
@@ -122,6 +177,7 @@
                 if (arr) {
                     for (var i = 0; i < arr.length; i++) {
                         var src = arr[i].match(srcReg);
+
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
                             str = str.replace(arr[i],'<div class="video_container"><video class="ql-video" playsinline  controlsList="nodownload" controls="controls" src="' + src[1] + '" poster="' + src[1] + '?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast"></video></div>')
                         }
@@ -132,10 +188,10 @@
                     for (var i = 0; i < imgArr.length; i++) {
                         var src = imgArr[i].match(srcReg);
                         if (src[1].indexOf('http') == -1 && src[1].indexOf('https') == -1) {
-                            str = str.replace(imgArr[i],'<img src="' + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 17.25)}"/>`)
+                            str = str.replace(imgArr[i],'<img src="'+config.baseUrl + src[1] + `?x-oss-process=image/resize,w_${parseInt(baseSize * 34.5)}"  @click="showZoomImage" class="myImg" data-index="${i}"/>`)
                         }
-                    }
-                }
+                        this.imgs[i] = `${src[1]}?x-oss-process=image/resize,w_${parseInt(baseSize * 37.5)}`
+                    }                }
 
                 return str
             },
@@ -233,7 +289,18 @@
                 let imgUrl = data.picture;
                 let url = data.url;
                 this.dataObj = {title, desc, url, imgUrl};
-            }
+            },
+            showZoomImage(index) {
+                console.log(1111)
+                this.slideIndex = index;
+                this.showSwiper = true;
+                this.showVideo = false;
+            },
+
+            hideSwiper() {
+                this.showVideo = true;
+                this.showSwiper = false;
+            },
         },
     }
 </script>
