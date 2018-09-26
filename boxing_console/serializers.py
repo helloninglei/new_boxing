@@ -11,7 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment
+    OrderComment, Album, AlbumPicture
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -635,3 +635,19 @@ class WordFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WordFilter
         fields = ['id', "sensitive_word"]
+
+
+class AlbumSerializer(serializers.ModelSerializer):
+    nick_name = serializers.CharField(source='related_account.user_profile.nick_name', required=False, allow_blank=True)
+    avatar = serializers.CharField(source='related_account.user_profile.avatar', required=False, allow_blank=True)
+
+    class Meta:
+        model = Album
+        exclude = ('created_time', 'updated_time')
+
+
+class AlbumPictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlbumPicture
+        exclude = ('created_time', 'album')
+

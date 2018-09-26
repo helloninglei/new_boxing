@@ -113,3 +113,35 @@ class HotVideoTestCase(APITestCase):
         result = res.data['results'][0]
         self.assertTrue(result['is_paid'])
         self.assertEqual(result['url'], self.data['url'])
+
+    def test_hot_video_redirect(self):
+        video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_hot_video_user.id)
+        res = self.client.get('/hot_videos')
+        self.assertEqual(res.status_code, 302)
+        redirect_url = f'/users/{constants.HOT_VIDEO_USER_ID}/hot_videos'
+        self.assertEqual(res.url, redirect_url)
+        res = self.client.get(res.url)
+        self.assertEqual(res.status_code, 200)
+
+        res = self.client.get(f'/hot_videos/{video.id}')
+        self.assertEqual(res.status_code, 302)
+        redirect_url = f'/users/{constants.HOT_VIDEO_USER_ID}/hot_videos/{video.id}'
+        self.assertEqual(res.url, redirect_url)
+
+    def test_hot_video_redirect_with_params(self):
+        video = HotVideo.objects.create(**self.data)
+        video.users.add(self.test_hot_video_user.id)
+        param = '?tag=0&page=1'
+        url = f'/hot_videos{param}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 302)
+        redirect_url = f'/users/{constants.HOT_VIDEO_USER_ID}/hot_videos{param}'
+        self.assertEqual(res.url, redirect_url)
+
+        param = ''
+        url = f'/hot_videos{param}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 302)
+        redirect_url = f'/users/{constants.HOT_VIDEO_USER_ID}/hot_videos{param}'
+        self.assertEqual(res.url, redirect_url)

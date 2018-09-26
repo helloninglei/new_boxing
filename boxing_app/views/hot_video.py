@@ -8,11 +8,12 @@ from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import permission_classes, authentication_classes
 from biz import models
-
-from biz.utils import comment_count_condition
-from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID, HOT_VIDEO_TAG_ALL, HOT_VIDEO_TAG_MAP
+from biz.constants import HOT_VIDEO_TAG_ALL, HOT_VIDEO_TAG_MAP
 from boxing_app.filters import HotVideoFilter
-from boxing_app.serializers import HotVideoSerializer, HotVideoDetailSerializer
+from boxing_app.serializers import HotVideoDetailSerializer
+from biz.utils import comment_count_condition, get_object_or_404
+from biz.constants import PAYMENT_STATUS_PAID, HOT_VIDEO_USER_ID
+from boxing_app.serializers import HotVideoSerializer
 from boxing_app.tasks import incr_hot_video_views_count
 
 
@@ -21,14 +22,15 @@ from boxing_app.tasks import incr_hot_video_views_count
 @authentication_classes([])
 def hot_video_redirect(request):
     param_string = urlencode(request.GET.dict())
-    return redirect(f'users/{HOT_VIDEO_USER_ID}/hot_videos?{param_string}')
+    param_string = param_string and f'?{param_string}'
+    return redirect(f'/users/{HOT_VIDEO_USER_ID}/hot_videos{param_string}')
 
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 @authentication_classes([])
 def hot_video_item_redirect(_, pk):
-    user_id = models.HotVideo.objects.get(pk=pk).users.first().id
+    user_id = get_object_or_404(models.HotVideo, pk=pk).users.first().id
     return redirect(f'/users/{user_id}/hot_videos/{pk}')
 
 
