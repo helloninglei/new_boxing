@@ -3,8 +3,6 @@ import functools
 from rest_framework import status
 from rest_framework.response import Response
 
-import settings
-from biz import constants
 from biz.redis_client import redis_client
 
 
