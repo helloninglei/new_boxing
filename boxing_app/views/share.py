@@ -48,6 +48,7 @@ def share_view(request, object_type, object_id):
     sub_title = picture = ''
     plural_prefix = 's' if object_type != 'game_news' else ''
     url = f'{h5_base_url}{object_type}{plural_prefix}/{object_id}'
+    weibo = ''  # 微博分享专用字段，解决因产品需求导致分享文案不同问题
     if isinstance(obj, Message):
         user = obj.user
         title = obj.content
@@ -85,6 +86,7 @@ def share_view(request, object_type, object_id):
         sub_title = f'已关注: {following},粉丝数: {follower}'
         picture = get_share_img_url(obj.avatar)
         url = f'{h5_base_url}players/{obj.id}'
+        weibo = url + f'  分享来自拳城出击的{user.user_profile.nick_name}的精彩瞬间'
     else:
         title = '我在拳城出击发现了一个很棒的拳击教练，一起去约课吧～'
         sub_title = '上拳城，玩转拳击'
@@ -96,6 +98,7 @@ def share_view(request, object_type, object_id):
         'sub_title': sub_title,
         'picture': picture,
         'url': url,
+        'weibo': weibo
     }
     if user:
         incr_number_of_share(user.id)
