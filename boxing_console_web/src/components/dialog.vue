@@ -8,7 +8,7 @@
           </div>
           <div class="dialog_content" v-if="type==2" style='margin-top:40px'>
           	<el-checkbox-group v-model="form.class_name">
-      			    <el-checkbox label="泰拳" name="class_name">泰拳</el-checkbox>
+      			    <el-checkbox label="自由搏击" name="class_name">自由搏击</el-checkbox>
       			    <el-checkbox label="拳击" name="class_name">拳击</el-checkbox>
       			    <el-checkbox label="MMA" name="class_name">MMA</el-checkbox>
       			</el-checkbox-group>
