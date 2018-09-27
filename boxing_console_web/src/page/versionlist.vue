@@ -2,7 +2,7 @@
     <div class="version_manage" style="calc(100vw - 230px)">
         <TopBar v-if="isShowTop" firstTitle_name="版本管理" firstTitle_path="/versionlist" disNone="disNone"></TopBar>
         <div class="container">
-            <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_bt20' @click.native="addVersion">新增版本</el-button>
+            <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_bt20' @click.native="addVersion" v-if='hasShow'>新增版本</el-button>
             <template>
                 <el-table
                         :data="tableData"
@@ -46,7 +46,7 @@
                     </el-table-column>
                 </el-table>
             </template>
-            <footer>
+            <footer v-if='total>10'>
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
@@ -108,6 +108,7 @@
                     isshow:false,
                     content:''
                 },
+                hasShow:false,
                 
             }
         },
@@ -123,6 +124,7 @@
         methods: {
             getData() {
                 this.ajax('/app_versions','get',{},{page:this.page}).then((res) => {
+                    this.hasShow = true
                     if(res&&res.data){
                         this.tableData = res.data.results;
                         this.total = res.data.count;
@@ -131,7 +133,8 @@
                     if(err&&err.response){
                         let errors=err.response.data
                         for(var key in errors){
-                            this.showErrorTip(errors[key][0])
+                            console.log(errors[key])
+                            this.showErrorTip(errors[key])
                         }
                     }
                 })
