@@ -9,13 +9,13 @@
                     type="date"
                     value-format="yyyy-MM-dd"
                     :default-value= "new Date()"
-                    placeholder="请输入日期"
+                    placeholder="请选择"
                     style="width: 100%;"
                     >
                     </el-date-picker>
             </el-form-item>
             <el-form-item label="赛事名称" prop="name">
-                <el-input v-model="form.name" placeholder="请输入赛事名称" ></el-input>
+                <el-input v-model="form.name" placeholder="请输入" ></el-input>
             </el-form-item>
         </el-form>
       </div>
