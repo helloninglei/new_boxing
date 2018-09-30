@@ -60,7 +60,7 @@
         <Confirm :isshow="confirmData.isshow" @confirm="conform1" @cancel="cancel()" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
         <Metchdialog :isshow="editmetch.isshow" @confirm="conform" @cancel="cancel()" content_title="编辑赛程" :id="form.schedule" :name="editmetch.name" :race_date="editmetch.race_date"></Metchdialog>
         <el-dialog  :visible.sync="showBattleDialog" class='myDialog'>
-            <div class="dialog_title">编辑对战表</div>
+            <div class="dialog_title">{{battleDialogTitle}}</div>
             <div class="dialog_content" >
                 <el-form ref="form" :model="form" label-width="76px" :rules="rules">
                     <el-row>

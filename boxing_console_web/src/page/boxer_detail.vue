@@ -313,7 +313,7 @@
                                     this.phoneError = true
                                     return;
                                 }
-                                this.form.avatar = res.data.avatar?res.data.avatar:'';
+                                this.form.avatar = res.data.avatar?res.data.avatar:this.form.avatar;
 
 
                             }
