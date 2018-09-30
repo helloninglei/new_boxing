@@ -72,7 +72,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    content:'参赛拳手资料删除后不可恢复，是否确认删除？？'
+                    content:'参赛拳手资料删除后不可恢复，是否确认删除？'
                 },
             }
         },
@@ -127,7 +127,7 @@
             handleDelete(index, row) {
                 this.confirmData.id = row.id
                 // 点击删除，则判断该拳手是否还有赛程记录，若有赛程，则弹窗提示用户：“请先删除该参赛拳手的所有赛程再删除拳手记录“，按钮只有一个“我知道了”，
-                this.confirmData.index = row.index
+                this.confirmData.index = index
                 this.confirmData.isshow=true;
             },
             cancel1(val){
