@@ -565,7 +565,7 @@ class AlbumPicture(models.Model):
 
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='feedback')
-    content = models.TextField(max_length=300)
+    content = models.TextField(max_length=500)
     images = StringListField(null=True)
     mark = models.BooleanField(default=False)
     created_time = models.DateTimeField(auto_now_add=True)
