@@ -83,7 +83,7 @@ def share_view(request, object_type, object_id):
         user = obj.user
         follower = follower_count(user.id)
         following = following_count(user.id)
-        sub_title = f'已关注: {following},粉丝数: {follower}'
+        sub_title = f'已关注: {following}，粉丝数: {follower}'
         picture = get_share_img_url(obj.avatar)
         url = f'{h5_base_url}players/{obj.id}'
         weibo = url + f'  分享来自拳城出击的{user.user_profile.nick_name}的精彩瞬间'
