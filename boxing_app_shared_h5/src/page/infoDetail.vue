@@ -153,8 +153,12 @@
                         let u = navigator.userAgent, app = navigator.appVersion;
                         let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
                         let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+                        let arr={
+                            imgs:$this.imgs,
+                            index:e.currentTarget.dataset.index
+                        }
                         if(isAndroid||isIOS){
-                            boxing.previewImage($this.imgs,e.currentTarget.dataset.index)
+                            boxing.previewImage(JSON.stringify(arr))
                         }else{
                             $this.showZoomImage(e.currentTarget.dataset.index)
                         }
