@@ -30,7 +30,7 @@
             &.total
                 margin auto 2.2rem auto 1.2rem
             &.win
-                margin-right 1.2rem
+                margin-right 2.2rem
 </style>
 
 <script type="text/ecmascript-6">
