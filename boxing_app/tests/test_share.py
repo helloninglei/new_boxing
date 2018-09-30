@@ -98,7 +98,7 @@ class ShareTestCase(APITestCase):
         print(res.status_code)
         data = res.data
         self.assertEqual(data['title'], '分享lerry的个人战绩')
-        self.assertEqual(data['sub_title'], "已关注: 0,粉丝数: 0")
+        self.assertEqual(data['sub_title'], "已关注: 0，粉丝数: 0")
         self.assertEqual(data['picture'], f'{oss_base_url}{self.test_player.avatar}{img_prefix}')
         self.assertEqual(data['url'], f'{h5_base_url}players/{self.test_player.id}')
 
