@@ -12,8 +12,8 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
-    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, PAYMENT_STATUS_PAID
-from biz.models import OrderComment, BoxingClub, User, Course
+    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, PAYMENT_STATUS_PAID, SCHEDULE_STATUS_PUBLISHED
+from biz.models import OrderComment, BoxingClub, User, Course, Match, Schedule, Player
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
@@ -588,7 +588,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source="user.title", read_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
-    has_record = serializers.BooleanField(source='user.player_info.count', read_only=True)  # 有无比赛记录
+    has_record = serializers.SerializerMethodField()  # 有无比赛记录
     has_album = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
@@ -619,6 +619,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_has_album(self, instance):
         return instance.user.albums.filter(is_show=True).exists()
+
+    def get_has_record(self, instance):
+        players = Player.objects.filter(user=instance.user)
+        if not players.exists():
+            return False
+        matches = Match.objects.filter(Q(red_player=players.first()) | Q(blue_player=players.first()))
+        if not matches.exists():
+            return False
+        return any(map(lambda match: Schedule.objects.filter(status=SCHEDULE_STATUS_PUBLISHED, matches=match).exists(), matches))
 
     def validate(self, attrs):
         if attrs.get("nick_name"):
