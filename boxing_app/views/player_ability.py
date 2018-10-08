@@ -79,7 +79,7 @@ def player_match(request, pk):
             record['category'] = match.get_category_display()
             record['level_min'] = match.level_min
             record['level_max'] = match.level_max
-            record['time'] = timezone.localtime(match.updated_time).strftime('%Y-%m-%d')
+            record['time'] = timezone.localtime(match.schedule.race_date).strftime('%Y-%m-%d')
             record['ko'] = get_ko_player(match.result)
             record['win'] = get_winner(match.result)
             # 根据当前用户id判断角色(红方还是蓝方)统计ko场数和总胜利场数
