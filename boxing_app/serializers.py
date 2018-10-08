@@ -624,10 +624,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         players = Player.objects.filter(user=instance.user)
         if not players.exists():
             return False
-        matches = Match.objects.filter(Q(red_player=players.first()) | Q(blue_player=players.first()))
-        if not matches.exists():
-            return False
-        return any(map(lambda match: Schedule.objects.filter(status=SCHEDULE_STATUS_PUBLISHED, matches=match).exists(), matches))
+        return Match.objects.filter(Q(red_player=players.first()) | Q(blue_player=players.first()),
+                                    schedule__status=SCHEDULE_STATUS_PUBLISHED).exists()
 
     def validate(self, attrs):
         if attrs.get("nick_name"):
