@@ -1,3 +1,4 @@
+import math
 import subprocess as sp
 import json
 from rest_framework.response import Response
@@ -86,7 +87,7 @@ def video_resolution(request):
             height = info.get('height')
             break
     size = int(video_info['format']['size']) / 1024 / 1024
-    data = {"height": height, "width": width, "size": int(size)}
+    data = {"height": height, "width": width, "size": math.ceil(size)}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
     return Response(data)
 
