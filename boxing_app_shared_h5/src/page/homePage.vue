@@ -34,7 +34,7 @@
                 </span>
             </div>
         </div>
-        <MatchData></MatchData>
+        <MatchData v-if="userInfo.has_record"></MatchData>
         <DownloadTip @closeEv="closeEv" :id="userId" page="home_page_match"></DownloadTip>
     </div>
 </template>
