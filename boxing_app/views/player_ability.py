@@ -66,7 +66,8 @@ def player_match(request, pk):
         ko = 0
         results = []
         match_qs = Match.objects.filter(Q(red_player=player) | Q(blue_player=player),
-                                        schedule__status=SCHEDULE_STATUS_PUBLISHED).select_related('schedule', 'red_player', 'blue_player')
+                                        schedule__status=SCHEDULE_STATUS_PUBLISHED).select_related('schedule', 'red_player',
+                                                                                                   'blue_player').order_by("-schedule__race_date")
         for match in match_qs:
             record = {}
             record['red_player'] = match.red_player.user.id
