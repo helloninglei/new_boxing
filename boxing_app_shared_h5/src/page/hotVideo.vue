@@ -48,7 +48,7 @@
                 <div class="recommend-video" v-for="(item,index) in videoObj.recommend_videos" :key="index">
                     <div class="is-pay">{{item.price?'付费':'免费'}}</div>
                     <div class="play-btn" @click="playVideoEv(item.id,item.user_id)"></div>
-                    <img :src="item.cover'" :alt="item.name">
+                    <img :src="item.cover" :alt="item.name">
                     <div class="video-name">{{item.name}}</div>
                 </div>
 
