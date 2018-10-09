@@ -430,7 +430,8 @@ class HotVideoDetailSerializer(HotVideoSerializer):
     recommend_videos = serializers.SerializerMethodField()
 
     def get_recommend_videos(self, instance):
-        return [{'id': v.id, 'name': v.name, 'url': v.url, 'user_id': v.users.first().id, 'price': v.price} for v in
+        return [{'id': v.id, 'name': v.name, 'url': v.url, 'user_id': v.users.first().id, 'price': v.price,
+                 'cover': v.cover} for v in
                 models.HotVideo.objects.filter(Q(tag=instance.tag) & Q(is_show=True) & ~Q(id=instance.id))[:5]]
 
     class Meta:
