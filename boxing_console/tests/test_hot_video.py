@@ -169,3 +169,37 @@ class HotVideoTestCase(APITestCase):
         result = res.data['results'][0]
         self.assertEqual(result['sales_count'], 2)
         self.assertEqual(result['price_amount'], video.price * 2)
+
+    def test_filter(self):
+        self.data['users'] = [self.hot_video_user.id]
+        self.data['price'] = 0
+        self.client2.post('/hot_videos', self.data)
+
+        self.data['users'] = [self.test_user3.id]
+        self.data['price'] = 100
+        self.client2.post('/hot_videos', self.data)
+        self.client2.post('/hot_videos', self.data)
+
+        # list
+        res = self.client2.get('/hot_videos')
+        self.assertEqual(res.data['count'], 3)
+
+        # is_hot
+        res = self.client2.get('/hot_videos?is_hot=all')
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client2.get('/hot_videos?is_hot=yes')
+        self.assertEqual(res.data['count'], 1)
+
+        res = self.client2.get('/hot_videos?is_hot=no')
+        self.assertEqual(res.data['count'], 2)
+
+        # is_need_pay
+        res = self.client2.get('/hot_videos?is_need_pay=all')
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client2.get('/hot_videos?is_need_pay=yes')
+        self.assertEqual(res.data['count'], 2)
+
+        res = self.client2.get('/hot_videos?is_need_pay=no')
+        self.assertEqual(res.data['count'], 1)
