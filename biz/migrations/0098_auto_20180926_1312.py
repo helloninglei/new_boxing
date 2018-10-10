@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 def alter_course_table_for_course_name(apps, schema_editor):
     Course = apps.get_model('biz', 'Course')
-    courses = Course.all_objects.all()
+    courses = Course.objects.all()
     for course in courses:
         if course.course_name == "泰拳":
             course.course_name = "自由搏击"
@@ -14,7 +14,7 @@ def alter_course_table_for_course_name(apps, schema_editor):
 
 def alter_course_order_table_for_course_name(apps, schema_editor):
     CourseOrder = apps.get_model('biz', 'CourseOrder')
-    course_orders = CourseOrder.all_objects.all()
+    course_orders = CourseOrder.objects.all()
     for course_order in course_orders:
         if course_order.course_name == "泰拳":
             course_order.course_name = "自由搏击"
@@ -45,4 +45,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(alter_course_table_for_course_name),
         migrations.RunPython(alter_course_order_table_for_course_name),
         migrations.RunPython(alter_boxer_table_for_allow_course)
+
     ]

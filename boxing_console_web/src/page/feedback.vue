@@ -1,6 +1,6 @@
 <template>
     <div class="feedback" style="calc(100vw - 230px)">
-        <TopBar v-if="isShowTop" firstTitle_name="赛事管理" firstTitle_path="/dynamic" secondTitle_name="反馈建议"></TopBar>
+        <TopBar v-if="isShowTop" firstTitle_name="反馈建议" firstTitle_path="/dynamic" secondTitle_name="反馈建议"></TopBar>
         <div class="container">
             <header style='margin:20px 0 50px'>
                 <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='输入用户昵称/用户手机号搜索' style='width:280px' @keyup.enter.native="searchEv"></el-input>
@@ -9,6 +9,7 @@
             <template>
                 <el-table
                         :data="tableData"
+                        :row-class-name="tableRowClassName"
                         style="width: 100%">
                     <el-table-column
                             prop="id"
@@ -56,7 +57,7 @@
                     <el-col :span="2">图片：</el-col>
                     <el-col :span='22'>
                         <div class='img_container' v-for='item in detail.images'>
-                            <img src="./img/person_img.png" alt="" width='100%'>
+                            <img :src="item" alt="" width='100%'>
                         </div>
                     </el-col>
                 </p>
@@ -99,6 +100,9 @@
             .el-checkbox:first-child{margin-left:0}
         }
     }
+    .el-table .gray-row {
+        background: #F2F2F2;
+      }
 </style>
 
 <script >
@@ -191,6 +195,12 @@
             changePage(page) {
                 this.page = page;
                 this.getData();
+            },
+            tableRowClassName({row, rowIndex}) {
+                if (row.mark==true) {
+                  return 'gray-row';
+                }
+                return '';
             },
             searchEv() {
                 this.hasSearch = true

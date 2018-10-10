@@ -13,17 +13,17 @@
                         style="width: 100%">
                     <el-table-column
                             prop="name"
-                            label="拳手名称">
+                            label="拳手姓名">
                     </el-table-column>
                     <el-table-column
                             prop="mobile"
                             label="拳手手机号">
                     </el-table-column>
                     <el-table-column
-                            width="350"
+                            width="450"
                             label="拳手能力值">
                             <template slot-scope="scope">
-                                <span>{{`耐力：${scope.row.stamina}，技术：${scope.row.skill}，进攻：${scope.row.attack}，防守：${scope.row.defence}，力量：${scope.row.strength}`}}</span>
+                                <span>{{`耐力：${scope.row.stamina}，技术：${scope.row.skill}，进攻：${scope.row.attack}，防守：${scope.row.defence}，力量：${scope.row.strength}，意志力：${scope.row.willpower}`}}</span>
                             </template>
                     </el-table-column>
                     <el-table-column label="操作" width='200'>
@@ -72,7 +72,7 @@
                 confirmData:{
                     isshow: false,
                     id    :'',
-                    content:'参赛拳手资料删除后不可恢复，是否确认删除？？'
+                    content:'参赛拳手资料删除后不可恢复，是否确认删除？'
                 },
             }
         },
@@ -127,7 +127,7 @@
             handleDelete(index, row) {
                 this.confirmData.id = row.id
                 // 点击删除，则判断该拳手是否还有赛程记录，若有赛程，则弹窗提示用户：“请先删除该参赛拳手的所有赛程再删除拳手记录“，按钮只有一个“我知道了”，
-                this.confirmData.index = row.index
+                this.confirmData.index = index
                 this.confirmData.isshow=true;
             },
             cancel1(val){
