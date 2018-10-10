@@ -38,7 +38,7 @@
                         </el-form-item> 
                         <div style='text-align: left;margin-left:212px'>
                             <el-button class="myButton_40 myBtnHover_red" @click="cancelEv('ruleForm')" style='width:150px'>取消</el-button>
-                            <el-button type="danger" class=' myColor_red' @click="submitForm('ruleForm')" style='width:150px;margin-left:58px'>发布</el-button>
+                            <el-button type="danger" class=' myColor_red' @click="submitForm('ruleForm')" style='width:150px;margin-left:58px'>确认</el-button>
                         </div>
                     </el-form>
                 </el-col>

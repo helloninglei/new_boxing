@@ -27,7 +27,7 @@
                     </el-table-column>
                     <el-table-column
                             prop="updated_time"
-                            label="操作时间">
+                            label="创建时间">
                     </el-table-column>
                     <el-table-column label="操作" width='220'>
                         <template slot-scope="scope">
