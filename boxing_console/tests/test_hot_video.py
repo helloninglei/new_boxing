@@ -23,8 +23,8 @@ class HotVideoTestCase(APITestCase):
         self.client3.login(username=self.test_user3, password='password')
 
         self.data = {
-            'name': 'test video1',
-            'description': 'test video1',
+            'name': 'test video',
+            'description': 'test video',
             'price': 111,
             'url': '/videos/111',
             'try_url': '/videos/222',
@@ -101,8 +101,8 @@ class HotVideoTestCase(APITestCase):
         res = self.client2.get(f'/hot_videos?search={self.test_user.id}')
         self.assertEqual(res.data['count'], 1)
 
-        res = self.client2.get(f'/hot_videos?search={self.hot_video_user.id}')
-        self.assertEqual(res.data['count'], 0)
+        res = self.client2.get(f'/hot_videos?search={self.test_user3.id}')
+        self.assertEqual(res.data['count'], 1)
 
         most_early_date = HotVideo.objects.all().order_by('created_time').first().created_time
         most_late_date = HotVideo.objects.all().order_by('-created_time').first().created_time

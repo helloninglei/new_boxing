@@ -49,7 +49,7 @@ class HotVideoFilter(CommonFilter):
     is_hot = django_filters.CharFilter(method='is_hot_filter')
     is_need_pay = django_filters.CharFilter(method='is_need_pay_filter')
 
-    def is_hot_filter(self, qs, name, value=''):
+    def is_hot_filter(self, qs, name, value):
         value = value.lower()
         if value == 'yes':
             return qs.filter(users__in=[HOT_VIDEO_USER_ID])
@@ -58,7 +58,7 @@ class HotVideoFilter(CommonFilter):
         else:
             return qs
 
-    def is_need_pay_filter(self, qs, name, value=''):
+    def is_need_pay_filter(self, qs, name, value):
         value = value.lower()
         if value == 'yes':
             return qs.filter(price__gt=0)
