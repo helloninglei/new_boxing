@@ -21,8 +21,10 @@ def limit_success_frequency(frequency, period, err_message):
             frequency_incr = redis_client.incr(key)
             if frequency_incr == 1:
                 if settings.ENVIRONMENT != settings.PRODUCTION:
-                    period = 60 * 5
-                redis_client.expire(key, period)
+                    test_period = 60 * 5
+                    redis_client.expire(key, test_period)
+                else:
+                    redis_client.expire(key, period)
             return res
         return wrapper
     return decorater
