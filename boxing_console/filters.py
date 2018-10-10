@@ -74,7 +74,7 @@ class HotVideoFilter(CommonFilter):
 
     class Meta:
         model = models.HotVideo
-        fields = ('start_time', 'end_time', 'search', 'is_hot')
+        fields = ('start_time', 'end_time')
 
 
 class GameNewsFilter(django_filters.FilterSet):
