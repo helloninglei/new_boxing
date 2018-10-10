@@ -19,6 +19,7 @@ from boxing_app.views.comment import CourseCommentsAboutBoxer
 from boxing_app.views.city import get_boxer_list
 from boxing_app.views.club import BoxingClubVewSet
 from boxing_app.views.course import BoxerMyCourseViewSet, GetBoxerCourseByAnyOneViewSet
+from boxing_app.views.feedback import FeedbackViewSet
 from boxing_app.views.game_news import NewsViewSet
 from boxing_app.views.message import MessageViewSet
 from boxing_app.views.orders import BoxerCourseOrderViewSet, UserCourseOrderViewSet, CourseOrderCommentViewSet
@@ -49,6 +50,7 @@ from boxing_app.views.album import AlbumViewSet
 from boxing_app.views.album import picture_list
 from boxing_app.views.handle_video import cover_picture, video_resolution
 from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
+from boxing_app.views.player_ability import ability_chart, ability_details, player_match
 
 boxer_identification = BoxerIdentificationViewSet.as_view({'post': 'create', 'put': 'update', 'get': 'retrieve'})
 
@@ -262,6 +264,17 @@ album_url = [
     path('albums/<int:pk>', picture_list, name='picture_list')
 ]
 
+feedback = [
+    path('feedback', FeedbackViewSet.as_view({"post": "create"}), name="create_feedback")
+]
+
+
+ability_url = [
+    path('players/<int:pk>/ability_chart', ability_chart, name='player_ability_chart'),
+    path('players/<int:pk>/ability_detail', ability_details, name='player_ability_detail'),
+    path('players/<int:pk>/match', player_match, name='player_match'),
+]
+
 urlpatterns = []
 urlpatterns += upload_urls
 urlpatterns += boxer_url
@@ -294,6 +307,8 @@ urlpatterns += cover_picture_urls
 urlpatterns += like_urls
 urlpatterns += search_urls
 urlpatterns += album_url
+urlpatterns += feedback
+urlpatterns += ability_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

@@ -173,6 +173,10 @@
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                             res.data.results[i].user_list_name = [] 
                             for(var a=0;a<res.data.results[i].user_list.length;a++){
+                                if(res.data.results[i].user_list[a].id==10){
+                                   delete res.data.results[i].user_list[a]
+                                   continue;
+                                }
                                 res.data.results[i].user_list_name.push(res.data.results[i].user_list[a].nick_name)
                             }
                             res.data.results[i].user_list_name = res.data.results[i].user_list_name.toString();

@@ -1,6 +1,7 @@
 <template>
 	<div id="confirm">
 		<el-dialog  :visible.sync="showDialog">
+          <div></div>
           <div class="confirm_content">{{content}}</div>
           <div slot="footer" class="dialog-footer" style='text-align:center'>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 border_raduis_100' @click="confirm()">确定</el-button>

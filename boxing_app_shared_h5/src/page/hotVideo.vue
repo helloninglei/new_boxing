@@ -6,10 +6,8 @@
                 <div class="close_btn" @click="closePayTipEv"></div>
             </div>
             <div class="video_info_wrapper">
-
-                <div v-if="videoObj.try_url || videoObj.url" class="video">
-                    <Video :url="videoObj.price ? videoObj.try_url : videoObj.url" height="11.8rem" v-show="showVideo"></Video>
-
+                <div v-if="videoObj.try_url || videoObj.url" class="video" id="videoBox" ref="videoBox">
+                    <Video :url="videoObj.try_url" height="11.8rem" v-show="showVideo" :cover="videoObj.cover"></Video>
                 </div>
                 <div class="user-wrap clearfix" v-if="videoObj.bind_user">
                     <div class="portrait"><img :src="videoObj.bind_user.avatar" alt=""></div>
@@ -50,7 +48,7 @@
                 <div class="recommend-video" v-for="(item,index) in videoObj.recommend_videos" :key="index">
                     <div class="is-pay">{{item.price?'付费':'免费'}}</div>
                     <div class="play-btn" @click="playVideoEv(item.id,item.user_id)"></div>
-                    <img :src="item.url+'?x-oss-process=video/snapshot,t_0,f_jpg,w_0,h_0,m_fast'" :alt="item.name">
+                    <img :src="item.cover" :alt="item.name">
                     <div class="video-name">{{item.name}}</div>
                 </div>
 

@@ -162,7 +162,6 @@
                         }else{
                             $this.showZoomImage(e.currentTarget.dataset.index)
                         }
-                        
                     }
                 } 
             }

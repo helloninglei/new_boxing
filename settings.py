@@ -20,10 +20,6 @@ PRODUCTION = 'production'
 TEST = 'test'
 DEVELOPMENT = 'development'
 
-
-
-
-
 ENVIRONMENT = DEVELOPMENT
 
 ALLOWED_HOSTS = [
@@ -114,10 +110,10 @@ BAIDU_MAP_AK = 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
 
 # version conf
 ANDROID_VERSION = {
-    'version': '3.4.0',
-    'version_code': '43',
+    'version': '3.5.0',
+    'version_code': '44',
     'url': '',
-    'message': '3.4.0',
+    'message': '3.5.0',
     'force': True
 }
 
@@ -284,3 +280,5 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(BASE_DIR),
 }
+
+PINGFANG_FONT = os.path.join(BASE_DIR, 'biz/fonts/PingFang.ttf')

@@ -53,6 +53,12 @@
                         <el-menu-item index="/infoList" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>资讯</div>
                         </el-menu-item>
+                        <el-menu-item index="/boxerlist" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>参赛选手管理</div>
+                        </el-menu-item>
+                        <el-menu-item index="/metchlist" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>赛程管理</div>
+                        </el-menu-item>
                         <!-- <el-menu-item index="/" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>添加报名</div>
                         </el-menu-item> -->
@@ -64,6 +70,12 @@
                         <template slot="title" ><div class='mySubMenu'>动态管理</div></template>
                         <el-menu-item index="/dynamic" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>动态列表</div>
+                        </el-menu-item>
+                    </el-submenu>
+                    <el-submenu index='6'>
+                        <template slot="title" ><div class='mySubMenu'>反馈建议</div></template>
+                        <el-menu-item index="/feedback" :disabled="disabled">
+                            <div class="menu-item-inner" ><div class='_hr'></div>反馈建议</div>
                         </el-menu-item>
                         <el-menu-item index="/report" :disabled="disabled">
                             <div class="menu-item-inner" ><div class='_hr'></div>举报处理</div>

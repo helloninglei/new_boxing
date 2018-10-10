@@ -2,13 +2,19 @@ from rest_framework import status
 from . import APILoginTestCase
 from biz import redis_client
 from biz.models import User
-from biz.constants import SERVICE_USER_ID
+from biz.constants import SERVICE_USER_ID, USER_IDENTITY_DICT
 
 
 class BlackListTestCase(APILoginTestCase):
     def setUp(self):
         self.client.credentials(**self.authorization_header)
-        self.user2 = User.objects.create_user(mobile="13300000000", password="password")
+        mobile = 13300000000
+        #  跳过因前几次测试而导致此次创建的用户ID为官方ID
+        while True:
+            self.user2 = User.objects.create_user(mobile=str(mobile), password="password")
+            if self.user2.id not in dict(USER_IDENTITY_DICT).values():
+                break
+            mobile += 1
 
     def test_black_list(self):
         # 加入黑名单

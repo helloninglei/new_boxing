@@ -310,11 +310,6 @@
                         $this.result.user_moren_time = new Date($this.result.boxer_confirm_time)
                         $this.result.user_moren_time.setDate($this.result.user_moren_time.getDate()+7)
                         $this.result.user_moren_time = $this.result.user_moren_time.Format("yyyy-MM-dd HH:mm:ss")
-                        // if($this.result.course_name=='BOXING'){
-                        //     $this.result.course_name='拳击'
-                        // }else if($this.result.course_name=='THAI_BOXING'){
-                        //     $this.result.course_name='泰拳'
-                        // }
                         if($this.result.payment_type==1){
                             $this.result.payment_type_name='支付宝'
                         }else if($this.result.payment_type==2){

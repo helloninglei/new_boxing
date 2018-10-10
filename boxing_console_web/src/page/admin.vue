@@ -78,7 +78,7 @@
             },
             getData(page){
                 var $this=this;
-                this.ajax('/admins/','get',{},{page:page}).then(function(res){
+                this.ajax('/admins','get',{},{page:page}).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData = res.data.results
@@ -105,7 +105,7 @@
             },
             confirm(val){
                 var $this = this;
-                this.ajax('/admins/','post',{mobile:val},{}).then(function(res){
+                this.ajax('/admins','post',{mobile:val},{}).then(function(res){
                     if(res&&res.data){
                         // console.log(res.data)
                         $this.tableData.unshift(res.data);
@@ -136,7 +136,7 @@
             deleteAdmin(id,index){
                 let $this=this;
                 // console.log(index)
-                this.ajax('/admins/'+id+'/','delete').then(function(res){
+                this.ajax('/admins/'+id ,'delete').then(function(res){
                     if(res&&res.status==204){
                         $this.tableData.splice(index,1)
                         $this.confirmData.isshow=false;
