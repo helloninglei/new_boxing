@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, datetime
 from django.utils import timezone
+from distutils.version import StrictVersion
 import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,7 +10,7 @@ from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment, Album, AlbumPicture, Player
+     Player,OrderComment, AppVersion, Album, AlbumPicture
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -18,7 +19,7 @@ from biz.redis_client import get_number_of_share, get_message_forward_count, get
 from biz.constants import BANNER_LINK_TYPE_IN_APP_NATIVE, BANNER_LINK_MODEL_TYPE, WITHDRAW_STATUS_WAITING, \
     WITHDRAW_STATUS_APPROVED, WITHDRAW_STATUS_REJECTED, MONEY_CHANGE_TYPE_INCREASE_REJECT_WITHDRAW_REBACK, \
     OFFICIAL_ACCOUNT_CHANGE_TYPE_WITHDRAW, PAYMENT_STATUS_UNPAID, MONEY_CHANGE_TYPE_INCREASE_OFFICIAL_RECHARGE, \
-    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT, HOT_VIDEO_USER_ID
+    USER_TYPE_MAP, MAX_HOT_VIDEO_BIND_USER_COUNT, HOT_VIDEO_USER_ID, APPVERSION_FUTURE, APPVERSION_NOW, ANDROID, IOS
 from biz.services.official_account_service import create_official_account_change_log
 
 url_validator = URLValidator()
@@ -633,6 +634,41 @@ class WordFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WordFilter
         fields = ['id', "sensitive_word"]
+
+
+class AppVersionSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        if attrs['status'] != APPVERSION_FUTURE:
+            raise ValidationError('只允许未发布版本')
+
+        try:
+            StrictVersion(attrs['version'])
+        except ValueError:
+            raise ValidationError('版本号格式错误 eg: x.y.z')
+
+        if attrs['platform'] == ANDROID:
+            if not attrs['package']:
+                raise ValidationError('软件包地址不能为空')
+            current = AppVersion.objects.get(status=APPVERSION_NOW, platform=ANDROID)
+            if StrictVersion(attrs['version']) <= StrictVersion(current.version):
+                raise ValidationError('发布版本号不得低于当前版本')
+            if not attrs['inner_number']:
+                raise ValidationError('内部版本号不得为空')
+            if attrs['inner_number'] <= current.inner_number:
+                raise ValidationError('内部版本号不得低于当前内部版本号')
+
+        if attrs['platform'] == IOS:
+            current = AppVersion.objects.get(status=APPVERSION_NOW, platform=IOS)
+            if StrictVersion(attrs['version']) <= StrictVersion(current.version):
+                raise ValidationError('发布版本号不得低于当前版本')
+            attrs['inner_number'] = 0
+            attrs['package'] = ''
+
+        return attrs
+
+    class Meta:
+        model = models.AppVersion
+        exclude = ('operator', 'updated_time')
 
 
 class AlbumSerializer(serializers.ModelSerializer):
