@@ -669,7 +669,7 @@ class AppVersionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.AppVersion
-        exclude = ('operator', 'created_time')
+        exclude = ('operator', 'updated_time')
 
 
 class AlbumSerializer(serializers.ModelSerializer):
