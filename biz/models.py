@@ -348,6 +348,9 @@ class HotVideo(BaseAuditModel):
     stay_top = models.BooleanField(default=False)
     views_count = models.PositiveIntegerField(default=0)
     like_count = models.PositiveIntegerField(default=0)
+    initial_views_count = models.PositiveIntegerField(default=0)  # 后台设置的观看数
+    initial_like_count = models.PositiveIntegerField(default=0)  # 后台设置的点赞数
+    initial_forward_count = models.PositiveIntegerField(default=0)  # 后台设置的转发数
     tag = models.PositiveSmallIntegerField(choices=HOT_VIDEO_TAG_CHOICES, default=HOT_VIDEO_TAG_DEFAULT)
     push_hot_video = models.BooleanField()  # 是否推送
     start_time = models.DateTimeField(null=True)  # 推送开始时间

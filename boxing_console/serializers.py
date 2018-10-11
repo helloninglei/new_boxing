@@ -271,7 +271,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'sales_count', 'price_amount', 'url', 'try_url', 'price',
                   'operator', 'is_show', 'created_time', 'cover', 'stay_top', 'tag', 'tag_name', 'users', 'user_list',
                   'push_to_hotvideo', 'push_hot_video', 'start_time', 'end_time', 'like_count', 'forward_count',
-                  'views_count')
+                  'views_count', 'initial_views_count', 'initial_like_count', 'initial_forward_count')
 
 
 class HotVideoShowSerializer(serializers.ModelSerializer):
