@@ -106,6 +106,9 @@
                 if (this.page === 'hot_videos') {
                     location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&userId=${this.userId}&time=${new Date().getTime()}`;
                 }
+                else if (this.page === 'home_page_match') {
+                    location.href = `boxing://api.bituquanguan.com:80/${this.page}?userId=${this.id}&time=${new Date().getTime()}`;
+                }
                 else {
                     location.href = `boxing://api.bituquanguan.com:80/${this.page}?id=${this.id}&time=${new Date().getTime()}`;
                 }

@@ -66,7 +66,8 @@ def player_match(request, pk):
         ko = 0
         results = []
         match_qs = Match.objects.filter(Q(red_player=player) | Q(blue_player=player),
-                                        schedule__status=SCHEDULE_STATUS_PUBLISHED).select_related('schedule', 'red_player', 'blue_player')
+                                        schedule__status=SCHEDULE_STATUS_PUBLISHED).select_related('schedule', 'red_player',
+                                                                                                   'blue_player').order_by("-schedule__race_date")
         for match in match_qs:
             record = {}
             record['red_player'] = match.red_player.user.id
@@ -79,7 +80,7 @@ def player_match(request, pk):
             record['category'] = match.get_category_display()
             record['level_min'] = match.level_min
             record['level_max'] = match.level_max
-            record['time'] = timezone.localtime(match.updated_time).strftime('%Y-%m-%d')
+            record['time'] = match.schedule.race_date
             record['ko'] = get_ko_player(match.result)
             record['win'] = get_winner(match.result)
             # 根据当前用户id判断角色(红方还是蓝方)统计ko场数和总胜利场数

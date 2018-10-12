@@ -1,11 +1,14 @@
 <template>
     <div class="homePage_container" :class="{hasClose: ifClose}">
         <div class="header_info" v-if="userInfo">
-            <img class="avatar" :src="userInfo.avatar ? userInfo.avatar : avatar_default" />
+            <div class="portrait_container">
+                <img class="avatar" :src="userInfo.avatar ? userInfo.avatar : avatar_default" />
+                <div class="sign_icon" :class="userInfo.user_type"></div>
+            </div>
             <div class="info_container">
                 <div class="name_info">
                     <div class="name">{{userInfo.nick_name}}</div>
-                    <div class="sex" :class="userInfo.gender ? 'lady' : 'gentleman'"/>
+                    <div class="sex" :class="userInfo.gender ? 'gentleman' : 'lady'"/>
                 </div>
                 <div class="desc">{{userInfo.bio}}</div>
                 <div class="sub_desc" v-if="userInfo.boxer_info.introduction">{{userInfo.boxer_info.introduction}}</div>
@@ -13,11 +16,11 @@
         </div>
         <div class="middle_info">
             <div class="middle_item attentions">
-                <div class="num">{{userInfo.followers_count}}</div>
+                <div class="num">{{userInfo.following_count}}</div>
                 <div class="item_name">关注</div>
             </div>
             <div class="middle_item fans">
-                <div class="num">{{userInfo.following_count}}</div>
+                <div class="num">{{userInfo.followers_count}}</div>
                 <div class="item_name">粉丝</div>
             </div>
         </div>
@@ -31,7 +34,7 @@
                 </span>
             </div>
         </div>
-        <MatchData></MatchData>
+        <MatchData v-if="userInfo.has_record"></MatchData>
         <DownloadTip @closeEv="closeEv" :id="userId" page="home_page_match"></DownloadTip>
     </div>
 </template>
@@ -41,6 +44,27 @@
     padding-bottom 3.5rem
     &.hasClose
         padding-bottom 0
+    .portrait_container
+        display inline-block
+        position relative
+        margin-left 1.2rem
+        width 2.5rem
+        height 2.5rem
+        .sign_icon
+            position absolute
+            right 0
+            bottom 0
+            width .9rem
+            height .9rem
+            &.boxer_icon
+                background url("../assets/images/boxer_icon.png") no-repeat
+                background-size contain
+            &.mark_icon
+                background url("../assets/images/mark_icon.png") no-repeat
+                background-size contain
+            &.media_icon
+                background url("../assets/images/media_icon.png") no-repeat
+                background-size contain
 .header_info
     position relative
     height 2.9rem
@@ -49,7 +73,7 @@
     .avatar
         position absolute
         top 0
-        left 1.2rem
+        left 0
         width 2.5rem
         height 2.5rem
         border-radius 50%
@@ -177,6 +201,20 @@
                 this.ajax(`/user_profile/${this.userId}`,'get').then((res) => {
                     if (res && res.data) {
                         let userInfo = res.data;
+                        switch (userInfo.user_type) {
+                            case '拳手':
+                                userInfo.user_type = 'boxer_icon';
+                                break;
+                            case '自媒体':
+                                userInfo.user_type = 'media_icon';
+                                break;
+                            case '名人':
+                                userInfo.user_type = 'mark_icon';
+                                break;
+                            default:
+                                userInfo.user_type = ''
+                                break;
+                        };
                         if (userInfo.followers_count >= 10000 && userInfo.followers_count < 1000000) {
                             userInfo.followers_count = Math.round(userInfo.followers_count / 1000) /10 + 'W';
                         }
@@ -214,7 +252,7 @@
                     wechat.wxConfig();
                     this.inWxShare();
                     let url = `/players/${this.userId}/share`;
-                    url = 'http://qa2.htop.info:50000/players/10158/share';
+                    //url = 'http://qa2.htop.info:50000/players/10158/share';
                     this.ajax(url,'get').then((res) => {
                         if (res && res.data) {
                             this.initShare(res.data);

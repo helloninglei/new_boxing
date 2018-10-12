@@ -59,6 +59,7 @@ class HotVideoTestCase(APITestCase):
         # recommend videos
         res = self.client1.get(f'/users/{self.test_user.id}/hot_videos/{video.id}')
         self.assertEqual(len(res.data['recommend_videos']), 1)  # 推荐同标签的其他视频
+        self.assertEqual(res.data['recommend_videos'][0]['cover'], self.data['cover'])
 
         # all video tag
         res = self.client1.get(f'/users/{self.test_user.id}/hot_videos?tag=0')

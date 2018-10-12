@@ -71,6 +71,6 @@ class AbilityTest(APITestCase):
         self.assertEqual(res.data['results'][0]['category'], dict(MATCH_CATEGORY_CHOICES)[MATCH_CATEGORY_FREE_BOXING])
         self.assertEqual(res.data['results'][0]['level_min'], level_min)
         self.assertEqual(res.data['results'][0]['level_max'], level_max)
-        self.assertEqual(res.data['results'][0]['time'], timezone.localtime(race_date).strftime('%Y-%m-%d'))
+        self.assertEqual(res.data['results'][0]['time'], race_date.date())
         self.assertEqual(res.data['results'][0]['ko'], ko_dict[m.result])
         self.assertEqual(res.data['results'][0]['win'], win_dict[m.result])

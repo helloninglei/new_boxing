@@ -3,6 +3,7 @@ import functools
 from rest_framework import status
 from rest_framework.response import Response
 
+import settings
 from biz.redis_client import redis_client
 
 
@@ -19,7 +20,11 @@ def limit_success_frequency(frequency, period, err_message):
                 return res
             frequency_incr = redis_client.incr(key)
             if frequency_incr == 1:
-                redis_client.expire(key, period)
+                if settings.ENVIRONMENT != settings.PRODUCTION:
+                    test_period = 60 * 5
+                    redis_client.expire(key, test_period)
+                else:
+                    redis_client.expire(key, period)
             return res
         return wrapper
     return decorater
