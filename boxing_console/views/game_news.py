@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django_filters import rest_framework as df_filters
 from rest_framework import viewsets, filters
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 from biz import models
 from boxing_console import serializers
@@ -16,6 +16,11 @@ class NewsViewSet(viewsets.ModelViewSet):
     filter_backends = (df_filters.DjangoFilterBackend, filters.SearchFilter)
     filter_class = GameNewsFilter
     search_fields = ('title',)
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.data.update(self.filter_queryset(self.get_queryset()).aggregate(real_views_amount=Sum("views_count")))
+        return response
 
     def perform_create(self, serializer):
         news = serializer.save(updated_time=timezone.now())

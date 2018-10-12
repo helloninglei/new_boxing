@@ -81,6 +81,16 @@ class GameNewsFilter(django_filters.FilterSet):
     start_date = django_filters.DateFilter(field_name='updated_time', lookup_expr='gte')
     end_date = django_filters.DateFilter(field_name='updated_time', lookup_expr='lte')
     stay_top = django_filters.CharFilter(method='filter_stay_top')
+    is_show = django_filters.CharFilter(method='is_show_filter')
+
+    def is_show_filter(self, qs, name, value):
+        value = value.lower()
+        if value == 'yes':
+            return qs.filter(is_show=1)
+        elif value == 'no':
+            return qs.filter(is_show=0)
+        else:
+            return qs
 
     def filter_stay_top(self, qs, name, value):
         value = value.lower()

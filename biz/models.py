@@ -447,6 +447,7 @@ class GameNews(BaseAuditModel):
     share_content = models.TextField(null=True, blank=True)
     created_time = models.DateTimeField(default=timezone.now)
     updated_time = models.DateTimeField(default=timezone.now, db_index=True)
+    is_show = models.BooleanField(default=True, db_index=True)
     comments = GenericRelation('Comment')
 
     class Meta:
