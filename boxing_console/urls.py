@@ -25,6 +25,7 @@ from boxing_console.views.user_management import MoneyBalanceChangeLogViewSet, E
 from boxing_console.views.official_account_change_logs import OfficialAccountChangeLogsViewSet
 from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
+from boxing_console.views.app_version import AppVersionViewSet, release_version
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
 from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateRetrieveDestroyApiView, \
     MatchListCreateApiView, players, MatchRetrieveUpdateDestroyApiView
@@ -147,6 +148,11 @@ player = [
 
 router.register(r"word_filters", WordFilterViewSet)
 
+appversion_url = [
+    path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'}), name='app_versions'),
+    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get':'retrieve', 'patch': 'partial_update'}), name='app_version'),
+    path('app_release/<int:pk>', release_version, name='app_release')
+]
 schedule_urls = [
     path("schedules", ScheduleListCreateApiView.as_view(), name="schedules"),
     path("schedules/<int:pk>", ScheduleUpdateRetrieveDestroyApiView.as_view())
@@ -177,6 +183,7 @@ urlpatterns += financial_management_urls
 urlpatterns += user_management_urls
 urlpatterns += official_account_change_logs_urls
 urlpatterns += message_urls
+urlpatterns += appversion_url
 urlpatterns += album_url
 urlpatterns += feedback
 urlpatterns += player
