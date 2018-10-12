@@ -27,11 +27,16 @@ import Hotvideo         from 'page/hot_videos';
 import Hotvideodetail   from 'page/hot_video_detail';
 import AccoundRecord    from 'page/accound_record';
 import InfoList         from 'page/infolist';
+import Metchlist        from 'page/metchlist';
+import Battlelist        from 'page/battlelist';
+import Boxerlist         from 'page/boxerlist';
 import InfoDetail       from 'page/info_detail';
 import BoxBean          from 'page/boxBean';
 import Dynamic          from 'page/dynamic';
 import SensitiveWord    from 'page/sensitive_words';
 import AlbumDetail      from 'page/album_detail';
+import BoxerDetail      from 'page/boxer_detail';
+import Feedback         from 'page/feedback';
 
 
 export default [
@@ -172,6 +177,22 @@ export default [
                 component: InfoDetail,
             },
             {
+                path: '/metchlist',
+                component: Metchlist,
+            },
+            {
+                path: '/battlelist',
+                component: Battlelist,
+            },
+            {
+                path: '/boxerlist',
+                component: Boxerlist,
+            },
+            {
+                path: '/boxerdetail',
+                component: BoxerDetail,
+            },
+            {
                 path: '/boxBean',
                 component: BoxBean,
             },
@@ -182,6 +203,10 @@ export default [
             {
                 path: '/sensitiveword',
                 component: SensitiveWord,
+            },
+            {
+                path: '/feedback',
+                component: Feedback,
             },
         ]
     },

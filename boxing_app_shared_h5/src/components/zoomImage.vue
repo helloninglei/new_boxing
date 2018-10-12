@@ -11,7 +11,7 @@
     </div>
 </template>
 
-<style scoped lang="stylus" type="text/stylus">
+<style scoped lang="stylus" >
 .zoom-container
     position: fixed;
     top:0;

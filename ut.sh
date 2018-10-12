@@ -1,11 +1,11 @@
 #!/bin/bash
 
-clear_cache(){
+function clear_cache(){
     find . -type f -name "*.py[co]" -delete
     find . -type d -name "__pycache__" -delete
 }
 
-install(){
+function install(){
     echo "install..."
     pip install -r requirements.txt
     echo "install done"
@@ -13,7 +13,7 @@ install(){
 
 exit_code=0
 
-ut(){
+function ut(){
     echo "test app"
     pytest --ds=boxing_app.app_settings boxing_app/tests --no-migrations --disable-warnings
     exit_code1=$?

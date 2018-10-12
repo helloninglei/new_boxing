@@ -3,6 +3,7 @@ import Download from 'page/download';
 import InfoDetail from 'page/infoDetail';
 import HotVideo from 'page/hotVideo';
 import CourseDetail from 'page/courseDetail';
+import HomePage from 'page/homePage';
 
 export default [
     {
@@ -33,6 +34,13 @@ export default [
     {
         path: '/boxers/:id',
         component: CourseDetail,
+        meta: {
+            title: '拳城出击'
+        }
+    },
+    {
+        path: '/players/:userId',
+        component: HomePage,
         meta: {
             title: '拳城出击'
         }

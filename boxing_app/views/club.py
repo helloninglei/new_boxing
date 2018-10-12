@@ -1,6 +1,6 @@
 from django.db.models import Case, When
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, permissions
 
 from biz.models import BoxingClub
 from biz import redis_client
@@ -9,6 +9,7 @@ from boxing_app.serializers import BoxingClubSerializer
 
 class BoxingClubVewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = BoxingClubSerializer
+    permission_classes = (permissions.AllowAny,)
     queryset = BoxingClub.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('name',)

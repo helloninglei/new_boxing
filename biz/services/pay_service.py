@@ -171,7 +171,11 @@ class PayService:
     @classmethod
     @atomic
     def success_callback(cls, data):
-        pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
+        try:
+            pay_order = PayOrder.objects.get(out_trade_no=data['out_trade_no'])
+        except PayOrder.DoesNotExist:
+            logger.info(f"支付订单{data['out_trade_no']}不存在")
+            return
         if pay_order.status == PAYMENT_STATUS_UNPAID:
             if isinstance(pay_order.content_object, User):
                 change_type = OFFICIAL_ACCOUNT_CHANGE_TYPE_RECHARGE

@@ -7,6 +7,7 @@
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item :to="{ path: firstTitle_path }" ><div class="firstTitle">{{firstTitle_name}}</div></el-breadcrumb-item>
               <el-breadcrumb-item :to="{ path: secondTitle_path }"><div class="titles">{{secondTitle_name}}</div></el-breadcrumb-item>
+              <el-breadcrumb-item :to="{ path: thirdTitle_path }" v-if="thirdTitle_name"><div class="titles">{{thirdTitle_name}}</div></el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <Confirm1 :isshow="confirmData.isshow" @confirm="close()" @cancel="cancel1()" :content="confirmData.content"></Confirm1>
@@ -22,7 +23,8 @@
     .titles{margin:49px 0 0 -3px!important;font-family: "PingFangSC"}
 </style>
 <style>
-    #topBar .el-breadcrumb__separator.el-icon-arrow-right{margin-top:50px!important;margin-left:20px;font-size:8px;}
+    #topBar .el-breadcrumb__separator.el-icon-arrow-right{margin-top:50px!important;margin-left:10px;font-size:8px;color:#333;}
+    #topBar .el-breadcrumb__item:first-child .el-breadcrumb__separator.el-icon-arrow-right{margin-left:20px}
     #topBar.disNone .el-breadcrumb__separator.el-icon-arrow-right{display: none}
 </style>
 <script >
@@ -54,7 +56,15 @@
                 type: String,
                 default: ''
             },
+            thirdTitle_name: {
+                type: String,
+                default: ''
+            },
             secondTitle_path: {
+                type: String,
+                default: ''
+            },
+            thirdTitle_path: {
                 type: String,
                 default: ''
             },
@@ -72,8 +82,7 @@
         },
         methods: {
             getParams(){
-                let routerParams = this.$route.params.dataobj
-                this.getMsg      = routerParams
+                this.getMsg = this.$route.params.dataobj;
             },
             openConfirm(){
                 this.confirmData.isshow=true

@@ -265,3 +265,5 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(BASE_DIR),
 }
+
+PINGFANG_FONT = os.path.join(BASE_DIR, 'biz/fonts/PingFang.ttf')

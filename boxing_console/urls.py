@@ -7,9 +7,12 @@ from django.urls import include, path, re_path
 from django.conf import settings
 
 from boxing_console.views.boxer_approve import BoxerIdentificationViewSet
+from boxing_console.views.check_mobile import check_player_mobile
 from boxing_console.views.club import BoxingClubVewSet
 from boxing_console.views.coin_and_money import CoinChangLogViewSet
 from boxing_console.views.course import CourseViewSet, CourseOrderViewSet, CourseSettleOrderViewSet
+from boxing_console.views.feedback import FeedbackViewSet
+from boxing_console.views.player import PlayerViewSet
 from boxing_console.views.user_management import UserManagementViewSet
 from boxing_console.views.hot_video import HotVideoViewSet, hot_video_user_list, hot_video_tag_list
 from boxing_console.views.game_news import NewsViewSet
@@ -24,9 +27,11 @@ from boxing_console.views.message import MessageViewSet
 from boxing_console.views.word_filter import WordFilterViewSet
 from boxing_console.views.app_version import AppVersionViewSet, release_version
 from boxing_console.views.album import AlbumViewSet, AlbumPictureViewSet
+from boxing_console.views.schedule import ScheduleListCreateApiView, ScheduleUpdateRetrieveDestroyApiView, \
+    MatchListCreateApiView, players, MatchRetrieveUpdateDestroyApiView
+from boxing_console.views.ability import ability_chart
 
-
-router = SimpleRouter()
+router = SimpleRouter(trailing_slash=False)
 
 boxer_url = [
     path('boxer/identification', BoxerIdentificationViewSet.as_view({'get': 'list'}), name='boxer_identification_list'),
@@ -123,7 +128,22 @@ message_urls = [
 album_url = [
     path('albums', AlbumViewSet.as_view({"get": "list", "post": "create"}), name='album_list'),
     path('albums/<int:pk>', AlbumViewSet.as_view({"get": "retrieve", "patch": "partial_update"}), name='album_modify'),
-    path('albums/<int:album_id>/pictures', AlbumPictureViewSet.as_view({"get": "list", "post": "create"}), name='picture_list'),
+    path('albums/<int:album_id>/pictures', AlbumPictureViewSet.as_view({"get": "list", "post": "create"}),
+         name='picture_list'),
+]
+
+feedback = [
+    path('feedback', FeedbackViewSet.as_view({"get": "list"}), name="feedback_list"),
+    path('feedback/<int:pk>', FeedbackViewSet.as_view({"get": "retrieve"}), name="feedback_detail"),
+    re_path('^feedback/(?P<pk>\d+)/(?P<operate>(mark|unmark))$', FeedbackViewSet.as_view({"post": "do_mark"}),
+            name="do_mark")
+]
+
+player = [
+    path('player', PlayerViewSet.as_view({"post": "create", "get": "list"}), name="create_player"),
+    path('player/<int:pk>', PlayerViewSet.as_view({"post": "update", "get": "retrieve", 'delete': 'destroy'}),
+         name="player_detail"),
+    path('check_player_mobile', check_player_mobile, name='check_player_mobile')
 ]
 
 router.register(r"word_filters", WordFilterViewSet)
@@ -132,6 +152,20 @@ appversion_url = [
     path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'}), name='app_versions'),
     path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get':'retrieve', 'patch': 'partial_update'}), name='app_version'),
     path('app_release/<int:pk>', release_version, name='app_release')
+]
+schedule_urls = [
+    path("schedules", ScheduleListCreateApiView.as_view(), name="schedules"),
+    path("schedules/<int:pk>", ScheduleUpdateRetrieveDestroyApiView.as_view())
+]
+
+match_urls = [
+    path("matches", MatchListCreateApiView.as_view()),
+    path("players", players),
+    path("matches/<int:pk>", MatchRetrieveUpdateDestroyApiView.as_view())
+]
+
+ability_url = [
+    path('ability', ability_chart, name='player_ability'),
 ]
 
 urlpatterns = router.urls
@@ -151,6 +185,11 @@ urlpatterns += official_account_change_logs_urls
 urlpatterns += message_urls
 urlpatterns += appversion_url
 urlpatterns += album_url
+urlpatterns += feedback
+urlpatterns += player
+urlpatterns += schedule_urls
+urlpatterns += match_urls
+urlpatterns += ability_url
 
 if settings.ENVIRONMENT != settings.PRODUCTION:
     urlpatterns += [path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

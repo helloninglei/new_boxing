@@ -9,9 +9,8 @@ from django.db import transaction
 from django.core.validators import URLValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
 from biz.models import User, CoinChangeLog, BoxerIdentification, Course, BoxingClub, HotVideo, Message, Comment, \
-    OrderComment, AppVersion, Album, AlbumPicture
+    OrderComment, AppVersion, Album, AlbumPicture, Player
 from biz import models, constants, redis_client
 from biz.services.money_balance_service import change_money
 from biz.utils import get_model_class_by_name, hans_to_initial
@@ -685,3 +684,78 @@ class AlbumPictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumPicture
         exclude = ('created_time', 'album')
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    images = serializers.ListField()
+    user_nick_name = serializers.CharField(source='user.user_profile.nick_name')
+    user_mobile = serializers.CharField(source='user.mobile')
+
+    class Meta:
+        model = models.Feedback
+        fields = "__all__"
+
+
+class PlayerSerializer(serializers.ModelSerializer):
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    stamina = serializers.IntegerField(min_value=1, max_value=100)
+    skill = serializers.IntegerField(min_value=1, max_value=100)
+    attack = serializers.IntegerField(min_value=1, max_value=100)
+    defence = serializers.IntegerField(min_value=1, max_value=100)
+    strength = serializers.IntegerField(min_value=1, max_value=100)
+    willpower = serializers.IntegerField(min_value=1, max_value=100)
+
+    def validate_mobile(self, value):
+        if not User.objects.filter(mobile=value).exists():
+            raise ValidationError("该手机号的用户不存在")
+        if Player.objects.filter(mobile=value).exists() and self.instance.mobile != value:
+            raise ValidationError("该手机号已被其他参赛选手注册")
+        return value
+
+    class Meta:
+        model = Player
+        exclude = ("user",)
+
+
+class ScheduleCommonSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source="get_status_display", read_only=True)
+
+    class Meta:
+        model = models.Schedule
+        fields = ("name", "race_date", "id", "status")
+
+
+class SchedulePatchUpdateSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(choices=constants.SCHEDULE_STATUS_CHOICES)
+
+    class Meta:
+        model = models.Schedule
+        fields = ('status',)
+
+
+class MatchCommonSerializer(serializers.ModelSerializer):
+    category = serializers.ChoiceField(choices=constants.MATCH_CATEGORY_CHOICES,
+                                       error_messages={"invalid_choice": "对战类型不符合要求!"})
+    result = serializers.ChoiceField(choices=constants.MATCH_RESULT_CHOICES,
+                                     error_messages={"invalid_choice": "对战结果不符合要求!"})
+    operator = serializers.HiddenField(default=serializers.CurrentUserDefault(), write_only=True)
+    level_min = serializers.IntegerField(min_value=1)
+    level_max = serializers.IntegerField(max_value=100)
+
+    def to_representation(self, instance):
+        return dict(id=instance.id, red_player=instance.red_player.name, blue_player=instance.blue_player.name,
+                    red_player_id=instance.red_player.id, blue_player_id=instance.blue_player.id,
+                    category=instance.get_category_display(), schedule=instance.schedule.id,
+                    level_min=instance.level_min, level_max=instance.level_max, result=instance.get_result_display())
+
+    def validate(self, attrs):
+        if attrs['red_player'] == attrs['blue_player']:
+            raise ValidationError("红方和蓝方不能是同一拳手!")
+        if attrs['level_max'] <= attrs['level_min']:
+            raise ValidationError("项目级别不符合要求!")
+        return attrs
+
+    class Meta:
+        model = models.Match
+        fields = ["id", "blue_player", "red_player", "schedule", "category", "level_min", "level_max", "result",
+                  "operator"]
