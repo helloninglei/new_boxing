@@ -616,6 +616,7 @@ class Match(BaseAuditModel):
         db_table = "match"
         ordering = ("-created_time",)
 
+
 class AppVersion(BaseAuditModel):
     version = models.CharField(max_length=16)  # 发布版本号
     platform = models.CharField(choices=PLATFORM_CHOICE, max_length=16)  # 平台

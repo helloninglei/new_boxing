@@ -354,6 +354,7 @@ MATCH_RESULT_CHOICES = (
     (MATCH_RESULT_RED_KO_BLUE, "红方KO蓝方"),
     (MATCH_RESULT_BLUE_KO_RED, "蓝方KO红方")
 )
+
 ANDROID = 'android'
 IOS = 'ios'
 PLATFORM_CHOICE = (

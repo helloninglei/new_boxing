@@ -108,7 +108,6 @@ BROKER_REDIS_DB = "0"
 BAIDU_MAP_URL = 'http://api.map.baidu.com/geocoder/v2/'
 BAIDU_MAP_AK = 'KCzp8claYra8uYAvahElV9oKUT6j7Gx1'
 
-
 OSS_BASE_URL = 'http://39.105.73.10'
 
 WEIXIN_PUBLIC_PLATFORM_CONF = {
