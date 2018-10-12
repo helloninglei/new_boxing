@@ -342,8 +342,6 @@
                 this.changeUrl=false
                 this.form.avatar = url;
                 this.form.picture = url;
-                // console.log(url,imgId)
-
             },
             addImg(ele,imgId){
                 // alert(1)
@@ -370,7 +368,6 @@
                 return url ;  
             }, 
             submitForm(formName) {
-                // console.log(this.form)
                 let $this = this;
                 this.rules.name=[
                             { validator: (rule, value, callback) => {

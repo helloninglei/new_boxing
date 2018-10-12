@@ -148,11 +148,6 @@ player = [
 
 router.register(r"word_filters", WordFilterViewSet)
 
-appversion_url = [
-    path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'}), name='app_versions'),
-    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get':'retrieve', 'patch': 'partial_update'}), name='app_version'),
-    path('app_release/<int:pk>', release_version, name='app_release')
-]
 schedule_urls = [
     path("schedules", ScheduleListCreateApiView.as_view(), name="schedules"),
     path("schedules/<int:pk>", ScheduleUpdateRetrieveDestroyApiView.as_view())
@@ -166,6 +161,13 @@ match_urls = [
 
 ability_url = [
     path('ability', ability_chart, name='player_ability'),
+]
+
+appversion_url = [
+    path('app_versions', AppVersionViewSet.as_view({'get': 'list', 'post': 'create'}), name='app_versions'),
+    path('app_versions/<int:pk>', AppVersionViewSet.as_view({'get': 'retrieve', 'patch': 'partial_update'}),
+         name='app_version'),
+    path('app_release/<int:pk>', release_version, name='app_release')
 ]
 
 urlpatterns = router.urls

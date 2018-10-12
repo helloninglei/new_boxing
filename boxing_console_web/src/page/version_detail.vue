@@ -32,13 +32,19 @@
                             <el-col :span="2" v-if='form.package'>
                                 <img src="./img/anzhuo.png" alt="" @click="changeInput">
                             </el-col>
-                            <el-col :span="22" v-if='form.package'>
-                                <p>{{form.package}}</p>
+                            <el-col :span="22" v-if='form.package' class='fileDetail'>
+                                <p>{{fileName}}</p>
+                                <p>{{fileSize}}M 上传完成</p>
                             </el-col>
+                            <el-col :span="22" v-show='uploadProgress>0&&uploadProgress<100'>
+                            <!-- <el-col :span="22"> -->
+                                <el-progress type="circle" :percentage="uploadProgress" :width='70' style='position:absolute;left:120px;top:-14px' ></el-progress>
+                            </el-col>
+                            
                         </el-form-item> 
                         <div style='text-align: left;margin-left:212px'>
                             <el-button class="myButton_40 myBtnHover_red" @click="cancelEv('ruleForm')" style='width:150px'>取消</el-button>
-                            <el-button type="danger" class=' myColor_red' @click="submitForm('ruleForm')" style='width:150px;margin-left:58px'>发布</el-button>
+                            <el-button type="danger" class=' myColor_red' @click="submitForm('ruleForm')" style='width:150px;margin-left:58px'>确认</el-button>
                         </div>
                     </el-form>
                 </el-col>
@@ -57,6 +63,13 @@
         .el-form-item{
             margin-bottom:50px
         }
+        .fileDetail p{
+            height:20px;line-height:20px;
+            font-size:14px;color:#000;opacity:0.9;
+            &:last-child{
+                font-size:12px;color:#000;opacity:0.5;
+            }
+        }
     }
 </style>
 <script>
@@ -74,7 +87,7 @@
                     "version": "",
                     "platform": "android",
                     "message": "",
-                    "inner_number": 45,
+                    "inner_number": '',
                     "force": '',
                     "package": "",
                     status:'FUTURE'
@@ -84,7 +97,10 @@
                     message : [{ required:true,message:'请输入升级文案', trigger:'blur' }],
                     force: [{ required:true,message:'请选择是否强更', trigger:'blur' }],
                     platform: [{ required:true,message:'请选择平台', trigger:'blur' }],
-                }
+                },
+                uploadProgress:0,
+                fileSize:0,
+                fileName:'',
             }
         },
 
@@ -162,8 +178,12 @@
             upload(e){
                 var file=event.target.files[0];
                 let formData = new FormData() 
+                this.fileName = file.name
+                this.fileSize = (file.size/1024/1024).toFixed(2)
                 formData.append('file', file) 
-                this.ajax('/upload','post',formData).then((res)=>{
+                this.ajax('/upload','post',formData,{},{},(val)=>{
+                    this.uploadProgress = parseFloat(val)
+                }).then((res)=>{
                     if(res&&res.data){
                         console.log(res)
                         this.form.package = res.data.urls[0]

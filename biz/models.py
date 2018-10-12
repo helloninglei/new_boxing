@@ -563,21 +563,6 @@ class AlbumPicture(models.Model):
         verbose_name = '照片'
 
 
-class AppVersion(BaseAuditModel):
-    version = models.CharField(max_length=16)  # 发布版本号
-    platform = models.CharField(choices=PLATFORM_CHOICE, max_length=16)  # 平台
-    status = models.CharField(choices=APPVERSION_STATUS_CHOICE, max_length=16)  # 状态
-    message = models.CharField(max_length=1024)  # 升级文案
-    inner_number = models.IntegerField(null=True, blank=True)  # 安卓包的内部版本号,ios无须此字段
-    force = models.BooleanField()  # 是否强制升级
-    package = models.CharField(max_length=256, null=True, blank=True)  # 安卓包路径,ios无须此字段
-
-    class Meta:
-        db_table = 'app_version'
-        ordering = ("-created_time",)
-        indexes = [models.Index(fields=['platform', 'status']), ]
-
-
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='feedback')
     content = models.TextField(max_length=500)
@@ -630,3 +615,18 @@ class Match(BaseAuditModel):
     class Meta:
         db_table = "match"
         ordering = ("-created_time",)
+
+
+class AppVersion(BaseAuditModel):
+    version = models.CharField(max_length=16)  # 发布版本号
+    platform = models.CharField(choices=PLATFORM_CHOICE, max_length=16)  # 平台
+    status = models.CharField(choices=APPVERSION_STATUS_CHOICE, max_length=16)  # 状态
+    message = models.CharField(max_length=1024)  # 升级文案
+    inner_number = models.IntegerField(null=True, blank=True)  # 安卓包的内部版本号,ios无须此字段
+    force = models.BooleanField()  # 是否强制升级
+    package = models.CharField(max_length=256, null=True, blank=True)  # 安卓包路径,ios无须此字段
+
+    class Meta:
+        db_table = 'app_version'
+        ordering = ("-created_time",)
+        indexes = [models.Index(fields=['platform', 'status']), ]

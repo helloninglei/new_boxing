@@ -87,6 +87,9 @@
                     <el-menu-item index="/sensitiveword" :disabled="disabled">
                         <div class='menu-item-inner'>拳城BB敏感词</div>
                     </el-menu-item>
+                    <el-menu-item index="/versionlist" :disabled="disabled">
+                        <div class='menu-item-inner'>版本管理</div>
+                    </el-menu-item>
                     <!-- <el-menu-item index="/useDialog" :disabled="disabled">
                         <div class='menu-item-inner'>弹框管理</div>
                     </el-menu-item> -->
