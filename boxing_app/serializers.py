@@ -375,6 +375,8 @@ class HotVideoSerializer(serializers.ModelSerializer):
     comment_count = serializers.IntegerField(read_only=True)
     url = serializers.SerializerMethodField()
     forward_count = serializers.SerializerMethodField()
+    like_count = serializers.SerializerMethodField()
+    views_count = serializers.SerializerMethodField()
     try_url = serializers.SerializerMethodField()
     is_like = serializers.SerializerMethodField()
     bind_user = serializers.SerializerMethodField()
@@ -410,7 +412,13 @@ class HotVideoSerializer(serializers.ModelSerializer):
         return ret
 
     def get_forward_count(self, instance):
-        return get_hotvideo_forward_count(instance.id)
+        return get_hotvideo_forward_count(instance.id) + instance.initial_forward_count
+
+    def get_views_count(self, instance):
+        return instance.views_count + instance.initial_views_count
+
+    def get_like_count(self, instance):
+        return instance.like_count + instance.initial_like_count
 
     def get_url(self, instance):
         if instance.is_paid or instance.price == 0:

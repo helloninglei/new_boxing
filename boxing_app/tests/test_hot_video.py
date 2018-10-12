@@ -5,6 +5,7 @@ from biz.redis_client import redis_client
 from rest_framework.test import APITestCase
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
+from biz.redis_client import forward_hotvideo
 
 
 class HotVideoTestCase(APITestCase):
@@ -146,3 +147,23 @@ class HotVideoTestCase(APITestCase):
         self.assertEqual(res.status_code, 302)
         redirect_url = f'/users/{constants.HOT_VIDEO_USER_ID}/hot_videos{param}'
         self.assertEqual(res.url, redirect_url)
+
+    def test_hot_video_initial_count(self):
+        self.data.update({
+            'views_count': 1,
+            'like_count': 2,
+            'initial_views_count': 1,
+            'initial_like_count': 2,
+            'initial_forward_count': 3
+        })
+        video = HotVideo.objects.create(**self.data)
+        forward_hotvideo(video.id)
+
+        video.users.add(self.test_hot_video_user.id)
+
+        url = f'/users/{constants.HOT_VIDEO_USER_ID}/hot_videos/{video.id}'
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['like_count'], 4)
+        self.assertEqual(res.data['views_count'], 2)
+        self.assertEqual(res.data['forward_count'], 4)
