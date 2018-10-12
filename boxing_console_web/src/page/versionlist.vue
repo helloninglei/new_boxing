@@ -50,7 +50,7 @@
                 <Pagination :total="total" @changePage="changePage" :page="page"></Pagination>
             </footer>
         </div>
-        <Confirm :isshow="confirmData.isshow" @confirm="UpApk" @cancel="cancel1" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index'></Confirm>
+        <Confirm :isshow="confirmData.isshow" @confirm="UpApk" @cancel="cancel1" :content="confirmData.content" :id='confirmData.id' :index='confirmData.index' buttonName='确认上线'></Confirm>
         <el-dialog  :visible.sync="updateMsg.isshow" class='my_dialog'>
             <div class='dialog_content'>
                 {{updateMsg.content}}
