@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
     HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, PAYMENT_STATUS_PAID, SCHEDULE_STATUS_PUBLISHED
-from biz.models import OrderComment, BoxingClub, User, Course, Match, Schedule, Player
+from biz.models import OrderComment, BoxingClub, User, Course, Match, Player
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
@@ -599,6 +599,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
     has_record = serializers.SerializerMethodField()  # 有无比赛记录
     has_album = serializers.SerializerMethodField()
+    is_mutual_following = serializers.SerializerMethodField()
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
@@ -635,6 +636,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return False
         return Match.objects.filter(Q(red_player=players.first()) | Q(blue_player=players.first()),
                                     schedule__status=SCHEDULE_STATUS_PUBLISHED).exists()
+
+    def get_is_mutual_following(self, instance):
+        current_user = User.objects.filter(id=self.context['request'].user.id)
+        if not current_user.exists():
+            return False
+        current_user_id = current_user.first().id
+        if current_user_id == instance.user_id:
+            return False
+        return all([bool(is_following(current_user_id, instance.user_id)), bool(is_following(instance.user_id, current_user_id))])
 
     def validate(self, attrs):
         if attrs.get("nick_name"):
