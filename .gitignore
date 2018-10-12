@@ -112,3 +112,4 @@ share_h5/
 console_h5/
 
 .pytest_cache/
+logs/

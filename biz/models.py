@@ -10,7 +10,7 @@ from django.db.transaction import atomic
 
 from biz import validator, constants
 from biz.constants import USER_IDENTITY_DICT, MONEY_CHANGE_TYPE_INCREASE_ORDER, USER_TYPE_CHOICE, HOT_VIDEO_TAG_CHOICES, \
-    HOT_VIDEO_TAG_DEFAULT
+    HOT_VIDEO_TAG_DEFAULT, PLATFORM_CHOICE, APPVERSION_STATUS_CHOICE
 
 OFFICIAL_USER_IDS = USER_IDENTITY_DICT.values()
 USER_IDENTITY_DICT_REVERSED = {v: k for k, v in USER_IDENTITY_DICT.items()}
@@ -618,3 +618,18 @@ class Match(BaseAuditModel):
     class Meta:
         db_table = "match"
         ordering = ("-created_time",)
+
+
+class AppVersion(BaseAuditModel):
+    version = models.CharField(max_length=16)  # 发布版本号
+    platform = models.CharField(choices=PLATFORM_CHOICE, max_length=16)  # 平台
+    status = models.CharField(choices=APPVERSION_STATUS_CHOICE, max_length=16)  # 状态
+    message = models.CharField(max_length=1024)  # 升级文案
+    inner_number = models.IntegerField(null=True, blank=True)  # 安卓包的内部版本号,ios无须此字段
+    force = models.BooleanField()  # 是否强制升级
+    package = models.CharField(max_length=256, null=True, blank=True)  # 安卓包路径,ios无须此字段
+
+    class Meta:
+        db_table = 'app_version'
+        ordering = ("-created_time",)
+        indexes = [models.Index(fields=['platform', 'status']), ]
