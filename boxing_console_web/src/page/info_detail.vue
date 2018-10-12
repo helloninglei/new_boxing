@@ -445,12 +445,6 @@
                 return url ;  
             }, 
             isshowPrev(){
-                // console.log(1111111)
-                // console.log(!this.form.title)
-                // console.log(this.form.initial_views_count=="")
-                // console.log(this.form.initial_views_count<=0)
-                // console.log(this.picture === ''&&this.form.picture_change==='')
-                // console.log(!this.form.app_content)
                 if(!this.form.title||this.form.initial_views_count==""||this.form.initial_views_count<=0||(this.form.picture === '')||!this.form.app_content){
                     this.showPrev1 = false
                 }else{
