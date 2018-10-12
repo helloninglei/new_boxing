@@ -16,10 +16,15 @@
                         value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
                 <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
-                <el-select v-model="stay_top" class="margin_tp30 margin_rt60">
+                <el-select v-model="stay_top" class="margin_tp30 margin_rt25" placeholder='是否置顶'>
                     <el-option value="all" label="全部">全部</el-option>
                     <el-option :value="true" label="置顶">置顶</el-option>
                     <el-option :value="false" label="不置顶">不置顶</el-option>
+                </el-select>
+                <el-select v-model="status" class="margin_tp30 margin_rt60" placeholder='状态'>
+                    <el-option value="all" label="全部">全部</el-option>
+                    <el-option :value="true" label="显示">显示</el-option>
+                    <el-option :value="false" label="隐藏">隐藏</el-option>
                 </el-select>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click.native="searchEv">查询</el-button>
             </header>
@@ -42,7 +47,7 @@
                     </el-table-column>
                     <el-table-column
                             prop="views_count"
-                            label="阅读人数">
+                            label="初始阅读量">
                     </el-table-column>
                     <el-table-column
                             prop="initial_views_count"
@@ -60,6 +65,11 @@
                             prop="pub_time"
                             label="发布时间"
                             width="170">
+                    </el-table-column>
+                    <el-table-column
+                            prop="zhuangtai"
+                            label="状态"
+                            width="50">
                     </el-table-column>
                     <el-table-column label="操作" width='220'>
                         <template slot-scope="scope">
@@ -101,6 +111,7 @@
                 start_date: '',
                 end_date: '',
                 stay_top: '',
+                status:'',
                 hasSearch: false,
                 tableData: [],
                 confirmData:{
