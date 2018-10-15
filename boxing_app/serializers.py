@@ -599,7 +599,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
     has_record = serializers.SerializerMethodField()  # 有无比赛记录
     has_album = serializers.SerializerMethodField()
-    is_mutual_following = serializers.SerializerMethodField()  # 是否互相关注
+    is_following_each_other = serializers.SerializerMethodField()  # 是否互相关注
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
@@ -637,12 +637,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return Match.objects.filter(Q(red_player=players.first()) | Q(blue_player=players.first()),
                                     schedule__status=SCHEDULE_STATUS_PUBLISHED).exists()
 
-    def get_is_mutual_following(self, instance):
-        current_user = User.objects.filter(id=self.context['request'].user.id)
-        if not current_user.exists():
-            return False
+    def get_is_following_each_other(self, instance):
         current_user_id = self.context['request'].user.id
-        return all([bool(is_following(current_user_id, instance.user_id)), bool(is_following(instance.user_id, current_user_id))])
+        current_user = User.objects.filter(id=current_user_id)
+        if not current_user.exists():  # 用户未登录
+            return False
+        return all([is_following(current_user_id, instance.user_id), is_following(instance.user_id, current_user_id)])
 
     def validate(self, attrs):
         if attrs.get("nick_name"):
