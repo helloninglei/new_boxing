@@ -48,7 +48,7 @@ from boxing_app.views.user_profile import batch_user_profile
 from boxing_app.views.shutup_list import ShutUpListViewSet
 from boxing_app.views.album import AlbumViewSet
 from boxing_app.views.album import picture_list
-from boxing_app.views.handle_video import cover_picture, video_resolution
+from boxing_app.views.handle_video import cover_picture
 from boxing_app.views.unread_like_and_comment import has_unread_like_and_comment
 from boxing_app.views.player_ability import ability_chart, ability_details, player_match
 
@@ -248,8 +248,7 @@ shutup_list_urls = [
 ]
 
 cover_picture_urls = [
-    path("cover_picture", cover_picture),
-    path("video_resolution", video_resolution)
+    path("cover_picture", cover_picture)
 ]
 
 like_urls = [
