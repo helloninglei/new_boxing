@@ -98,4 +98,3 @@ def _get_file_oss_url(url):
     origin_ret = urlparse(url)
     oss_ret = urlparse(oss_url)
     return urljoin(origin_ret.scheme + "://" + oss_bucket + "." + oss_ret.netloc, origin_ret.path)
-
