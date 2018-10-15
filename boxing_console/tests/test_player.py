@@ -15,7 +15,7 @@ class PlayerTestCase(APITestCase):
         self.client = self.client_class()
         self.client.login(username=self.user1, password='password')
         self.player_data = {
-            "name": "user1",
+            "name": "张三",
             "mobile": self.user1.mobile,
             "avatar": "avatar1.png",
             "stamina": 10,

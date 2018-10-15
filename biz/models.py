@@ -2,6 +2,8 @@
 from datetime import datetime
 from json import loads, dumps
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -107,12 +109,12 @@ class UserProfile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     nick_name = models.CharField(max_length=30, null=True, blank=True)
     nick_name_index_letter = models.CharField(max_length=1, null=True, blank=True)  # 昵称首字母
-    name = models.CharField(max_length=30, blank=True, null=True)
-    nation = models.CharField(max_length=30, blank=True, null=True)
+    name = models.CharField(max_length=30, blank=True, null=True, validators=[validator.validate_real_name])
+    nation = models.CharField(max_length=30, blank=True, null=True, validators=[validator.validate_nation])
     birthday = models.DateField(blank=True, null=True)
     weight = models.PositiveSmallIntegerField(blank=True, null=True)
     height = models.PositiveSmallIntegerField(blank=True, null=True)
-    profession = models.CharField(max_length=20, null=True, blank=True)
+    profession = models.CharField(max_length=30, null=True, blank=True, validators=[validator.validate_profession])
     avatar = models.CharField(null=True, blank=True, max_length=256)
     gender = models.BooleanField(default=True)  # True-男，False-女
     address = models.CharField(max_length=254, null=True, blank=True)
@@ -207,7 +209,7 @@ class Message(SoftDeleteModel):
 # 拳手认证
 class BoxerIdentification(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='boxer_identification')
-    real_name = models.CharField(max_length=10)
+    real_name = models.CharField(max_length=30, validators=[validator.validate_real_name])
     height = models.IntegerField()  # 单位：cm
     weight = models.IntegerField()  # 单位：g
     birthday = models.DateField()
@@ -215,7 +217,7 @@ class BoxerIdentification(BaseModel):
     mobile = models.CharField(max_length=11, validators=[validator.validate_mobile])
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
     club = models.CharField(null=True, blank=True, max_length=50)
-    job = models.CharField(max_length=10)
+    job = models.CharField(max_length=30, validators=[validator.validate_profession])
     introduction = models.TextField(max_length=300)
     is_locked = models.BooleanField(default=False)
     experience = models.TextField(null=True, blank=True, max_length=500)
@@ -581,7 +583,7 @@ class Feedback(models.Model):
 class Player(BaseAuditModel):
     """参赛拳手"""
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="player_info")
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, validators=[validator.validate_real_name])
     mobile = models.CharField(max_length=11, unique=True, db_index=True, validators=[validator.validate_mobile],
                               error_messages={'unique': "手机号已存在。"})
     avatar = models.CharField(max_length=256)  # 头像
@@ -634,3 +636,31 @@ class AppVersion(BaseAuditModel):
         db_table = 'app_version'
         ordering = ("-created_time",)
         indexes = [models.Index(fields=['platform', 'status']), ]
+
+
+@receiver(post_save, sender=BoxerIdentification)
+def after_save_boxer(sender, instance, **kwargs):
+    UserProfile.objects.filter(user=instance.user).update(name=instance.real_name,
+                                                          height=instance.height,
+                                                          weight=instance.weight,
+                                                          birthday=instance.birthday,
+                                                          profession=instance.job)
+    Player.objects.filter(user=instance.user).update(name=instance.real_name)
+
+
+@receiver(post_save, sender=UserProfile)
+def after_save_profile(sender, instance, **kwargs):
+    BoxerIdentification.objects.filter(user=instance.user).update(real_name=instance.name,
+                                                                  height=instance.height,
+                                                                  weight=instance.weight,
+                                                                  birthday=instance.birthday,
+                                                                  job=instance.profession)
+    Player.objects.filter(user=instance.user).update(name=instance.name)
+
+
+@receiver(post_save, sender=Player)
+def after_save_player(sender, instance, **kwargs):
+    UserProfile.objects.filter(user=instance.user).update(name=instance.name)
+    BoxerIdentification.objects.filter(user=instance.user).update(real_name=instance.name)
+
+
