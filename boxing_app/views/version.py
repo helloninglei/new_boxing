@@ -27,5 +27,3 @@ def version(request):
         return Response(data=version_response, status=status.HTTP_200_OK)
 
     return Response(status=status.HTTP_400_BAD_REQUEST)
-
-

@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
 from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
     HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, PAYMENT_STATUS_PAID, SCHEDULE_STATUS_PUBLISHED
-from biz.models import OrderComment, BoxingClub, User, Course, Match, Schedule, Player
+from biz.models import OrderComment, BoxingClub, User, Course, Match, Player
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
     MONEY_CHANGE_TYPE_REDUCE_WITHDRAW
@@ -28,6 +28,7 @@ from boxing_app.services import verify_code_service
 from biz.utils import get_client_ip, get_device_platform, get_model_class_by_name, hans_to_initial
 from biz.constants import WITHDRAW_MIN_CONFINE, DEFAULT_NICKNAME_FORMAT, DEFAULT_AVATAR
 from biz.services.money_balance_service import change_money
+from boxing_app.services.video_info_service import video_resolution
 
 datetime_format = settings.REST_FRAMEWORK['DATETIME_FORMAT']
 message_dateformat = '%Y-%m-%d %H:%M'
@@ -409,6 +410,7 @@ class HotVideoSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret['is_hot'] = instance.operator.id == constants.HOT_VIDEO_USER_ID
+        ret.update(video_resolution(instance.url))
         return ret
 
     def get_forward_count(self, instance):
