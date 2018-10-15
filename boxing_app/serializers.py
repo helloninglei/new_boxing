@@ -641,9 +641,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         current_user = User.objects.filter(id=self.context['request'].user.id)
         if not current_user.exists():
             return False
-        current_user_id = current_user.first().id
-        if current_user_id == instance.user_id:
-            return False
+        current_user_id = self.context['request'].user.id
         return all([bool(is_following(current_user_id, instance.user_id)), bool(is_following(instance.user_id, current_user_id))])
 
     def validate(self, attrs):
