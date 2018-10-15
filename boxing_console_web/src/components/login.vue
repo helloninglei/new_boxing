@@ -109,6 +109,9 @@
             }
         },
         created() {
+            this.form.username = localStorage.getItem("username");
+            this.form.password = localStorage.getItem("password");
+            this.isremember = this.form.username == '' ? false : true ; 
             this.getCaptcha();
         },
         methods: {
@@ -146,8 +149,15 @@
                 }else{
                     this.isShowErr=false;
                     let $this=this;
-                    this.ajax('/login','post',this.form).then(function(res){
+                    this.ajax('/login','post',this.form).then((res)=>{
                         if(res&&res.data){
+                            if(this.isremember){
+                                localStorage.setItem("username", this.form.username);
+                                localStorage.setItem("password", this.form.password);
+                            }else{
+                                localStorage.setItem("username", '');
+                                localStorage.setItem("password", '');
+                            }
                             localStorage.token=res.data.token;
                             $this.$router.push({path:'/index'});
                         }

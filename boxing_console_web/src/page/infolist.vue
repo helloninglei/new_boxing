@@ -21,14 +21,15 @@
                     <el-option :value="true" label="置顶">置顶</el-option>
                     <el-option :value="false" label="不置顶">不置顶</el-option>
                 </el-select>
-                <el-select v-model="status" class="margin_tp30 margin_rt60" placeholder='状态'>
+                <el-select v-model="is_show" class="margin_tp30 margin_rt60" placeholder='状态'>
                     <el-option value="all" label="全部">全部</el-option>
-                    <el-option :value="true" label="显示">显示</el-option>
-                    <el-option :value="false" label="隐藏">隐藏</el-option>
+                    <el-option value="yes" label="显示">显示</el-option>
+                    <el-option value="no" label="隐藏">隐藏</el-option>
                 </el-select>
                 <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click.native="searchEv">查询</el-button>
             </header>
             <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_tp30 margin_bt20' @click.native="addMatchEv">新增</el-button>
+            <p class="showTotal">发文量:{{total}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;真实阅读数：{{real_views_amount}}</p>
             <template>
                 <el-table
                         :data="tableData"
@@ -47,11 +48,11 @@
                     </el-table-column>
                     <el-table-column
                             prop="views_count"
-                            label="初始阅读量">
+                            label="真实阅读量">
                     </el-table-column>
                     <el-table-column
                             prop="initial_views_count"
-                            label="真实阅读量">
+                            label="初始阅读量">
                     </el-table-column>
                     <el-table-column
                             prop="comment_count"
@@ -67,9 +68,12 @@
                             width="170">
                     </el-table-column>
                     <el-table-column
-                            prop="zhuangtai"
+                            prop="is_show"
                             label="状态"
                             width="50">
+                        <template slot-scope="scope">
+                            <span>{{scope.row.is_show==true?'显示':'隐藏'}}</span>
+                        </template>
                     </el-table-column>
                     <el-table-column label="操作" width='220'>
                         <template slot-scope="scope">
@@ -80,6 +84,10 @@
                                     size="mini"
                                     type="danger"
                                     @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+                            <el-button
+                                    size="mini"
+                                    @click="changeShow(scope.row,scope.$index)">{{scope.row.is_show?'隐藏':'显示'}}
+                            </el-button> 
                         </template>
                     </el-table-column>
                 </el-table>
@@ -111,7 +119,7 @@
                 start_date: '',
                 end_date: '',
                 stay_top: '',
-                status:'',
+                is_show:'',
                 hasSearch: false,
                 tableData: [],
                 confirmData:{
@@ -119,6 +127,7 @@
                     id    :'',
                     content:'确认删除该条资讯？'
                 },
+                real_views_amount:0,//真是阅读数
             }
         },
         components: {
@@ -141,6 +150,7 @@
                             res.data.results[i].stay_top_name = res.data.results[i].stay_top ? '是' : '否'
                         }
                         this.total = res.data.count;
+                        this.real_views_amount = res.data.real_views_amount
                         ifBtn && (this.hasSearch = true);
                     }
                 })
@@ -158,6 +168,25 @@
                             this.showErrorTip(errors[key][0])
                         }
                     }
+                })
+            },
+            changeShow(row,index){
+                // 显示隐藏
+                let $this = this;
+                this.ajax('/game_news/'+row.id,'patch',{is_show:!row.is_show}).then(function(res){
+                    if(res&&res.data){
+                        row.is_show= res.data.is_show
+                        row.is_show_name = res.data.is_show?'显示':'隐藏'
+                    }
+
+                },function(err){
+                    if(err&&err.response){
+                        let errors=err.response.data
+                        for(var key in errors){
+                            console.log(errors[key])
+                            // return
+                        } 
+                    } 
                 })
             },
             addMatchEv() {
