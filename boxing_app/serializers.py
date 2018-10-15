@@ -599,7 +599,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     has_hotvideo = serializers.BooleanField(source="user.hot_videos.count", read_only=True)
     has_record = serializers.SerializerMethodField()  # 有无比赛记录
     has_album = serializers.SerializerMethodField()
-    is_mutual_following = serializers.SerializerMethodField()
+    is_mutual_following = serializers.SerializerMethodField()  # 是否互相关注
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
