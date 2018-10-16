@@ -1,5 +1,6 @@
 import math
 import subprocess as sp
+import re
 import json
 import settings
 from biz.redis_client import redis_client
@@ -21,44 +22,31 @@ def video_resolution(video_path: str) -> dict:
             return video_info
 
     pipe = sp.Popen(
-        ["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-show_entries", "format=size",
-         "-of", "json", "-i", f"{video_url}"], stdout=sp.PIPE
+        ["ffprobe", "-v", "error", "-show_entries", "stream_tags=rotate:", "-show_entries", "stream=width,height", "-show_entries", "format=size",
+         "-of", "default=noprint_wrappers=1", f"{video_url}"], stdout=sp.PIPE
     )
 
     pipe.wait()
     if pipe.returncode is not 0:
         return {"video_height": -1, "video_width": -1, "video_size": -1}  # 失败默认结果返回-1
+    std_out = pipe.communicate()[0].decode("utf-8")
 
-    """
-    std_out data like this:
-    {
-        "streams": {
-            {
-            ...
-            "width":960,
-            "height":540,
-            ...
-            },
-        }
-        "format": {
-            ...
-            "size":"537296",
-            ...
-        }
-    }
-    """
-    std_out = pipe.communicate()[0]
+    width_match = re.findall(r"width=(\d+)", std_out)
+    video_width = width_match[0] if width_match else -1
 
-    height, width = 0, 0
-    video_info = json.loads(std_out.decode("utf-8"))
-    for info in video_info['streams']:
-        if info.get("height") and info.get("width"):
-            width = info.get("width")
-            height = info.get("height")
-            break
+    height_match = re.findall(r"height=(\d+)", std_out)
+    video_height = height_match[0] if height_match else -1
 
-    size = int(video_info['format']['size']) / 1024 / 1024
-    data = {"video_height": height, "video_width": width, "video_size": math.ceil(size)}
+    rotate_match = re.findall(r"rotate=(\d+)", std_out)
+    video_rotate = rotate_match[0] if rotate_match else 0
+
+    size_match = re.findall(r"size=(\d+)", std_out)
+    video_size = int(size_match[0]) / 1024 / 1024 if size_match else -1
+
+    if video_rotate is not 0:
+        video_height, video_width = video_width, video_height
+ 
+    data = {"video_height": video_height, "video_width": video_width, "video_size": math.ceil(video_size)}
     redis_client.hset(VIDEO_RESOLUTION, video_path, json.dumps(data))
     return data
 
