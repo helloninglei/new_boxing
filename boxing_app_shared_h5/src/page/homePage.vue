@@ -12,16 +12,22 @@
                 </div>
                 <div class="desc">{{userInfo.bio}}</div>
                 <div class="sub_desc" v-if="userInfo.boxer_info.introduction">{{userInfo.boxer_info.introduction}}</div>
+                <div class="sub_desc sub_desc_num">{{userInfo.followers_count}} 粉丝 <span class='desc_line'></span>{{userInfo.following_count}}关注</div>
             </div>
         </div>
         <div class="middle_info">
-            <div class="middle_item attentions">
-                <div class="num">{{userInfo.following_count}}</div>
-                <div class="item_name">关注</div>
-            </div>
-            <div class="middle_item fans">
-                <div class="num">{{userInfo.followers_count}}</div>
-                <div class="item_name">粉丝</div>
+            <div class="info_container">
+                <p><span style='width:60px'>真实姓名：</span><span>熊城城</span></p>
+                <p ><span style='width:60px'>个性签名：</span><span class='autograph'>此处是个性签名此处是个性签名此处是个性签名此处是个性签名此处是个性签名</span></p>
+                <div class='tag'>
+                    <span>汉族</span>
+                    <span>狮子座</span>
+                    <span>北京市</span>
+                    <span>181cm</span>
+                    <span>70kg</span>
+                    <span>职业拳手</span>
+                    <span>职业拳手</span>
+                </div>
             </div>
         </div>
         <div class="fight">
@@ -90,7 +96,7 @@
             .name
                 display inline-block
                 line-height 1rem
-                font-size .7rem
+                font-size .8rem
                 color #fff
                 vertical-align middle
             .sex
@@ -110,7 +116,7 @@
             margin-bottom .25rem
             width 13.8rem
             line-height .6rem
-            color #474955
+            color #8989A1
             overflow hidden
             text-overflow ellipsis
             white-space nowrap
@@ -121,25 +127,45 @@
             overflow hidden
             text-overflow ellipsis
             white-space nowrap
+        .sub_desc_num
+            font-size .6rem
+            .desc_line
+                display inline-block
+                width 0.8rem
+                height 0.4rem
+                border-right 1px solid #8989a1
+                margin-right 0.8rem
 .middle_info
-    display flex
-    margin-top 1.4rem
-    .middle_item
-        flex 1
-        text-align center
-        .num
+    padding 0 1rem
+    .info_container
+        padding-top 0.95rem
+        margin-top 0.75rem
+        border-top 1px solid rgba(72,72,85,0.5)
+        p
+            font-size 0.6rem
             line-height 1rem
-            font-size 1rem
-            color #fff
-        .item_name
-            margin-top .1rem
-            line-height .7rem
-            font-size .55rem
+            color #8989A1
+            .autograph
+                display inline-block
+                vertical-align top
+                width calc(100% - 60px)
+        .tag
+            font-size 0.6rem
             color #9DA3B4
+            margin-top 0.7rem
+            span
+                display inline-block
+                height 1.2rem
+                padding 0.25rem
+                background #272734
+                box-sizing border-box
+                margin 0.3rem 0.3rem 0 0
+            
+            
 .fight
     overflow hidden
     .title
-        margin 1.7rem auto auto 1.2rem
+        margin 1.35rem auto auto 1.2rem
         line-height 1.5rem
         color #fff
         font-size 1rem
@@ -179,6 +205,7 @@
                 ifClose: false,
                 dataObj: {},
                 avatar_default: require('../assets/images/portrait_default.png'),
+                ismin:false
             }
         },
         components: {
@@ -194,7 +221,6 @@
                 this.getUserInfo();
                 this.sharePage();
             }
-
         },
         methods: {
             getUserInfo() {

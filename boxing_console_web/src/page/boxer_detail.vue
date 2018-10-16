@@ -10,7 +10,7 @@
                         <el-row>
                             <el-col :span="11">
                                 <el-form-item label="拳手姓名" prop="name">
-                                    <el-input v-model="form.name" placeholder="请输入姓名" :maxlength="20"></el-input>
+                                    <el-input v-model="form.name" placeholder="请输入姓名" :maxlength="6"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="11" :offset="2">
