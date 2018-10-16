@@ -10,23 +10,17 @@
                     <div class="name">{{userInfo.nick_name}}</div>
                     <div class="sex" :class="userInfo.gender ? 'gentleman' : 'lady'"/>
                 </div>
-                <div class="desc">{{userInfo.bio}}</div>
+                <div class="desc">{{user_detail.title}}</div>
                 <div class="sub_desc" v-if="userInfo.boxer_info.introduction">{{userInfo.boxer_info.introduction}}</div>
                 <div class="sub_desc sub_desc_num">{{userInfo.followers_count}} 粉丝 <span class='desc_line'></span>{{userInfo.following_count}}关注</div>
             </div>
         </div>
         <div class="middle_info">
             <div class="info_container">
-                <p><span style='width:60px'>真实姓名：</span><span>熊城城</span></p>
-                <p ><span style='width:60px'>个性签名：</span><span class='autograph'>此处是个性签名此处是个性签名此处是个性签名此处是个性签名此处是个性签名</span></p>
-                <div class='tag'>
-                    <span>汉族</span>
-                    <span>狮子座</span>
-                    <span>北京市</span>
-                    <span>181cm</span>
-                    <span>70kg</span>
-                    <span>职业拳手</span>
-                    <span>职业拳手</span>
+                <p><span style='width:60px'>真实姓名：</span><span>{{user_detail.real_name}}</span></p>
+                <p ><span style='width:60px'>个性签名：</span><span class='autograph'>{{user_detail.signature}}</span></p>
+                <div class='tag' >
+                    <span v-for="item in user_detail.tags">{{item}}</span>
                 </div>
             </div>
         </div>
@@ -187,7 +181,7 @@
                 color #fff
 </style>
 
-<script type="text/ecmascript-6">
+<script>
     import AbilityPic from 'components/abilityPic';
     import AbilityNumber from 'components/abilityNumber';
     import MatchData from 'components/matchData';
@@ -199,13 +193,13 @@
             return {
                 userId: '',
                 userInfo: '',
+                user_detail:'',
                 tabs: [{name: "能力图"}, {name: "数值"}],
                 current: 0,
                 tabView: 'AbilityPic',
                 ifClose: false,
                 dataObj: {},
                 avatar_default: require('../assets/images/portrait_default.png'),
-                ismin:false
             }
         },
         components: {
@@ -255,6 +249,17 @@
                         }
 
                         this.userInfo = userInfo;
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        console.log(errors);
+                    }
+                })
+                this.ajax(`/players/${this.userId}/info`,'get').then((res) => {
+                    if (res && res.data) {
+                        this.user_detail = res.data;
+                        
                     }
                 },(err) => {
                     if(err&&err.response){
