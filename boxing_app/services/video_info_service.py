@@ -14,7 +14,11 @@ VIDEO_RESOLUTION = "video_resolution"
 def video_resolution(video_path: str) -> dict:
     video_url = _get_file_oss_url(video_path)
     if redis_client.hexists(VIDEO_RESOLUTION, video_path):
-        return json.loads(redis_client.hget(VIDEO_RESOLUTION, video_path))
+        video_info = json.loads(redis_client.hget(VIDEO_RESOLUTION, video_path))
+        if "size" in video_info or "height" in video_info or "width" in video_info:
+            redis_client.hdel(VIDEO_RESOLUTION, video_path)
+        else:
+            return video_info
 
     pipe = sp.Popen(
         ["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-show_entries", "format=size",
