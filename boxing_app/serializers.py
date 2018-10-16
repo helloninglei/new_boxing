@@ -162,6 +162,11 @@ class MessageSerializer(serializers.ModelSerializer):
             raise ValidationError({'message': ['文字、图片、视频需要至少提供一个']})
         return data
 
+    def to_representation(self, instance: models.Message) -> dict:
+        ret = super().to_representation(instance)
+        ret.update(video_resolution(instance.video))
+        return ret
+
     class Meta:
         model = models.Message
         fields = ['id', 'content', 'images', 'video', 'msg_type', 'created_time', 'user', 'like_count', 'comment_count',
