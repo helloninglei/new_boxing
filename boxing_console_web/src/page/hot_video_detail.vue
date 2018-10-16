@@ -14,14 +14,14 @@
                         <el-form-item label="付费金额" prop="price_int">
                             <el-input v-model="ruleForm.price_int" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <el-form-item label="初始转发数" prop="chushi_forward_count">
-                            <el-input v-model="ruleForm.chushi_forward_count" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
+                        <el-form-item label="初始转发数" prop="initial_forward_count">
+                            <el-input v-model="ruleForm.initial_forward_count" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <el-form-item label="初始点赞数" prop="chushi_like_count">
-                            <el-input v-model="ruleForm.chushi_like_count" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
+                        <el-form-item label="初始点赞数" prop="initial_like_count">
+                            <el-input v-model="ruleForm.initial_like_count" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
-                        <el-form-item label="初始观看数" prop="chushi_views_count">
-                            <el-input v-model="ruleForm.chushi_views_count" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
+                        <el-form-item label="初始观看数" prop="initial_views_count">
+                            <el-input v-model="ruleForm.initial_views_count" :span="5" placeholder="付费金额为自然数" type='number'></el-input>
                         </el-form-item>
                         <el-form-item label="完整视频" prop="tsurl">
                             <el-button class='myButton_40 btn_width_95 myBtnHover_red'  @click="addFullVideo()" v-if="!(tsurl)">添加视频</el-button>
@@ -301,13 +301,13 @@
                     price_int:[
                         { validator: validateNumber, trigger: 'blur',required:true }
                     ],
-                    chushi_like_count:[
+                    initial_like_count:[
                         { validator: validateNumber, trigger: 'blur',required:true }
                     ],
-                    chushi_forward_count:[
+                    initial_forward_count:[
                         { validator: validateNumber, trigger: 'blur',required:true }
                     ],
-                    chushi_views_count:[
+                    initial_views_count:[
                         { validator: validateNumber, trigger: 'blur',required:true }
                     ],
                     push_to_hotvideo:[
@@ -431,6 +431,9 @@
                         $this.userImgIds = res.data.user_list;
                         $this.ruleForm.tag = res.data.tag
                         $this.ruleForm.push_hot_video = res.data.push_hot_video
+                        $this.ruleForm.initial_views_count = res.data.initial_views_count
+                        $this.ruleForm.initial_like_count = res.data.initial_like_count
+                        $this.ruleForm.initial_forward_count = res.data.initial_forward_count
                         for(var i=0;i<$this.userImgIds.length;i++){
                             if($this.userImgIds[i].id==10){
                                $this.ruleForm.push_to_hotvideo = true;

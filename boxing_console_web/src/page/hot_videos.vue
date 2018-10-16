@@ -32,18 +32,18 @@
                     </el-col> 
                     <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
                         <div class="inlimeLabel lf" style='margin:10px'>热门</div>
-                        <el-select v-model="sendData.tag1" >
-                            <el-option value="" label="全部">全部</el-option>
-                            <el-option :value="true" label="是">是</el-option>
-                            <el-option :value="false" label="否">否</el-option>
+                        <el-select v-model="sendData.is_hot" >
+                            <el-option value="all" label="全部">全部</el-option>
+                            <el-option value="yes" label="是">是</el-option>
+                            <el-option value="no" label="否">否</el-option>
                         </el-select>
                     </el-col> 
                     <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
                         <div class="inlimeLabel lf" style='margin:10px'>付费</div>
-                        <el-select v-model="sendData.tag2" >
-                            <el-option value="" label="全部">全部</el-option>
-                            <el-option value="1" label="付费">付费</el-option>
-                            <el-option value="2" label="免费">免费</el-option>
+                        <el-select v-model="sendData.is_need_pay" >
+                            <el-option value="all" label="全部">全部</el-option>
+                            <el-option value="yes" label="付费">付费</el-option>
+                            <el-option value="no" label="免费">免费</el-option>
                         </el-select>
                     </el-col>     
                     <el-col :md="12" :lg="6" :xl='5'>
@@ -130,7 +130,9 @@
                     start_time : '',
                     end_time   : '',
                     search     : '',
-                    tag        : ''
+                    tag        : '',
+                    is_need_pay: '',
+                    is_hot     : ''
                 },
                 videoTags :[],
                 confirmData:{
@@ -164,12 +166,12 @@
                     {title:'sales_count', name :'付费人数'   ,width: ''},
                     {title:'price_amount',name :'总金额（元）',width: '100'},
                     {title:'forward_count', name :'真实转发数'   ,width: '80'},
-                    {title:'forward_count', name :'初始转发数'   ,width: '80'},
+                    {title:'initial_forward_count', name :'初始转发数'   ,width: '80'},
                     {title:'like_count', name :'真实点赞数'   ,width: '80'},
-                    {title:'like_count', name :'初始点赞数'   ,width: '80'},
+                    {title:'initial_like_count', name :'初始点赞数'   ,width: '80'},
                     {title:'views_count', name :'真实观看数'   ,width: '80'},
-                    {title:'views_count', name :'初始观看数'   ,width: '80'},
-                    {title:'views_count', name :'热门'   ,width: '80'},
+                    {title:'initial_views_count', name :'初始观看数'   ,width: '80'},
+                    {title:'is_hot_name', name :'热门'   ,width: '80'},
                     {title:'created_time',name :'发布时间' ,width: '200'},
                     {title:'is_show_name',name :'显示状态' ,width: '90'},
                 ],
@@ -204,9 +206,11 @@
                             res.data.results[i].price = res.data.results[i].price  ?(res.data.results[i].price/100).toFixed(2)  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                             res.data.results[i].user_list_name = [] 
+                            res.data.results[i].is_hot_name = '否'
                             for(var a=0;a<res.data.results[i].user_list.length;a++){
                                 if(res.data.results[i].user_list[a].id==10){
                                    delete res.data.results[i].user_list[a]
+                                   res.data.results[i].is_hot_name = '是'
                                    continue;
                                 }
                                 res.data.results[i].user_list_name.push(res.data.results[i].user_list[a].nick_name)
@@ -265,8 +269,6 @@
             },
             changeShow(row,index){
                 // 显示隐藏
-                console.log(row.is_show)
-                console.log(!row.is_show)
                 let $this = this;
                 this.ajax('/hot_videos/'+row.id,'patch',{is_show:!row.is_show}).then(function(res){
                     if(res&&res.data){

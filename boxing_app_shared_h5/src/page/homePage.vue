@@ -10,18 +10,18 @@
                     <div class="name">{{userInfo.nick_name}}</div>
                     <div class="sex" :class="userInfo.gender ? 'gentleman' : 'lady'"/>
                 </div>
-                <div class="desc">{{userInfo.bio}}</div>
+                <div class="desc">{{user_detail.title}}</div>
                 <div class="sub_desc" v-if="userInfo.boxer_info.introduction">{{userInfo.boxer_info.introduction}}</div>
+                <div class="sub_desc sub_desc_num">{{userInfo.followers_count}} 粉丝 <span class='desc_line'></span>{{userInfo.following_count}}关注</div>
             </div>
         </div>
         <div class="middle_info">
-            <div class="middle_item attentions">
-                <div class="num">{{userInfo.following_count}}</div>
-                <div class="item_name">关注</div>
-            </div>
-            <div class="middle_item fans">
-                <div class="num">{{userInfo.followers_count}}</div>
-                <div class="item_name">粉丝</div>
+            <div class="info_container">
+                <p><span style='width:60px'>真实姓名：</span><span>{{user_detail.real_name}}</span></p>
+                <p ><span style='width:60px'>个性签名：</span><span class='autograph'>{{user_detail.signature}}</span></p>
+                <div class='tag' >
+                    <span v-for="item in user_detail.tags">{{item}}</span>
+                </div>
             </div>
         </div>
         <div class="fight">
@@ -90,7 +90,7 @@
             .name
                 display inline-block
                 line-height 1rem
-                font-size .7rem
+                font-size .8rem
                 color #fff
                 vertical-align middle
             .sex
@@ -110,7 +110,7 @@
             margin-bottom .25rem
             width 13.8rem
             line-height .6rem
-            color #474955
+            color #8989A1
             overflow hidden
             text-overflow ellipsis
             white-space nowrap
@@ -121,25 +121,45 @@
             overflow hidden
             text-overflow ellipsis
             white-space nowrap
+        .sub_desc_num
+            font-size .6rem
+            .desc_line
+                display inline-block
+                width 0.8rem
+                height 0.4rem
+                border-right 1px solid #8989a1
+                margin-right 0.8rem
 .middle_info
-    display flex
-    margin-top 1.4rem
-    .middle_item
-        flex 1
-        text-align center
-        .num
+    padding 0 1rem
+    .info_container
+        padding-top 0.95rem
+        margin-top 0.75rem
+        border-top 1px solid rgba(72,72,85,0.5)
+        p
+            font-size 0.6rem
             line-height 1rem
-            font-size 1rem
-            color #fff
-        .item_name
-            margin-top .1rem
-            line-height .7rem
-            font-size .55rem
+            color #8989A1
+            .autograph
+                display inline-block
+                vertical-align top
+                width calc(100% - 60px)
+        .tag
+            font-size 0.6rem
             color #9DA3B4
+            margin-top 0.7rem
+            span
+                display inline-block
+                height 1.2rem
+                padding 0.25rem
+                background #272734
+                box-sizing border-box
+                margin 0.3rem 0.3rem 0 0
+            
+            
 .fight
     overflow hidden
     .title
-        margin 1.7rem auto auto 1.2rem
+        margin 1.35rem auto auto 1.2rem
         line-height 1.5rem
         color #fff
         font-size 1rem
@@ -161,7 +181,7 @@
                 color #fff
 </style>
 
-<script type="text/ecmascript-6">
+<script>
     import AbilityPic from 'components/abilityPic';
     import AbilityNumber from 'components/abilityNumber';
     import MatchData from 'components/matchData';
@@ -173,6 +193,7 @@
             return {
                 userId: '',
                 userInfo: '',
+                user_detail:'',
                 tabs: [{name: "能力图"}, {name: "数值"}],
                 current: 0,
                 tabView: 'AbilityPic',
@@ -194,7 +215,6 @@
                 this.getUserInfo();
                 this.sharePage();
             }
-
         },
         methods: {
             getUserInfo() {
@@ -229,6 +249,17 @@
                         }
 
                         this.userInfo = userInfo;
+                    }
+                },(err) => {
+                    if(err&&err.response){
+                        let errors=err.response.data;
+                        console.log(errors);
+                    }
+                })
+                this.ajax(`/players/${this.userId}/info`,'get').then((res) => {
+                    if (res && res.data) {
+                        this.user_detail = res.data;
+                        
                     }
                 },(err) => {
                     if(err&&err.response){

@@ -15,7 +15,11 @@
                         <img :src="captcha" alt="" width='100%' height='100%'>
                     </div>
                 </el-form-item>
-                <div class='error'><span v-if='isShowErr'>{{errText}}</span></div>
+                <el-form-item>
+                    <el-checkbox label="记住密码" name="isremember" v-model="isremember"></el-checkbox>
+                </el-form-item>
+                <div class='error' v-if='isShowErr'><span >{{errText}}</span></div>
+                
                 </el-form-item>
                 <el-form-item label="">
                     <el-button type="danger" class='myColor_red myButton' @click="onSubmit">立即登录</el-button>
@@ -30,12 +34,13 @@
     .title{position:absolute;top:-62px;font-size: 40px;color: #FFFFFF;letter-spacing: -0.29px;}
     .title b{font-family: 'pngFang SC'}
     .login_bg{background: #1D1D27;box-shadow: inset 0 1px 3px 0 rgba(0,0,0,0.50);height:100%;width:100%}
-    .login{height:426px;width:620px;position:absolute;top:50%;left:50%;margin-left:-310px;margin-top:-213px;background: #32323C;}
+    .login{height:476px;width:620px;position:absolute;top:50%;left:50%;margin-left:-310px;margin-top:-213px;background: #32323C;}
     .myInput,.myButton{width:370px!important;height:60px}
     .width-234{width:234px!important;}
     .form{margin-top:51px;}
     .yzPicture{float:right;width:122px;height:49px;background: #fff;margin-right:77px;margin-top:5px;}
     .error{padding-left:173px;height:20px;margin-top:15px;margin-bottom:20px;color:#FF635A;font-size:14px;}
+    .login_bg .el-checkbox{margin-left:0;}
 </style>
 <style>
     /*login里面的style*/
@@ -83,11 +88,12 @@
                     captcha:{
                         captcha_hash: "",
                         captcha_code: ''
-                    }
+                    },
                 },
                 captcha:'',
                 isShowErr:false,
                 errText:'',
+                isremember:false,
             }
         },
         components: {
@@ -103,6 +109,9 @@
             }
         },
         created() {
+            this.form.username = localStorage.getItem("username");
+            this.form.password = localStorage.getItem("password");
+            this.isremember = this.form.username == '' ? false : true ; 
             this.getCaptcha();
         },
         methods: {
@@ -140,8 +149,15 @@
                 }else{
                     this.isShowErr=false;
                     let $this=this;
-                    this.ajax('/login','post',this.form).then(function(res){
+                    this.ajax('/login','post',this.form).then((res)=>{
                         if(res&&res.data){
+                            if(this.isremember){
+                                localStorage.setItem("username", this.form.username);
+                                localStorage.setItem("password", this.form.password);
+                            }else{
+                                localStorage.setItem("username", '');
+                                localStorage.setItem("password", '');
+                            }
                             localStorage.token=res.data.token;
                             $this.$router.push({path:'/index'});
                         }
