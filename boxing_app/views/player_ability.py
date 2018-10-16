@@ -97,6 +97,7 @@ def player_match(request, pk):
     return Response(data=response_data, status=status.HTTP_200_OK)
 
 
+# 输入月份和日期，获取星座
 def get_constellation(month, date):
     dates = (21, 20, 21, 21, 22, 22, 23, 24, 24, 24, 23, 22)
     constellations = ("摩羯", "水瓶", "双鱼", "白羊", "金牛", "双子", "巨蟹", "狮子", "处女", "天秤", "天蝎", "射手", "摩羯")
@@ -113,15 +114,12 @@ def player_info(request, pk):
     if not Player.objects.filter(user_id=pk).exists():
         return Response(status=404)
 
-    current_user_profile = UserProfile.objects.filter(user_id=pk)
-    if not current_user_profile.exists():
-        return Response(status=404)
-
     tags = []
-    user_profile = current_user_profile.first()
+    user_profile = UserProfile.objects.filter(user_id=pk).first()
     real_name = user_profile.name
     bio = user_profile.bio
     nick_name = user_profile.nick_name
+    
     nation = user_profile.nation
     if nation:
         tags.append(nation)
