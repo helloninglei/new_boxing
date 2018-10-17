@@ -29,11 +29,11 @@ def cover_picture(request):
                '-vf', 'scale=480:trunc(ow/a/2)*2',
                '-f', 'image2pipe',
                '-']
-    pipe = sp.Popen(command, stdout=sp.PIPE, bufsize=10 ** 8)
-    pipe.wait()
+    pipe = sp.Popen(args=command, stdout=sp.PIPE)
+    image_stream = pipe.communicate()
     if pipe.returncode is not 0:
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    return StreamingHttpResponse(pipe.stdout, content_type="image/jpeg")
+    return StreamingHttpResponse(image_stream, content_type="image/jpeg")
 
 
 @api_view(['POST'])
@@ -98,4 +98,3 @@ def _get_file_oss_url(url):
     origin_ret = urlparse(url)
     oss_ret = urlparse(oss_url)
     return urljoin(origin_ret.scheme + "://" + oss_bucket + "." + oss_ret.netloc, origin_ret.path)
-
