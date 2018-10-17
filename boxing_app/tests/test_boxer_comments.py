@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
 from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, PayOrder, OrderComment, CourseOrder
-from settings import CDN_BASE_URL
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class CommentsAboutBoxerTestCase(APITestCase):

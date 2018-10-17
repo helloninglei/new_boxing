@@ -2,11 +2,13 @@
 import datetime
 from biz import constants
 from biz.redis_client import redis_client
+from django.conf import settings
 from rest_framework.test import APITestCase
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
 from biz.redis_client import forward_hotvideo
-from settings import CDN_BASE_URL
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class HotVideoTestCase(APITestCase):

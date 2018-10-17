@@ -1,11 +1,13 @@
 from datetime import datetime
 
+from django.conf import settings
 from rest_framework.test import APITestCase
 
 from biz import constants, redis_client
 from biz.constants import USER_TYPE_MAP, USER_TYPE_BOXER
 from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, CourseOrder
-from settings import CDN_BASE_URL
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class NearbyBoxerTestCase(APITestCase):

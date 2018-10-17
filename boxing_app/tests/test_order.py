@@ -1,11 +1,14 @@
 import time
+
+from captcha.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
 from rest_framework.test import APITestCase
 from biz import constants
 from biz.constants import USER_TYPE_BOXER, USER_TYPE_MAP, PAYMENT_TYPE_ALIPAY, DEVICE_PLATFORM_IOS
 from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder, PayOrder
-from settings import CDN_BASE_URL
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class OrderTestCase(APITestCase):

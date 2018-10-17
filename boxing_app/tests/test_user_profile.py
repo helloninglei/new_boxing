@@ -1,10 +1,12 @@
+from django.conf import settings
 from rest_framework import status
 
 from biz.constants import DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, USER_TYPE_CELEBRITY, DEFAULT_NICKNAME_FORMAT, \
     DEFAULT_AVATAR
 from biz.models import UserProfile, User
-from settings import CDN_BASE_URL
 from . import APILoginTestCase
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class UserProfileTestCase(APILoginTestCase):
