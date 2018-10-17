@@ -167,3 +167,5 @@ class HotVideoTestCase(APITestCase):
         self.assertEqual(res.data['like_count'], 4)
         self.assertEqual(res.data['views_count'], 2)
         self.assertEqual(res.data['forward_count'], 4)
+
+

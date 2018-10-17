@@ -173,6 +173,17 @@ class MessageSerializer(serializers.ModelSerializer):
                   'forward_count', 'is_like']
 
 
+class MessageReadOnlySerializer(MessageSerializer):
+    images = serializers.SerializerMethodField()
+    video = serializers.SerializerMethodField()
+
+    def get_images(self, instance):
+        return [f"{CDN_BASE_URL}{image}" for image in instance.images]
+
+    def get_video(self, instance):
+        return instance.video and f"{CDN_BASE_URL}{instance.video}"
+
+
 class BasicReplySerializer(serializers.ModelSerializer):
     user = DiscoverUserField(read_only=True)
     to_user = DiscoverUserField(read_only=True)

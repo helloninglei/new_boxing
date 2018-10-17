@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from biz import constants
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -46,7 +47,6 @@ class MessageTestCase(APITestCase):
         self.assertEqual(len(response.data['results']), 2)
         results = response.data['results']
         self.assertEqual(msg1['content'], results[1]['content'])
-        self.assertEqual(msg2['images'], results[0]['images'])
 
     def test_msg_type(self):
         msg1 = {'content': 'hello1'}
@@ -123,3 +123,11 @@ class MessageTestCase(APITestCase):
         msg = {'content': 'hello1'}
         res = self.anonymous_client.post('/messages', msg)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_cdn(self):
+        url = '/uploads/122.jpg'
+        msg = {'images': [url, url]}
+        res = self.client1.post('/messages', msg)
+        msg_id = res.data['id']
+        res = self.client1.get(f'/messages/{msg_id}')
+        self.assertEqual(res.data['images'], [f'{settings.CDN_BASE_URL}{url}'] * 2)
