@@ -42,7 +42,7 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
     competition_video = serializers.CharField(required=False)
     allowed_course = serializers.ListField(child=serializers.CharField(), required=False)
     gender = serializers.BooleanField(source="user.user_profile.gender", read_only=True)
-    avatar = serializers.CharField(source="user.user_profile.avatar", read_only=True)
+    avatar = serializers.SerializerMethodField()
     course_order_count = serializers.SerializerMethodField()
     title = serializers.CharField(max_length=16, write_only=True)
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
@@ -51,6 +51,9 @@ class BoxerIdentificationSerializer(serializers.ModelSerializer):
         ret = super().to_representation(instance)
         ret['title'] = get_user_title(instance.user) or instance.user.title
         return ret
+
+    def get_avatar(self, instance):
+        return instance.user.user_profile.avatar and f"{CDN_BASE_URL}{instance.user.user_profile.avatar}"
 
     def get_course_order_count(self, instance):
         return instance.boxer_course_order.filter(status__gt=constants.COURSE_PAYMENT_STATUS_UNPAID).count()
@@ -79,13 +82,16 @@ class NearbyBoxerIdentificationSerializer(serializers.ModelSerializer):
     latitude = serializers.SerializerMethodField()
     course_min_price = serializers.IntegerField(source='min_price')
     gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
-    avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    avatar = serializers.SerializerMethodField()
     allowed_course = serializers.ListField(read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     city = serializers.SerializerMethodField()
     order_count = serializers.IntegerField()
     title = serializers.CharField(source='user.title')
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
+
+    def get_avatar(self, instance):
+        return instance.user.user_profile.avatar and f"{CDN_BASE_URL}{instance.user.user_profile.avatar}"
 
     def get_longitude(self, instance):
         club = self.get_boxer_club(instance)
@@ -124,7 +130,7 @@ def serialize_user(user, context):
         'identity': user.identity,
         'is_following': bool(is_following(context['request'].user.id, user.id)),
         'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
-        'avatar': profile.avatar,
+        'avatar': f"{CDN_BASE_URL}{profile.avatar}" if profile.avatar else None,
         "user_type": user.get_user_type_display()
     }
 
@@ -210,7 +216,7 @@ class CommentMeMessageSerializer(serializers.ModelSerializer):
             'id': user.id,
             'identity': user.identity,
             'nick_name': profile.nick_name or DEFAULT_NICKNAME_FORMAT.format(user.id),
-            'avatar': profile.avatar,
+            'avatar': f"{CDN_BASE_URL}{profile.avatar}" if profile.avatar else None,
             "user_type": user.get_user_type_display()
         }
 
@@ -231,6 +237,11 @@ class CommentMeHotVideoSerializer(serializers.ModelSerializer):
 
 
 class CommentMeNewsSerializer(serializers.ModelSerializer):
+    picture = serializers.SerializerMethodField()
+
+    def get_picture(self, obj):
+        return obj.picture and f"{CDN_BASE_URL}{obj.picture}"
+
     class Meta:
         model = models.GameNews
         fields = ('id', 'title', 'sub_title', 'picture', 'share_content')
@@ -308,7 +319,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
 class FollowUserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    avatar = serializers.CharField(source='user_profile.avatar')
+    avatar = serializers.SerializerMethodField()
     nick_name = serializers.CharField(source='user_profile.nick_name')
     address = serializers.CharField(source='user_profile.address')
     bio = serializers.CharField(source='user_profile.bio')
@@ -316,6 +327,9 @@ class FollowUserSerializer(serializers.Serializer):
     identity = serializers.CharField()
     is_following = serializers.SerializerMethodField()
     user_type = serializers.SerializerMethodField()
+
+    def get_avatar(self, user):
+        return user.user_profile.avatar and f"{CDN_BASE_URL}{user.user_profile.avatar}"
 
     def get_user_type(self, user):
         return user.get_user_type_display()
@@ -528,13 +542,16 @@ class BoxerCourseOrderSerializer(BaseCourseOrderSerializer):
     user_id = serializers.IntegerField(source='user.pk', read_only=True)
     user_nickname = serializers.CharField(source='user.user_profile.nick_name', read_only=True)
     user_gender = serializers.BooleanField(source='user.user_profile.gender', read_only=True)
-    user_avatar = serializers.CharField(source='user.user_profile.avatar', read_only=True)
+    user_avatar = serializers.SerializerMethodField()
     user_type = serializers.CharField(source="user.get_user_type_display", read_only=True)
     identity = serializers.CharField(source='user.identity', read_only=True)
     comment_score = serializers.SerializerMethodField()
     comment_time = serializers.SerializerMethodField()
     comment_content = serializers.SerializerMethodField()
     comment_images = serializers.SerializerMethodField()
+
+    def get_user_avatar(self, instance):
+        return instance.user.user_profile.avatar and  f"{CDN_BASE_URL}{instance.user.user_profile.avatar}"
 
     def get_comment_score(self, instance):
         comment = self.get_comment(instance)
@@ -565,8 +582,11 @@ class UserCourseOrderSerializer(BaseCourseOrderSerializer):
     boxer_id = serializers.IntegerField(source='boxer.pk', read_only=True)
     boxer_name = serializers.CharField(source='boxer.real_name', read_only=True)
     boxer_gender = serializers.BooleanField(source='boxer.user.user_profile.gender', read_only=True)
-    boxer_avatar = serializers.CharField(source='boxer.user.user_profile.avatar', read_only=True)
     boxer_user_type = serializers.CharField(source="boxer.user.get_user_type_display", read_only=True)
+    boxer_avatar = serializers.SerializerMethodField()
+
+    def get_boxer_avatar(self, instance):
+        return instance.boxer.user.user_profile.avatar and f"{CDN_BASE_URL}{instance.boxer.user.user_profile.avatar}"
 
 
 class BoxerInfoReadOnlySerializer(serializers.ModelSerializer):
@@ -608,7 +628,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
         data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
-        data['avatar'] = instance.avatar or DEFAULT_AVATAR
+        data['avatar'] = f"{CDN_BASE_URL}{instance.avatar}" if instance.avatar else DEFAULT_AVATAR
         data['bio'] = instance.bio or (DEFAULT_BIO_OF_MEN if instance.gender else DEFAULT_BIO_OF_WOMEN)
         return data
 
@@ -681,6 +701,7 @@ class NewsSerializer(serializers.ModelSerializer):
     content = serializers.SerializerMethodField()
     read_count = serializers.SerializerMethodField()
     pub_time = serializers.DateTimeField(source='updated_time', read_only=True)
+    picture = serializers.SerializerMethodField()
 
     def get_content(self, obj):
         if self.context['request'].query_params.get('in_app') == '1':
@@ -689,6 +710,9 @@ class NewsSerializer(serializers.ModelSerializer):
 
     def get_read_count(self, obj):
         return obj.initial_views_count + obj.views_count
+
+    def get_picture(self, obj):
+        return obj.picture and f"{CDN_BASE_URL}{obj.picture}"
 
     class Meta:
         model = models.GameNews
@@ -700,7 +724,8 @@ class BlockedUserSerializer(serializers.BaseSerializer):
     def to_representation(self, user):
         representation_dict = {"id": user.id, "user_type": user.get_user_type_display()}
         if hasattr(user, "user_profile"):
-            representation_dict.update(nick_name=user.user_profile.nick_name, avatar=user.user_profile.avatar)
+            avatar = f"{CDN_BASE_URL}{user.user_profile.avatar}" if user.user_profile.avatar else None
+            representation_dict.update(nick_name=user.user_profile.nick_name, avatar=avatar)
         return representation_dict
 
 
@@ -845,9 +870,12 @@ class SocialLoginSerializer(serializers.Serializer):
 
 class ContactSerializer(serializers.ModelSerializer):
     nick_name = serializers.CharField(source="user_profile.nick_name")
-    avatar = serializers.CharField(source="user_profile.avatar")
     index_letter = serializers.CharField(source="user_profile.nick_name_index_letter")
+    avatar = serializers.SerializerMethodField()
     user_type = serializers.SerializerMethodField()
+
+    def get_avatar(self, user):
+        return user.user_profile.avatar and f"{CDN_BASE_URL}{user.user_profile.avatar}"
 
     def get_user_type(self, user):
         return user.get_user_type_display()
