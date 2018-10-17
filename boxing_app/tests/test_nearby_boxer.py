@@ -1,10 +1,13 @@
 from datetime import datetime
 
+from django.conf import settings
 from rest_framework.test import APITestCase
 
 from biz import constants, redis_client
 from biz.constants import USER_TYPE_MAP, USER_TYPE_BOXER
 from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, CourseOrder
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class NearbyBoxerTestCase(APITestCase):
@@ -204,7 +207,7 @@ class NearbyBoxerTestCase(APITestCase):
         self.assertEqual(boxer['course_min_price'], self.course_data['price'])
         self.assertEqual(boxer['order_count'], 0)
         self.assertEqual(boxer['gender'], self.user_profile_data['gender'])
-        self.assertEqual(boxer['avatar'], self.user_profile_data['avatar'])
+        self.assertEqual(boxer['avatar'], f"{CDN_BASE_URL}{self.user_profile_data['avatar']}")
         self.assertEqual(boxer['allowed_course'], self.boxer_data['allowed_course'])
         self.assertEqual(boxer['user_type'], USER_TYPE_MAP[USER_TYPE_BOXER])
 

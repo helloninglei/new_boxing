@@ -1,9 +1,12 @@
+from django.conf import settings
 from rest_framework import status
 
 from biz.constants import DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, USER_TYPE_CELEBRITY, DEFAULT_NICKNAME_FORMAT, \
     DEFAULT_AVATAR
 from biz.models import UserProfile, User
 from . import APILoginTestCase
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class UserProfileTestCase(APILoginTestCase):
@@ -23,7 +26,7 @@ class UserProfileTestCase(APILoginTestCase):
         self.assertEqual(response.data['height'], self.user_profile_data['height'])
         self.assertEqual(response.data['weight'], self.user_profile_data['weight'])
         self.assertEqual(response.data['profession'], self.user_profile_data['profession'])
-        self.assertEqual(response.data['avatar'], self.user_profile_data['avatar'])
+        self.assertEqual(response.data['avatar'], f"{CDN_BASE_URL}{self.user_profile_data['avatar']}")
         self.assertEqual(response.data['bio'], self.user_profile_data['bio'])
 
         user = User.objects.create_user(mobile="19900000002", password="p")
