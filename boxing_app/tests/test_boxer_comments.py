@@ -1,13 +1,11 @@
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from biz import constants
 from biz.models import User, BoxerIdentification, Course, BoxingClub, UserProfile, PayOrder, OrderComment, CourseOrder
-
-CDN_BASE_URL = settings.CDN_BASE_URL
+from biz.services.url_service import get_cdn_url
 
 
 class CommentsAboutBoxerTestCase(APITestCase):
@@ -131,7 +129,7 @@ class CommentsAboutBoxerTestCase(APITestCase):
             if key == 'user':
                 self.assertEqual(res.data['results'][0][key]['id'], self.test_user_1.id)
                 self.assertEqual(res.data['results'][0][key]['nick_name'], self.user_profile_data['nick_name'])
-                self.assertEqual(res.data['results'][0][key]['avatar'], f"{CDN_BASE_URL}{self.user_profile_data['avatar']}")
+                self.assertEqual(res.data['results'][0][key]['avatar'], get_cdn_url(self.user_profile_data['avatar']))
             elif key == 'order':
                 self.assertEqual(res.data['results'][0][key], course_order2.id)
             else:

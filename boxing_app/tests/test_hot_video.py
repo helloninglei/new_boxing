@@ -2,13 +2,11 @@
 import datetime
 from biz import constants
 from biz.redis_client import redis_client
-from django.conf import settings
 from rest_framework.test import APITestCase
 from biz.models import User, HotVideo, PayOrder
 from biz.services.pay_service import PayService
 from biz.redis_client import forward_hotvideo
-
-CDN_BASE_URL = settings.CDN_BASE_URL
+from biz.services.url_service import get_cdn_url
 
 
 class HotVideoTestCase(APITestCase):
@@ -117,7 +115,7 @@ class HotVideoTestCase(APITestCase):
         res = self.client3.get(f'/users/{self.test_user.id}/hot_videos')
         result = res.data['results'][0]
         self.assertTrue(result['is_paid'])
-        self.assertEqual(result['url'], f"{CDN_BASE_URL}{self.data['url']}")
+        self.assertEqual(result['url'], get_cdn_url(self.data['url']))
 
     def test_hot_video_redirect(self):
         video = HotVideo.objects.create(**self.data)
