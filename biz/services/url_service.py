@@ -4,11 +4,8 @@ from django.conf import settings
 
 
 def get_path(url):
-    if url.startswith("http"):
-        return urlparse(url).path
-    return url
+    return urlparse(url).path if url.startswith("http") else url
 
 
 def get_cdn_url(url):
-    path = get_path(url)
-    return f"{settings.CDN_BASE_URL}{path}"
+    return f"{settings.CDN_BASE_URL}{get_path(url)}"
