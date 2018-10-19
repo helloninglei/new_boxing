@@ -1,10 +1,14 @@
 import time
+
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import status
 from rest_framework.test import APITestCase
 from biz import constants
 from biz.constants import USER_TYPE_BOXER, USER_TYPE_MAP, PAYMENT_TYPE_ALIPAY, DEVICE_PLATFORM_IOS
 from biz.models import User, UserProfile, BoxerIdentification, BoxingClub, Course, OrderComment, CourseOrder, PayOrder
+
+CDN_BASE_URL = settings.CDN_BASE_URL
 
 
 class OrderTestCase(APITestCase):
@@ -148,7 +152,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['user_id'], self.test_user_1.id)
         self.assertEqual(res.data['user_nickname'], self.user_profile_data['nick_name'])
         self.assertEqual(res.data['user_gender'], self.user_profile_data['gender'])
-        self.assertEqual(res.data['user_avatar'], self.user_profile_data['avatar'])
+        self.assertEqual(res.data['user_avatar'], f"{CDN_BASE_URL}{self.user_profile_data['avatar']}")
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
         self.assertEqual(res.data['course_validity'], self.course_data['validity'])
@@ -234,7 +238,7 @@ class OrderTestCase(APITestCase):
         self.assertEqual(res.data['boxer_id'], boxer.id)
         self.assertEqual(res.data['boxer_name'], boxer.real_name)
         self.assertEqual(res.data['boxer_gender'], boxer.user.user_profile.gender)
-        self.assertEqual(res.data['boxer_avatar'], boxer.user.user_profile.avatar)
+        self.assertEqual(res.data['boxer_avatar'], f"{CDN_BASE_URL}{boxer.user.user_profile.avatar}")
         self.assertEqual(res.data['course_name'], self.course_data['course_name'])
         self.assertEqual(res.data['course_duration'], self.course_data['duration'])
         self.assertEqual(res.data['course_validity'], self.course_data['validity'])
