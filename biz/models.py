@@ -114,7 +114,7 @@ class UserProfile(BaseModel):
     birthday = models.DateField(blank=True, null=True)
     weight = models.PositiveSmallIntegerField(blank=True, null=True)
     height = models.PositiveSmallIntegerField(blank=True, null=True)
-    profession = models.CharField(max_length=30, null=True, blank=True, validators=[validator.validate_profession])
+    profession = models.CharField(max_length=10, null=True, blank=True)
     avatar = models.CharField(null=True, blank=True, max_length=256)
     gender = models.BooleanField(default=True)  # True-男，False-女
     address = models.CharField(max_length=254, null=True, blank=True)
@@ -217,7 +217,7 @@ class BoxerIdentification(BaseModel):
     mobile = models.CharField(max_length=11, validators=[validator.validate_mobile])
     is_professional_boxer = models.BooleanField(default=False)  # True, 职业 | False，非职业
     club = models.CharField(null=True, blank=True, max_length=50)
-    job = models.CharField(max_length=30, validators=[validator.validate_profession])
+    job = models.CharField(max_length=10)
     introduction = models.TextField(max_length=300)
     is_locked = models.BooleanField(default=False)
     experience = models.TextField(null=True, blank=True, max_length=500)

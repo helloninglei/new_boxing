@@ -38,14 +38,14 @@ def validate_mobile_or_email(value):
 
 def validate_real_name(value):
     if not real_name_regex.match(value):
-        raise ValidationError("真实姓名为不超过6个的汉字")
+        raise ValidationError("请输入六位以内汉字")
 
 
 def validate_nation(value):
     if not nation_regex.match(value):
-        raise ValidationError("名族为不超过5个的汉字")
+        raise ValidationError("请输入五位以内汉字")
 
 
 def validate_profession(value):
     if not profession_regex.match(value):
-        raise ValidationError("职业为不超过10个的汉字")
+        raise ValidationError("请输入十位以内汉字")
