@@ -20,8 +20,8 @@ def cover_picture(request):
                '-vf', 'scale=480:trunc(ow/a/2)*2',
                '-f', 'image2pipe',
                '-']
-    pipe = sp.Popen(command, stdout=sp.PIPE, bufsize=10 ** 8)
-    pipe.wait()
+    pipe = sp.Popen(args=command, stdout=sp.PIPE)
+    pipe.communicate()
     if pipe.returncode is not 0:
         return Response(status=status.HTTP_400_BAD_REQUEST)
     return StreamingHttpResponse(pipe.stdout, content_type="image/jpeg")
