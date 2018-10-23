@@ -1,7 +1,6 @@
 from rest_framework import status
 
-from biz.constants import DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, USER_TYPE_CELEBRITY, DEFAULT_NICKNAME_FORMAT, \
-    DEFAULT_AVATAR
+from biz.constants import USER_TYPE_CELEBRITY, DEFAULT_NICKNAME_FORMAT, DEFAULT_AVATAR
 from biz.models import UserProfile, User
 from biz.services.url_service import get_cdn_url
 from . import APILoginTestCase
@@ -37,12 +36,12 @@ class UserProfileTestCase(APILoginTestCase):
         user = User.objects.create_user(mobile="18877778888", password="password", user_type=USER_TYPE_CELEBRITY,
                                         title="我是大名人")
         response = self.client.get(path=f"/user_profile/{user.id}")
-        self.assertEqual(response.data['bio'], DEFAULT_BIO_OF_MEN)
+        self.assertIsNone(response.data['bio'])
         self.assertEqual(response.data['user_type'], user.get_user_type_display())
         self.assertEqual(response.data['title'], user.title)
         UserProfile.objects.filter(user=user).update(gender=False)
         response = self.client.get(path=f"/user_profile/{user.id}")
-        self.assertEqual(response.data['bio'], DEFAULT_BIO_OF_WOMEN)
+        self.assertIsNone(response.data['bio'])
 
     def test_change_avatar(self):
         data = {"avatar": "新头像"}

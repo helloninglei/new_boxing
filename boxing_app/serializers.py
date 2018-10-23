@@ -11,8 +11,8 @@ from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.compat import authenticate
-from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, DEFAULT_BIO_OF_MEN, DEFAULT_BIO_OF_WOMEN, \
-    HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, PAYMENT_STATUS_PAID, SCHEDULE_STATUS_PUBLISHED
+from biz.constants import BOXER_AUTHENTICATION_STATE_WAITING, HOT_VIDEO_USER_ID, PAYMENT_TYPE, REPORT_OTHER_REASON, \
+    PAYMENT_STATUS_PAID, SCHEDULE_STATUS_PUBLISHED
 from biz.models import OrderComment, BoxingClub, User, Course, Match, Player
 from biz.redis_client import follower_count, following_count, get_user_title, is_liking_hot_video
 from biz.constants import MESSAGE_TYPE_ONLY_TEXT, MESSAGE_TYPE_HAS_IMAGE, MESSAGE_TYPE_HAS_VIDEO, \
@@ -641,7 +641,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         data = super(UserProfileSerializer, self).to_representation(instance)
         data['nick_name'] = instance.nick_name or DEFAULT_NICKNAME_FORMAT.format(instance.user.id)
         data['avatar'] = get_cdn_url(instance.avatar) if instance.avatar else DEFAULT_AVATAR
-        data['bio'] = instance.bio or (DEFAULT_BIO_OF_MEN if instance.gender else DEFAULT_BIO_OF_WOMEN)
         return data
 
     def get_is_following(self, instance):
