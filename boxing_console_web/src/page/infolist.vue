@@ -6,14 +6,14 @@
                 <el-date-picker
                         class="margin_rt25"
                         v-model="dateArr"
-                        type="datetimerange"
+                        type="daterange"
                         range-separator="至"
                         start-placeholder="起始日期"
                         end-placeholder="结束日期"
                         @change="getDateTime"
                         :clearable=false
                         :editable=false
-                        value-format="yyyy-MM-dd HH:mm:ss">
+                        value-format="yyyy-MM-dd">
                 </el-date-picker>
                 <el-input v-model="search"  class='myInput_40 margin_rt25' placeholder='请输入关键词' style='width:280px' @keyup.enter.native="searchEv"></el-input>
                 <el-select v-model="stay_top" class="margin_tp30 margin_rt25" placeholder='是否置顶'>
@@ -141,7 +141,7 @@
         methods: {
             getData(ifBtn) {
                 ifBtn && (this.page = 1);
-                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date,stay_top: this.stay_top};
+                let param = {page: this.page, search: this.search, start_date: this.start_date, end_date: this.end_date,stay_top: this.stay_top,is_show:this.is_show};
                 !this.hasSearch && (param = {page: this.page});
                 this.ajax('/game_news','get',{},param).then((res) => {
                     if(res&&res.data){

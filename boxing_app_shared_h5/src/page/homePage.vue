@@ -11,7 +11,6 @@
                     <div class="sex" :class="userInfo.gender ? 'gentleman' : 'lady'"/>
                 </div>
                 <div class="desc">{{user_detail.title}}</div>
-                <div class="sub_desc" v-if="userInfo.boxer_info.introduction">{{userInfo.boxer_info.introduction}}</div>
                 <div class="sub_desc sub_desc_num">{{userInfo.followers_count}} 粉丝 <span class='desc_line'></span>{{userInfo.following_count}}关注</div>
             </div>
         </div>
@@ -139,10 +138,6 @@
             font-size 0.6rem
             line-height 1rem
             color #8989A1
-            .autograph
-                display inline-block
-                vertical-align top
-                width calc(100% - 60px)
         .tag
             font-size 0.6rem
             color #9DA3B4
