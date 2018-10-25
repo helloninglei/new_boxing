@@ -118,7 +118,7 @@ def player_info(request, pk):
     user_profile = UserProfile.objects.filter(user_id=pk).first()
     real_name = user_profile.name
     bio = user_profile.bio
-    nick_name = user_profile.user.title
+    title = user_profile.user.title
     
     nation = user_profile.nation
     if nation:
@@ -139,6 +139,6 @@ def player_info(request, pk):
     if profession:
         tags.append(profession)
 
-    data = {'real_name': real_name, 'signature': bio, 'title': nick_name, 'tags': tags}
+    data = {'real_name': real_name, 'signature': bio, 'title': title, 'tags': tags}
 
     return Response(data=data)
