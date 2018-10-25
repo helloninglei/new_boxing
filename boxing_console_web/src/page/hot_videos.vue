@@ -32,7 +32,7 @@
                     </el-col> 
                     <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
                         <div class="inlimeLabel lf" style='margin:10px'>热门</div>
-                        <el-select v-model="sendData.is_hot" >
+                        <el-select v-model="sendData.is_hot" placeholder='全部'>
                             <el-option value="all" label="全部">全部</el-option>
                             <el-option value="yes" label="是">是</el-option>
                             <el-option value="no" label="否">否</el-option>
@@ -40,7 +40,7 @@
                     </el-col> 
                     <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
                         <div class="inlimeLabel lf" style='margin:10px'>付费</div>
-                        <el-select v-model="sendData.is_need_pay" >
+                        <el-select v-model="sendData.is_need_pay" placeholder='全部'>
                             <el-option value="all" label="全部">全部</el-option>
                             <el-option value="yes" label="付费">付费</el-option>
                             <el-option value="no" label="免费">免费</el-option>
