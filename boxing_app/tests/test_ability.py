@@ -76,6 +76,8 @@ class AbilityTest(APITestCase):
         self.assertEqual(res.data['results'][0]['win'], win_dict[m.result])
 
     def test_player_info(self):
+        self.user.title = '龙抬头'
+        self.user.save()
         Player.objects.create(user=self.user, name='华莱士', mobile='18888888888', avatar='/path/to/face.jpg',
                               stamina=80, skill=80, attack=80, defence=80, strength=80, willpower=80)
         UserProfile.objects.update(nick_name='蛤', name='华莱士', nation='美利坚', birthday=timezone.datetime(year=2018, month=10, day=16),  # 天秤座
@@ -84,7 +86,7 @@ class AbilityTest(APITestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data['real_name'], '华莱士')
         self.assertEqual(res.data['signature'], '你不是真的司机')
-        self.assertEqual(res.data['title'], '蛤')
+        self.assertEqual(res.data['title'], '龙抬头')
         self.assertTrue('50kg' in res.data['tags'])
         self.assertTrue('150cm' in res.data['tags'])
         self.assertTrue('美利坚' in res.data['tags'])
