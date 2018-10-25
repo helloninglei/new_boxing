@@ -118,7 +118,7 @@ def player_info(request, pk):
     user_profile = UserProfile.objects.filter(user_id=pk).first()
     real_name = user_profile.name
     bio = user_profile.bio
-    nick_name = user_profile.nick_name
+    nick_name = user_profile.user.title
     
     nation = user_profile.nation
     if nation:
