@@ -22,11 +22,8 @@ def cover_picture(request):
                '-']
     pipe = sp.Popen(args=command, stdout=sp.PIPE)
 
-    try:
-        pipe.wait(timeout=2)
-    except sp.TimeoutExpired:
-        return Response(status=status.HTTP_408_REQUEST_TIMEOUT)
+    image_stream = pipe.communicate()
 
     if pipe.returncode is not 0:
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    return StreamingHttpResponse(pipe.stdout, content_type="image/jpeg")
+    return StreamingHttpResponse(image_stream, content_type="image/jpeg")
