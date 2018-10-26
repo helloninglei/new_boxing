@@ -76,7 +76,7 @@ class MessageTestCase(APITestCase):
         response = self.client1.get(path='/messages')
         self.assertEqual(len(response.data['results']), 2)
         self.assertEqual(response.data['results'][0]['video_size'], -1)
-        self.assertEqual(response.data['results'][0]['video_height'], -1)
+        self.assertEqual(response.data['results'][0]['video_height'], 0)
         self.assertEqual(response.data['results'][0]['video_width'], -1)
 
     def prepare(self):
