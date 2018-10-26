@@ -2,10 +2,8 @@ import math
 import subprocess as sp
 import re
 import json
-import settings
 from biz.redis_client import redis_client
 from urllib.parse import urlparse, urljoin
-
 from settings import OSS_CONFIG
 
 FFMPEG_BIN = "ffmpeg"
@@ -28,7 +26,7 @@ def video_resolution(video_path: str) -> dict:
 
     pipe.wait()
     if pipe.returncode is not 0:
-        return {"video_height": -1, "video_width": -1, "video_size": -1}  # 失败默认结果返回-1
+        return {"video_height": -1, "video_width": -1, "video_size": 0}  # 失败默认结果返回-1, 视频大小返回0
     std_out = pipe.communicate()[0].decode("utf-8")
 
     width_match = re.findall(r"width=(\d+)", std_out)
@@ -41,7 +39,7 @@ def video_resolution(video_path: str) -> dict:
     video_rotate = rotate_match[0] if rotate_match else 0
 
     size_match = re.findall(r"size=(\d+)", std_out)
-    video_size = int(size_match[0]) / 1024 / 1024 if size_match else -1
+    video_size = int(size_match[0]) / 1024 / 1024 if size_match else 0
 
     if video_rotate != 0:
         video_height, video_width = video_width, video_height
