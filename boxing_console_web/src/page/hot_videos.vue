@@ -4,10 +4,10 @@
         <div class='container'>
             <header>
                  <el-row>
-                    <el-col :span="5" style='width:314px'>
+                    <el-col :span="5" style='width:314px;margin-bottom:30px'>
                         <el-input v-model="sendData.search"  class='myInput_40 margin_rt25' placeholder='用户ID/视频名称' style='width:284px'></el-input>
                     </el-col> 
-                    <el-col :span="7" style='width:460px'>
+                    <el-col :span="7" style='width:460px;margin-bottom:30px'>
                         <el-date-picker
                         v-model="sendData.start_time"
                         type="datetime"
@@ -23,16 +23,32 @@
                         placeholder="发布结束时间" style='width:200px' class="margin_rt25">
                         </el-date-picker>
                     </el-col> 
-                    <el-col :span="5" style='margin-right:25px;width:248px' class='videoTags'>
+                    <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
                         <div class="inlimeLabel lf" style='margin:10px'>标签</div>
                         <el-select v-model="sendData.tag" >
                             <el-option value="" label="全部">全部</el-option>
                             <el-option :value="item.id" :label="item.name" v-for="item in videoTags">{{item.name}}</el-option>
                         </el-select>
+                    </el-col> 
+                    <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
+                        <div class="inlimeLabel lf" style='margin:10px'>热门</div>
+                        <el-select v-model="sendData.is_hot" placeholder='全部'>
+                            <el-option value="all" label="全部">全部</el-option>
+                            <el-option value="yes" label="是">是</el-option>
+                            <el-option value="no" label="否">否</el-option>
+                        </el-select>
+                    </el-col> 
+                    <el-col :span="5" style='margin-right:25px;width:248px;margin-bottom:30px' class='videoTags'>
+                        <div class="inlimeLabel lf" style='margin:10px'>付费</div>
+                        <el-select v-model="sendData.is_need_pay" placeholder='全部'>
+                            <el-option value="all" label="全部">全部</el-option>
+                            <el-option value="yes" label="付费">付费</el-option>
+                            <el-option value="no" label="免费">免费</el-option>
+                        </el-select>
                     </el-col>     
                     <el-col :md="12" :lg="6" :xl='5'>
-                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25 margin_tp30' @click="filter()">查询</el-button>
-                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red margin_tp30' @click="reset()">重置</el-button>
+                        <el-button type="danger" class='myColor_red myButton_40 btn_width_95 margin_rt25' @click="filter()">查询</el-button>
+                        <el-button  class='myButton_40 btn_width_95 myBtnHover_red' @click="reset()">重置</el-button>
                     </el-col>   
                     <el-col :span='24'>
                         <el-button type="danger" class='myColor_red myButton_40 btn_width_120 margin_rt25'  @click="toDetail()" style='margin-top:30px'>新增视频</el-button>
@@ -46,6 +62,20 @@
                       :data="tableData"
                       style="width: 100%"
                       :highlight-current-row="true">
+                        <el-table-column
+                        prop="id"
+                        label="ID"
+                        width="80"
+                        fixed="left"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                        prop="name"
+                        label="视频名称"
+                        width="200"
+                        fixed="left"
+                        >
+                        </el-table-column>
                         <el-table-column
                         :prop="value.title"
                         :label="value.name"
@@ -79,9 +109,9 @@
     @media screen and (min-width:1681px){
        .margin_tp30{margin-top:0px!important;margin-left:0!important;} 
     }
-    @media screen and (max-width:1333px){
+    /*@media screen and (max-width:1333px){
        .videoTags{margin-top:30px!important;margin-left:0!important;} 
-    } 
+    } */
 </style>
 <style>
 </style>
@@ -100,7 +130,9 @@
                     start_time : '',
                     end_time   : '',
                     search     : '',
-                    tag        : ''
+                    tag        : '',
+                    is_need_pay: '',
+                    is_hot     : ''
                 },
                 videoTags :[],
                 confirmData:{
@@ -128,16 +160,18 @@
                     }
                 ],
                 tableColumn:[
-                    {title:'id',    name :'ID',   width: '80'},
-                    {title:'name',  name :'视频名称',width: ''},
                     {title:'user_list_name',name :'关联用户' ,width: '80'},
                     {title:'tag_name',name :'标签',width: '100'},
                     {title:'price',name :'付费金额（元）',width: '100'},
-                    {title:'forward_count', name :'转发数'   ,width: '50'},
-                    {title:'like_count', name :'点赞数'   ,width: '50'},
-                    {title:'views_count', name :'观看人数'   ,width: '60'},
                     {title:'sales_count', name :'付费人数'   ,width: ''},
                     {title:'price_amount',name :'总金额（元）',width: '100'},
+                    {title:'forward_count', name :'真实转发数'   ,width: '80'},
+                    {title:'initial_forward_count', name :'初始转发数'   ,width: '80'},
+                    {title:'like_count', name :'真实点赞数'   ,width: '80'},
+                    {title:'initial_like_count', name :'初始点赞数'   ,width: '80'},
+                    {title:'views_count', name :'真实观看数'   ,width: '80'},
+                    {title:'initial_views_count', name :'初始观看数'   ,width: '80'},
+                    {title:'is_hot_name', name :'热门'   ,width: '80'},
                     {title:'created_time',name :'发布时间' ,width: '200'},
                     {title:'is_show_name',name :'显示状态' ,width: '90'},
                 ],
@@ -172,9 +206,11 @@
                             res.data.results[i].price = res.data.results[i].price  ?(res.data.results[i].price/100).toFixed(2)  :0
                             res.data.results[i].is_show_name = res.data.results[i].is_show?'显示':'隐藏'
                             res.data.results[i].user_list_name = [] 
+                            res.data.results[i].is_hot_name = '否'
                             for(var a=0;a<res.data.results[i].user_list.length;a++){
                                 if(res.data.results[i].user_list[a].id==10){
                                    delete res.data.results[i].user_list[a]
+                                   res.data.results[i].is_hot_name = '是'
                                    continue;
                                 }
                                 res.data.results[i].user_list_name.push(res.data.results[i].user_list[a].nick_name)
@@ -233,8 +269,6 @@
             },
             changeShow(row,index){
                 // 显示隐藏
-                console.log(row.is_show)
-                console.log(!row.is_show)
                 let $this = this;
                 this.ajax('/hot_videos/'+row.id,'patch',{is_show:!row.is_show}).then(function(res){
                     if(res&&res.data){

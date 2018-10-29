@@ -83,7 +83,8 @@ upload_url = [
 
 news_urls = [
     path('game_news', NewsViewSet.as_view({'post': 'create', 'get': 'list'})),
-    path('game_news/<int:pk>', NewsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('game_news/<int:pk>',
+         NewsViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy', 'patch': 'partial_update'})),
 ]
 
 router.register(r"admins", admin.AdminViewSet, base_name="admin")

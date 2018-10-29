@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from biz.models import Message
-from boxing_app.serializers import MessageSerializer
+from boxing_app.serializers import MessageSerializer, MessageReadOnlySerializer
 from boxing_app.permissions import OnlyOwnerCanDeletePermission
 from biz.redis_client import following_list_all, blocked_user_list
 from biz.utils import comment_count_condition
@@ -43,12 +43,17 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     # 最新动态
     def list(self, request, *args, **kwargs):
+        self.serializer_class = MessageReadOnlySerializer
         user_id = request.query_params.get('user_id')
         if user_id:  # 指定用户的动态
             self.queryset = self._get_query_set().filter(user_id=user_id)
         else:
             self.queryset = self._get_query_set()
         return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        self.serializer_class = MessageReadOnlySerializer
+        return super().retrieve(request, *args, **kwargs)
 
     def hot(self, request, *args, **kwargs):
         self.queryset = self._get_query_set().order_by('-like_count', '-created_time')

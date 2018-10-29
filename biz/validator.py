@@ -7,6 +7,9 @@ from django.utils.translation import gettext_lazy as _
 
 mobile_regex = re.compile(r'^1\d{10}$')
 identity_number_regex = re.compile(r'^\d{17}[xX0-9]$')
+real_name_regex = re.compile(r'^[\u4e00-\u9fa5]{1,6}$')
+nation_regex = re.compile(r'^[\u4e00-\u9fa5]{1,5}$')
+profession_regex = re.compile(r'^[\u4e00-\u9fa5]{1,10}$')
 
 
 def validate_mobile(value):
@@ -31,3 +34,18 @@ def validate_mobile_or_email(value):
     mobile_or_email_regex = re.compile(r"^1\d{10}$|^[\w.-]+@[\da-zA-Z]+(.[\w-]+)+$")
     if not mobile_or_email_regex.match(value):
         raise ValidationError(_('%(value)s 不是有效邮箱或手机号。'), params={"value": value})
+
+
+def validate_real_name(value):
+    if not real_name_regex.match(value):
+        raise ValidationError("请输入六位以内汉字")
+
+
+def validate_nation(value):
+    if not nation_regex.match(value):
+        raise ValidationError("请输入五位以内汉字")
+
+
+def validate_profession(value):
+    if not profession_regex.match(value):
+        raise ValidationError("请输入十位以内汉字")

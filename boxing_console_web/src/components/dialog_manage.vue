@@ -106,7 +106,7 @@
                       if(this.row.user_type=='普通用户'){
                             callback();
                         }
-                        else if(value==''){
+                        else if(value==''||value==undefined){
                             callback(new Error('请输入认证称号'));
                         }else {
                         
@@ -129,7 +129,6 @@
           row:{
             type : Object,
             default:function(row){
-              console.log(row)
               return row
             }
           },
@@ -145,17 +144,18 @@
             if(!val){
               this.$emit('cancel',val)
               this.resetForm();
+            }else{
+              this.form3.title = this.row.title
+              this.form3.user_type = this.row.user_type
             }
           },
           row(row){
             if(row&&row.id){
-              // this.form3.change_amount = row.money_balance
-              this.form3.title = row.title
+              // this.form3.title = row.title
               this.form3.user_type = row.user_type
             }
           },
           "form3.user_type"(val){
-            console.log(val)
           }
 
         },
@@ -177,13 +177,17 @@
                       delete this.form3.title
                     }
                     this.form3.change_amount = this.form3.change_amount*100
-                      this.ajax('/edit_user/'+this.row.id,'put',this.form3).then(function(res){
+                      this.ajax('/edit_user/'+this.row.id,'put',this.form3).then((res)=>{
                           if(res&&res.data){
-                            console.log(res.data)
-                              sendData.row.title = res.data.title
-                              sendData.row.user_type = res.data.user_type
+                              $this.row.title =res.data.title
+                              $this.row.user_type =res.data.user_type
                               sendData.row.money_balance = res.data.money_balance
                               $this.$emit('confirm')
+                              this.form3={
+                                change_amount:0,
+                                title:'请输入',
+                                user_type:'拳手',
+                              }
                           }
 
                       },function(err){

@@ -7,7 +7,7 @@ from django.db.models import Q
 from biz import models
 from biz.models import Course
 from biz import constants
-from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID, USER_TYPE_CHOICE
+from biz.constants import REPORT_STATUS_NOT_PROCESSED, PAYMENT_STATUS_UNPAID, USER_TYPE_CHOICE, HOT_VIDEO_USER_ID
 
 
 class CommonFilter(django_filters.FilterSet):
@@ -46,6 +46,26 @@ class CourseFilter(django_filters.FilterSet):
 class HotVideoFilter(CommonFilter):
     search = django_filters.CharFilter(method='search_filter')
     tag = django_filters.ChoiceFilter(choices=constants.HOT_VIDEO_TAG_CHOICES, field_name='tag')
+    is_hot = django_filters.CharFilter(method='is_hot_filter')
+    is_need_pay = django_filters.CharFilter(method='is_need_pay_filter')
+
+    def is_hot_filter(self, qs, name, value):
+        value = value.lower()
+        if value == 'yes':
+            return qs.filter(users__in=[HOT_VIDEO_USER_ID])
+        elif value == 'no':
+            return qs.filter(~Q(users__in=[HOT_VIDEO_USER_ID]))
+        else:
+            return qs
+
+    def is_need_pay_filter(self, qs, name, value):
+        value = value.lower()
+        if value == 'yes':
+            return qs.filter(price__gt=0)
+        elif value == 'no':
+            return qs.filter(price=0)
+        else:
+            return qs
 
     def search_filter(self, qs, name, value):
         if value.isdigit():
@@ -54,13 +74,23 @@ class HotVideoFilter(CommonFilter):
 
     class Meta:
         model = models.HotVideo
-        fields = ('start_time', 'end_time', 'search')
+        fields = ('start_time', 'end_time', 'search', 'is_hot', 'is_need_pay')
 
 
 class GameNewsFilter(django_filters.FilterSet):
     start_date = django_filters.DateFilter(field_name='updated_time', lookup_expr='gte')
     end_date = django_filters.DateFilter(field_name='updated_time', lookup_expr='lte')
     stay_top = django_filters.CharFilter(method='filter_stay_top')
+    is_show = django_filters.CharFilter(method='is_show_filter')
+
+    def is_show_filter(self, qs, name, value):
+        value = value.lower()
+        if value == 'yes':
+            return qs.filter(is_show=1)
+        elif value == 'no':
+            return qs.filter(is_show=0)
+        else:
+            return qs
 
     def filter_stay_top(self, qs, name, value):
         value = value.lower()

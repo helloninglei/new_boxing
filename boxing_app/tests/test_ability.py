@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from rest_framework.test import APITestCase
-from biz.models import Player, User, Schedule, Match
+from biz.models import Player, User, Schedule, Match, UserProfile
 from biz.constants import MATCH_CATEGORY_FREE_BOXING, SCHEDULE_STATUS_PUBLISHED, MATCH_CATEGORY_CHOICES, \
     MATCH_RESULT_RED_SUCCESS, MATCH_RESULT_BLUE_SUCCESS, MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_BLUE_KO_RED
 from django.utils import timezone
@@ -41,7 +41,7 @@ class AbilityTest(APITestCase):
         level_min = 50
         level_max = 60
         ko_dict = {MATCH_RESULT_RED_KO_BLUE: 'red', MATCH_RESULT_BLUE_KO_RED: 'blue',
-                   MATCH_RESULT_RED_SUCCESS: '',  MATCH_RESULT_BLUE_SUCCESS: ''}
+                   MATCH_RESULT_RED_SUCCESS: '', MATCH_RESULT_BLUE_SUCCESS: ''}
         win_dict = {MATCH_RESULT_RED_SUCCESS: 'red', MATCH_RESULT_RED_KO_BLUE: 'red',
                     MATCH_RESULT_BLUE_SUCCESS: 'blue', MATCH_RESULT_BLUE_KO_RED: 'blue'}
         him = User.objects.create_user(mobile='22222222222', password='password')
@@ -74,3 +74,22 @@ class AbilityTest(APITestCase):
         self.assertEqual(res.data['results'][0]['time'], race_date.date())
         self.assertEqual(res.data['results'][0]['ko'], ko_dict[m.result])
         self.assertEqual(res.data['results'][0]['win'], win_dict[m.result])
+
+    def test_player_info(self):
+        self.user.title = '龙抬头'
+        self.user.save()
+        Player.objects.create(user=self.user, name='华莱士', mobile='18888888888', avatar='/path/to/face.jpg',
+                              stamina=80, skill=80, attack=80, defence=80, strength=80, willpower=80)
+        UserProfile.objects.update(nick_name='蛤', name='华莱士', nation='美利坚', birthday=timezone.datetime(year=2018, month=10, day=16),  # 天秤座
+                                   weight=50, height=150, profession='魔法师', address='香港', bio='你不是真的司机')
+        res = self.client.get('/players/{}/info'.format(self.user.id))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data['real_name'], '华莱士')
+        self.assertEqual(res.data['signature'], '你不是真的司机')
+        self.assertEqual(res.data['title'], '龙抬头')
+        self.assertTrue('50kg' in res.data['tags'])
+        self.assertTrue('150cm' in res.data['tags'])
+        self.assertTrue('美利坚' in res.data['tags'])
+        self.assertTrue('魔法师' in res.data['tags'])
+        self.assertTrue('香港' in res.data['tags'])
+        self.assertTrue('天秤座' in res.data['tags'])

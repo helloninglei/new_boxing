@@ -4,9 +4,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from biz.services.chart_service import make_radar
 from rest_framework.response import Response
-from biz.models import Player, Match
+from biz.models import Player, Match, User, UserProfile
 from django.db.models import Q
-from django.utils import timezone
 from biz.constants import SCHEDULE_STATUS_PUBLISHED, MATCH_RESULT_RED_KO_BLUE, MATCH_RESULT_BLUE_KO_RED, \
     MATCH_RESULT_BLUE_SUCCESS, MATCH_RESULT_RED_SUCCESS
 
@@ -96,3 +95,50 @@ def player_match(request, pk):
         response_data = {'total': len(results), 'win': win, 'ko': ko, 'results': results}
 
     return Response(data=response_data, status=status.HTTP_200_OK)
+
+
+# 输入月份和日期，获取星座
+def get_constellation(month, date):
+    dates = (21, 20, 21, 21, 22, 22, 23, 24, 24, 24, 23, 22)
+    constellations = ("摩羯", "水瓶", "双鱼", "白羊", "金牛", "双子", "巨蟹", "狮子", "处女", "天秤", "天蝎", "射手", "摩羯")
+    if date < dates[month - 1]:
+        return constellations[month - 1] + '座'
+    else:
+        return constellations[month] + '座'
+
+
+@api_view(['GET'])
+@permission_classes([])
+@authentication_classes([])
+def player_info(request, pk):
+    if not Player.objects.filter(user_id=pk).exists():
+        return Response(status=404)
+
+    tags = []
+    user_profile = UserProfile.objects.filter(user_id=pk).first()
+    real_name = user_profile.name
+    bio = user_profile.bio
+    title = user_profile.user.title
+    
+    nation = user_profile.nation
+    if nation:
+        tags.append(nation)
+    birthday = user_profile.birthday
+    if birthday:
+        tags.append(get_constellation(birthday.month, birthday.day))
+    address = user_profile.address
+    if address:
+        tags.append(address)
+    height = user_profile.height
+    if height:
+        tags.append(str(height) + 'cm')
+    weight = user_profile.weight
+    if weight:
+        tags.append(str(weight) + 'kg')
+    profession = user_profile.profession
+    if profession:
+        tags.append(profession)
+
+    data = {'real_name': real_name, 'signature': bio, 'title': title, 'tags': tags}
+
+    return Response(data=data)

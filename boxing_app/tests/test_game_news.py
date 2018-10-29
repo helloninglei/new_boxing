@@ -43,3 +43,10 @@ class GameNewsTestCase(APITestCase):
         res = self.client.get(f'/game_news/{news.id}')
         content = res.data['content']
         self.assertEqual(content, self.data['share_content'])
+
+    def test_list(self):
+        models.GameNews.objects.create(**self.data)
+        self.data['is_show'] = False
+        models.GameNews.objects.create(**self.data)
+        res = self.client.get(f'/game_news')
+        self.assertEqual(len(res.data['results']), 1)

@@ -70,3 +70,34 @@ class GameNewsTestCase(APITestCase):
 
         res = self.client.get('/game_news', {'stay_top': 'false'})
         self.assertEqual(res.data['count'], 1)
+
+    def test_stat(self):
+        news = models.GameNews.objects.create(**self.data)
+        news.stay_top = True
+        news.views_count = 1
+        news.save()
+
+        news = models.GameNews.objects.create(**self.data)
+        news.stay_top = True
+        news.is_show = False
+        news.views_count = 5
+        news.save()
+
+        news = models.GameNews.objects.create(**self.data)
+        news.stay_top = False
+        news.is_show = False
+        news.views_count = 10
+        news.save()
+
+        res = self.client.get('/game_news')
+        self.assertEqual(res.data['count'], 3)
+        self.assertEqual(res.data['real_views_amount'], 16)
+
+        res = self.client.get('/game_news', {'stay_top': 'true'})
+        self.assertEqual(res.data['count'], 2)
+        self.assertEqual(res.data['real_views_amount'], 6)
+
+        res = self.client.get('/game_news', {'stay_top': 'true', 'is_show': 'yes'})
+        self.assertEqual(res.data['count'], 1)
+        self.assertEqual(res.data['real_views_amount'], 1)
+

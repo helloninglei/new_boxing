@@ -23,8 +23,8 @@ class HotVideoTestCase(APITestCase):
         self.client3.login(username=self.test_user3, password='password')
 
         self.data = {
-            'name': 'test video1',
-            'description': 'test video1',
+            'name': 'test video',
+            'description': 'test video',
             'price': 111,
             'url': '/videos/111',
             'try_url': '/videos/222',
@@ -101,8 +101,8 @@ class HotVideoTestCase(APITestCase):
         res = self.client2.get(f'/hot_videos?search={self.test_user.id}')
         self.assertEqual(res.data['count'], 1)
 
-        res = self.client2.get(f'/hot_videos?search={self.hot_video_user.id}')
-        self.assertEqual(res.data['count'], 0)
+        res = self.client2.get(f'/hot_videos?search={self.test_user3.id}')
+        self.assertEqual(res.data['count'], 1)
 
         most_early_date = HotVideo.objects.all().order_by('created_time').first().created_time
         most_late_date = HotVideo.objects.all().order_by('-created_time').first().created_time
@@ -169,3 +169,37 @@ class HotVideoTestCase(APITestCase):
         result = res.data['results'][0]
         self.assertEqual(result['sales_count'], 2)
         self.assertEqual(result['price_amount'], video.price * 2)
+
+    def test_filter(self):
+        self.data['users'] = [self.hot_video_user.id]
+        self.data['price'] = 0
+        self.client2.post('/hot_videos', self.data)
+
+        self.data['users'] = [self.test_user3.id]
+        self.data['price'] = 100
+        self.client2.post('/hot_videos', self.data)
+        self.client2.post('/hot_videos', self.data)
+
+        # list
+        res = self.client2.get('/hot_videos')
+        self.assertEqual(res.data['count'], 3)
+
+        # is_hot
+        res = self.client2.get('/hot_videos?is_hot=all')
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client2.get('/hot_videos?is_hot=yes')
+        self.assertEqual(res.data['count'], 1)
+
+        res = self.client2.get('/hot_videos?is_hot=no')
+        self.assertEqual(res.data['count'], 2)
+
+        # is_need_pay
+        res = self.client2.get('/hot_videos?is_need_pay=all')
+        self.assertEqual(res.data['count'], 3)
+
+        res = self.client2.get('/hot_videos?is_need_pay=yes')
+        self.assertEqual(res.data['count'], 2)
+
+        res = self.client2.get('/hot_videos?is_need_pay=no')
+        self.assertEqual(res.data['count'], 1)

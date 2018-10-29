@@ -215,7 +215,6 @@
                 })
             },
             addCount(row,index){
-                // console.log(row)
                 this.addData.row = row
                 this.addData.index = index
                 this.dialog_label_data.nick_name=row.user_basic_info.nick_name
