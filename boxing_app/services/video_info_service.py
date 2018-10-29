@@ -41,7 +41,7 @@ def video_resolution(video_path: str) -> dict:
     size_match = re.findall(r"size=(\d+)", std_out)
     video_size = int(size_match[0]) / 1024 / 1024 if size_match else 0
 
-    if video_rotate != 0:
+    if video_rotate in [90, 270]:
         video_height, video_width = video_width, video_height
  
     data = {"video_height": video_height, "video_width": video_width, "video_size": math.ceil(video_size)}
