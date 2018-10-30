@@ -13,6 +13,10 @@
                             label="版本号">
                     </el-table-column>
                     <el-table-column
+                            prop="inner_number"
+                            label="内部版本号">
+                    </el-table-column>
+                    <el-table-column
                             prop="platform"
                             label="平台">
                         <template slot-scope="scope">
