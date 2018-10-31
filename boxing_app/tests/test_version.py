@@ -2,12 +2,14 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from biz.models import User, AppVersion
 from biz.constants import IOS, ANDROID, APPVERSION_NOW
+from django.conf import settings
+oss_base_url = settings.OSS_BASE_URL
 
 
 class VersionTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(mobile="19909999999", password="password")
-        self.prefix = PKG_URL = 'http://qa.bituquanguan.com'
+        self.prefix = oss_base_url
         self.client = self.client_class()
         self.client.login(username=self.user.mobile, password="password")
         AppVersion.objects.all().delete()

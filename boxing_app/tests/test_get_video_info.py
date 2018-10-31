@@ -21,6 +21,6 @@ class GetVideoInfo(APITestCase):
 
     def test_get_video_info(self):
         res = video_info_service.video_resolution("/uploads/5b/df/f2d60475f18bf0d4a304351215b686a5fd4d.mp4")
-        self.assertEqual(res['video_width'], video_height)
-        self.assertEqual(res['video_height'], video_width)
+        self.assertEqual(res['video_width'], video_width)
+        self.assertEqual(res['video_height'], video_height)
         self.assertEqual(res['video_size'], video_size)
